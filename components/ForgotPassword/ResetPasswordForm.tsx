@@ -30,6 +30,7 @@ const ResetPasswordForm = () => {
   const searchParams = useSearchParams();
 
   const code = searchParams.get("code");
+  const email = searchParams.get("email");
 
   const formSchema = z
     .object({
@@ -67,6 +68,7 @@ const ResetPasswordForm = () => {
       code,
       password1: passwordRef.current?.value,
       password2: confirmPasswordRef.current?.value,
+      email
     };
 
     try {
