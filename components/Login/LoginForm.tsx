@@ -58,6 +58,8 @@ const LoginForm = () => {
         redirect: false,
       })
         .then((res) => {
+          console.log("res", res);
+          
           if (res?.error === null) {
             toast({
               title: "Login Successful",
