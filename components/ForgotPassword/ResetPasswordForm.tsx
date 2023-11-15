@@ -72,7 +72,7 @@ const ResetPasswordForm = () => {
     try {
       formSchema.parse(formData);
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}auth/password/confirm/forgot-password/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/auth/password/confirm/forgot-password/`,
         JSON.stringify(formData),
         {
           headers: {
