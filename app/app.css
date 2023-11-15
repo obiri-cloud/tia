@@ -43,9 +43,9 @@
   
 }
 
-/* body{
-  background-color: ;
-} */
+body{
+  font-family: 'Inter', sans-serif;
+}
 
 .glassBorder{
   border: 1px solid hsl(0, 0%, 18%);
