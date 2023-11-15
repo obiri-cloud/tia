@@ -39,7 +39,7 @@ const ResetPasswordForm = () => {
           message: "Code has to be 5 characters or more",
         })
         .max(6, {
-          message: "Code can't to be more than 5 characters ",
+          message: "Code can't to be more than 6 characters ",
         }),
       password1: z.string().min(6, {
         message: "Password has to be longer than 6 characaters",
@@ -72,7 +72,7 @@ const ResetPasswordForm = () => {
     try {
       formSchema.parse(formData);
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}auth/password/change/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}auth/password/confirm/forgot-password/`,
         JSON.stringify(formData),
         {
           headers: {
