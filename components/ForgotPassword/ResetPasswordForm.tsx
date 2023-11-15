@@ -87,6 +87,8 @@ const ResetPasswordForm = () => {
         title: response.data.message,
         variant: "success",
       });
+      router.push(`/login?emdail=${email}`);
+
     } catch (error) {
       if (error instanceof z.ZodError) {
         console.log("error.issues", error.issues);
