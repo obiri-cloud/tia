@@ -1,0 +1,29 @@
+import { signOut } from "next-auth/react";
+import Link from "next/link";
+import React from "react";
+
+const Navbar = () => {
+  return (
+    <nav className="w-full bg-black p-3 text-white glassBorder border-t-0 border-r-0">
+      <ul className="flex  gap-4 justify-end">
+        <li>
+          <Link href="/dashboard/explore" className="hover:bg-black/10">
+            Explore
+          </Link>{" "}
+        </li>
+        <li>
+          <Link href="/dashboard/account" className="hover:bg-black/10">
+            Account
+          </Link>{" "}
+        </li>
+        <li>
+          <button onClick={() => signOut()} className="hover:bg-black/10">
+            Logout
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
+};
+
+export default Navbar;
