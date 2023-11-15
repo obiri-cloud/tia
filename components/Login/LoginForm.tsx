@@ -30,8 +30,8 @@ const LoginForm = () => {
 
   const formSchema = z.object({
     email: z.string().email({}),
-    password: z.string().min(8, {
-      message: "Password has to be longer than 4 characaters",
+    password: z.string().min(6, {
+      message: "Password has to be longer than 6 characaters",
     }),
   });
 
