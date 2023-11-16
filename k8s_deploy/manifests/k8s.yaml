@@ -3,6 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: tialabs-frontend-configmap
+  namespace: "tiacourses"
 data:
   NEXT_PUBLIC_BE_URL: https://tialabs-api.tiapod.tiacloud.dev/api/v1
   NEXTAUTH_SECRET: dGlhbGFicwo
