@@ -74,7 +74,7 @@ const ResetPasswordForm = () => {
     try {
       formSchema.parse(formData);
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/auth/password/confirm/forgot-password/`,
+        `https://tialabs-api.tiapod.tiacloud.dev/api/v1/auth/password/confirm/forgot-password/`,
         JSON.stringify(formData),
         {
           headers: {

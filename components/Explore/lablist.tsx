@@ -22,7 +22,7 @@ const LabList = () => {
   const getLabs = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/image/list/`,
+        `https://tialabs-api.tiapod.tiacloud.dev/api/v1/user/lab/image/list/`,
         {
           headers: {
             "Content-Type": "application/json",

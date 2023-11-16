@@ -51,7 +51,7 @@ const AccountPage = () => {
   const token = session?.user!.tokens?.access_token;
   const getUser = async () => {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/auth/user/`,
+      `https://tialabs-api.tiapod.tiacloud.dev/api/v1/auth/user/`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +80,7 @@ const AccountPage = () => {
 
       try {
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BE_URL}auth/avatar/change/`,
+          `https://tialabs-api.tiapod.tiacloud.dev/api/v1auth/avatar/change/`,
           formData,
           {
             headers: {
@@ -125,7 +125,7 @@ const AccountPage = () => {
     try {
       formSchema.parse(formData);
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/auth/user/update/`,
+        `https://tialabs-api.tiapod.tiacloud.dev/api/v1/auth/user/update/`,
         JSON.stringify(formData),
         {
           headers: {
@@ -171,7 +171,7 @@ const AccountPage = () => {
     }
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}auth/account/deactivate/`,
+        `https://tialabs-api.tiapod.tiacloud.dev/api/v1auth/account/deactivate/`,
         {
           headers: {
             Accept: "application/json",

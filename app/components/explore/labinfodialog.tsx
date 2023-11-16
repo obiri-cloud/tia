@@ -49,7 +49,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/create/`,
+        `https://tialabs-api.tiapod.tiacloud.dev/api/v1/user/lab/create/`,
         formData,
         {
           headers: {
@@ -124,7 +124,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     });
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/delete/`,
+        `https://tialabs-api.tiapod.tiacloud.dev/api/v1/user/lab/delete/`,
         formData,
         {
           headers: {

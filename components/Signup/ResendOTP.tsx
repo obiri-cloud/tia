@@ -20,7 +20,7 @@ const ResendOTP = () => {
     });
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/auth/send-otp/`,
+        `https://tialabs-api.tiapod.tiacloud.dev/api/v1/auth/send-otp/`,
         JSON.stringify(formData),
         {
           headers: {
