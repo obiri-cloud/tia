@@ -10,10 +10,7 @@ import Link from "next/link";
 import ThemeToggle from "./components/home/themetoggle";
 
 const Page = () => {
-  console.log("NEXT_PUBLIC_BE_URL", process.env.NEXT_PUBLIC_BE_URL);
-  console.log("NEXTAUTH_SECRET", process.env.NEXTAUTH_SECRET);
-  console.log("NEXTAUTH_URL", process.env.NEXTAUTH_URL);
-  
+
   return (
     <div className="noise relative">
       <nav className="w-full z-10 bg-black p-3 text-white glassBorder sticky top-0">
