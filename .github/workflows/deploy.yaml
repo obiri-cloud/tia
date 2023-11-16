@@ -1,0 +1,82 @@
+name: Deploy to Azure AKS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    env:
+      MANIFESTS_DIRECTORY: ./k8s_deploy/manifests
+      IMAGE_NAME: tialabs-frontend
+      CLUSTER_NAME: argocd-dev-eus-rg
+      RESOURCE_GROUP: argocd-dev-eus-aks
+      IMAGE_TAG: 0.0.1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get Current Date
+        id: current-date
+        run: |
+          time=$(date +'%T')
+          echo "::set-output name=date::$(date +'%m-%d-%Y')-${time//:/-}"
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push Docker image
+        id: build-image
+        env:
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          TIMESTAMP_TAG: ${{ steps.current-date.outputs.date }}
+          ACR_SERVER_NAME: ${{ secrets.ACR_SERVER }}
+        run: |
+          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+          az acr login --name ${{ env.ACR_SERVER_NAME }}
+          docker build -f Dockerfile -t $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG .
+          docker push $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG
+          echo "::set-output name=image::$ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG"
+
+      - uses: azure/k8s-set-context@v1
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K8S_CLUSTER_KUBECONFIG }}
+          context: argocd-dev-eus-aks  #If left unspecified, current-context from kubeconfig is used as default
+        id: setcontext
+
+      - name: Install kubectl
+        id: install-kubectl
+        run: |
+          curl -LO https://dl.k8s.io/release/v1.23.6/bin/linux/amd64/kubectl
+          chmod +x kubectl
+          mkdir -p ~/.local/bin
+          mv ./kubectl ~/.local/bin/kubectl
+          kubectl version --short
+
+      - name: Deploy Frontend
+        id: deploy-k8s-yaml
+        env:
+          IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+          NAMESPACE: tiacourses
+        run: |
+          cd $MANIFESTS_DIRECTORY
+          curl -s -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+          chmod u+x ./kustomize
+          ./kustomize edit set image tialabs-frontend=$IMAGE_NAME
+          ./kustomize build . | kubectl apply -f -
+          kubectl rollout status deployment/tialabs-frontend -n $NAMESPACE
+          kubectl get services -o wide -n $NAMESPACE
+          kubectl get ingress -n $NAMESPACE
+
+
