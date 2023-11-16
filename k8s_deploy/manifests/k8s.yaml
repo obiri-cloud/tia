@@ -1,0 +1,93 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tialabs-frontend-configmap
+  namespace: "tiacourses"
+data:
+  NEXT_PUBLIC_BE_URL: https://tialabs-api.tiapod.tiacloud.dev/api/v1
+  NEXTAUTH_SECRET: dGlhbGFicwo
+  NEXTAUTH_URL: http://localhost:3000
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tialabs-frontend
+  namespace: "tiacourses"
+spec:
+  selector:
+    matchLabels:
+      app: tialabs-frontend
+  template:
+    metadata:
+      labels:
+        app: tialabs-frontend
+    spec:
+      serviceAccountName: tialabs-api
+      containers:
+      - name: tialabs-frontend
+        image: tialabs-frontend
+        # image: tiacloudconregdev.azurecr.io/tialabs-api:10-20-2023-02-00-03
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: general-config
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: regcred
+
+      volumes:
+      - name: config-volume
+        configMap:
+          name: tialabs-frontend-configmap
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tialabs-frontend
+  namespace: tiacourses 
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: tialabs-frontend.tiapod.tiacloud.dev
+spec:
+  ports:
+    - port: 80
+      targetPort: 8000
+  selector:
+    app: tialabs-frontend
+
+    
+---
+
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: kong
+  labels:
+    app: tialabs-frontend
+  name: tialabs-frontend
+  namespace: tiacourses
+spec:
+  rules:
+  - host: tialabs-frontend.tiapod.tiacloud.dev
+    http:
+      paths:
+      - backend:
+          service:
+            name: tialabs-frontend
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - tialabs-frontend.tiapod.tiacloud.dev
+    secretName: tiacourses.tls.wildcard.tiapod.tiacloud.dev
+

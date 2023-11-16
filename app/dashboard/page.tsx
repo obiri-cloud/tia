@@ -40,15 +40,11 @@ const UserPage = () => {
           },
         }
       );
-      console.log("response.data.results", response.data.results);
-      
       setLabs(response.data.results);
     } catch (error) {}
   };
 
   const resumeLab = (data: ILabListItem) => {
-    console.log("data", data);
-    
     localStorage.setItem(
       "tialab_info",
       JSON.stringify({
