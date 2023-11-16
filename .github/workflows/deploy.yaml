@@ -39,7 +39,11 @@ jobs:
         run: |
           az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
           az acr login --name ${{ env.ACR_SERVER_NAME }}
-          docker build -f Dockerfile -t $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG .
+          docker build -f Dockerfile \
+          --build-arg NEXT_PUBLIC_BE_URL=${{ secrets.NEXT_PUBLIC_BE_URL }} \
+          --build-arg NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
+          --build-arg NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} \
+          -t $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG .
           docker push $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG
           echo "::set-output name=image::$ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG"
 

@@ -30,9 +30,9 @@ spec:
         # image: tiacloudconregdev.azurecr.io/tialabs-api:10-20-2023-02-00-03
         ports:
         - containerPort: 3000
-        envFrom:
-        - configMapRef:
-            name: tialabs-frontend-configmap
+        # envFrom:
+        # - configMapRef:
+        #     name: tialabs-frontend-configmap
       restartPolicy: Always
       imagePullSecrets:
       - name: regcred
