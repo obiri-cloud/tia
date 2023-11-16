@@ -48,7 +48,7 @@ metadata:
 spec:
   ports:
     - port: 80
-      targetPort: 8000
+      targetPort: 3000
   selector:
     app: tialabs-frontend
 ---
