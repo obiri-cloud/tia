@@ -210,7 +210,7 @@ const AccountPage = () => {
     <div className="container pt-10">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <div className="bg-gray-200 text-3xl font-bold w-[100px] h-[100px] rounded-full flex justify-center items-center">
+          <div className="bg-gray-200 text-black   text-3xl font-bold w-[100px] h-[100px] rounded-full flex justify-center items-center">
             {userData?.first_name[0]}
             {userData?.last_name[0]}
           </div>
@@ -283,7 +283,7 @@ const AccountPage = () => {
                   ) : (
                     <>
                       {userData?.first_name ? (
-                        <p className="text-black/70">{userData?.first_name}</p>
+                        <p className="dark:text-white text-black/70">{userData?.first_name}</p>
                       ) : (
                         <Skeleton className="w-full h-[25px] rounded-md" />
                       )}
@@ -314,7 +314,7 @@ const AccountPage = () => {
                   ) : (
                     <>
                       {userData?.last_name ? (
-                        <p className="text-black/70">{userData?.last_name}</p>
+                        <p className="dark:text-white text-black/70">{userData?.last_name}</p>
                       ) : (
                         <Skeleton className="w-full h-[25px] rounded-md" />
                       )}
@@ -325,7 +325,7 @@ const AccountPage = () => {
                   <h2 className="font-medium ">Email</h2>
                   <>
                     {userData?.email ? (
-                      <p className="text-black/70">{userData?.email}</p>
+                      <p className="dark:text-white text-black/70">{userData?.email}</p>
                     ) : (
                       <Skeleton className="w-full h-[25px] rounded-md" />
                     )}
