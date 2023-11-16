@@ -3,16 +3,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const Hero = () => {
-  console.log("NEXT_PUBLIC_BE_URL", process.env.NEXT_PUBLIC_BE_URL);
-  console.log("NEXTAUTH_SECRET", process.env.NEXTAUTH_SECRET);
-  console.log("NEXTAUTH_URL", process.env.NEXTAUTH_URL);
-  
   return (
     <section className="glassBorder">
       <div className="h-screen container flex flex-col justify-center items-center dark:text-white text-black ">
         <div className="w-full flex flex-col justify-center px-8">
           <h1 className="text-[clamp(5rem,calc(2.73214rem_+_3.28571vw),2.875rem)] dark:text-white text-black text-center w-full mb-8 leading-[110px] tracking-[-2px]  font-extrabold uppercase ">
-            Master Programming{" "}
+            {/* Master Programming Through{" "} */}
             <span className="dec-text">Hands-On</span> Labs
           </h1>
           <p className=" text-center dark:text-white text-black">
