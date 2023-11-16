@@ -10,8 +10,6 @@ data:
   NEXTAUTH_URL: http://localhost:3000
 
 ---
-
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -35,18 +33,11 @@ spec:
         - containerPort: 8000
         envFrom:
         - configMapRef:
-            name: general-config
+            name: tialabs-frontend-configmap
       restartPolicy: Always
       imagePullSecrets:
       - name: regcred
-
-      volumes:
-      - name: config-volume
-        configMap:
-          name: tialabs-frontend-configmap
-
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -60,11 +51,7 @@ spec:
       targetPort: 8000
   selector:
     app: tialabs-frontend
-
-    
 ---
-
-
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
