@@ -68,7 +68,7 @@ const LabList = () => {
       </div>
       {labs && labs.length === 0 ? (
         <div className="w-full flex justify-center h-[400px] items-center">
-          <p className="text-gray-600">No labs found...</p>
+          <p className="text-gray-600">No images found...</p>
         </div>
       ) : null}
       {/* <Toaster /> */}
