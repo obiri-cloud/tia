@@ -82,6 +82,12 @@ const SignupForm = () => {
       );
       if (response.data.status === 201) {
         router.push(`/signup/confirmation?email=${emailRef.current!.value}`);
+      }else{
+        toast({
+          variant: "destructive",
+          title: "Login Error",
+          description: response.data.message,
+        })
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
