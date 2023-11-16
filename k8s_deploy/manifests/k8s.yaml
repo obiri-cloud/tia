@@ -6,8 +6,8 @@ metadata:
   namespace: "tiacourses"
 data:
   NEXT_PUBLIC_BE_URL: https://tialabs-api.tiapod.tiacloud.dev/api/v1
-  NEXTAUTH_SECRET: dGlhbGFicwo
-  NEXTAUTH_URL: https://tialabs-frontend.tiapod.tiacloud.dev
+  NEXT_PUBLIC_NEXTAUTH_SECRET: dGlhbGFicwo
+  NEXT_PUBLIC_NEXTAUTH_URL: https://tialabs-frontend.tiapod.tiacloud.dev
 
 ---
 apiVersion: apps/v1
@@ -30,9 +30,9 @@ spec:
         # image: tiacloudconregdev.azurecr.io/tialabs-api:10-20-2023-02-00-03
         ports:
         - containerPort: 3000
-        envFrom:
-        - configMapRef:
-            name: tialabs-frontend-configmap
+        # envFrom:
+        # - configMapRef:
+        #     name: tialabs-frontend-configmap
       restartPolicy: Always
       imagePullSecrets:
       - name: regcred
