@@ -6,8 +6,8 @@ metadata:
   namespace: "tiacourses"
 data:
   NEXT_PUBLIC_BE_URL: https://tialabs-api.tiapod.tiacloud.dev/api/v1
-  NEXT_PUBLIC_NEXTAUTH_SECRET: dGlhbGFicwo
-  NEXT_PUBLIC_NEXTAUTH_URL: https://tialabs-frontend.tiapod.tiacloud.dev
+  NEXTAUTH_SECRET: dGlhbGFicwo
+  NEXTAUTH_URL: https://tialabs-frontend.tiapod.tiacloud.dev
 
 ---
 apiVersion: apps/v1
