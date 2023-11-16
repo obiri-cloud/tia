@@ -30,7 +30,7 @@ const UserPage = () => {
   const getActiveLabs = async () => {
     try {
       const response = await axios.get(
-        `https://tialabs-api.tiapod.tiacloud.dev/api/v1/user/lab/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/list/`,
         {
           headers: {
             "Content-Type": "application/json",

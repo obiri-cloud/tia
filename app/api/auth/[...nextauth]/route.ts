@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         try {
           const res = await fetch(
-            `https://tialabs-api.tiapod.tiacloud.dev/api/v1/auth/login/`,
+            `${process.env.NEXT_PUBLIC_BE_URL}/auth/login/`,
             {
               method: "POST",
               body: JSON.stringify(credentials),

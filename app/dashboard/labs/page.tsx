@@ -53,7 +53,7 @@ const LabsPage = () => {
     });
     try {
       const response = await axios.post(
-        `https://tialabs-api.tiapod.tiacloud.dev/api/v1/user/lab/delete/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/delete/`,
         formData,
         {
           headers: {

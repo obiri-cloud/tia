@@ -54,7 +54,7 @@ const SignupConfirmationForm = () => {
     try {
       formSchema.parse(formData);
       const response = await axios.post(
-        `https://tialabs-api.tiapod.tiacloud.dev/api/v1/auth/registration/confirm/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/auth/registration/confirm/`,
         JSON.stringify(formData),
         {
           headers: {
