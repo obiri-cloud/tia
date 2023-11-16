@@ -8,7 +8,7 @@ const Hero = () => {
       <div className="h-screen container flex flex-col justify-center items-center dark:text-white text-black ">
         <div className="w-full flex flex-col justify-center px-8">
           <h1 className="text-[clamp(5rem,calc(2.73214rem_+_3.28571vw),2.875rem)] dark:text-white text-black text-center w-full mb-8 leading-[110px] tracking-[-2px]  font-extrabold uppercase ">
-            Master Programming Through{" "}
+            Master Programming{" "}
             <span className="dec-text">Hands-On</span> Labs
           </h1>
           <p className=" text-center dark:text-white text-black">
