@@ -1,3 +1,16 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tialabs-frontend-configmap
+data:
+  NEXT_PUBLIC_BE_URL: https://tialabs-api.tiapod.tiacloud.dev/api/v1
+  NEXTAUTH_SECRET: dGlhbGFicwo
+  NEXTAUTH_URL: http://localhost:3000
+
+---
+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,7 +42,7 @@ spec:
       volumes:
       - name: config-volume
         configMap:
-          name: my-configmap
+          name: tialabs-frontend-configmap
 
 ---
 
@@ -76,16 +89,4 @@ spec:
   - hosts:
     - tialabs-frontend.tiapod.tiacloud.dev
     secretName: tiacourses.tls.wildcard.tiapod.tiacloud.dev
-
-
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: my-configmap
-data:
-  NEXT_PUBLIC_BE_URL: https://tialabs-api.tiapod.tiacloud.dev/api/v1
-  NEXTAUTH_SECRET: dGlhbGFicwo
-  NEXTAUTH_URL: http://localhost:3000
 
