@@ -29,11 +29,6 @@ jobs:
           time=$(date +'%T')
           echo "::set-output name=date::$(date +'%m-%d-%Y')-${time//:/-}"
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       - name: Build and push Docker image
         id: build-image
         env:
