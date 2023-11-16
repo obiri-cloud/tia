@@ -40,8 +40,6 @@ const UserPage = () => {
           },
         }
       );
-      console.log("response.data.results", response.data.results);
-      
       setLabs(response.data.results);
     } catch (error) {}
   };

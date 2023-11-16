@@ -179,7 +179,6 @@ const AccountPage = () => {
           },
         }
       );
-      console.log("response", response);
 
       if (response.status === 200) {
         toast({
