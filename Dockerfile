@@ -13,8 +13,6 @@ RUN npm install
 # Copy the rest of your application code to the container
 COPY . .
 
-COPY .env .env
-
 # Build your Next.js application
 RUN npm run build
 
