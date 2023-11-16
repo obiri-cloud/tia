@@ -45,8 +45,6 @@ const UserPage = () => {
   };
 
   const resumeLab = (data: ILabListItem) => {
-    console.log("data", data);
-    
     localStorage.setItem(
       "tialab_info",
       JSON.stringify({
