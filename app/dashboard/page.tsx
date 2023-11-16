@@ -30,7 +30,7 @@ const UserPage = () => {
   const getActiveLabs = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/user/labs/list/`,
         {
           headers: {
             "Content-Type": "application/json",
