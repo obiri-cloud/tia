@@ -208,7 +208,7 @@ const AccountPage = () => {
 
   return (
     <div className="container pt-10">
-      <div className="flex justify-between items-center">
+      <div className="sm:flex block justify-between items-center">
         <div className="flex items-center gap-4">
           <div className="bg-gray-200 text-black   text-3xl font-bold w-[100px] h-[100px] rounded-full flex justify-center items-center">
             {userData?.first_name[0]}
@@ -229,7 +229,7 @@ const AccountPage = () => {
         <button
           ref={deactivateButtonRef}
           onClick={deactivateAccount}
-          className="bg-red-700 text-white h-auto py-3 px-6 rounded-2xl disabled:bg-red-700/60"
+          className="bg-red-700 sm:w-fit sm:mt-0 w-full mt-6 text-white h-auto py-3 px-6 rounded-2xl disabled:bg-red-700/60"
         >
           Deactivate Account
         </button>
@@ -258,8 +258,8 @@ const AccountPage = () => {
               >
                 <Image src={editMode ? cancel : edit} alt="edit" width={20} />
               </div>
-              <div className="w-full grid grid-cols-2 border rounded-xl mt-4 p-9 gap-4">
-                <div className="mb-6">
+              <div className="w-full grid sm:grid-cols-2 grid-cols-1 border rounded-xl mt-4 p-9 gap-4">
+                <div className="sm:mb-6 mb-3">
                   <h2 className="font-medium ">First Name</h2>
                   {editMode ? (
                     <FormField
@@ -335,7 +335,7 @@ const AccountPage = () => {
                   <h2 className="font-medium ">Username</h2>
                   <>
                     {userData?.username ? (
-                      <p className="text-black/70">{userData?.username}</p>
+                      <p className="dark:text-white text-black/70">{userData?.username}</p>
                     ) : (
                       <Skeleton className="w-full h-[25px] rounded-md" />
                     )}
