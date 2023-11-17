@@ -4,10 +4,11 @@ import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { MagicSpinner } from "react-spinners-kit";
-
+import { Drawer } from "vaul";
+import info from "@/public/svgs/info.svg";
 interface ILabInfo {
   id: number | null;
   url: string;
@@ -23,6 +24,22 @@ const LabsPage = () => {
   // @ts-ignore
 
   const token = session?.user!.tokens?.access_token;
+
+  const [isNotDesktop, setIsNotDesktop] = useState(false);
+  const drawerButton = useRef<HTMLButtonElement>(null);
+
+  //choose the screen size
+  const handleResize = () => {
+    if (window.innerWidth < 1024) {
+      setIsNotDesktop(true);
+    } else {
+      setIsNotDesktop(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+  });
 
   const handleLoad = () => {
     setIsLoading(false);
@@ -85,6 +102,14 @@ const LabsPage = () => {
     }
   };
 
+  const handleClick = () => {
+    console.log("click");
+
+    if (drawerButton) {
+      drawerButton.current?.click();
+    }
+  };
+
   return (
     <div className="h-full">
       <PanelGroup
@@ -92,16 +117,10 @@ const LabsPage = () => {
         autoSaveId="tia-lab"
         direction="horizontal"
       >
-        <Panel className="h-full relative instructions" collapsible={true}>
-          <div className="p-5 overflow-x-auto">
-            <h1 className="font-bold text-3xl">Instructions</h1>
-            <p className="">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione
-              dignissimos vel similique impedit praesentium, labore deserunt
-              iure excepturi, odio illo facere quis illum, maiores vitae atque
-              ipsum. Aut, cupiditate quod.
-            </p>
-          </div>
+        <Panel
+          className="h-full relative instructions lg:block hidden"
+          collapsible={true}
+        >
           <Button
             onClick={endLab}
             variant="destructive"
@@ -128,6 +147,31 @@ const LabsPage = () => {
           </div>
         </Panel>
       </PanelGroup>
+      <button
+        onClick={handleClick}
+        className={` bottom-10 left-10 glassBorder p-5 rounded-full fixed`}
+      >
+        <Image alt="info" src={info} />
+      </button>
+
+      {isNotDesktop ? (
+        <Drawer.Root>
+          <Drawer.Trigger asChild>
+            <button ref={drawerButton}></button>
+          </Drawer.Trigger>
+          <Drawer.Portal>
+            <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+            <Drawer.Content className="bg-zinc-100 flex flex-col rounded-t-[10px] h-[96%] mt-24 fixed bottom-0 left-0 right-0">
+              <div className=" bg-white rounded-t-[10px] flex-1">
+                <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
+                <div className="max-w-md mx-auto">
+                  <Instructions />
+                </div>
+              </div>
+            </Drawer.Content>
+          </Drawer.Portal>
+        </Drawer.Root>
+      ) : null}
     </div>
   );
 };
@@ -135,10 +179,14 @@ const LabsPage = () => {
 export default LabsPage;
 
 import { PanelResizeHandle } from "react-resizable-panels";
+import Image from "next/image";
 
 function ResizeHandle({ id }: { id?: string }) {
   return (
-    <PanelResizeHandle className="resize-handler-outer bg-[#eee]" id={id}>
+    <PanelResizeHandle
+      className="resize-handler-outer bg-[#eee]  lg:block hidden"
+      id={id}
+    >
       {/* <div className="resize-handler-inner rotate-90">
         <svg className="icon" viewBox="0 0 24 24">
           <path
@@ -150,3 +198,17 @@ function ResizeHandle({ id }: { id?: string }) {
     </PanelResizeHandle>
   );
 }
+
+const Instructions = () => {
+  return (
+    <div className="p-2 overflow-x-auto">
+      <h1 className="font-bold text-3xl">Instructions</h1>
+      <p className="">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione
+        dignissimos vel similique impedit praesentium, labore deserunt iure
+        excepturi, odio illo facere quis illum, maiores vitae atque ipsum. Aut,
+        cupiditate quod.
+      </p>
+    </div>
+  );
+};
