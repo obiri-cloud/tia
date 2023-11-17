@@ -17,22 +17,17 @@ const Page = () => {
         <ul className="flex  gap-4 justify-end">
           <li>
             <Link href="/dashboard/explore" className="hover:bg-black/10">
-              Link 1
+              Login
             </Link>
           </li>
           <li>
             <Link href="/dashboard/account" className="hover:bg-black/10">
-              Link 2
+              Explore Labs
             </Link>
           </li>
           <li>
             <Link href="/dashboard/account" className="hover:bg-black/10">
-              Link 3
-            </Link>
-          </li>
-          <li>
-            <Link href="/dashboard/account" className="hover:bg-black/10">
-              Link 4
+              Sign up
             </Link>
           </li>
         </ul>

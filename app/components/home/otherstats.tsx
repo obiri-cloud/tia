@@ -16,7 +16,7 @@ const OtherStats = () => {
                   Vitae necessitatibus similique dolores numquam facilis
                   quaerat.
                 </p>
-                <p className="mt-14 lg:mb-10 pr-10 lg:text-[18px]">
+                <p className="lg:mt-14 mt-7 lg:mb-10 mb-5 pr-10 lg:text-[18px]">
                   Lorem ipsum dolor sit amet consectetur adipisicing elit.
                   Possimus voluptatibus distinctio perferendis! Eos odit fugiat
                   delectus, placeat nam officia quae adipisci quod
@@ -33,7 +33,7 @@ const OtherStats = () => {
                 </p>
               </div>
             </div>
-            <div className="lg:col-span-2 lg:col-start-5 mt-20 lg:mt-0">
+            <div className="lg:col-span-2 lg:col-start-5 mt-10 lg:mt-0">
               <ul className="text-center space-y-14">
                 <li>
                   <figure>

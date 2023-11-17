@@ -31,9 +31,9 @@ const Courses = () => {
   ];
   return (
     <section className="dark:bg-[#06000f] bg-white">
-      <div className="grid grid-cols-2 container gap-4 py-5">
-      <div className="flex flex-col  justify-center">
-        <h2 className="text-[2rem] font-bold dark:text-white text-black">
+      <div className="lg:grid block grid-cols-2 container gap-4 py-5">
+      <div className="flex flex-col  justify-center lg:mb-0 mb-6">
+        <h2 className="md:text-[2rem] text-2xl font-bold dark:text-white text-black">
           Tia Cloud Presents Tialabs
         </h2>
         <p className="dark:text-white text-black">
@@ -51,8 +51,8 @@ const Courses = () => {
       </div>
       <div className="">
         {/* dark:bg-gradient-to-r from-darkGlass to-darkGlass */}
-        <div className="glassBorder  rounded-[20px] p-8 dark:bg-[#0d1117] bg-white">
-          <p className="dark:text-white text-black">
+        <div className="glassBorder  md:rounded-[20px] rounded-lg md:p-8 p-4 dark:bg-[#0d1117] bg-white">
+          <p className="dark:text-white text-black ">
             Lorem ipsum dolor sit amet consectetur adipisicing elit.
           </p>
           <div className="flex flex-col gap-2 mt-4">

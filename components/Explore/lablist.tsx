@@ -33,7 +33,10 @@ const LabList = () => {
         }
       );
       setLabs(response.data.results);
-    } catch (error) {}
+    } catch (error) {
+      console.log("error", error);
+      
+    }
   };
 
   return (

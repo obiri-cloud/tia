@@ -40,13 +40,13 @@ const Provisioning = () => {
   return (
    <section className="dark:bg-[#06000f] bg-white py-5">
      <div className="container pt-6 ">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="p-5 noise-bg bg-[#AA6000] glassBorder text-white rounded-lg shadow-sm">
-          <h3 className="font-bold text-2xl mb-6">Zero Cost Cloud Labs</h3>
+      <div className="grid lg:grid-cols-2 grid-cols-1 gap-4">
+        <div className="p-5 noise-bg bg-[#AA6000] text-white rounded-lg shadow-sm">
+          <h3 className="font-bold text-2xl lg:mb-6 mb-2">Zero Cost Cloud Labs</h3>
           <p className="text-sm">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Earum nesciunt sint optio consequatur dolor reiciendis repellendus</p>
         </div>
         <div className="noise-bg p-5 bg-[#4B0082] rounded-lg shadow-sm text-white relative">
-          <h3 className="font-bold text-2xl mb-6">Fast Labs</h3>
+          <h3 className="font-bold text-2xl lg:mb-6 mb-2">Fast Labs</h3>
           <p className="text-sm">
             Lorem ipsum, dolor sit amet consectetur adipisicing elit.
             Earum nesciunt sint 
@@ -55,19 +55,19 @@ const Provisioning = () => {
           </p>
         </div>
       </div>
-      <div className="noise-bg py-10 px-5 bg-blue-700 rounded-lg shadow-sm mt-4 flex justify-between  items-center text-white">
+      <div className="noise-bg p-5 bg-blue-700 rounded-lg shadow-sm mt-4 lg:flex block justify-between  items-center text-white">
         <div className="">
-          <h3 className="font-bold text-2xl mb-6">
+          <h3 className="font-bold text-2xl lg:mb-6 mb-2">
             Choose from one of our many providers
           </h3>
-          <p className="font-normal">
-            Lorem ipsum, dolor sit amet consectetur <br /> adipisicing elit.
-            Earum nesciunt sint <br />
-            optio consequatur dolor reiciendis <br />
+          <p className="font-normal text-sm">
+            Lorem ipsum, dolor sit amet consectetur <br className="lg:block hidden" /> adipisicing elit.
+            Earum nesciunt sint <br className="lg:block hidden" /> 
+            optio consequatur dolor reiciendis <br className="lg:block hidden" /> 
             repellendus, a
           </p>
         </div>
-        <div className="flex gap-8">
+        <div className="flex justify-between md:grid md:grid-cols-2 flex-wrap gap-8 lg:mt-0 mt-6">
           {providers.map((pd, i) => (
             <div className="" key={i}>
               {pd.icon}
