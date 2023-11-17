@@ -15,18 +15,19 @@ const Page = () => {
     <div className="noise relative">
       <nav className="w-full z-10 bg-black p-3 text-white glassBorder sticky top-0">
         <ul className="flex  gap-4 justify-end">
-          <li>
-            <Link href="/dashboard/explore" className="hover:bg-black/10">
-              Login
-            </Link>
-          </li>
+          
           <li>
             <Link href="/dashboard/account" className="hover:bg-black/10">
               Explore Labs
             </Link>
           </li>
           <li>
-            <Link href="/dashboard/account" className="hover:bg-black/10">
+            <Link href="/login" className="hover:bg-black/10">
+              Login
+            </Link>
+          </li>
+          <li>
+            <Link href="/signup" className="hover:bg-black/10">
               Sign up
             </Link>
           </li>
