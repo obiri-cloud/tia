@@ -35,7 +35,6 @@ const LabList = () => {
       setLabs(response.data.results);
     } catch (error) {
       console.log("error", error);
-      
     }
   };
 
@@ -51,7 +50,7 @@ const LabList = () => {
                 className="w-full flex justify-center items-center h-[250px] bg-gray-200/90 "
               >
                 <Image
-                  src={lab.image_picture}
+                  src={lab.image_picture ?? ""}
                   alt={lab.name}
                   width={0}
                   height={0}

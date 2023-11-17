@@ -8,7 +8,9 @@ export default function ExplorePage() {
   return (
     <main className="pt-6">
       <div className="flex justify-center">
-        <h1 className="text-center text-[clamp(6rem,calc(1.73214rem_+_3.28571vw),5.875rem)] mb-8 leading-[110px] dec-text dark:text-white text-black   tracking-[-10px]  font-extrabold uppercase ">
+        <h1 className="md:text-[clamp(6rem,calc(2.73214rem_+_4.28571vw),7.875rem)] 
+      text-[clamp(5rem,calc(2.73214rem_+_4.28571vw),7.875rem)]
+      mb-8 leading-[110px] dec-text dark:text-white text-black md:tracking-[-10px] tracking-[-5px]  font-extrabold uppercase text-center">
           Explore
         </h1>
       </div>

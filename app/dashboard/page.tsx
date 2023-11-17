@@ -22,7 +22,6 @@ const UserPage = () => {
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
-
   useEffect(() => {
     getActiveLabs();
   }, []);
@@ -60,10 +59,10 @@ const UserPage = () => {
   };
 
   return (
-    <div className="grid grid-cols-2 h-screen">
-      <div className="p-5 border-r flex items-center">
-        <div className="">
-          <h1 className="text-[40px] font-bold">
+    <div className="grid lg:grid-cols-2 grid-cols-1 h-screen">
+      <div className="p-5 lg:border-r border-b w-full flex items-center">
+        <div className="w-full">
+          <h1 className="text-[40px] font-bold text-center">
             Jump back in your live labs:
           </h1>
           <ul>
@@ -79,6 +78,11 @@ const UserPage = () => {
                 </li>
               ))}
           </ul>
+          {labs && labs.length === 0 ? (
+            <div className="w-full flex justify-center mt-4 items-center">
+              <p className="text-gray-600">No active labs found...</p>
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="flex justify-center items-center">
