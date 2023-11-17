@@ -109,9 +109,9 @@ const SignupForm = () => {
     <Form {...form}>
       <form
         onSubmit={handleSubmit}
-        className="max-w-[500px] w-full dark:text-white text-black"
+        className="max-w-[500px] container w-full dark:text-white text-black"
       >
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mb-6">
           <FormField
             control={form.control}
             name="first_name"
@@ -171,12 +171,12 @@ const SignupForm = () => {
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-4 my-6">
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem className="my-6">
+              <FormItem className="">
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input
@@ -196,7 +196,7 @@ const SignupForm = () => {
             control={form.control}
             name="confirm_password"
             render={({ field }) => (
-              <FormItem className="my-6">
+              <FormItem className="">
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
                   <Input

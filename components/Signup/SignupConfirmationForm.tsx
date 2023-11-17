@@ -94,7 +94,7 @@ const SignupConfirmationForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit} className="max-w-[500px] w-full">
+      <form onSubmit={handleSubmit} className="container max-w-[500px] w-full">
         <FormField
           control={form.control}
           name="Code"
