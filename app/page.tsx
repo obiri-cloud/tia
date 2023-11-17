@@ -17,7 +17,7 @@ const Page = () => {
         <ul className="flex  gap-4 justify-end">
           
           <li>
-            <Link href="/dashboard/account" className="hover:bg-black/10">
+            <Link href="/labs" className="hover:bg-black/10">
               Explore Labs
             </Link>
           </li>
