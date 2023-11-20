@@ -9,6 +9,7 @@ import { Panel, PanelGroup } from "react-resizable-panels";
 import { MagicSpinner } from "react-spinners-kit";
 import { Drawer } from "vaul";
 import info from "@/public/svgs/info.svg";
+import info_white from "@/public/svgs/info-white.svg";
 interface ILabInfo {
   id: number | null;
   url: string;
@@ -24,6 +25,7 @@ const LabsPage = () => {
   // @ts-ignore
 
   const token = session?.user!.tokens?.access_token;
+  const { systemTheme, theme, setTheme } = useTheme();
 
   const [isNotDesktop, setIsNotDesktop] = useState(false);
   const drawerButton = useRef<HTMLButtonElement>(null);
@@ -121,6 +123,8 @@ const LabsPage = () => {
           className="h-full relative instructions lg:block hidden"
           collapsible={true}
         >
+          <Instructions />
+
           <Button
             onClick={endLab}
             variant="destructive"
@@ -147,12 +151,20 @@ const LabsPage = () => {
           </div>
         </Panel>
       </PanelGroup>
-      <button
-        onClick={handleClick}
-        className={` bottom-10 left-10 glassBorder p-5 rounded-full fixed`}
-      >
-        <Image alt="info" src={info} />
-      </button>
+      {isNotDesktop ? (
+        <button
+          onClick={handleClick}
+          className={` bottom-10 left-10 glassBorder p-5 rounded-full fixed ${
+            theme == "dark" ? "bg-white" : "bg-black"
+          }`}
+        >
+          {theme === "dark" ? (
+            <Image alt="info" src={info} />
+          ) : (
+            <Image alt="info" src={info_white} />
+          )}
+        </button>
+      ) : null}
 
       {isNotDesktop ? (
         <Drawer.Root>
@@ -180,6 +192,7 @@ export default LabsPage;
 
 import { PanelResizeHandle } from "react-resizable-panels";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 
 function ResizeHandle({ id }: { id?: string }) {
   return (

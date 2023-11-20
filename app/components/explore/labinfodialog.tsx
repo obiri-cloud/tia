@@ -88,7 +88,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
       setProgress(0);
     }
   };
-  const delayPush = (data: any) => {
+  const delayPush = (data: any, resumed: boolean | null = null) => {
     setSecondaryAction(null);
     const timer = setInterval(() => setProgress((prev) => prev + 10), 1000);
     setTimeout(() => {
@@ -100,7 +100,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
         })
       );
       toast({
-        title: "Lab Created",
+        title: `Lab ${resumed ? "Resumed" : "Created"}`,
         variant: "success",
       });
       router.push(`/dashboard/labs?lab=${data.lab_id}`);
@@ -217,7 +217,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
                     <Button
                       onClick={() => {
                         setDisabled(true);
-                        delayPush(labInfo);
+                        delayPush(labInfo, true);
                       }}
                       className="mt-6 disabled:bg-black-900/10 w-full bg-black text-white  glassBorder"
                       variant="black"

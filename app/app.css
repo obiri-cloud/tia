@@ -54,3 +54,18 @@ body{
 .instructions{
   border-right: 1px solid #dee2e6;
 }
+
+
+
+.active-lab-button .delete-button {
+  opacity: 0;
+  visibility: hidden; /* Initially hide the delete button */
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s; /* Delay visibility change */
+  /* Other styles for the delete button */
+}
+
+.active-lab-button:hover .delete-button {
+  opacity: 1;
+  visibility: visible; /* Make the delete button visible on hover */
+  transition-delay: 0s; 
+}

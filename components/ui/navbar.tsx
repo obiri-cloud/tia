@@ -7,6 +7,11 @@ const Navbar = () => {
     <nav className="w-full bg-black p-3 text-white glassBorder border-t-0 border-r-0">
       <ul className="flex  gap-4 justify-end">
         <li>
+          <Link href="/dashboard" className="hover:bg-black/10">
+            Dasboard
+          </Link>
+        </li>
+        <li>
           <Link href="/dashboard/explore" className="hover:bg-black/10">
             Explore
           </Link>{" "}

@@ -51,11 +51,12 @@ const UserPage = () => {
         url: data.ingress_url,
       })
     );
+    router.push(`/dashboard/labs?lab=${data.id}`);
+
     toast({
       title: "Lab Resumed",
       variant: "success",
     });
-    // router.push(`/dashboard/labs?lab=${data.id}`);
   };
 
   return (
@@ -68,13 +69,14 @@ const UserPage = () => {
           <ul>
             {labs &&
               labs.map((lab, i) => (
-                <li key={i}>
+                <li className="active-lab-button flex gap-4  mb-5 " key={i}>
                   <button
                     onClick={() => resumeLab(lab)}
-                    className="p-3 w-full transparent dark:text-white text-black  text-left border mb-5 block glassBorder rounded-lg "
+                    className="p-3 w-full transparent dark:text-white text-black  text-left border block glassBorder rounded-lg "
                   >
                     {lab.name}
                   </button>
+                  <Button variant="destructive" className=" delete-button h-auto">delete</Button>
                 </li>
               ))}
           </ul>
