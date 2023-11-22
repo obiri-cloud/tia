@@ -11,9 +11,13 @@ import { Drawer } from "vaul";
 import info from "@/public/svgs/info.svg";
 import info_white from "@/public/svgs/info-white.svg";
 import secureLocalStorage from "react-secure-storage";
+import double_arrow_left from "@/public/svgs/double_arrow_left.svg";
+import double_arrow_right from "@/public/svgs/double_arrow_right.svg";
+
 interface ILabInfo {
   id: number | null;
   url: string;
+  creation_time: string;
 }
 
 const LabsPage = () => {
@@ -50,20 +54,19 @@ const LabsPage = () => {
 
   useEffect(() => {
     let tialab_info: ILabInfo | null = JSON.parse(
-      secureLocalStorage.getItem("tialab_info") as string || ""
+      (secureLocalStorage.getItem("tialab_info") as string) || ""
     );
     if (
       tialab_info &&
       tialab_info.hasOwnProperty("id") &&
       tialab_info.hasOwnProperty("url")
     ) {
-      console.log("tialab_info", tialab_info);
-      
       setLabInfo(tialab_info);
     } else {
       setLabInfo({
         id: null,
         url: "",
+        creation_time: "",
       });
     }
   }, []);
@@ -71,7 +74,7 @@ const LabsPage = () => {
   const endLab = async () => {
     let formData = JSON.stringify({ image: labInfo!.id });
     toast({
-      title: "Hold on we are deleting your lab.",
+      title: "Hold on we are cleaning your lab environment.",
     });
     try {
       const response = await axios.post(
@@ -126,8 +129,27 @@ const LabsPage = () => {
           className="h-full relative instructions lg:block hidden"
           collapsible={true}
         >
+          <div className="flex justify-end p-3">
+            <label htmlFor="rotateCheckbox" className="button relative">
+              <input
+                type="checkbox"
+                id="rotateCheckbox"
+                name="rotateCheckbox"
+                className="absolute bg-transparent appearance-none p-[22px] rounded-full"
+              />
+              <button className="bg-gray-300 shadow-md p-3 w-fit rounded-full instructions-toggle">
+                <Image
+                  src={double_arrow_left}
+                  alt="double_arrow_left"
+                  className="arrow-img"
+                />
+              </button>
+            </label>
+          </div>
           <Instructions />
-
+          <div className="absolute bottom-4 left-4">
+            <CountdownClock startTime={labInfo?.creation_time || ""} endLab={endLab} />
+          </div>
           <Button
             onClick={endLab}
             variant="destructive"
@@ -196,21 +218,22 @@ export default LabsPage;
 import { PanelResizeHandle } from "react-resizable-panels";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { CountdownClock } from "@/components/Labs/countdown";
 
 function ResizeHandle({ id }: { id?: string }) {
   return (
     <PanelResizeHandle
-      className="resize-handler-outer bg-[#eee]  lg:block hidden"
+      className="resize-handler-outer bg-[#eee] hover:bg-black/30  lg:block hidden"
       id={id}
     >
-      {/* <div className="resize-handler-inner rotate-90">
+      <div className="resize-handler-inner hidden rotate-90">
         <svg className="icon" viewBox="0 0 24 24">
           <path
             fill="currentColor"
             d="M8,18H11V15H2V13H22V15H13V18H16L12,22L8,18M12,2L8,6H11V9H2V11H22V9H13V6H16L12,2Z"
           />
         </svg>
-      </div> */}
+      </div>
     </PanelResizeHandle>
   );
 }

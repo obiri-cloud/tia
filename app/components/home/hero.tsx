@@ -23,7 +23,7 @@ const Hero = () => {
             href="/signup"
             className="px-[50px]  mt-6 sm:w-fit w-full block text-center bg-black glassBorder text-white hover:bg-black/90 rounded-md text-sm font-medium h-10 py-2"
           >
-            Get Started
+            Try it Yourself
           </Link>
           <Link
             href="/labs"

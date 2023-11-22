@@ -90,6 +90,8 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     }
   };
   const delayPush = (data: any, resumed: boolean | null = null) => {
+    console.log("data", data);
+    
     setSecondaryAction(null);
     const timer = setInterval(() => setProgress((prev) => prev + 10), 1000);
     setTimeout(() => {
@@ -98,6 +100,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
         JSON.stringify({
           id: data.image_id,
           url: data.ingress_url,
+          creation_time: data.creation_time
         })
       );
       toast({

@@ -67,7 +67,7 @@ const Provisioning = () => {
             repellendus, a
           </p>
         </div>
-        <div className="flex justify-between md:grid md:grid-cols-2 flex-wrap gap-8 lg:mt-0 mt-6">
+        <div className="md:flex justify-between grid grid-cols-2 flex-wrap gap-8 lg:mt-0 mt-6">
           {providers.map((pd, i) => (
             <div className="" key={i}>
               {pd.icon}

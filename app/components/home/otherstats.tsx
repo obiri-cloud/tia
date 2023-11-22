@@ -39,7 +39,7 @@ const OtherStats = () => {
                   <figure>
                     <div className="trillion flex justify-center items-center bg-appBlue py-4 rounded-full m-auto">
                       <span className="text-3xl text-white font-medium">
-                        $1 trillion
+                        $1
                       </span>
                     </div>
                     <figcaption className="mt-6 max-w-[325px] m-auto">
@@ -64,7 +64,7 @@ const OtherStats = () => {
                   <figure>
                     <div className="dev flex justify-center items-center bg-appBlue py-4 rounded-full m-auto">
                       <span className="text-3xl text-white font-medium">
-                        10 - 15 years
+                        10 - 15 ms
                       </span>
                     </div>
                     <figcaption className="mt-6 max-w-[325px] m-auto">
@@ -77,7 +77,7 @@ const OtherStats = () => {
                   <figure>
                     <div className="dev flex justify-center items-center bg-appBlue py-4  rounded-full m-auto">
                       <span className="text-3xl text-white font-medium">
-                        $2.5 billion
+                        $2.5
                       </span>
                     </div>
                     <figcaption className="mt-6 max-w-[325px] m-auto">

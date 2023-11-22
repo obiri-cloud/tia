@@ -116,12 +116,12 @@ const UserPage = () => {
             {labs &&
               labs.map((lab, i) => (
                 <li className="active-lab-button flex gap-4  mb-5 " key={i}>
-                  <button
+                  <Button
                     onClick={() => resumeLab(lab)}
-                    className="p-3 w-full transparent dark:text-white text-black  text-left border block glassBorder rounded-lg "
+                    className="w-full transparent bg-black text-white  text-left border block glassBorder rounded-lg "
                   >
                     {lab.name}
-                  </button>
+                  </Button>
                   <Button
                     disabled={disabled}
                     onClick={() => deleteLab(lab.image)}
