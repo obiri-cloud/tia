@@ -6,6 +6,8 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
+import secureLocalStorage from "react-secure-storage";
+import { MetroSpinner } from "react-spinners-kit";
 
 interface ILabListItem {
   id: number;
@@ -16,6 +18,7 @@ interface ILabListItem {
 
 const UserPage = () => {
   const [labs, setLabs] = useState<ILabListItem[]>();
+  const [disabled, setDisabled] = useState(false);
 
   const router = useRouter();
   const { data: session } = useSession();
@@ -39,12 +42,14 @@ const UserPage = () => {
           },
         }
       );
+      console.log("response.data.results", response.data.results);
+
       setLabs(response.data.results);
     } catch (error) {}
   };
 
   const resumeLab = (data: ILabListItem) => {
-    localStorage.setItem(
+    secureLocalStorage.setItem(
       "tialab_info",
       JSON.stringify({
         id: data.image,
@@ -57,6 +62,47 @@ const UserPage = () => {
       title: "Lab Resumed",
       variant: "success",
     });
+  };
+
+  const deleteLab = async (id: number) => {
+    setDisabled(true);
+    let formData = JSON.stringify({ image: id });
+    toast({
+      title: "Hold on we are deleting your lab.",
+    });
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/delete/`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.status === 200) {
+        toast({
+          title: response.data.message,
+          variant: "success",
+        });
+        setDisabled(false);
+        setLabs((prev) => prev?.filter((lab) => lab.image !== id));
+      } else {
+        toast({
+          title: response.data.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Something went wrong. Try again",
+        variant: "destructive",
+      });
+      console.error(error);
+    }
   };
 
   return (
@@ -76,7 +122,18 @@ const UserPage = () => {
                   >
                     {lab.name}
                   </button>
-                  <Button variant="destructive" className=" delete-button h-auto">delete</Button>
+                  <Button
+                    disabled={disabled}
+                    onClick={() => deleteLab(lab.image)}
+                    variant="destructive"
+                    className=" delete-button h-auto disabled:bg-red-900/10"
+                  >
+                    {disabled ? (
+                      <MetroSpinner size={20} color="#fff" loading={true} />
+                    ) : (
+                      <span>Delete</span>
+                    )}
+                  </Button>
                 </li>
               ))}
           </ul>

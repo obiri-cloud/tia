@@ -10,6 +10,7 @@ import { MagicSpinner } from "react-spinners-kit";
 import { Drawer } from "vaul";
 import info from "@/public/svgs/info.svg";
 import info_white from "@/public/svgs/info-white.svg";
+import secureLocalStorage from "react-secure-storage";
 interface ILabInfo {
   id: number | null;
   url: string;
@@ -49,13 +50,15 @@ const LabsPage = () => {
 
   useEffect(() => {
     let tialab_info: ILabInfo | null = JSON.parse(
-      localStorage.getItem("tialab_info") || ""
+      secureLocalStorage.getItem("tialab_info") as string || ""
     );
     if (
       tialab_info &&
       tialab_info.hasOwnProperty("id") &&
       tialab_info.hasOwnProperty("url")
     ) {
+      console.log("tialab_info", tialab_info);
+      
       setLabInfo(tialab_info);
     } else {
       setLabInfo({

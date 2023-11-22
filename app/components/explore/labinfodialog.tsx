@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Progress } from "@/components/ui/progress";
 import { createPortal } from "react-dom";
+import secureLocalStorage from "react-secure-storage";
 
 interface ILabInfo {
   message: string;
@@ -92,7 +93,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     setSecondaryAction(null);
     const timer = setInterval(() => setProgress((prev) => prev + 10), 1000);
     setTimeout(() => {
-      localStorage.setItem(
+      secureLocalStorage.setItem(
         "tialab_info",
         JSON.stringify({
           id: data.image_id,
