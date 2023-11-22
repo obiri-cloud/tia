@@ -14,6 +14,7 @@ interface ILabListItem {
   name: string;
   image: number;
   ingress_url: string;
+  creation_date: string
 }
 
 const UserPage = () => {
@@ -49,11 +50,14 @@ const UserPage = () => {
   };
 
   const resumeLab = (data: ILabListItem) => {
+    console.log("data", data);
+    
     secureLocalStorage.setItem(
       "tialab_info",
       JSON.stringify({
         id: data.image,
         url: data.ingress_url,
+        creation_date: data.creation_date
       })
     );
     router.push(`/dashboard/labs?lab=${data.id}`);

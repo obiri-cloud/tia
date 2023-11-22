@@ -17,7 +17,7 @@ import double_arrow_right from "@/public/svgs/double_arrow_right.svg";
 interface ILabInfo {
   id: number | null;
   url: string;
-  creation_time: string;
+  creation_date: string;
 }
 
 const LabsPage = () => {
@@ -53,20 +53,27 @@ const LabsPage = () => {
   };
 
   useEffect(() => {
+    
+    console.log("here");
+    
     let tialab_info: ILabInfo | null = JSON.parse(
       (secureLocalStorage.getItem("tialab_info") as string) || ""
     );
+    console.log("tialab_info", tialab_info);
+
     if (
       tialab_info &&
       tialab_info.hasOwnProperty("id") &&
       tialab_info.hasOwnProperty("url")
     ) {
+      console.log("labInfo ==>", labInfo);
+      
       setLabInfo(tialab_info);
     } else {
       setLabInfo({
         id: null,
         url: "",
-        creation_time: "",
+        creation_date: "",
       });
     }
   }, []);
@@ -148,7 +155,7 @@ const LabsPage = () => {
           </div>
           <Instructions />
           <div className="absolute bottom-4 left-4">
-            <CountdownClock startTime={labInfo?.creation_time || ""} endLab={endLab} />
+            <CountdownClock startTime={labInfo?.creation_date || ""} endLab={endLab} />
           </div>
           <Button
             onClick={endLab}
