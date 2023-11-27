@@ -60,13 +60,13 @@ const LabList = () => {
                 key={i}
                 className="w-full flex justify-center items-center h-[250px] bg-gray-200/90 "
               >
-                <Image
+                {/* <Image
                   src={lab.image_picture ?? ""}
                   alt={lab.name}
-                  width={0}
-                  height={0}
-                  className="w-full h-full"
-                />
+            layout="fill"
+                  className="w-[16px] h-[16px]"
+                /> */}
+                <img src={lab.image_picture ?? ""} alt="" />
                 {/* <p className=" ">{lab.name}</p> */}
               </button>
             </DialogTrigger>
