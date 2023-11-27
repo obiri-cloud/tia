@@ -58,7 +58,7 @@ const LabList = () => {
               <button
                 onClick={() => setCurrentLab(lab)}
                 key={i}
-                className="w-full flex justify-center items-center h-[250px] bg-gray-200/90 "
+                className="w-full flex flex-col justify-center items-center h-[250px] bg-gray-200/90  py-6"
               >
                 {/* <Image
                   src={lab.image_picture ?? ""}
@@ -66,7 +66,8 @@ const LabList = () => {
             layout="fill"
                   className="w-[16px] h-[16px]"
                 /> */}
-                <img src={lab.image_picture ?? ""} alt="" />
+                <h6 className="mb-0 font-bold">{lab.name}</h6>
+                <img src={lab.image_picture ?? ""} alt="" className="flex-1 " />
                 {/* <p className=" ">{lab.name}</p> */}
               </button>
             </DialogTrigger>
