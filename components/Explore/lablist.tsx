@@ -39,7 +39,8 @@ const LabList = () => {
     } catch (error) {
       if (
         error instanceof AxiosError &&
-        error.response?.data.code === "user_not_found"
+        (error.response?.data.code === "user_not_found" ||
+          error.response?.data.code === "token_not_valid")
       ) {
         signOut();
         secureLocalStorage.removeItem("tialabs_info");
