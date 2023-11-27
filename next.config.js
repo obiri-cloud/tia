@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["tialabs-api.tiapod.tiacloud.dev"],
+    domains: [
+      "tialabs-api.tiapod.tiacloud.dev",
+      "tialabsbackendstorage.blob.core.windows.net",
+    ],
   },
   env: {
     NEXT_PUBLIC_BE_URL: process.env.NEXT_PUBLIC_BE_URL,

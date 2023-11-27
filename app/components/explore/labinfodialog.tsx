@@ -9,13 +9,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Progress } from "@/components/ui/progress";
 import { createPortal } from "react-dom";
 import secureLocalStorage from "react-secure-storage";
+import { userCheck } from "@/lib/utils";
 
 interface ILabInfo {
   message: string;
@@ -80,10 +81,13 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
           );
         }
       }
-      if (response.data.status === 200 || response.data.status === 201) {
-        delayPush(response.data);
-      }
+      console.log("response.data", response);
+      
+      // if (response.data.status === 200 || response.data.status === 201) {
+      //   delayPush(response.data);
+      // }
     } catch (error) {
+      userCheck(error as AxiosError)
       console.error("error", error);
       setDisabled(false);
       setProgress(0);
@@ -155,6 +159,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
         });
       }
     } catch (error) {
+      userCheck(error as AxiosError)
       setSecondaryAction(
         "A lab of this instance already exists, you can delete the lab and create a new one or jump back into it."
       );

@@ -1,5 +1,5 @@
 "use client";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import React, {
   ChangeEvent,
   FormEvent,
@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import * as z from "zod";
+import { userCheck } from "@/lib/utils";
 
 const AccountPage = () => {
   const { data: session } = useSession();
@@ -103,6 +104,8 @@ const AccountPage = () => {
           });
         }
       } catch (error) {
+      userCheck(error as AxiosError)
+
         toast({
           title: "Error when updating.",
           action: <ToastAction altText="Try again">Try again</ToastAction>,
@@ -149,6 +152,8 @@ const AccountPage = () => {
         });
       }
     } catch (error) {
+      userCheck(error as AxiosError)
+
       if (error instanceof z.ZodError) {
         error.issues.map((err) =>
           toast({
@@ -193,6 +198,8 @@ const AccountPage = () => {
         });
       }
     } catch (error) {
+      userCheck(error as AxiosError)
+
       console.log("error", error);
 
       toast({

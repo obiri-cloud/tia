@@ -2,12 +2,13 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
 import secureLocalStorage from "react-secure-storage";
 import { MetroSpinner } from "react-spinners-kit";
+import { userCheck } from "@/lib/utils";
 
 interface ILabListItem {
   id: number;
@@ -46,7 +47,10 @@ const UserPage = () => {
       console.log("response.data.results", response.data.results);
 
       setLabs(response.data.results);
-    } catch (error) {}
+    } catch (error) {
+      userCheck(error as AxiosError)
+
+    }
   };
 
   const resumeLab = (data: ILabListItem) => {
@@ -101,6 +105,8 @@ const UserPage = () => {
         });
       }
     } catch (error) {
+      userCheck(error as AxiosError)
+
       toast({
         title: "Something went wrong. Try again",
         variant: "destructive",

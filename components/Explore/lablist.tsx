@@ -1,11 +1,13 @@
 "use client";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 import LabInfoDialog from "@/app/components/explore/labinfodialog";
 import { Dialog, DialogTrigger } from "../ui/dialog";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { errorToJSON } from "next/dist/server/render";
+import secureLocalStorage from "react-secure-storage";
 
 const LabList = () => {
   const { data: session } = useSession();
@@ -32,8 +34,17 @@ const LabList = () => {
           },
         }
       );
+      console.log("response.data.results", response.data.results);
       setLabs(response.data.results);
     } catch (error) {
+      if (
+        error instanceof AxiosError &&
+        error.response?.data.code === "user_not_found"
+      ) {
+        signOut();
+        secureLocalStorage.removeItem("tialabs_info");
+      }
+
       console.log("error", error);
     }
   };
