@@ -83,9 +83,9 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
       }
       console.log("response.data", response);
       
-      // if (response.data.status === 200 || response.data.status === 201) {
-      //   delayPush(response.data);
-      // }
+      if (response.data.status === 200 || response.data.status === 201) {
+        delayPush(response.data);
+      }
     } catch (error) {
       userCheck(error as AxiosError)
       console.error("error", error);
