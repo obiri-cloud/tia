@@ -20,8 +20,22 @@ interface ILabImage {
   duration: number;
   image_picture: string;
   prerequisites: string;
+  port_number: number
 }
 
-interface ILabInfoDialog{
-  lab: ILabImage | undefined
+interface ILabInfoDialog {
+  lab: ILabImage | undefined;
+}
+
+interface ILabList {
+  id: number;
+  name: string;
+  status: string;
+  deployment_name: string;
+  ingress_url: string;
+  creation_date: string;
+  review: integer;
+  comments: string;
+  image: integer;
+  user: string;
 }

@@ -94,7 +94,7 @@ const SignupForm = () => {
         error.issues.map((err) =>
           toast({
             variant: "destructive",
-            title: "Login Error",
+            title: "Sign up Error",
             description: err.message,
           })
         );
