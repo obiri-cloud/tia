@@ -81,6 +81,17 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
           );
         }
       }
+
+      if (response.data.status === 408) {
+        setDisabled(false);
+        setProgress(0);
+        toast({
+          title: response.data.message,
+          variant: "destructive",
+          description: "Lab timed out",
+        });
+       
+      }
       console.log("response.data", response);
       
       if (response.data.status === 200 || response.data.status === 201) {

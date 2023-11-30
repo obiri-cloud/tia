@@ -1,27 +1,3 @@
-# # Use an official Node.js runtime as a parent image
-# FROM node:18-alpine
-
-# # Set the working directory in the container
-# WORKDIR /app
-
-# # Copy package.json and package-lock.json to the container
-# COPY package*.json ./
-
-# # Install application dependencies
-# RUN npm install
-
-# # Copy the rest of your application code to the container
-# COPY . .
-
-# # Build your Next.js application
-# RUN npm run build
-
-# # Expose the port your application will run on
-# EXPOSE 3000
-
-# # Define the command to run your application
-# CMD ["npm", "run", "start"]
-
 
 FROM node:18-alpine AS base
 
@@ -34,14 +10,6 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 RUN npm install --frozen-lockfile
-
-# RUN \
-#   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-#   elif [ -f package-lock.json ]; then npm ci; \
-#   elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm i --frozen-lockfile; \
-#   else echo "Lockfile not found." && exit 1; \
-#   fi
-
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -62,9 +30,6 @@ ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
 ENV NEXTAUTH_URL=$NEXTAUTH_URL
 
 RUN npm run build
-
-# If using npm comment out above and use below instead
-# RUN npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
