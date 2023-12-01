@@ -26,6 +26,7 @@ const UserPage = () => {
   const { data: session } = useSession();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
+  
 
   useEffect(() => {
     getActiveLabs();

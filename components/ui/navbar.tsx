@@ -4,7 +4,7 @@ import React from "react";
 import secureLocalStorage from "react-secure-storage";
 const Navbar = () => {
   const logout = () => {
-    signOut();
+    signOut({ callbackUrl: "/login" });
     secureLocalStorage.removeItem("tialabs_info");
   };
   return (

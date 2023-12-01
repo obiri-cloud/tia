@@ -8,11 +8,13 @@ import { Dialog, DialogTrigger } from "../ui/dialog";
 import axios, { AxiosError } from "axios";
 import { errorToJSON } from "next/dist/server/render";
 import secureLocalStorage from "react-secure-storage";
+import { userCheck } from "@/lib/utils";
 
 const LabList = () => {
   const { data: session } = useSession();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
+  
 
   const [labs, setLabs] = useState<ILabImage[]>();
   const [currentLab, setCurrentLab] = useState<ILabImage>();
@@ -37,15 +39,7 @@ const LabList = () => {
       console.log("response.data.results", response.data.results);
       setLabs(response.data.results);
     } catch (error) {
-      if (
-        error instanceof AxiosError &&
-        (error.response?.data.code === "user_not_found" ||
-          error.response?.data.code === "token_not_valid")
-      ) {
-        signOut();
-        secureLocalStorage.removeItem("tialabs_info");
-      }
-
+      userCheck(error as AxiosError)
       console.log("error", error);
     }
   };

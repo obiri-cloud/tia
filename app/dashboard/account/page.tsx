@@ -190,7 +190,7 @@ const AccountPage = () => {
           title: "Account deactivated successfully!",
           variant: "success",
         });
-        signOut();
+        signOut({ callbackUrl: "/login" });
       } else {
         toast({
           title: "Something went deactivating your account.",
