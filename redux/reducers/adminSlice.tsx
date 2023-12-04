@@ -2,17 +2,17 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface AdminState {
-  labCount: number;
-  imageCount: number;
-  labList: ILabList[];
-  imageList: ILabImage[];
+  labCount: number | null;
+  imageCount: number | null;
+  labList: ILabList[] | null;
+  imageList: ILabImage[] | null;
 }
 
 const initialState: AdminState = {
   labCount: 0,
   imageCount: 0,
-  labList: [],
-  imageList: [],
+  labList: null,
+  imageList: null,
 };
 
 export const adminSlice = createSlice({
