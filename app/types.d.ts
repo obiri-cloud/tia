@@ -20,7 +20,8 @@ interface ILabImage {
   duration: number;
   image_picture: string;
   prerequisites: string;
-  port_number: number
+  port_number: number;
+  image_picture: string
 }
 
 interface ILabInfoDialog {
