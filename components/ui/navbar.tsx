@@ -1,3 +1,4 @@
+import Fullscreen from "@/app/components/home/fullscreen";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
@@ -30,6 +31,7 @@ const Navbar = () => {
             Logout
           </button>
         </li>
+        <Fullscreen/>
       </ul>
     </nav>
   );

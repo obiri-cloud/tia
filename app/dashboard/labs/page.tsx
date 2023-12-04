@@ -12,7 +12,6 @@ import info from "@/public/svgs/info.svg";
 import info_white from "@/public/svgs/info-white.svg";
 import secureLocalStorage from "react-secure-storage";
 import double_arrow_left from "@/public/svgs/double_arrow_left.svg";
-import double_arrow_right from "@/public/svgs/double_arrow_right.svg";
 
 interface ILabInfo {
   id: number | null;
@@ -33,6 +32,7 @@ const LabsPage = () => {
   const { systemTheme, theme, setTheme } = useTheme();
 
   const [isNotDesktop, setIsNotDesktop] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(true);
   const drawerButton = useRef<HTMLButtonElement>(null);
 
   //choose the screen size
@@ -53,9 +53,8 @@ const LabsPage = () => {
   };
 
   useEffect(() => {
-    
     console.log("here");
-    
+
     let tialab_info: ILabInfo | null = JSON.parse(
       (secureLocalStorage.getItem("tialab_info") as string) || ""
     );
@@ -67,7 +66,7 @@ const LabsPage = () => {
       tialab_info.hasOwnProperty("url")
     ) {
       console.log("labInfo ==>", labInfo);
-      
+
       setLabInfo(tialab_info);
     } else {
       setLabInfo({
@@ -132,41 +131,44 @@ const LabsPage = () => {
         autoSaveId="tia-lab"
         direction="horizontal"
       >
-        <Panel
-          className="h-full relative instructions lg:block hidden"
-          collapsible={true}
-        >
-          <div className="flex justify-end p-3">
-            <label htmlFor="rotateCheckbox" className="button relative">
-              <input
-                type="checkbox"
-                id="rotateCheckbox"
-                name="rotateCheckbox"
-                className="absolute bg-transparent appearance-none p-[22px] rounded-full"
-              />
-              <button className="bg-gray-300 shadow-md p-3 w-fit rounded-full instructions-toggle">
+        {showInstructions ? (
+          <Panel
+            className="h-full relative instructions lg:block hidden"
+            collapsible={true}
+          >
+            <div className="flex justify-end p-3">
+              <button
+                onClick={() =>
+                  setShowInstructions(
+                    (setShowInstructions) => !setShowInstructions
+                  )
+                }
+                className="bg-gray-300 shadow-md p-3 w-fit rounded-full instructions-toggle"
+              >
                 <Image
                   src={double_arrow_left}
                   alt="double_arrow_left"
                   className="arrow-img"
                 />
               </button>
-            </label>
-          </div>
-          <Instructions />
-          <div className="absolute bottom-4 left-4">
-            <CountdownClock startTime={labInfo?.creation_date || ""} endLab={endLab} />
-          </div>
-          <Button
-            onClick={endLab}
-            variant="destructive"
-            className="absolute bottom-4 right-4"
-          >
-            End Lab
-          </Button>
-        </Panel>
-
-        <ResizeHandle />
+            </div>
+            <Instructions />
+            <div className="absolute bottom-4 left-4">
+              <CountdownClock
+                startTime={labInfo?.creation_date || ""}
+                endLab={endLab}
+              />
+            </div>
+            <Button
+              onClick={endLab}
+              variant="destructive"
+              className="absolute bottom-4 right-4"
+            >
+              End Lab
+            </Button>
+          </Panel>
+        ) : null}
+        {showInstructions ? <ResizeHandle /> : null}
         <Panel className="h-full" collapsible={true}>
           {isLoading ? (
             <div className="h-full flex justify-center items-center">
@@ -215,6 +217,21 @@ const LabsPage = () => {
             </Drawer.Content>
           </Drawer.Portal>
         </Drawer.Root>
+      ) : null}
+
+      {!showInstructions ? (
+        <button
+          onClick={() =>
+            setShowInstructions((setShowInstructions) => !setShowInstructions)
+          }
+          className="bg-gray-300 shadow-md p-3 w-fit rounded-full absolute instructions-toggle bottom-10 left-10 glassBorder rotate-180 "
+        >
+          <Image
+            src={double_arrow_left}
+            alt="double_arrow_left"
+            className="arrow-img"
+          />
+        </button>
       ) : null}
     </div>
   );
