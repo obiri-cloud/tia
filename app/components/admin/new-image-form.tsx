@@ -50,11 +50,12 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
   const durationRef = useRef<HTMLInputElement>(null);
   const prerequisitesRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  const imagePictureRef = useRef<HTMLInputElement>(null);
   const [difficultyLevel, setDifficultyLevel] = useState(
     imageDetails?.difficulty_level ?? ""
   );
   const { data: session } = useSession();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
@@ -78,13 +79,14 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
       message: "Description has to be 3 characters or more",
     }),
   });
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
     if (buttonRef.current) {
       buttonRef.current.disabled = true;
     }
-    let formData = {
+
+    let parseFormData = {
       name: nameRef.current?.value,
       docker_image: dockerImageRef.current?.value,
       port_number: portNumberRef.current?.value,
@@ -94,22 +96,47 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
       description: descriptionRef.current?.value,
     };
 
+    const formData = new FormData();
+
+    // Append fields to the FormData object
+    formData.append("name", nameRef.current?.value || "");
+    formData.append("docker_image", dockerImageRef.current?.value || "");
+    formData.append("port_number", portNumberRef.current?.value || "");
+    formData.append("difficulty_level", difficultyLevel);
+    formData.append("duration", durationRef.current?.value || "");
+    formData.append("description", descriptionRef.current?.value || "");
+
+    // Append the image file to the FormData object
+    if (imagePictureRef.current && imagePictureRef.current!.files) {
+      formData.append("image_picture", imagePictureRef.current!.files[0]);
+    }
+
     let axiosConfig = {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/create/`,
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
-      data: JSON.stringify(formData),
+      data: formData, // Pass the FormData object as the data
     };
+
+    // let axiosConfig = {
+    //   method: "POST",
+    //   url: `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/create/`,
+    //   headers: {
+    //     "Content-Type": "multipart/form-data",
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    //   data: JSON.stringify(formData),
+    // };
     if (imageDetails) {
       axiosConfig.method = "PUT";
       axiosConfig.url = `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${imageDetails.id}/update/`;
     }
 
     try {
-      formSchema.parse(formData);
+      formSchema.parse(parseFormData);
       const response = await axios(axiosConfig);
 
       if (response.status === 201 || response.status === 200) {
@@ -118,7 +145,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
           title: "Image Creation Success",
           description: "Image created successfully",
         });
-        getImageListX(token).then((response)=> {
+        getImageListX(token).then((response) => {
           dispatch(setImageCount(response.data.count));
           dispatch(setImageList(response.data.results));
           document.getElementById("closeDialog")?.click();
@@ -280,21 +307,20 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
               </FormItem>
             )}
           />
-          {/* <div className="my-6">
-            {" "}
+          <div className="my-6">
             <FormField
               control={form.control}
-              name="prerequisites"
+              name="image_picture"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Prerequisites</FormLabel>
+                  <FormLabel>Image Picture</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Prerequisites"
-                      type="text"
+                      placeholder="Image Picture"
+                      type="file"
                       {...field}
-                      ref={prerequisitesRef}
-                      defaultValue={imageDetails?.prerequisites}
+                      ref={imagePictureRef}
+                      defaultValue={imageDetails?.image_picture}
                       className="glassBorder"
                     />
                   </FormControl>
@@ -302,7 +328,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                 </FormItem>
               )}
             />
-          </div> */}
+          </div>
           <div className="my-6">
             <FormField
               control={form.control}

@@ -32,9 +32,10 @@ const Images = () => {
   const { imageCount, imageList } = useSelector(
     (state: RootState) => state.admin
   );
+
   const [currentImage, setCurrentImage] = useState<ILabImage | null>(null);
   const { data: session } = useSession();
-  const dispatch  = useDispatch()
+  const dispatch = useDispatch();
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -61,7 +62,7 @@ const Images = () => {
           description: "Image deleted successfully",
         });
         // setLocalImageList((prev) => prev?.filter((image) => image.id !== id));
-        getImageListX(token).then((response)=> {
+        getImageListX(token).then((response) => {
           dispatch(setImageCount(response.data.count));
           dispatch(setImageList(response.data.results));
           document.getElementById("closeDialog")?.click();
@@ -132,34 +133,43 @@ const Images = () => {
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
+                {imageList?.length === 0 && (
+                  <TableCaption>No images found...</TableCaption>
+                )}
                 <TableBody>
-                  {imageList.map((image, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="font-medium">
-                        {image.name}
-                      </TableCell>
-                      <TableCell>{image.difficulty_level}</TableCell>
-                      <TableCell>{image.duration}</TableCell>
-                      <TableCell className="text-right">
-                        {image.port_number}
-                      </TableCell>
-                      <TableCell className="underline font-medium text-right">
-                        <DialogTrigger onClick={() => setCurrentImage(image)}>
-                          <Button className="font-medium" variant="link">
-                            View
-                          </Button>
-                        </DialogTrigger>
-                        |
-                        <Button
-                          onClick={() => deleteImage(image.id)}
-                          className="font-medium text-red-600"
-                          variant="link"
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {imageList
+                    ? imageList.length > 0
+                      ? imageList.map((image, i) => (
+                          <TableRow key={i}>
+                            <TableCell className="font-medium">
+                              {image.name}
+                            </TableCell>
+                            <TableCell>{image.difficulty_level}</TableCell>
+                            <TableCell>{image.duration}</TableCell>
+                            <TableCell className="text-right">
+                              {image.port_number}
+                            </TableCell>
+                            <TableCell className="underline font-medium text-right">
+                              <DialogTrigger
+                                onClick={() => setCurrentImage(image)}
+                              >
+                                <Button className="font-medium" variant="link">
+                                  View
+                                </Button>
+                              </DialogTrigger>
+                              |
+                              <Button
+                                onClick={() => deleteImage(image.id)}
+                                className="font-medium text-red-600"
+                                variant="link"
+                              >
+                                Delete
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      : null
+                    : null}
                 </TableBody>
               </Table>
             </CardContent>

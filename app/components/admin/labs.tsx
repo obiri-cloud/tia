@@ -72,25 +72,32 @@ const Labs = () => {
                     {/* <TableHead className="text-right">Action</TableHead> */}
                   </TableRow>
                 </TableHeader>
+                {labList?.length === 0 && (
+                  <TableCaption>No labs found...</TableCaption>
+                )}
                 <TableBody>
-                  {labList.map((image: ILabList, i: number) => (
-                    <TableRow key={i}>
-                      <TableCell className="font-medium">
-                        {image.name}
-                      </TableCell>
-                      <TableCell>{image.status}</TableCell>
-                      <TableCell>{image.creation_date}</TableCell>
-                      <TableCell className="text-center">
-                        {image.image}
-                      </TableCell>
-                      {/* <TableCell className="underline font-medium text-right">
-                        <DialogTrigger onClick={() => setCurrentLab(image)}>
-                          <Button className="font-medium" variant="link">View</Button>
-                        </DialogTrigger>
-                        |<Button className="font-medium text-red-600" variant="link">Delete</Button>
-                      </TableCell> */}
-                    </TableRow>
-                  ))}
+                  {labList
+                    ? labList.length
+                      ? labList.map((image: ILabList, i: number) => (
+                          <TableRow key={i}>
+                            <TableCell className="font-medium">
+                              {image.name}
+                            </TableCell>
+                            <TableCell>{image.status}</TableCell>
+                            <TableCell>{image.creation_date}</TableCell>
+                            <TableCell className="text-center">
+                              {image.image}
+                            </TableCell>
+                            {/* <TableCell className="underline font-medium text-right">
+                          <DialogTrigger onClick={() => setCurrentLab(image)}>
+                            <Button className="font-medium" variant="link">View</Button>
+                          </DialogTrigger>
+                          |<Button className="font-medium text-red-600" variant="link">Delete</Button>
+                        </TableCell> */}
+                          </TableRow>
+                        ))
+                      : null
+                    : null}
                 </TableBody>
               </Table>
             </CardContent>
