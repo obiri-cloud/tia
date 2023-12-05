@@ -1,13 +1,5 @@
 "use client";
-import React, {
-  FC,
-  FormEvent,
-  RefObject,
-  forwardRef,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { FC, FormEvent, useEffect, useRef, useState } from "react";
 import {
   Form,
   FormControl,
@@ -35,7 +27,8 @@ import { useSession } from "next-auth/react";
 import { getImageListX } from "./overview";
 import { setImageCount, setImageList } from "@/redux/reducers/adminSlice";
 import { useDispatch } from "react-redux";
-
+import trash from "@/public/svgs/trash.svg";
+import Image from "next/image";
 interface INewImageForm {
   imageDetails: ILabImage | null;
 }
@@ -51,6 +44,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
   const prerequisitesRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const imagePictureRef = useRef<HTMLInputElement>(null);
+  const [updateImage, setUpdateImage] = useState(false);
   const [difficultyLevel, setDifficultyLevel] = useState(
     imageDetails?.difficulty_level ?? ""
   );
@@ -118,7 +112,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
-      data: formData, // Pass the FormData object as the data
+      data: formData,
     };
 
     // let axiosConfig = {
@@ -174,14 +168,21 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
         buttonRef.current.disabled = false;
       }
     }
+    setUpdateImage(false);
   };
 
   useEffect(() => {
-    setDifficultyLevel(imageDetails?.difficulty_level ?? "");
-  }, []);
+    if (imageDetails?.difficulty_level) {
+      setDifficultyLevel(imageDetails?.difficulty_level ?? "");
+    }
+  }, [imageDetails?.difficulty_level]);
+
+  useEffect(() => {
+    setUpdateImage(false);
+  }, [imageDetails]);
 
   return (
-    <DialogContent className="overflow-y-scroll">
+    <DialogContent className="overflow-y-scroll h-[90vh] ">
       <Form {...form}>
         <form
           onSubmit={handleSubmit}
@@ -307,6 +308,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
               </FormItem>
             )}
           />
+
           <div className="my-6">
             <FormField
               control={form.control}
@@ -315,20 +317,34 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                 <FormItem>
                   <FormLabel>Image Picture</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Image Picture"
-                      type="file"
-                      {...field}
-                      ref={imagePictureRef}
-                      defaultValue={imageDetails?.image_picture}
-                      className="glassBorder"
-                    />
+                    {imageDetails &&
+                    imageDetails.image_picture &&
+                    !updateImage ? (
+                      <div className="flex justify-center">
+                        <img src={imageDetails.image_picture} alt="Existing" />
+                        <Button
+                          variant={"destructive"}
+                          onClick={() => setUpdateImage(true)}
+                        >
+                          <Image src={trash} alt="trash" className="w-[25px]" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Input
+                        placeholder="Image Picture"
+                        type="file"
+                        {...field}
+                        ref={imagePictureRef}
+                        className="glassBorder"
+                      />
+                    )}
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
+
           <div className="my-6">
             <FormField
               control={form.control}
