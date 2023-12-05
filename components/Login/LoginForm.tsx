@@ -16,11 +16,13 @@ import { toast } from "@/components/ui/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { ToastAction } from "../ui/toast";
+import { useSession } from "next-auth/react";
 
 const LoginForm = () => {
   const form = useForm();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { data: session } = useSession();
 
   const email = searchParams.get("email");
 
@@ -43,10 +45,6 @@ const LoginForm = () => {
     try {
       let email = emailRef.current?.value;
       let password = passwordRef.current?.value;
-      console.log({
-        email,
-        password,
-      });
 
       formSchema.parse({
         email,
@@ -58,13 +56,19 @@ const LoginForm = () => {
         redirect: false,
       })
         .then((res) => {
-          
           if (res?.error === null) {
             toast({
               title: "Login Successful",
               variant: "success",
             });
-            router.push("/dashboard");
+            // @ts-ignore
+            let status = session?.user.data.is_admin as boolean;
+            
+            if (status) {
+              router.push("/admin");
+            } else {
+              router.push("/dashboard");
+            }
           } else {
             toast({
               title: "Login Failed",
@@ -114,7 +118,6 @@ const LoginForm = () => {
                   {...field}
                   ref={emailRef}
                   className="glassBorder"
-
                 />
               </FormControl>
               <FormMessage />
@@ -134,7 +137,6 @@ const LoginForm = () => {
                   type="password"
                   placeholder="Password"
                   className="glassBorder"
-
                 />
               </FormControl>
               <FormMessage />
