@@ -1,22 +1,8 @@
 import { Metadata } from "next";
 import Image from "next/image";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MainNav } from "@/components/ui/main-nav";
-import { Overview } from "@/components/ui/overview";
-import { RecentSales } from "@/components/ui/recent-sales";
-import { Search } from "@/components/ui/search";
-// import TeamSwitcher from "@/components/ui/team-switcher"
-// import { UserNav } from "@/components/ui/user-nav"
-import { Button } from "@/components/ui/button";
-import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AdminCheck from "../../hooks/admin-check";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
