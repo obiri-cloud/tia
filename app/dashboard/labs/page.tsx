@@ -25,6 +25,7 @@ const LabsPage = () => {
 
   const [labInfo, setLabInfo] = useState<ILabInfo>();
   const [isLoading, setIsLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
 
   // @ts-ignore
 
@@ -53,8 +54,6 @@ const LabsPage = () => {
   };
 
   useEffect(() => {
-    console.log("here");
-
     let tialab_info: ILabInfo | null = JSON.parse(
       (secureLocalStorage.getItem("tialab_info") as string) || ""
     );
@@ -78,6 +77,7 @@ const LabsPage = () => {
   }, []);
 
   const endLab = async () => {
+    setDeleting(true);
     let formData = JSON.stringify({ image: labInfo!.id });
     toast({
       title: "Hold on we are cleaning your lab environment.",
@@ -98,13 +98,13 @@ const LabsPage = () => {
       if (response.data.status === 200) {
         secureLocalStorage.removeItem("tialabs_info");
         toast({
-          title: response.data.message,
+          title: "Lab Deleted Successfully...",
           variant: "success",
         });
         router.push("/dashboard/explore");
       } else {
         toast({
-          title: response.data.message,
+          title: "Something went wrong. Try again",
           variant: "destructive",
         });
       }
@@ -114,6 +114,8 @@ const LabsPage = () => {
         variant: "destructive",
       });
       console.error(error);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -161,11 +163,12 @@ const LabsPage = () => {
               />
             </div>
             <Button
+              disabled={deleting}
               onClick={endLab}
               variant="destructive"
-              className="absolute bottom-4 right-4"
+              className="absolute bottom-4 right-4 disabled:bg-red-900/90"
             >
-              End Lab
+              {deleting ? "Ending Lab..." : "End Lab"}
             </Button>
           </Panel>
         ) : null}
