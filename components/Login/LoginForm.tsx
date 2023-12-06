@@ -41,7 +41,7 @@ const LoginForm = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setLogging(true);
-   
+
     try {
       let email = emailRef.current?.value;
       let password = passwordRef.current?.value;
@@ -78,10 +78,10 @@ const LoginForm = () => {
               variant: "destructive",
             });
           }
-        }).finally(()=>{
-      setLogging(false);
-
         })
+        .finally(() => {
+          setLogging(false);
+        });
     } catch (error) {
       if (error instanceof z.ZodError) {
         error.issues.map((err) =>
@@ -92,7 +92,7 @@ const LoginForm = () => {
           })
         );
       }
-    } 
+    }
   };
 
   return (
