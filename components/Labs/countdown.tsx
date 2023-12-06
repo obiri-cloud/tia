@@ -10,7 +10,6 @@ export const CountdownClock: React.FC<CountdownProps> = ({
   startTime,
   endLab,
 }) => {
-  console.log("startTime", startTime);
 
   const [timeRemaining, setTimeRemaining] = useState<Duration | null>(null);
   const [fiveMinLeft, setFiveMinLeft] = useState(false);
@@ -23,7 +22,7 @@ export const CountdownClock: React.FC<CountdownProps> = ({
     const interval = setInterval(() => {
       const now = moment();
 
-      const futureTime = moment(startMoment).add(20, "minutes");
+      const futureTime = moment(startMoment).add(1, "minutes");
       const duration = moment.duration(futureTime.diff(now));
 
       if (duration.asSeconds() <= 300) {
