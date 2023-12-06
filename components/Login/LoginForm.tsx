@@ -1,5 +1,5 @@
 "use client";
-import React, { FormEvent, useRef } from "react";
+import React, { FormEvent, useRef, useState } from "react";
 import {
   Form,
   FormControl,
@@ -29,6 +29,7 @@ const LoginForm = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const [logging, setLogging] = useState(false);
 
   const formSchema = z.object({
     email: z.string().email({}),
@@ -39,9 +40,8 @@ const LoginForm = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (buttonRef.current) {
-      buttonRef.current.disabled = true;
-    }
+    setLogging(true);
+   
     try {
       let email = emailRef.current?.value;
       let password = passwordRef.current?.value;
@@ -63,7 +63,7 @@ const LoginForm = () => {
             });
             // @ts-ignore
             let status = session?.user.data.is_admin as boolean;
-            
+
             if (status) {
               router.push("/admin");
             } else {
@@ -78,12 +78,10 @@ const LoginForm = () => {
               variant: "destructive",
             });
           }
+        }).finally(()=>{
+      setLogging(false);
+
         })
-        .finally(() => {
-          if (buttonRef.current) {
-            buttonRef.current.disabled = false;
-          }
-        });
     } catch (error) {
       if (error instanceof z.ZodError) {
         error.issues.map((err) =>
@@ -94,11 +92,7 @@ const LoginForm = () => {
           })
         );
       }
-    } finally {
-      if (buttonRef.current) {
-        buttonRef.current.disabled = false;
-      }
-    }
+    } 
   };
 
   return (
@@ -144,11 +138,12 @@ const LoginForm = () => {
           )}
         />
         <Button
+          disabled={logging}
           ref={buttonRef}
           className="w-full disabled:bg-black-900/10 dark:bg-white dark:text-black bg-black text-white "
           variant="black"
         >
-          Login
+          {logging ? "Logging in..." : "Login"}
         </Button>
       </form>
     </Form>
