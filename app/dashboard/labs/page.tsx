@@ -96,6 +96,7 @@ const LabsPage = () => {
         }
       );
       if (response.data.status === 200) {
+        secureLocalStorage.removeItem("tialabs_info");
         toast({
           title: response.data.message,
           variant: "success",
