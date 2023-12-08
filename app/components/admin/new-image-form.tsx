@@ -41,7 +41,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
   const dockerImageRef = useRef<HTMLInputElement>(null);
   const portNumberRef = useRef<HTMLInputElement>(null);
   const durationRef = useRef<HTMLInputElement>(null);
-  const prerequisitesRef = useRef<HTMLInputElement>(null);
+  const commandRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const imagePictureRef = useRef<HTMLInputElement>(null);
   const [updateImage, setUpdateImage] = useState(false);
@@ -68,7 +68,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
       message: "Select a difficulty level",
     }),
     duration: z.coerce.number().int().optional(),
-    // prerequisites: z.string().optional(),
+    command: z.string().optional(),
     description: z.string().min(3, {
       message: "Description has to be 3 characters or more",
     }),
@@ -86,7 +86,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
       port_number: portNumberRef.current?.value,
       difficulty_level: difficultyLevel,
       duration: durationRef.current?.value,
-      // prerequisites: prerequisitesRef.current?.value ?? "",
+      command: commandRef.current?.value,
       description: descriptionRef.current?.value,
     };
 
@@ -99,6 +99,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
     formData.append("difficulty_level", difficultyLevel);
     formData.append("duration", durationRef.current?.value || "");
     formData.append("description", descriptionRef.current?.value || "");
+    formData.append("command", commandRef.current?.value || "");
 
     // Append the image file to the FormData object
     if (imagePictureRef.current && imagePictureRef.current!.files) {
@@ -115,15 +116,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
       data: formData,
     };
 
-    // let axiosConfig = {
-    //   method: "POST",
-    //   url: `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/create/`,
-    //   headers: {
-    //     "Content-Type": "multipart/form-data",
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    //   data: JSON.stringify(formData),
-    // };
+
     if (imageDetails) {
       axiosConfig.method = "PUT";
       axiosConfig.url = `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${imageDetails.id}/update/`;
@@ -193,7 +186,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Name <sup className="text-red-600">*</sup></FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Name"
@@ -215,7 +208,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
               name="docker_image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Docker Image</FormLabel>
+                  <FormLabel>Docker Image <sup className="text-red-600">*</sup></FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Docker Image"
@@ -238,7 +231,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
               name="port_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Port Number</FormLabel>
+                  <FormLabel>Port Number <sup className="text-red-600">*</sup></FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Port Number"
@@ -258,7 +251,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
               name="duration"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Duration</FormLabel>
+                  <FormLabel>Duration <sup className="text-red-600">*</sup></FormLabel>
                   <FormControl>
                     <Input
                       min={1}
@@ -280,7 +273,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
             name="difficulty_level"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Difficulty Level</FormLabel>
+                <FormLabel>Difficulty Level <sup className="text-red-600">*</sup></FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={(dl) => setDifficultyLevel(dl)}
@@ -338,6 +331,27 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                         className="glassBorder"
                       />
                     )}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="my-6">
+            <FormField
+              control={form.control}
+              name="command"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Command</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="glassBorder"
+                      {...field}
+                      ref={commandRef}
+                      defaultValue={imageDetails?.command}
+                      placeholder="Command"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
