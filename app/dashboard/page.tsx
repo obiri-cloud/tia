@@ -15,7 +15,7 @@ interface ILabListItem {
   name: string;
   image: number;
   ingress_url: string;
-  creation_date: string
+  creation_date: string;
 }
 
 const UserPage = () => {
@@ -26,7 +26,6 @@ const UserPage = () => {
   const { data: session } = useSession();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-  
 
   useEffect(() => {
     getActiveLabs();
@@ -49,20 +48,19 @@ const UserPage = () => {
 
       setLabs(response.data.results);
     } catch (error) {
-      userCheck(error as AxiosError)
-
+      userCheck(error as AxiosError);
     }
   };
 
   const resumeLab = (data: ILabListItem) => {
     console.log("data", data);
-    
+
     secureLocalStorage.setItem(
       "tialab_info",
       JSON.stringify({
         id: data.image,
         url: data.ingress_url,
-        creation_date: data.creation_date
+        creation_date: data.creation_date,
       })
     );
     router.push(`/dashboard/labs?lab=${data.id}`);
@@ -106,7 +104,7 @@ const UserPage = () => {
         });
       }
     } catch (error) {
-      userCheck(error as AxiosError)
+      userCheck(error as AxiosError);
 
       toast({
         title: "Something went wrong. Try again",
@@ -117,44 +115,50 @@ const UserPage = () => {
   };
 
   return (
-    <div className="grid lg:grid-cols-2 grid-cols-1 h-screen">
-      <div className="p-5 lg:border-r border-b w-full flex items-center">
-        <div className="w-full">
-          <h1 className="text-[40px] font-bold text-center">
-            Jump back in your live labs:
-          </h1>
-          <ul>
-            {labs &&
-              labs.map((lab, i) => (
-                <li className="active-lab-button flex gap-4  mb-5 " key={i}>
-                  <Button
-                    onClick={() => resumeLab(lab)}
-                    className="w-full transparent bg-black text-white  text-left border block glassBorder rounded-lg "
-                  >
-                    {lab.name}
-                  </Button>
-                  <Button
-                    disabled={disabled}
-                    onClick={() => deleteLab(lab.image)}
-                    variant="destructive"
-                    className=" delete-button h-auto disabled:bg-red-900/10"
-                  >
-                    {disabled ? (
-                      <MetroSpinner size={20} color="#fff" loading={true} />
-                    ) : (
-                      <span>Delete</span>
-                    )}
-                  </Button>
-                </li>
-              ))}
-          </ul>
-          {labs && labs.length === 0 ? (
-            <div className="w-full flex justify-center mt-4 items-center">
-              <p className="text-gray-600">No active labs found...</p>
-            </div>
-          ) : null}
+    <div
+      className={`grid  ${
+        labs && labs.length === 0 ? "lg:grid-cols-1" : "lg:grid-cols-2"
+      } grid-cols-1 h-screen`}
+    >
+      {labs && labs.length > 1 ? (
+        <div className="p-5 lg:border-r border-b w-full flex items-center">
+          <div className="w-full">
+            <h1 className="text-[40px] font-bold text-center">
+              Jump back in your live labs:
+            </h1>
+            <ul>
+              {labs &&
+                labs.map((lab, i) => (
+                  <li className="active-lab-button flex gap-4  mb-5 " key={i}>
+                    <Button
+                      onClick={() => resumeLab(lab)}
+                      className="w-full transparent bg-black text-white  text-left border block glassBorder rounded-lg "
+                    >
+                      {lab.name}
+                    </Button>
+                    <Button
+                      disabled={disabled}
+                      onClick={() => deleteLab(lab.image)}
+                      variant="destructive"
+                      className=" delete-button h-auto disabled:bg-red-900/10"
+                    >
+                      {disabled ? (
+                        <MetroSpinner size={20} color="#fff" loading={true} />
+                      ) : (
+                        <span>Delete</span>
+                      )}
+                    </Button>
+                  </li>
+                ))}
+            </ul>
+            {labs && labs.length === 0 ? (
+              <div className="w-full flex justify-center mt-4 items-center">
+                <p className="text-gray-600">No active labs found...</p>
+              </div>
+            ) : null}
+          </div>
         </div>
-      </div>
+      ) : null}
       <div className="flex justify-center items-center">
         <Link
           href="/dashboard/explore"
