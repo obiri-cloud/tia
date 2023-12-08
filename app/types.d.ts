@@ -22,6 +22,7 @@ interface ILabImage {
   prerequisites: string;
   port_number: number;
   image_picture: string
+  command: string
 }
 
 interface ILabInfoDialog {
