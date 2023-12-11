@@ -19,7 +19,7 @@ const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
   const [currentImage, setCurrentImage] = useState<ILabImage | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const dispatch  = useDispatch()
+  const dispatch = useDispatch();
 
   const [localImageList, setLocalImageList] = useState(imageList);
   const [disabled, setDisabled] = useState(false);
@@ -30,7 +30,7 @@ const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
 
   useEffect(() => {
     console.log("imageList", imageList);
-    
+
     setLocalImageList(imageList);
   }, [imageList]);
 
@@ -56,7 +56,7 @@ const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
           description: "Image deleted successfully",
         });
         // setLocalImageList((prev) => prev?.filter((image) => image.id !== id));
-        getImageListX(token).then((response)=> {
+        getImageListX(token).then((response) => {
           dispatch(setImageCount(response.data.count));
           dispatch(setImageList(response.data.results));
           document.getElementById("closeDialog")?.click();
@@ -82,59 +82,61 @@ const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
   return (
     <Dialog>
       <div className="space-y-8">
-        {localImageList?
-       localImageList.length > 0 ? (
-        localImageList.map((lab, i) => (
-          <div key={i} className="flex items-center">
-            <Avatar className="h-9 w-9">
-              <AvatarImage src="/avatars/01.png" alt="Avatar" />
-              <AvatarFallback className="uppercase">
-                {lab.name.slice(0, 2)}
-              </AvatarFallback>
-            </Avatar>
-            <DialogTrigger
-              className="w-full text-left"
-              onClick={() => setCurrentImage(lab)}
-            >
-              <div className="ml-4 space-y-1">
-                <p className="text-sm font-medium leading-none">{lab.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {lab.difficulty_level}
-                </p>
+        {localImageList ? (
+          localImageList.length > 0 ? (
+            localImageList.map((lab, i) => (
+              <div key={i} className="flex items-center">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src="/avatars/01.png" alt="Avatar" />
+                  <AvatarFallback className="uppercase">
+                    {lab.name.slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <DialogTrigger
+                  className="w-full text-left"
+                  onClick={() => setCurrentImage(lab)}
+                >
+                  <div className="ml-4 space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {lab.name}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {lab.difficulty_level}
+                    </p>
+                  </div>
+                </DialogTrigger>
+                <div className="ml-auto font-medium">
+                  <Button
+                    disabled={disabled}
+                    className="disabled:bg-red-900/90"
+                    onClick={() => deleteImage(lab.id)}
+                    ref={buttonRef}
+                    variant="destructive"
+                  >
+                    Delete
+                  </Button>
+                </div>
               </div>
-            </DialogTrigger>
-            <div className="ml-auto font-medium">
-              <Button
-                disabled={disabled}
-                className="disabled:bg-red-900/90"
-                onClick={() => deleteImage(lab.id)}
-                ref={buttonRef}
-                variant="destructive"
-              >
-                Delete
-              </Button>
-            </div>
-          </div>
-        ))
-      ):
-      <p className="px-4">No images found...</p>
-      : (
-        <>
-          {new Array(4).fill(0).map((_, i) => (
-            <div key={i} className="flex items-center">
-              <Skeleton className="h-9 w-9 rounded-full" />
-              <div className="ml-4 space-y-1">
-                <Skeleton className="h-3 w-[200px]" />
-                <Skeleton className="h-3 w-[150px]" />
+            ))
+          ) : (
+            <p className="px-4">No images found...</p>
+          )
+        ) : (
+          <>
+            {new Array(4).fill(0).map((_, i) => (
+              <div key={i} className="flex items-center">
+                <Skeleton className="h-9 w-9 rounded-full" />
+                <div className="ml-4 space-y-1">
+                  <Skeleton className="h-3 w-[200px]" />
+                  <Skeleton className="h-3 w-[150px]" />
+                </div>
+                <div className="ml-auto font-medium">
+                  <Skeleton className="h-9 w-[80px]" />
+                </div>
               </div>
-              <div className="ml-auto font-medium">
-                <Skeleton className="h-9 w-[80px]" />
-              </div>
-            </div>
-          ))}
-        </>
-      )  
-      }
+            ))}
+          </>
+        )}
       </div>
       <NewImageForm imageDetails={currentImage} />
     </Dialog>
