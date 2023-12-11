@@ -18,7 +18,6 @@ import { createPortal } from "react-dom";
 import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
 
-
 const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
   console.log("lab", lab);
 
@@ -92,8 +91,10 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
         delayPush(response.data);
       }
     } catch (error) {
-      userCheck(error as AxiosError);
       console.error("error", error);
+      if (error instanceof AxiosError) {
+        userCheck(error as AxiosError);
+      }
       if (axios.isCancel(error)) {
         toast({
           title: "Lab Creation Stopped",
@@ -108,8 +109,6 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     }
   };
   const delayPush = (data: any, resumed: boolean | null = null) => {
-    console.log("data", data);
-
     setSecondaryAction(null);
     const timer = setInterval(() => setProgress((prev) => prev + 10), 1000);
     setTimeout(() => {
@@ -219,7 +218,6 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     });
     //@ts-ignore
     deleteLab(lab?.id);
-
   };
   return (
     <div>
@@ -227,74 +225,77 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
         <DialogContent
           onClickOutside={(e) => handleOnClickOutside(e)}
           onEsc={(e) => handleOnEsc(e)}
-          noClose={true}
+          // noClose={true}
         >
           <DialogHeader>
             <DialogTitle>{lab.name}</DialogTitle>
-            <DialogDescription>
-              <h2 className="font-semibold">Level: </h2>
-              {lab.difficulty_level}
-              <br />
-              <br />
-              <h2 className="font-semibold">Description</h2>
-              {lab.description ? (
-                lab.description
-              ) : (
-                <p>No description providede...</p>
-              )}
-              <br />
+          </DialogHeader>
+          <>
+            <div className="">
+              <span className="font-semibold block">Level: </span>
+              <span>{lab.difficulty_level}</span>
+            </div>
+            <div className="">
+              <span className="font-semibold block">Description: </span>
+              <span>
+                {lab.description ? (
+                  lab.description
+                ) : (
+                  <p>No description provided...</p>
+                )}
+              </span>
+            </div>
 
-              {disabled ? (
-                <>
-                  <Progress value={progress} className="mt-10 h-2" />
+            {disabled ? (
+              <>
+                <Progress value={progress} className="mt-10 h-2" />
+                <Button
+                  onClick={() => cancelLab()}
+                  className="mt-6 block py-2 px-4 rounded-md w-full"
+                  variant="destructive"
+                >
+                  Cancel Lab Creation
+                </Button>
+              </>
+            ) : (
+              !secondaryAction && (
+                <Button
+                  onClick={() => goToLab(lab.id)}
+                  className="mt-6 disabled:bg-black-900/10 w-full dark:bg-white dark:text-black bg-black text-white "
+                  variant="black"
+                >
+                  Start Lab
+                </Button>
+              )
+            )}
+            {secondaryAction ? (
+              <div className="mt-5">
+                <span>
+                  A lab of this instance already exists, you can delete the lab
+                  and create a new one or jump back into it.
+                </span>
+                <div className="grid grid-cols-2 gap-4">
                   <Button
-                    onClick={() => cancelLab()}
-                    className="mt-6 block py-2 px-4 rounded-md w-full"
+                    onClick={() => deleteLab(labInfo!.image_id)}
+                    className="mt-6 block py-2 px-4 rounded-md"
                     variant="destructive"
                   >
-                    Cancel Lab Creation
+                    Delete Lab
                   </Button>
-                </>
-              ) : (
-                !secondaryAction && (
                   <Button
-                    onClick={() => goToLab(lab.id)}
-                    className="mt-6 disabled:bg-black-900/10 w-full dark:bg-white dark:text-black bg-black text-white "
+                    onClick={() => {
+                      setDisabled(true);
+                      delayPush(labInfo, true);
+                    }}
+                    className="mt-6 disabled:bg-black-900/10 w-full bg-black text-white  glassBorder"
                     variant="black"
                   >
-                    Start Lab
+                    Jump back into lab
                   </Button>
-                )
-              )}
-              {secondaryAction ? (
-                <div className="mt-5">
-                  <p>
-                    A lab of this instance already exists, you can delete the
-                    lab and create a new one or jump back into it.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Button
-                      onClick={() => deleteLab(labInfo!.image_id)}
-                      className="mt-6 block py-2 px-4 rounded-md"
-                      variant="destructive"
-                    >
-                      Delete Lab
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setDisabled(true);
-                        delayPush(labInfo, true);
-                      }}
-                      className="mt-6 disabled:bg-black-900/10 w-full bg-black text-white  glassBorder"
-                      variant="black"
-                    >
-                      Jump back into lab
-                    </Button>
-                  </div>
                 </div>
-              ) : null}
-            </DialogDescription>
-          </DialogHeader>
+              </div>
+            ) : null}
+          </>
         </DialogContent>
       ) : null}
     </div>

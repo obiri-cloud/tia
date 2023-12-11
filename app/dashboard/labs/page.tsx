@@ -135,9 +135,9 @@ const LabsPage = () => {
           autoSaveId="tia-lab"
           direction="horizontal"
         >
-          {showInstructions ? (
+
             <Panel
-              className="h-full relative instructions lg:block hidden"
+              className={`h-full relative instructions  hidden ${showInstructions? 'lg:block': 'hidden'}`}
               collapsible={true}
             >
               <div className="flex justify-end p-3">
@@ -173,7 +173,6 @@ const LabsPage = () => {
                 </Button>
               </DialogTrigger>
             </Panel>
-          ) : null}
           {showInstructions ? <ResizeHandle /> : null}
           <Panel className="h-full" collapsible={true}>
             {isLoading ? (

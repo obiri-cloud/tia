@@ -49,8 +49,8 @@ const LabList = () => {
       <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4">
         {labs && labs.length >= -1 ? (
           labs.map((lab, i) => (
-            <DialogTrigger>
-              <button
+            <DialogTrigger key={i}>
+              <span
                 onClick={() => setCurrentLab(lab)}
                 key={i}
                 className="w-full flex flex-col justify-center items-center h-[250px] bg-gray-200/90  py-6"
@@ -64,7 +64,7 @@ const LabList = () => {
                 <h6 className="mb-0 font-bold">{lab.name}</h6>
                 <img src={lab.image_picture ?? ""} alt="" className="flex-1 " />
                 {/* <p className=" ">{lab.name}</p> */}
-              </button>
+              </span>
             </DialogTrigger>
           ))
         ) : (
