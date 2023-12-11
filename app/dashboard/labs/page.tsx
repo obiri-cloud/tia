@@ -12,7 +12,7 @@ import info from "@/public/svgs/info.svg";
 import info_white from "@/public/svgs/info-white.svg";
 import secureLocalStorage from "react-secure-storage";
 import double_arrow_left from "@/public/svgs/double_arrow_left.svg";
-
+import { Dialog } from "@/components/ui/dialog";
 interface ILabInfo {
   id: number | null;
   url: string;
@@ -128,116 +128,126 @@ const LabsPage = () => {
   };
 
   return (
-    <div className="h-full">
-      <PanelGroup
-        className="h-full "
-        autoSaveId="tia-lab"
-        direction="horizontal"
-      >
-        {showInstructions ? (
-          <Panel
-            className="h-full relative instructions lg:block hidden"
-            collapsible={true}
-          >
-            <div className="flex justify-end p-3">
-              <button
-                onClick={() =>
-                  setShowInstructions(
-                    (setShowInstructions) => !setShowInstructions
-                  )
-                }
-                className="bg-gray-300 shadow-md p-3 w-fit rounded-full instructions-toggle"
-              >
-                <Image
-                  src={double_arrow_left}
-                  alt="double_arrow_left"
-                  className="arrow-img"
-                />
-              </button>
-            </div>
-            <Instructions />
-            <div className="absolute bottom-4 left-4">
-              <CountdownClock
-                startTime={labInfo?.creation_date || ""}
-                endLab={endLab}
-              />
-            </div>
-            <Button
-              disabled={deleting}
-              onClick={endLab}
-              variant="destructive"
-              className="absolute bottom-4 right-4 disabled:bg-red-900/90"
+    <Dialog>
+      <div className="h-full">
+        <PanelGroup
+          className="h-full "
+          autoSaveId="tia-lab"
+          direction="horizontal"
+        >
+          {showInstructions ? (
+            <Panel
+              className="h-full relative instructions lg:block hidden"
+              collapsible={true}
             >
-              {deleting ? "Ending Lab..." : "End Lab"}
-            </Button>
-          </Panel>
-        ) : null}
-        {showInstructions ? <ResizeHandle /> : null}
-        <Panel className="h-full" collapsible={true}>
-          {isLoading ? (
-            <div className="h-full flex justify-center items-center">
-              <MagicSpinner size={100} color="#686769" loading={isLoading} />
-            </div>
-          ) : null}
-          <div className="h-full">
-            <iframe
-              src={(labInfo && labInfo.url) || ""}
-              width="100%"
-              height="100%"
-              onLoad={handleLoad}
-            ></iframe>
-          </div>
-        </Panel>
-      </PanelGroup>
-      {isNotDesktop ? (
-        <button
-          onClick={handleClick}
-          className={` bottom-10 left-10 glassBorder p-5 rounded-full fixed ${
-            theme == "dark" ? "bg-white" : "bg-black"
-          }`}
-        >
-          {theme === "dark" ? (
-            <Image alt="info" src={info} />
-          ) : (
-            <Image alt="info" src={info_white} />
-          )}
-        </button>
-      ) : null}
-
-      {isNotDesktop ? (
-        <Drawer.Root>
-          <Drawer.Trigger asChild>
-            <button ref={drawerButton}></button>
-          </Drawer.Trigger>
-          <Drawer.Portal>
-            <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-            <Drawer.Content className="bg-zinc-100 flex flex-col rounded-t-[10px] h-[96%] mt-24 fixed bottom-0 left-0 right-0">
-              <div className=" bg-white rounded-t-[10px] flex-1">
-                <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
-                <div className="max-w-md mx-auto">
-                  <Instructions />
-                </div>
+              <div className="flex justify-end p-3">
+                <button
+                  onClick={() =>
+                    setShowInstructions(
+                      (setShowInstructions) => !setShowInstructions
+                    )
+                  }
+                  className="bg-gray-300 shadow-md p-3 w-fit rounded-full instructions-toggle"
+                >
+                  <Image
+                    src={double_arrow_left}
+                    alt="double_arrow_left"
+                    className="arrow-img"
+                  />
+                </button>
               </div>
-            </Drawer.Content>
-          </Drawer.Portal>
-        </Drawer.Root>
-      ) : null}
+              <Instructions />
+              <div className="absolute bottom-4 left-4">
+                <CountdownClock
+                  startTime={labInfo?.creation_date || ""}
+                  endLab={endLab}
+                />
+              </div>
+              <DialogTrigger className="w-full text-left">
+                <Button
+                  disabled={deleting}
+                  variant="destructive"
+                  className="absolute bottom-4 right-4 disabled:bg-red-900/90"
+                >
+                  {deleting ? "Ending Lab..." : "End Lab"}
+                </Button>
+              </DialogTrigger>
+            </Panel>
+          ) : null}
+          {showInstructions ? <ResizeHandle /> : null}
+          <Panel className="h-full" collapsible={true}>
+            {isLoading ? (
+              <div className="h-full flex justify-center items-center">
+                <MagicSpinner size={100} color="#686769" loading={isLoading} />
+              </div>
+            ) : null}
+            <div className="h-full">
+              <iframe
+                src={(labInfo && labInfo.url) || ""}
+                width="100%"
+                height="100%"
+                onLoad={handleLoad}
+              ></iframe>
+            </div>
+          </Panel>
+        </PanelGroup>
+        {isNotDesktop ? (
+          <button
+            onClick={handleClick}
+            className={` bottom-10 left-10 glassBorder p-5 rounded-full fixed ${
+              theme == "dark" ? "bg-white" : "bg-black"
+            }`}
+          >
+            {theme === "dark" ? (
+              <Image alt="info" src={info} />
+            ) : (
+              <Image alt="info" src={info_white} />
+            )}
+          </button>
+        ) : null}
 
-      {!showInstructions ? (
-        <button
-          onClick={() =>
-            setShowInstructions((setShowInstructions) => !setShowInstructions)
-          }
-          className="bg-gray-300 shadow-md p-3 w-fit rounded-full absolute instructions-toggle bottom-10 left-10 glassBorder rotate-180 "
-        >
-          <Image
-            src={double_arrow_left}
-            alt="double_arrow_left"
-            className="arrow-img"
-          />
-        </button>
-      ) : null}
-    </div>
+        {isNotDesktop ? (
+          <Drawer.Root>
+            <Drawer.Trigger asChild>
+              <button ref={drawerButton}></button>
+            </Drawer.Trigger>
+            <Drawer.Portal>
+              <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+              <Drawer.Content className="bg-zinc-100 flex flex-col rounded-t-[10px] h-[96%] mt-24 fixed bottom-0 left-0 right-0">
+                <div className=" bg-white rounded-t-[10px] flex-1">
+                  <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
+                  <div className="max-w-md mx-auto">
+                    <Instructions />
+                  </div>
+                </div>
+              </Drawer.Content>
+            </Drawer.Portal>
+          </Drawer.Root>
+        ) : null}
+
+        {!showInstructions ? (
+          <button
+            onClick={() =>
+              setShowInstructions((setShowInstructions) => !setShowInstructions)
+            }
+            className="bg-gray-300 shadow-md p-3 w-fit rounded-full absolute instructions-toggle bottom-10 left-10 glassBorder rotate-180 "
+          >
+            <Image
+              src={double_arrow_left}
+              alt="double_arrow_left"
+              className="arrow-img"
+            />
+          </button>
+        ) : null}
+      </div>
+      <DeleteConfirmation
+        lab={labInfo}
+        text="Do you want to delete this lab"
+        noText="No, resume lab"
+        confirmText="Yes, Delete this lab"
+        confirmFunc={() => endLab()}
+      />
+    </Dialog>
   );
 };
 
@@ -247,6 +257,8 @@ import { PanelResizeHandle } from "react-resizable-panels";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { CountdownClock } from "@/components/Labs/countdown";
+import { DialogTrigger } from "@/components/ui/dialog";
+import DeleteConfirmation from "@/app/components/delete-confirmation";
 
 function ResizeHandle({ id }: { id?: string }) {
   return (
