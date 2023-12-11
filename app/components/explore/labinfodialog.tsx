@@ -18,15 +18,10 @@ import { createPortal } from "react-dom";
 import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
 
-interface ILabInfo {
-  message: string;
-  status: number;
-  ingress_url: string;
-  lab_id: number;
-  image_id: number;
-}
 
 const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
+  console.log("lab", lab);
+
   const { data: session } = useSession();
   const [progress, setProgress] = useState(0);
   const [disabled, setDisabled] = useState(false);
@@ -90,23 +85,31 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
           variant: "destructive",
           description: "Lab timed out",
         });
-       
       }
       console.log("response.data", response);
-      
+
       if (response.data.status === 200 || response.data.status === 201) {
         delayPush(response.data);
       }
     } catch (error) {
-      userCheck(error as AxiosError)
+      userCheck(error as AxiosError);
       console.error("error", error);
+      if (axios.isCancel(error)) {
+        toast({
+          title: "Lab Creation Stopped",
+          variant: "destructive",
+          description: "Deleting all created resources",
+        });
+      } else {
+        // Handle other errors
+      }
       setDisabled(false);
       setProgress(0);
     }
   };
   const delayPush = (data: any, resumed: boolean | null = null) => {
     console.log("data", data);
-    
+
     setSecondaryAction(null);
     const timer = setInterval(() => setProgress((prev) => prev + 10), 1000);
     setTimeout(() => {
@@ -115,7 +118,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
         JSON.stringify({
           id: data.image_id,
           url: data.ingress_url,
-          creation_date: data.creation_date
+          creation_date: data.creation_date,
         })
       );
       toast({
@@ -170,7 +173,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
         });
       }
     } catch (error) {
-      userCheck(error as AxiosError)
+      userCheck(error as AxiosError);
       setSecondaryAction(
         "A lab of this instance already exists, you can delete the lab and create a new one or jump back into it."
       );
@@ -188,10 +191,44 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     setSecondaryAction(null);
   }, [lab]);
 
+  const handleOnClickOutside = (e: ContentProps["onPointerDownOutside"]) => {
+    e.preventDefault();
+
+    toast({
+      variant: "destructive",
+      title: `Click on the "x" to cancel the lab creation.`,
+    });
+  };
+
+  const handleOnEsc = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    console.log("e ==>", e);
+
+    toast({
+      variant: "destructive",
+      title: `Click on the buttont to cancen the lab creation...`,
+    });
+  };
+
+  const cancelLab = () => {
+    document.getElementById("closeDialog")?.click();
+
+    toast({
+      variant: "destructive",
+      title: `Lab creation stopped`,
+    });
+    //@ts-ignore
+    deleteLab(lab?.id);
+
+  };
   return (
     <div>
       {lab ? (
-        <DialogContent>
+        <DialogContent
+          onClickOutside={(e) => handleOnClickOutside(e)}
+          onEsc={(e) => handleOnEsc(e)}
+          noClose={true}
+        >
           <DialogHeader>
             <DialogTitle>{lab.name}</DialogTitle>
             <DialogDescription>
@@ -208,7 +245,16 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
               <br />
 
               {disabled ? (
-                <Progress value={progress} className="mt-10 h-2" />
+                <>
+                  <Progress value={progress} className="mt-10 h-2" />
+                  <Button
+                    onClick={() => cancelLab()}
+                    className="mt-6 block py-2 px-4 rounded-md w-full"
+                    variant="destructive"
+                  >
+                    Cancel Lab Creation
+                  </Button>
+                </>
               ) : (
                 !secondaryAction && (
                   <Button
