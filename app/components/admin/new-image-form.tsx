@@ -42,6 +42,8 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
   const portNumberRef = useRef<HTMLInputElement>(null);
   const durationRef = useRef<HTMLInputElement>(null);
   const commandRef = useRef<HTMLInputElement>(null);
+  const argumentsRef = useRef<HTMLInputElement>(null);
+  
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const imagePictureRef = useRef<HTMLInputElement>(null);
   const [updateImage, setUpdateImage] = useState(false);
@@ -69,6 +71,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
     }),
     duration: z.coerce.number().int().optional(),
     command: z.string().optional(),
+    arguments: z.string().optional(),
     description: z.string().min(3, {
       message: "Description has to be 3 characters or more",
     }),
@@ -87,6 +90,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
       difficulty_level: difficultyLevel,
       duration: durationRef.current?.value,
       command: commandRef.current?.value,
+      arguments: argumentsRef.current?.value,
       description: descriptionRef.current?.value,
     };
 
@@ -100,6 +104,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
     formData.append("duration", durationRef.current?.value || "");
     formData.append("description", descriptionRef.current?.value || "");
     formData.append("command", commandRef.current?.value || "");
+    formData.append("arguments", argumentsRef.current?.value || "");
 
     // Append the image file to the FormData object
     if (imagePictureRef.current && imagePictureRef.current!.files) {
@@ -351,6 +356,28 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                       ref={commandRef}
                       defaultValue={imageDetails?.command}
                       placeholder="Command"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="my-6">
+            <FormField
+              control={form.control}
+              name="arguments"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Arguments</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="glassBorder"
+                      {...field}
+                      ref={argumentsRef}
+                      defaultValue={imageDetails?.arguments}
+                      placeholder="Arguments"
                     />
                   </FormControl>
                   <FormMessage />
