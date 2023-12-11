@@ -22,7 +22,8 @@ interface ILabImage {
   prerequisites: string;
   port_number: number;
   image_picture: string
-  command: string
+  command: string;
+  arguments: string
 }
 
 interface ILabInfoDialog {
@@ -40,4 +41,19 @@ interface ILabList {
   comments: string;
   image: integer;
   user: string;
+}
+
+
+type ContentProps = React.ComponentProps<typeof SomeContentPrimitive>
+type Props = {
+  onPointerDownOutside: ContentProps['onPointerDownOutside']
+}
+
+
+interface ILabInfo {
+  message: string;
+  status: number;
+  ingress_url: string;
+  lab_id: number;
+  image_id: number;
 }
