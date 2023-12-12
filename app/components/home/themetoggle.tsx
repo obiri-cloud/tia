@@ -11,7 +11,7 @@ const ThemeToggle = () => {
 
   return (
     <button
-      className={` bottom-10 right-10 glassBorder p-5 rounded-full ${
+      className={` bottom-10 right-10 glassBorder p-5 rounded-full z-[100] ${
         theme == "dark" ? "bg-white" : "bg-black"
       } fixed`}
       onClick={() => (theme == "dark" ? setTheme("light") : setTheme("dark"))}
