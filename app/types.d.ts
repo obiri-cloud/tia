@@ -23,7 +23,17 @@ interface ILabImage {
   port_number: number;
   image_picture: string
   command: string;
-  arguments: string
+  arguments: string;
+  readiness_probe_initial_delay_seconds?: number;
+  readiness_probe_period_seconds?: number;
+  readiness_probe_timeout_seconds?: number;
+  readiness_probe_success_threshold?: number;
+  readiness_probe_failure_threshold?: number;
+  liveness_probe_initial_delay_seconds?: number;
+  liveness_probe_period_seconds?: number;
+  liveness_probe_timeout_seconds?: number;
+  liveness_probe_success_threshold?: number;
+  liveness_probe_failure_threshold?: number;
 }
 
 interface ILabInfoDialog {
