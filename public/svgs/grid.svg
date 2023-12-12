@@ -1,0 +1,31 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_22_60" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
+<rect width="1920" height="1080" fill="url(#paint0_radial_22_60)"/>
+</mask>
+<g mask="url(#mask0_22_60)">
+<line x1="68.5" y1="1080" x2="68.5" y2="-0.00378418" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="230.5" y1="1080" x2="230.5" y2="-0.00378418" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="392.5" y1="1080" x2="392.5" y2="-0.00378418" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="554.5" y1="1080" x2="554.5" y2="-0.00378418" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="716.5" y1="1080" x2="716.5" y2="-0.00378418" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="878.5" y1="1080" x2="878.5" y2="-0.00378418" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="1040.5" y1="1080" x2="1040.5" y2="-0.00378418" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="1202.5" y1="1080" x2="1202.5" y2="-0.00378418" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="1364.5" y1="1080" x2="1364.5" y2="-0.00378418" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="1526.5" y1="1080" x2="1526.5" y2="-0.00378418" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="1688.5" y1="1080" x2="1688.5" y2="-0.00378418" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="1850.5" y1="1080" x2="1850.5" y2="-0.00378418" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="0.000122092" y1="134.5" x2="1920" y2="134.5" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="0.000122092" y1="296.5" x2="1920" y2="296.5" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="0.000122092" y1="458.5" x2="1920" y2="458.5" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="0.000244162" y1="620.5" x2="1920" y2="620.5" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="0.000244162" y1="782.5" x2="1920" y2="782.5" stroke="#646464" stroke-opacity="0.75"/>
+<line x1="0.000183127" y1="944.5" x2="1920" y2="944.5" stroke="#646464" stroke-opacity="0.75"/>
+</g>
+<defs>
+<radialGradient id="paint0_radial_22_60" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 231) rotate(90) scale(601 1068.44)">
+<stop stop-color="#090B11"/>
+<stop offset="1" stop-color="#090B11" stop-opacity="0"/>
+</radialGradient>
+</defs>
+</svg>
