@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Hero = () => {
   return (
-    <section className="glassBorder">
+    <section id="hero" className="glassBorder">
       <div className="h-screen container flex flex-col justify-center items-center dark:text-white text-black ">
         <div className="w-full flex flex-col justify-center lg:px-8">
           <h1 className="lg:text-[clamp(5rem,calc(2.73214rem_+_3.28571vw),2.875rem)] md:text-[clamp(4.5rem,calc(2.73214rem_+_3.28571vw),2.875rem)]  text-[clamp(1rem,calc(1.73214rem_+_3.28571vw),2.875rem)] dark:text-white text-black text-center w-full mb-8 lg:leading-[110px] md:leading-[70px] leading-[50px] tracking-[-2px]  font-extrabold uppercase ">
