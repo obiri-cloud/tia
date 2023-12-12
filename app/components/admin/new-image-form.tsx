@@ -43,7 +43,19 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
   const durationRef = useRef<HTMLInputElement>(null);
   const commandRef = useRef<HTMLInputElement>(null);
   const argumentsRef = useRef<HTMLInputElement>(null);
-  
+
+  const readinessProbeInitialDelaySecondsRef = useRef<HTMLInputElement>(null);
+  const readinessProbePeriodSecondsRef = useRef<HTMLInputElement>(null);
+  const readinessProbeTimeoutSecondsRef = useRef<HTMLInputElement>(null);
+  const readinessProbeSuccessThresholdRef = useRef<HTMLInputElement>(null);
+  const readinessProbeFailureThresholdRef = useRef<HTMLInputElement>(null);
+  const livenessProbeInitialDelaySecondsRef = useRef<HTMLInputElement>(null);
+  const livenessProbePeriodSecondsRef = useRef<HTMLInputElement>(null);
+  const livenessProbeTimeoutSecondsRef = useRef<HTMLInputElement>(null);
+  const livenessProbeSuccessThresholdRef = useRef<HTMLInputElement>(null);
+  const livenessProbeFailureThresholdRef = useRef<HTMLInputElement>(null);
+
+
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const imagePictureRef = useRef<HTMLInputElement>(null);
   const [updateImage, setUpdateImage] = useState(false);
@@ -72,6 +84,19 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
     duration: z.coerce.number().int().optional(),
     command: z.string().optional(),
     arguments: z.string().optional(),
+
+    readiness_probe_initial_delay_seconds: z.string().optional(),
+    readiness_probe_period_seconds: z.string().optional(),
+    readiness_probe_timeout_seconds: z.string().optional(),
+    readiness_probe_success_threshold: z.string().optional(),
+    readiness_probe_failure_threshold: z.string().optional(),
+    liveness_probe_initial_delay_seconds: z.string().optional(),
+    liveness_probe_period_seconds: z.string().optional(),
+    liveness_probe_timeout_seconds: z.string().optional(),
+
+    liveness_probe_success_threshold: z.string().optional(),
+    liveness_probe_failure_threshold: z.string().optional(),
+
     description: z.string().min(3, {
       message: "Description has to be 3 characters or more",
     }),
@@ -106,6 +131,59 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
     formData.append("command", commandRef.current?.value || "");
     formData.append("arguments", argumentsRef.current?.value || "");
 
+    if(imageDetails){
+      formData.append(
+        "readiness_probe_initial_delay_seconds",
+        readinessProbeInitialDelaySecondsRef.current?.value || ""
+      );
+      
+      formData.append(
+        "readiness_probe_period_seconds",
+        readinessProbePeriodSecondsRef.current?.value || ""
+      );
+      
+      formData.append(
+        "readiness_probe_timeout_seconds",
+        readinessProbeTimeoutSecondsRef.current?.value || ""
+      );
+      
+      formData.append(
+        "readiness_probe_success_threshold",
+        readinessProbeSuccessThresholdRef.current?.value || ""
+      );
+      
+      formData.append(
+        "readiness_probe_failure_threshold",
+        readinessProbeFailureThresholdRef.current?.value || ""
+      );
+      
+      formData.append(
+        "liveness_probe_initial_delay_seconds",
+        livenessProbeInitialDelaySecondsRef.current?.value || ""
+      );
+      
+      formData.append(
+        "liveness_probe_period_seconds",
+        livenessProbePeriodSecondsRef.current?.value || ""
+      );
+      
+      formData.append(
+        "liveness_probe_timeout_seconds",
+        livenessProbeTimeoutSecondsRef.current?.value || ""
+      );
+      
+      formData.append(
+        "liveness_probe_success_threshold",
+        livenessProbeSuccessThresholdRef.current?.value || ""
+      );
+      
+      formData.append(
+        "liveness_probe_failure_threshold",
+        livenessProbeFailureThresholdRef.current?.value || ""
+      );
+    }
+
+
     // Append the image file to the FormData object
     if (imagePictureRef.current && imagePictureRef.current!.files) {
       formData.append("image_picture", imagePictureRef.current!.files[0]);
@@ -120,7 +198,6 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
       },
       data: formData,
     };
-
 
     if (imageDetails) {
       axiosConfig.method = "PUT";
@@ -191,7 +268,9 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name <sup className="text-red-600">*</sup></FormLabel>
+                <FormLabel>
+                  Name <sup className="text-red-600">*</sup>
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Name"
@@ -213,7 +292,9 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
               name="docker_image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Docker Image <sup className="text-red-600">*</sup></FormLabel>
+                  <FormLabel>
+                    Docker Image <sup className="text-red-600">*</sup>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Docker Image"
@@ -236,7 +317,9 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
               name="port_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Port Number <sup className="text-red-600">*</sup></FormLabel>
+                  <FormLabel>
+                    Port Number <sup className="text-red-600">*</sup>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Port Number"
@@ -256,7 +339,9 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
               name="duration"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Duration <sup className="text-red-600">*</sup></FormLabel>
+                  <FormLabel>
+                    Duration <sup className="text-red-600">*</sup>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       min={1}
@@ -278,7 +363,9 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
             name="difficulty_level"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Difficulty Level <sup className="text-red-600">*</sup></FormLabel>
+                <FormLabel>
+                  Difficulty Level <sup className="text-red-600">*</sup>
+                </FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={(dl) => setDifficultyLevel(dl)}
@@ -407,6 +494,239 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
               )}
             />
           </div>
+
+          {imageDetails ? (
+            <>
+              <p className="text-sm text-gray-600 mb-6 font-bold text-center">Probe Settings</p>
+              <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mb-6">
+                <FormField
+                  control={form.control}
+                  name="readiness_probe_initial_delay_seconds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Readiness Probe Initial Delay Seconds
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Readiness Probe Initial Delay Seconds"
+                          type="number"
+                          {...field}
+                          className="glassBorder"
+                          ref={readinessProbeInitialDelaySecondsRef}
+                          defaultValue={imageDetails?.readiness_probe_initial_delay_seconds}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="readiness_probe_period_seconds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Readiness Probe Period Seconds</FormLabel>
+                      <FormControl>
+                        <Input
+                          min={1}
+                          placeholder="Readiness Probe Period Seconds"
+                          type="number"
+                          {...field}
+                          className="glassBorder"
+                          ref={readinessProbePeriodSecondsRef}
+                          defaultValue={imageDetails?.readiness_probe_period_seconds}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mb-6">
+                <FormField
+                  control={form.control}
+                  name="readiness_probe_timeout_seconds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Readiness Probe Timeout Seconds</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Readiness Probe Timeout Seconds"
+                          type="number"
+                          {...field}
+                          className="glassBorder"
+                          ref={readinessProbeTimeoutSecondsRef}
+                          defaultValue={imageDetails?.readiness_probe_timeout_seconds}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="readiness_probe_success_threshold"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Readiness Probe Success Threshold</FormLabel>
+                      <FormControl>
+                        <Input
+                          min={1}
+                          placeholder="Readiness Probe Success Threshold"
+                          type="number"
+                          {...field}
+                          className="glassBorder"
+                          ref={readinessProbeSuccessThresholdRef}
+                          defaultValue={imageDetails?.readiness_probe_success_threshold}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+
+              <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mb-6">
+                <FormField
+                  control={form.control}
+                  name="readiness_probe_failure_threshold"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Readiness Probe Failure Threshold</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Readiness Probe Failure Threshold"
+                          type="number"
+                          {...field}
+                          className="glassBorder"
+                          ref={readinessProbeFailureThresholdRef}
+                          defaultValue={imageDetails?.readiness_probe_failure_threshold}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="liveness_probe_initial_delay_seconds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Liveness Probe Initial Delay Seconds</FormLabel>
+                      <FormControl>
+                        <Input
+                          min={1}
+                          placeholder="Liveness Probe Initial Delay Seconds"
+                          type="number"
+                          {...field}
+                          className="glassBorder"
+                          ref={livenessProbeInitialDelaySecondsRef}
+                          defaultValue={imageDetails?.liveness_probe_initial_delay_seconds}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+
+              <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mb-6">
+                <FormField
+                  control={form.control}
+                  name="liveness_probe_period_seconds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Liveness Probe Period Seconds</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Liveness Probe Period Seconds"
+                          type="number"
+                          {...field}
+                          className="glassBorder"
+                          ref={livenessProbePeriodSecondsRef}
+                          defaultValue={imageDetails?.liveness_probe_period_seconds}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="liveness_probe_timeout_seconds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Liveness Probe Timeout Seconds</FormLabel>
+                      <FormControl>
+                        <Input
+                          min={1}
+                          placeholder="Liveness Probe Timeout Seconds"
+                          type="number"
+                          {...field}
+                          className="glassBorder"
+                          ref={livenessProbeTimeoutSecondsRef}
+                          defaultValue={imageDetails?.liveness_probe_timeout_seconds}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+
+              <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mb-6">
+                <FormField
+                  control={form.control}
+                  name="liveness_probe_success_threshold"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Liveness Probe Success Threshold</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Liveness Probe Success Threshold"
+                          type="number"
+                          {...field}
+                          className="glassBorder"
+                          ref={livenessProbeSuccessThresholdRef}
+                          defaultValue={imageDetails?.liveness_probe_success_threshold}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="liveness_probe_failure_threshold"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Liveness Probe Failure Threshold</FormLabel>
+                      <FormControl>
+                        <Input
+                          min={1}
+                          placeholder="Liveness Probe Failure Threshold"
+                          type="number"
+                          {...field}
+                          className="glassBorder"
+                          ref={livenessProbeFailureThresholdRef}
+                          defaultValue={imageDetails?.liveness_probe_failure_threshold}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+
+
+            </>
+          ) : null}
           <Button
             ref={buttonRef}
             className="w-full disabled:bg-black-900/10 mt-6 dark:bg-white dark:text-black bg-black text-white "
