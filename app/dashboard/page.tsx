@@ -117,10 +117,10 @@ const UserPage = () => {
   return (
     <div
       className={`grid  ${
-        labs && labs.length === 0 ? "lg:grid-cols-1" : "lg:grid-cols-2"
+        labs && labs.length >= 1 ? "lg:grid-cols-2" : "lg:grid-cols-1"
       } grid-cols-1 h-screen`}
     >
-      {labs && labs.length > 1 ? (
+      {labs && labs.length >= 1 ? (
         <div className="p-5 lg:border-r border-b w-full flex items-center">
           <div className="w-full">
             <h1 className="text-[40px] font-bold text-center">
