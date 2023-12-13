@@ -19,19 +19,19 @@ import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
 
 const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
-  console.log("lab", lab);
-
   const { data: session } = useSession();
   const [progress, setProgress] = useState(0);
   const [disabled, setDisabled] = useState(false);
   const [labInfo, setLabInfo] = useState<ILabInfo>();
   const [secondaryAction, setSecondaryAction] = useState<string | null>(null);
+  const [noClose, toggleNoClose] = useState(false);
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
   const router = useRouter();
 
   const goToLab = async (id: number) => {
     setDisabled(true);
+    toggleNoClose(true);
 
     const timer = setInterval(() => setProgress((prev) => prev + 10), 1000);
     setTimeout(() => {
@@ -190,23 +190,30 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     setSecondaryAction(null);
   }, [lab]);
 
-  const handleOnClickOutside = (e: ContentProps["onPointerDownOutside"]) => {
+  const handleOnClickOutside = (
+    e: ContentProps["onPointerDownOutside"],
+    text: string
+  ) => {
     e.preventDefault();
 
     toast({
       variant: "destructive",
-      title: `Click on the "x" to cancel the lab creation.`,
+      title: text,
     });
   };
 
-  const handleOnEsc = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    e.preventDefault();
+  const handleOnEsc = (
+    e: React.KeyboardEvent<HTMLDivElement>,
+    text: string
+  ) => {
     console.log("e ==>", e);
-
-    toast({
-      variant: "destructive",
-      title: `Click on the buttont to cancen the lab creation...`,
-    });
+    if (e.key === "Escape") {
+      e.preventDefault();
+      toast({
+        variant: "destructive",
+        title: text,
+      });
+    }
   };
 
   const cancelLab = () => {
@@ -223,9 +230,20 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     <div>
       {lab ? (
         <DialogContent
-          onClickOutside={(e) => handleOnClickOutside(e)}
-          onEsc={(e) => handleOnEsc(e)}
-          // noClose={true}
+          onClickOutside={(e) =>
+            handleOnClickOutside(
+              e,
+              "You can't stop lab creation once you've initiated the request."
+            )
+          }
+          onEsc={(e) =>
+            noClose &&
+            handleOnEsc(
+              e,
+              "You can't stop lab creation once you've initiated the request."
+            )
+          }
+          noClose={noClose}
         >
           <DialogHeader>
             <DialogTitle>{lab.name}</DialogTitle>
@@ -247,16 +265,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
             </div>
 
             {disabled ? (
-              <>
-                <Progress value={progress} className="mt-10 h-2" />
-                <Button
-                  onClick={() => cancelLab()}
-                  className="mt-6 block py-2 px-4 rounded-md w-full"
-                  variant="destructive"
-                >
-                  Cancel Lab Creation
-                </Button>
-              </>
+              <Progress value={progress} className="mt-10 h-2" />
             ) : (
               !secondaryAction && (
                 <Button
