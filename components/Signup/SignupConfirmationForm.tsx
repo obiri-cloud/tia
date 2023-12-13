@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, FormEvent } from "react";
+import React, { useRef, FormEvent, useState } from "react";
 import {
   Form,
   FormControl,
@@ -25,6 +25,9 @@ const SignupConfirmationForm = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
 
+
+
+
   const searchParams = useSearchParams();
 
   const email = searchParams.get("email");
@@ -44,6 +47,7 @@ const SignupConfirmationForm = () => {
     e.preventDefault();
     if (buttonRef.current) {
       buttonRef.current.disabled = true;
+      buttonRef.current.textContent = "Confirming";
     }
 
     let formData = {
@@ -88,6 +92,8 @@ const SignupConfirmationForm = () => {
     } finally {
       if (buttonRef.current) {
         buttonRef.current.disabled = false;
+      buttonRef.current.textContent = "Confirm";
+
       }
     }
   };
