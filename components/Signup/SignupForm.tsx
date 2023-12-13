@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "@/components/ui/use-toast";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { FormEvent, useRef } from "react";
 
@@ -80,14 +80,16 @@ const SignupForm = () => {
           },
         }
       );
+      console.log("response.data", response.data);
+
       if (response.data.status === 201) {
         router.push(`/signup/confirmation?email=${emailRef.current!.value}`);
-      }else{
+      } else {
         toast({
           variant: "destructive",
-          title: "Login Error",
+          title: "Sign Up Error",
           description: response.data.message,
-        })
+        });
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -98,6 +100,13 @@ const SignupForm = () => {
             description: err.message,
           })
         );
+      } else if (error instanceof AxiosError) {
+        toast({
+          variant: "destructive",
+          title: "Sign Up Error",
+          //@ts-ignore
+          description: error.response.data.message,
+        });
       }
     } finally {
       if (buttonRef.current) {
@@ -143,7 +152,6 @@ const SignupForm = () => {
                     type="text"
                     {...field}
                     className="glassBorder"
-
                     ref={lastNameRef}
                   />
                 </FormControl>
@@ -184,7 +192,6 @@ const SignupForm = () => {
                     ref={passwordRef}
                     type="password"
                     className="glassBorder"
-
                     placeholder="Password"
                   />
                 </FormControl>
@@ -204,7 +211,6 @@ const SignupForm = () => {
                     ref={confirmPasswordRef}
                     type="password"
                     className="glassBorder"
-
                     placeholder="Confirm Password"
                   />
                 </FormControl>
