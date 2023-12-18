@@ -637,8 +637,8 @@ header ~ .Layout_content__PrPCk {
   border: 3px solid rgba(255, 255, 255, 0.07);
   cursor: pointer;
   display: flex;
-  padding: 8px 32px;
-  font-size: 18px;
+  padding: 2px 16px;
+  font-size: 16px;
   background: rgba(255, 255, 255, 0.07);
   transition: 150ms ease all;
   align-items: center;
@@ -665,47 +665,94 @@ header ~ .Layout_content__PrPCk {
   color: white;
   width: fit-content;
   display: flex;
-  padding: 4px 16px;
+  padding: 8px 16px;
   font-size: 14px;
   align-items: center;
   justify-content: center;
 }
 
 
-
-
-.prism-content h1 {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
+code{
+  font-family: 'JetBrains Mono', monospace !important;
 }
 
-.prism-content h2 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
+.jss51 {
+  font-size: 16px;
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  background-color: #0D1117;
 }
 
-.prism-content h3 {
-  font-size: 1.17rem;
-  font-weight: bold;
-  margin-bottom: 0.83rem;
+.jss52 {
+  padding-top: 96px;
+  padding-bottom: 96px;
+}
+.jss25 {
+  margin: auto;
+  max-width: 1372px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.jss53 {
+  justify-content: space-between;
+}
+.MuiGrid-container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  box-sizing: border-box;
 }
 
-.prism-content h4 {
-  font-size: 1rem;
-  font-weight: bold;
-  margin-bottom: 0.67rem;
+
+@media (min-width: 1200px) {
+  .MuiGrid-grid-xl-2 {
+    flex-grow: 0;
+    max-width: 16.666667%;
+    flex-basis: 16.666667%;
+  }
+}
+.MuiGrid-item {
+  margin: 0;
+  box-sizing: border-box;
 }
 
-.prism-content h5 {
-  font-size: 0.83rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
+.jss54 {
+  color: #FFFFFF;
+  display: block;
+  font-weight: 700;
+  margin-bottom: 24px;
 }
 
-.prism-content h6 {
-  font-size: 0.67rem;
-  font-weight: bold;
-  margin-bottom: 0.33rem;
+.jss54 {
+  color: #FFFFFF;
+  display: block;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.jss56 {
+  gap: 24px;
+  color: #FFFFFF;
+  margin: 0;
+  display: grid;
+  padding: 0;
+  grid-auto-flow: column;
+  justify-content: end;
+  list-style-type: none;
+  grid-auto-columns: min-content;
+}
+
+.jss57 {
+  font-size: 14px;
+  margin-top: 120px;
+  text-align: center;
+}
+
+.jss58 {
+  height: 2px;
+  opacity: 0.2;
+  background: linear-gradient(90deg, rgba(179, 191, 215, 0) 0%, #B3BFD7 16.67%, #B3BFD7 83.33%, rgba(179, 191, 215, 0) 100%);
+}
+
+.jss59 {
+  margin-top: 40px;
 }

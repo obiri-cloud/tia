@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import Hero from "./components/home/hero";
 import Courses from "./components/home/courses";
 import Stats from "./components/home/stats";
@@ -12,20 +12,29 @@ import ThemeToggle from "./components/home/themetoggle";
 import lab from "@/public/images/lab.png";
 import Image from "next/image";
 import azure from "@/public/svgs/azure.svg";
-import Prism from "prismjs";
-import "prismjs/themes/prism-okaidia.css";
 
-import "prismjs/components/prism-hcl";
-import "prismjs/components/prism-bash";
-import "prismjs/components/prism-markdown";
 import hljs from "highlight.js/lib/core";
 import javascript from "highlight.js/lib/languages/javascript";
 import yaml from "highlight.js/lib/languages/yaml";
+import bash from "highlight.js/lib/languages/bash";
+import dockerfile from "highlight.js/lib/languages/dockerfile";
+hljs.registerLanguage("dockerfile", dockerfile);
 hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("yaml", yaml);
+hljs.registerLanguage("bash", bash);
+
+interface ILandLab {
+  label: string;
+  value: string;
+  icon: ReactNode;
+  sm_icon: ReactNode;
+  file_name: string;
+  code: string;
+  language: string;
+}
 
 const Page = () => {
-  const code = `
+  const terraform_code = `
   terraform {
     required_providers {
       aws = {
@@ -102,14 +111,174 @@ spec:
         - containerPort: 80
   `;
 
-  const highlightedK8sCode = hljs.highlight(k8s_code, {
-    language: "yaml",
-  }).value;
+  const docker_code = `
+# Use the official Nginx base image
+FROM nginx
 
-  
+# Copy custom configuration file to the container
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# (Optional) Copy static content to the web server directory
+COPY /path/to/your/static/files /usr/share/nginx/html
+
+# Expose the port Nginx is listening on
+EXPOSE 80
+
+# Start Nginx when the container launches
+CMD ["nginx", "-g", "daemon off;"]
+  `;
+
+  const bash_code = `
+#!/bin/bash
+
+# A simple bash script
+
+# Define variables
+NAME="John"
+AGE=30
+
+# Print a greeting
+echo "Hello, $NAME! You are $AGE years old."
+
+# Check if the user is old enough
+if [ $AGE -ge 18 ]; then
+  echo "You are old enough to vote."
+else
+  echo "You are not old enough to vote yet."
+fi
+
+# List files in the current directory
+echo "Listing files in the current directory:"
+ls -l
+  `;
+
+  const ansible_code = `
+- name: Install and Configure Nginx
+  hosts: your_server
+  become: yes  # Allows privilege escalation
+
+  tasks:
+    - name: Update apt package manager cache (for Debian-based systems)
+      apt:
+        update_cache: yes
+      when: ansible_os_family == 'Debian'  # Conditional task for Debian-based systems
+
+    - name: Install Nginx
+      package:
+        name: nginx
+        state: present  # Ensure the package is present
+
+    - name: Copy Nginx configuration file
+      copy:
+        src: /path/to/your/local/nginx.conf  # Path to your local nginx.conf
+        dest: /etc/nginx/nginx.conf  # Destination on the remote server
+      notify: Restart Nginx  # Notify the handler to restart Nginx if the file changes
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted  # Restart the Nginx service
+  `;
+
+  const argocd_code = `
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sample-app
+  namespace: argocd  # Replace with your target namespace
+spec:
+  destination:
+    server: 'https://kubernetes.default.svc'  # Replace with your Kubernetes API server address
+    namespace: default  # Replace with your target namespace
+  project: default
+  source:
+    repoURL: 'https://github.com/your-username/your-repo.git'  # Replace with your Git repository URL
+    targetRevision: HEAD  # Replace with the branch, tag, or commit ID you want to deploy
+    path: /path/to/your/app  # Replace with the path within the repo where your app manifests are located
+    helm:
+      valueFiles:
+        - values.yaml  # Add any specific Helm values files if needed
+  syncPolicy:
+    automated:
+      prune: true  # Enable automatic pruning of resources not defined in Git
+      selfHeal: true  # Enable automatic self-healing of resources
+
+
+  `;
+
+  const [highlightedCode, setHighlightedCode] = useState(
+    hljs.highlight(k8s_code, {
+      language: "yaml",
+    }).value
+  );
+
+  const labs: ILandLab[] = [
+    {
+      label: "Terraform",
+      value: "terraform",
+      icon: <i className="devicon-terraform-plain  colored text-[40px]"></i>,
+      sm_icon: <i className="devicon-terraform-plain  colored text-[20px]"></i>,
+      file_name: "main.tf",
+      code: terraform_code,
+      language: "yaml",
+    },
+    {
+      label: "K8s",
+      value: "k8s",
+      icon: <i className="devicon-kubernetes-plain colored text-[40px]"></i>,
+      sm_icon: <i className="devicon-kubernetes-plain colored text-[20px]"></i>,
+      file_name: "deployment.yaml",
+      code: k8s_code,
+      language: "yaml",
+    },
+    {
+      label: "Dockerfile",
+      value: "dockerfile",
+      icon: (
+        <i className="devicon-docker-plain-wordmark colored text-[40px]"></i>
+      ),
+      sm_icon: (
+        <i className="devicon-docker-plain-wordmark colored text-[20px]"></i>
+      ),
+      file_name: "Dockerfile",
+      code: docker_code,
+      language: "dockerfile",
+    },
+    {
+      label: "Bash Scripting",
+      value: "bash",
+      icon: <i className="devicon-bash-plain  dark:colored text-[40px]"></i>,
+      sm_icon: <i className="devicon-bash-plain  dark:colored text-[20px]"></i>,
+      file_name: "install.sh",
+      code: bash_code,
+      language: "bash",
+    },
+    {
+      label: "Ansible",
+      value: "ansible",
+      icon: <i className="devicon-ansible-plain dark:colored text-[40px]"></i>,
+      sm_icon: (
+        <i className="devicon-ansible-plain dark:colored text-[20px]"></i>
+      ),
+      file_name: "playbook.yaml",
+      code: ansible_code,
+      language: "yaml",
+    },
+    {
+      label: "ArgoCD",
+      value: "argo-cd",
+      icon: <i className="devicon-argocd-plain colored text-[40px]"></i>,
+      sm_icon: <i className="devicon-argocd-plain colored text-[20px]"></i>,
+      file_name: "playbook.yaml",
+      code: argocd_code,
+      language: "yaml",
+    },
+  ];
 
   const elementRef = useRef(null);
   const [isInView, setIsInView] = useState(false);
+  const [currentLab, setCurrentLab] = useState(labs[0]);
 
   const isInViewport = (element: HTMLElement) => {
     const rect = element.getBoundingClientRect();
@@ -160,37 +329,15 @@ spec:
     },
   ];
 
-  const labs = [
-    {
-      label: "Terraform",
-      value: "terraform",
-      icon: <i className="devicon-terraform-plain  colored text-[40px]"></i>,
-    },
-    {
-      label: "K8s",
-      value: "k8s",
-      icon: <i className="devicon-kubernetes-plain colored text-[40px]"></i>,
-    },
-    {
-      label: "ArgoCD",
-      value: "argo-cd",
-      icon: <i className="devicon-argocd-plain colored text-[40px]"></i>,
-    },
-    {
-      label: "Bash Scripting",
-      value: "bash",
-      icon: <i className="devicon-bash-plain  dark:colored text-[40px]"></i>,
-    },
-    {
-      label: "Ansible",
-      value: "ansible",
-      icon: <i className="devicon-ansible-plain dark:colored text-[40px]"></i>,
-    },
-  ];
+  const handleLabClick = (data: ILandLab) => {
+    setCurrentLab(data);
+    setHighlightedCode(
+      hljs.highlight(data.code, {
+        language: data.language,
+      }).value
+    );
+  };
 
-  useEffect(() => {
-    setTimeout(() => Prism.highlightAll(), 0);
-  }, []);
   return (
     <div className="relative font-sans flex flex-col w-full leading-[1.53em]">
       <div className="header-sticky-wrapper ">
@@ -326,18 +473,21 @@ spec:
 
         <div className="">
           <h1 className="jss26 jss130 max-w-[950px]">
-            Provision anything and everything with Terraform-defined workspaces
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit.  Rem cum pariatur dolor deleniti eius!
           </h1>
           <p className="jss131 text-[#AFB3B8] text-lg">
-            Write normal Terraform that runs our startup script on provisioned
-            compute. A development environment may consist of any Terraform
-            resource, including virtual machines, containers, Kubernetes pods,
-            or non-computing resources like secrets and databases.
+            Alias, ab necessitatibus laborum nihil, accusamus a saepe
+            reprehenderit perferendis eos ipsam voluptates id. Officiis,
+            laudantium? Rem cum pariatur dolor deleniti eius!
           </p>
           <div className="container grid gap-4 grid-cols-2">
             <div className="grid grid-cols-1 gap-4">
-              {labs.map((lab, i) => (
-                <div key={i} className="jss135 ">
+              {labs.map((lab: ILandLab, i: number) => (
+                <div
+                  onClick={() => handleLabClick(lab)}
+                  key={i}
+                  className="jss135 cursor-pointer"
+                >
                   {lab.icon}
                   {lab.label}
                 </div>
@@ -345,13 +495,15 @@ spec:
             </div>
             <div className="jss137">
               <div className="jss138">
-                <div className="jss139">main.tf</div>
+                <div className="jss139">
+                  <div className="w-[20px] h-[20px]">{currentLab.sm_icon}</div>
+                  {currentLab.file_name}
+                </div>
               </div>
-              <div className="overflow-scroll px-2">
-              
-                <pre className="px-2">
+              <div className="overflow-scroll">
+                <pre className="text-[17px] ">
                   <code
-                    dangerouslySetInnerHTML={{ __html: highlightedK8sCode }}
+                    dangerouslySetInnerHTML={{ __html: highlightedCode }}
                   ></code>
                 </pre>
               </div>
@@ -378,6 +530,53 @@ spec:
           </div>
         </div>
       </main>
+      <footer className="jss51">
+  <div className="jss25 jss52">
+    <div className="MuiGrid-root jss53 MuiGrid-container">
+      <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xl-2">
+        <span className="jss54">Information</span>
+        <ul className="font-light">
+          <li className="mb-2"><a href="/pricing">Pricing</a></li>
+          <li className="mb-2"><a href="/blog">Blog</a></li>
+        </ul>
+      </div>
+      <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xl-2">
+        <span className="jss54">Company</span>
+        <ul className="font-light">
+          <li className="mb-2"><a href="/contact">Contact us</a></li>
+          <li className="mb-2"><a href="/demo">Request demo</a></li>
+        </ul>
+      </div>
+      <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xl-2">
+        <span className="jss54">Legal</span>
+        <ul className="font-light">
+          <li className="mb-2"><a href="/legal/terms-of-service">Terms of service</a></li>
+          <li className="mb-2"><a href="/legal/privacy-policy">Privacy policy</a></li>
+
+        </ul>
+      </div>
+      <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xl-3">
+        {/* <ul className="jss56">
+          <li>
+            <a
+             href="#"
+              >
+                <img src={linkedin}/>
+              </a>
+          </li>
+      
+        </ul> */}
+      </div>
+    </div>
+    <div className="jss57">
+      <div className="jss58"></div>
+      <div className="jss59">
+        © 2024 TIA Cloud. All rights reserved.
+      </div>
+    </div>
+  </div>
+</footer>
+
       {/* <Hero />
       <Courses />
       <Provisioning />
