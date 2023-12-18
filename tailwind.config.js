@@ -52,7 +52,11 @@ module.exports = {
         },
         appYellow: "#ffc300",
         appBlue: "#1d4ed8",
-        darkGlass: "#ffffff0d"
+        darkGlass: "#ffffff0d",
+        pink:{
+          200: 'hsl(270, 45%, 24%)',
+          500: 'hsl(270, 60%, 52%)'
+        }
       },
       backgroundImage: {
         darkGlass:
