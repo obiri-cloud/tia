@@ -44,7 +44,6 @@ const Navbar = () => {
           href="https://blog.railway.app"
           target="_blank"
           rel="noreferrer"
-          name="Blog Nav"
           className="font-semibold text-sm text-gray-500 rounded-sm hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-700 nav-link-blog"
         >
           Blog
@@ -53,7 +52,6 @@ const Navbar = () => {
           href="https://docs.railway.app"
           target="_blank"
           rel="noreferrer"
-          name="Docs Nav"
           className="font-semibold text-sm text-gray-500 rounded-sm hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-700 nav-link-docs"
         >
           Docs
@@ -86,7 +84,6 @@ const Navbar = () => {
           Pricing
         </a>
         <button
-          as="button"
           className="font-semibold text-sm text-gray-500 rounded-sm hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-700 nav-link-login"
         >
           Login
