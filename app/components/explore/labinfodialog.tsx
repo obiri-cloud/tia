@@ -70,6 +70,8 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
           response.data.lab_id &&
           response.data.image_id
         ) {
+    toggleNoClose(false)
+
           setSecondaryAction(
             "A lab of this instance already exists, you can delete the lab and create a new one or jump back into it."
           );
@@ -226,6 +228,12 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     //@ts-ignore
     deleteLab(lab?.id);
   };
+
+  const deleteActiveLab = ()=>{
+    deleteLab(labInfo!.image_id)
+    document.getElementById("closeDialog")?.click();
+
+  }
   return (
     <div>
       {lab ? (
@@ -243,7 +251,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
               "You can't stop lab creation once you've initiated the request."
             )
           }
-          noClose={noClose}
+          noClose={false}
         >
           <DialogHeader>
             <DialogTitle>{lab.name}</DialogTitle>
@@ -285,7 +293,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
                 </span>
                 <div className="grid grid-cols-2 gap-4">
                   <Button
-                    onClick={() => deleteLab(labInfo!.image_id)}
+                    onClick={deleteActiveLab}
                     className="mt-6 block py-2 px-4 rounded-md"
                     variant="destructive"
                   >
