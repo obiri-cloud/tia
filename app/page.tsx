@@ -12,7 +12,6 @@ import ThemeToggle from "./components/home/themetoggle";
 import lab from "@/public/images/lab.png";
 import Image from "next/image";
 import azure from "@/public/svgs/azure.svg";
-import PrismComponent from "./components/PrismaComponent";
 import Prism from "prismjs";
 import "prismjs/themes/prism-okaidia.css";
 
