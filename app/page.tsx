@@ -347,14 +347,14 @@ spec:
             <a
               className="header-link login-link"
               target="_blank"
-              href="https://app.hyperping.io/login"
+              href="/login"
             >
               Log in
             </a>
             <a
               className="header-link signup-link text-pink-500"
               target="_blank"
-              href="https://app.hyperping.io/register"
+              href="/signup"
             >
               Sign up
             </a>
