@@ -486,7 +486,6 @@ const Trash = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-
 const ChevronRight = (props: SVGProps<SVGSVGElement>) => (
   <svg {...props} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
     <path
