@@ -1,8 +1,8 @@
 "use client";
 import { userCheck } from "@/lib/utils";
 import axios, { AxiosError } from "axios";
-import React, { useEffect, useState } from "react";
-import { ChevronRight } from "../page";
+import React, { SVGProps, useEffect, useState } from "react";
+
 import {
   Table,
   TableBody,
@@ -96,3 +96,16 @@ const ActiveLabsPage = () => {
 };
 
 export default ActiveLabsPage;
+
+
+const ChevronRight = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...props} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M12 25a1 1 0 0 1-.71-.29 1 1 0 0 1 0-1.42l7.3-7.29-7.3-7.29a1 1 0 1 1 1.42-1.42l8 8a1 1 0 0 1 0 1.42l-8 8A1 1 0 0 1 12 25Z"
+      data-name="Layer 2"
+      fill="#current"
+      className="fill-2c2d3c"
+    ></path>
+    <path d="M0 0h32v32H0z" fill="none"></path>
+  </svg>
+);
