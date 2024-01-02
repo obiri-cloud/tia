@@ -92,7 +92,7 @@ const Labs = () => {
                           <DialogTrigger onClick={() => setCurrentLab(image)}>
                             <Button className="font-medium" variant="link">View</Button>
                           </DialogTrigger>
-                          |<Button className="font-medium text-red-600" variant="link">Delete</Button>
+                          |<Button className="font-medium text-red-500" variant="link">Delete</Button>
                         </TableCell> */}
                           </TableRow>
                         ))

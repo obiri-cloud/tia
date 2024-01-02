@@ -132,7 +132,7 @@ const SignupForm = () => {
                     placeholder="First Name"
                     type="text"
                     {...field}
-                    className="glassBorder"
+                    className="glassBorder text-black"
                     ref={firstNameRef}
                   />
                 </FormControl>
@@ -151,7 +151,7 @@ const SignupForm = () => {
                     placeholder="Last Name"
                     type="text"
                     {...field}
-                    className="glassBorder"
+                    className="glassBorder text-black"
                     ref={lastNameRef}
                   />
                 </FormControl>
@@ -171,7 +171,7 @@ const SignupForm = () => {
                   placeholder="Email"
                   type="email"
                   {...field}
-                  className="glassBorder"
+                  className="glassBorder text-black"
                   ref={emailRef}
                 />
               </FormControl>
@@ -191,7 +191,7 @@ const SignupForm = () => {
                     {...field}
                     ref={passwordRef}
                     type="password"
-                    className="glassBorder"
+                    className="glassBorder text-black"
                     placeholder="Password"
                   />
                 </FormControl>
@@ -210,7 +210,7 @@ const SignupForm = () => {
                     {...field}
                     ref={confirmPasswordRef}
                     type="password"
-                    className="glassBorder"
+                    className="glassBorder text-black"
                     placeholder="Confirm Password"
                   />
                 </FormControl>
@@ -221,7 +221,7 @@ const SignupForm = () => {
         </div>
         <Button
           ref={buttonRef}
-          className="w-full disabled:bg-black-900/10 dark:bg-white dark:text-black bg-black text-white "
+          className="w-full disabled:bg-black-900/10 bg-pink-200 text-white "
           variant="black"
         >
           Sign up

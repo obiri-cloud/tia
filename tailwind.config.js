@@ -56,7 +56,25 @@ module.exports = {
         pink:{
           200: 'hsl(270, 45%, 24%)',
           500: 'hsl(270, 60%, 52%)'
-        }
+        },
+        menuHov: "rgb(38, 39, 54)",
+        menuHovWhite: "rgb(240, 243, 249)",
+        
+        dashboardText: "rgb(210, 211, 224)",
+        comboBg: "rgb(39, 41, 57)",
+        whiteDark: "rgb(40, 42, 48)",
+        whiteEdge: "rgb(239, 241, 244)",
+        dashboardDarkHeadText: "rgb(238, 239, 252)",
+        dashboardDarkSeparator: "rgb(44, 45, 60)",
+        dashboardDarkInput: "rgb(21, 22, 33)",
+        dashboardDarkInputBorder: "rgb(49, 50, 72)",
+        dashboardLightInputBorder: " rgb(223, 225, 228)",
+        cardDarkBg: "rgb(32, 33, 46)",
+        cardDarkBorder: "rgb(53, 56, 74)",
+        cardLightBorder: "rgb(239, 241, 244)"
+
+
+       
       },
       backgroundImage: {
         darkGlass:

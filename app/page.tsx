@@ -344,11 +344,7 @@ spec:
         <header className="header-sticky">
           <a href="/" className="header-logo"></a>
           <nav className="header-nav">
-            <a
-              className="header-link login-link"
-              target="_blank"
-              href="/login"
-            >
+            <a className="header-link login-link" target="_blank" href="/login">
               Log in
             </a>
             <a
@@ -473,7 +469,8 @@ spec:
 
         <div className="">
           <h1 className="jss26 jss130 max-w-[950px]">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit.  Rem cum pariatur dolor deleniti eius!
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rem cum
+            pariatur dolor deleniti eius!
           </h1>
           <p className="jss131 text-[#AFB3B8] text-lg">
             Alias, ab necessitatibus laborum nihil, accusamus a saepe
@@ -518,7 +515,7 @@ spec:
         ></div>
 
         <div className="LayoutContent_root__ZBUya">
-          <div className="sc-aebfa4d0-0 glNtfm">
+          <div className="sc-aebfa4d0-0 glNtfm pb-[60px]">
             <p className=" dJZbCQ block text-[120px]">∞</p>
             <div className="sc-aebfa4d0-0 jHMutq">
               <h2 className="sc-734624b2-0 sc-6bdb0090-0 sc-f69e4342-1 dJZbCQ exmcmE hwNsAr text-[70px] transform-none">
@@ -531,32 +528,43 @@ spec:
         </div>
       </main>
       <footer className="jss51">
-  <div className="jss25 jss52">
-    <div className="MuiGrid-root jss53 MuiGrid-container">
-      <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xl-2">
-        <span className="jss54">Information</span>
-        <ul className="font-light">
-          <li className="mb-2"><a href="/pricing">Pricing</a></li>
-          <li className="mb-2"><a href="/blog">Blog</a></li>
-        </ul>
-      </div>
-      <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xl-2">
-        <span className="jss54">Company</span>
-        <ul className="font-light">
-          <li className="mb-2"><a href="/contact">Contact us</a></li>
-          <li className="mb-2"><a href="/demo">Request demo</a></li>
-        </ul>
-      </div>
-      <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xl-2">
-        <span className="jss54">Legal</span>
-        <ul className="font-light">
-          <li className="mb-2"><a href="/legal/terms-of-service">Terms of service</a></li>
-          <li className="mb-2"><a href="/legal/privacy-policy">Privacy policy</a></li>
-
-        </ul>
-      </div>
-      <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xl-3">
-        {/* <ul className="jss56">
+        <div className="jss25 jss52">
+          <div className="MuiGrid-root jss53 MuiGrid-container">
+            <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xl-2">
+              <span className="jss54">Information</span>
+              <ul className="font-light">
+                <li className="mb-2">
+                  <a href="/pricing">Pricing</a>
+                </li>
+                <li className="mb-2">
+                  <a href="/blog">Blog</a>
+                </li>
+              </ul>
+            </div>
+            <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xl-2">
+              <span className="jss54">Company</span>
+              <ul className="font-light">
+                <li className="mb-2">
+                  <a href="/contact">Contact us</a>
+                </li>
+                <li className="mb-2">
+                  <a href="/demo">Request demo</a>
+                </li>
+              </ul>
+            </div>
+            <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xl-2">
+              <span className="jss54">Legal</span>
+              <ul className="font-light">
+                <li className="mb-2">
+                  <a href="/legal/terms-of-service">Terms of service</a>
+                </li>
+                <li className="mb-2">
+                  <a href="/legal/privacy-policy">Privacy policy</a>
+                </li>
+              </ul>
+            </div>
+            <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xl-3">
+              {/* <ul className="jss56">
           <li>
             <a
              href="#"
@@ -566,24 +574,14 @@ spec:
           </li>
       
         </ul> */}
-      </div>
-    </div>
-    <div className="jss57">
-      <div className="jss58"></div>
-      <div className="jss59">
-        © 2024 TIA Cloud. All rights reserved.
-      </div>
-    </div>
-  </div>
-</footer>
-
-      {/* <Hero />
-      <Courses />
-      <Provisioning />
-      <OtherStats />
-      <Footer />
-
-      <ThemeToggle /> */}
+            </div>
+          </div>
+          <div className="jss57">
+            <div className="jss58"></div>
+            <div className="jss59">© 2024 TIA Cloud. All rights reserved.</div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

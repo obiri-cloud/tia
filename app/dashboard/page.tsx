@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { SVGProps, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios, { AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,9 @@ import { useSession } from "next-auth/react";
 import secureLocalStorage from "react-secure-storage";
 import { MetroSpinner } from "react-spinners-kit";
 import { userCheck } from "@/lib/utils";
+import { useDispatch } from "react-redux";
+import { setCurrentImage } from "@/redux/reducers/userSlice";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ILabListItem {
   id: number;
@@ -21,11 +24,40 @@ interface ILabListItem {
 const UserPage = () => {
   const [labs, setLabs] = useState<ILabListItem[]>();
   const [disabled, setDisabled] = useState(false);
+  const { data: session } = useSession();
+  const dispatch = useDispatch();
 
   const router = useRouter();
-  const { data: session } = useSession();
+
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
+
+  const [images, setImages] = useState<ILabImage[]>();
+
+  useEffect(() => {
+    getImages();
+  }, []);
+
+  const getImages = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/user/image/list/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("response.data.results", response.data.results);
+
+      setImages(response.data.results);
+    } catch (error) {
+      userCheck(error as AxiosError);
+    }
+  };
 
   useEffect(() => {
     getActiveLabs();
@@ -114,61 +146,114 @@ const UserPage = () => {
     }
   };
 
+  const viewImage = (image: ILabImage) => {
+    dispatch(setCurrentImage(image));
+    router.push(`/dashboard/images?image=${image.id}`);
+  };
+
   return (
-    <div
-      className={`grid  ${
-        labs && labs.length >= 1 ? "lg:grid-cols-2" : "lg:grid-cols-1"
-      } grid-cols-1 h-screen`}
-    >
-      {labs && labs.length >= 1 ? (
-        <div className="p-5 lg:border-r border-b w-full flex items-center">
-          <div className="w-full">
-            <h1 className="text-[40px] font-bold text-center">
-              Jump back in your live labs:
-            </h1>
-            <ul>
-              {labs &&
-                labs.map((lab, i) => (
-                  <li className="active-lab-button flex gap-4  mb-5 " key={i}>
-                    <Button
-                      onClick={() => resumeLab(lab)}
-                      className="w-full transparent bg-black text-white  text-left border block glassBorder rounded-lg "
-                    >
-                      {lab.name}
-                    </Button>
-                    <Button
-                      disabled={disabled}
-                      onClick={() => deleteLab(lab.image)}
-                      variant="destructive"
-                      className=" delete-button h-auto disabled:bg-red-900/10"
-                    >
-                      {disabled ? (
-                        <MetroSpinner size={20} color="#fff" loading={true} />
-                      ) : (
-                        <span>Delete</span>
-                      )}
-                    </Button>
-                  </li>
-                ))}
-            </ul>
-            {labs && labs.length === 0 ? (
-              <div className="w-full flex justify-center mt-4 items-center">
-                <p className="text-gray-600">No active labs found...</p>
+    <div className="">
+      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex gap-2 p-2">
+        <span className="p-2 ">All Images</span>
+        <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+      </div>
+      <div className="p-4">
+        <div className="grid grid-cols-3 gap-3 keyfeatures">
+          {images && images.length >= -1 ? (
+            images.map((image, i) => (
+              <div
+                onClick={() => viewImage(image)}
+                key={i}
+                className="keyfeatures-blocks dark:bg-cardDarkBg border dark:border-cardDarkBorder rounded-[8px] bg-white border-cardLightBorder cursor-pointer"
+              >
+                <div>
+                  <span>
+                    <h4 className=" mb-2 text-center font-semibold text-[1.125rem]">
+                      {image.name}
+                    </h4>
+                    <img
+                      src={image.image_picture ?? ""}
+                      alt=""
+                      className="flex-1 mx-auto"
+                    />
+
+                    <p className="text-sm text-left anywhere mt-4">
+                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                      Quos suscipit natus officiis obcaecati blanditiis repellat
+                      aliquam amet sint dolorem porro, cum voluptatibus omnis,
+                      dicta sit aperiam aspernatur, debitis nisi temporibus.
+                    </p>
+                  </span>
+                </div>
               </div>
-            ) : null}
-          </div>
+            ))
+          ) : (
+            <>
+              {new Array(6).fill(1).map((_, i) => (
+                <Skeleton key={i} className="w-full h-[200px] rounded-[16px]" />
+              ))}
+            </>
+          )}
+
+          {images && images.length === 0 ? (
+            <div className="w-full flex justify-center h-[400px] items-center">
+              <p className="text-gray-600">No images found...</p>
+            </div>
+          ) : null}
         </div>
-      ) : null}
-      <div className="flex justify-center items-center">
-        <Link
-          href="/dashboard/explore"
-          className="w-auto  dark:bg-white dark:text-black bg-black text-white  hover:bg-black/9 block py-2 px-4 rounded-md hover:bg-black/90"
-        >
-          Start a new lab
-        </Link>
       </div>
     </div>
   );
 };
 
 export default UserPage;
+
+export const ChevronRight = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...props} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M12 25a1 1 0 0 1-.71-.29 1 1 0 0 1 0-1.42l7.3-7.29-7.3-7.29a1 1 0 1 1 1.42-1.42l8 8a1 1 0 0 1 0 1.42l-8 8A1 1 0 0 1 12 25Z"
+      data-name="Layer 2"
+      fill="#current"
+      className="fill-2c2d3c"
+    ></path>
+    <path d="M0 0h32v32H0z" fill="none"></path>
+  </svg>
+);
+
+// <Table>
+// <TableHeader>
+//   <TableRow>
+//     <TableHead className="p-1">Name</TableHead>
+//     <TableHead className="p-1">Difficulty Level</TableHead>
+//     <TableHead className="text-right p-1">Action</TableHead>
+//   </TableRow>
+// </TableHeader>
+// {images?.length === 0 && (
+//   <TableCaption>No images found...</TableCaption>
+// )}
+// <TableBody>
+//   {images
+//     ? images.length > 0
+//       ? images.map((image, i) => (
+//           <TableRow key={i}>
+//             <TableCell className="font-medium p-1">
+//               {image.name}
+//             </TableCell>
+//             <TableCell className="p-1">
+//               {image.difficulty_level}
+//             </TableCell>
+//             <TableCell className="underline font-medium text-right p-1">
+//               <Button
+//                 onClick={() => viewImage(image)}
+//                 className="font-medium p-0"
+//                 variant="link"
+//               >
+//                 View
+//               </Button>
+//             </TableCell>
+//           </TableRow>
+//         ))
+//       : null
+//     : null}
+// </TableBody>
+// </Table>

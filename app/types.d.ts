@@ -21,7 +21,7 @@ interface ILabImage {
   image_picture: string;
   prerequisites: string;
   port_number: number;
-  image_picture: string
+  image_picture: string;
   command: string;
   arguments: string;
   readiness_probe_initial_delay_seconds?: number;
@@ -53,12 +53,10 @@ interface ILabList {
   user: string;
 }
 
-
-type ContentProps = React.ComponentProps<typeof SomeContentPrimitive>
+type ContentProps = React.ComponentProps<typeof SomeContentPrimitive>;
 type Props = {
-  onPointerDownOutside: ContentProps['onPointerDownOutside']
-}
-
+  onPointerDownOutside: ContentProps["onPointerDownOutside"];
+};
 
 interface ILabInfo {
   message: string;
@@ -66,4 +64,12 @@ interface ILabInfo {
   ingress_url: string;
   lab_id: number;
   image_id: number;
+}
+
+interface IActiveLab {
+  creation_date: string;
+  id: number;
+  image: number;
+  ingress_url: string;
+  name: string;
 }

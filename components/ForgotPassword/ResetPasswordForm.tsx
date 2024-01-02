@@ -131,6 +131,7 @@ const ResetPasswordForm = () => {
                     ref={passwordRef}
                     type="password"
                     placeholder="Password"
+                    className="text-black"
                   />
                 </FormControl>
                 <FormMessage />
@@ -149,6 +150,7 @@ const ResetPasswordForm = () => {
                     ref={confirmPasswordRef}
                     type="password"
                     placeholder="Confirm Password"
+                    className="text-black"
                   />
                 </FormControl>
                 <FormMessage />

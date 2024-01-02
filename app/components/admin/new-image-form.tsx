@@ -269,14 +269,14 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Name <sup className="text-red-600">*</sup>
+                  Name <sup className="text-red-500">*</sup>
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Name"
                     type="text"
                     {...field}
-                    className="glassBorder"
+                    className="glassBorder text-black"
                     ref={nameRef}
                     defaultValue={imageDetails?.name}
                   />
@@ -293,14 +293,14 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Docker Image <sup className="text-red-600">*</sup>
+                    Docker Image <sup className="text-red-500">*</sup>
                   </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Docker Image"
                       type="text"
                       {...field}
-                      className="glassBorder"
+                      className="glassBorder text-black"
                       ref={dockerImageRef}
                       defaultValue={imageDetails?.docker_image}
                     />
@@ -318,14 +318,14 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Port Number <sup className="text-red-600">*</sup>
+                    Port Number <sup className="text-red-500">*</sup>
                   </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Port Number"
                       type="number"
                       {...field}
-                      className="glassBorder"
+                      className="glassBorder text-black"
                       ref={portNumberRef}
                       defaultValue={imageDetails?.port_number}
                     />
@@ -340,7 +340,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Duration <sup className="text-red-600">*</sup>
+                    Duration <sup className="text-red-500">*</sup>
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -348,7 +348,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                       placeholder="Duration"
                       type="number"
                       {...field}
-                      className="glassBorder"
+                      className="glassBorder text-black"
                       ref={durationRef}
                       defaultValue={imageDetails?.duration}
                     />
@@ -364,7 +364,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Difficulty Level <sup className="text-red-600">*</sup>
+                  Difficulty Level <sup className="text-red-500">*</sup>
                 </FormLabel>
                 <FormControl>
                   <Select
@@ -420,7 +420,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                         type="file"
                         {...field}
                         ref={imagePictureRef}
-                        className="glassBorder"
+                        className="glassBorder text-black"
                       />
                     )}
                   </FormControl>
@@ -438,7 +438,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                   <FormLabel>Command</FormLabel>
                   <FormControl>
                     <Input
-                      className="glassBorder"
+                      className="glassBorder text-black"
                       {...field}
                       ref={commandRef}
                       defaultValue={imageDetails?.command}
@@ -460,7 +460,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                   <FormLabel>Arguments</FormLabel>
                   <FormControl>
                     <Input
-                      className="glassBorder"
+                      className="glassBorder text-black"
                       {...field}
                       ref={argumentsRef}
                       defaultValue={imageDetails?.arguments}
@@ -482,7 +482,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="glassBorder"
+                      className="glassBorder text-black"
                       {...field}
                       ref={descriptionRef}
                       defaultValue={imageDetails?.description}
@@ -512,7 +512,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                           placeholder="Readiness Probe Initial Delay Seconds"
                           type="number"
                           {...field}
-                          className="glassBorder"
+                          className="glassBorder text-black"
                           ref={readinessProbeInitialDelaySecondsRef}
                           defaultValue={imageDetails?.readiness_probe_initial_delay_seconds}
                         />
@@ -533,7 +533,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                           placeholder="Readiness Probe Period Seconds"
                           type="number"
                           {...field}
-                          className="glassBorder"
+                          className="glassBorder text-black"
                           ref={readinessProbePeriodSecondsRef}
                           defaultValue={imageDetails?.readiness_probe_period_seconds}
                         />
@@ -556,7 +556,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                           placeholder="Readiness Probe Timeout Seconds"
                           type="number"
                           {...field}
-                          className="glassBorder"
+                          className="glassBorder text-black"
                           ref={readinessProbeTimeoutSecondsRef}
                           defaultValue={imageDetails?.readiness_probe_timeout_seconds}
                         />
@@ -577,7 +577,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                           placeholder="Readiness Probe Success Threshold"
                           type="number"
                           {...field}
-                          className="glassBorder"
+                          className="glassBorder text-black"
                           ref={readinessProbeSuccessThresholdRef}
                           defaultValue={imageDetails?.readiness_probe_success_threshold}
                         />
@@ -601,7 +601,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                           placeholder="Readiness Probe Failure Threshold"
                           type="number"
                           {...field}
-                          className="glassBorder"
+                          className="glassBorder text-black"
                           ref={readinessProbeFailureThresholdRef}
                           defaultValue={imageDetails?.readiness_probe_failure_threshold}
                         />
@@ -622,7 +622,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                           placeholder="Liveness Probe Initial Delay Seconds"
                           type="number"
                           {...field}
-                          className="glassBorder"
+                          className="glassBorder text-black"
                           ref={livenessProbeInitialDelaySecondsRef}
                           defaultValue={imageDetails?.liveness_probe_initial_delay_seconds}
                         />
@@ -646,7 +646,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                           placeholder="Liveness Probe Period Seconds"
                           type="number"
                           {...field}
-                          className="glassBorder"
+                          className="glassBorder text-black"
                           ref={livenessProbePeriodSecondsRef}
                           defaultValue={imageDetails?.liveness_probe_period_seconds}
                         />
@@ -667,7 +667,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                           placeholder="Liveness Probe Timeout Seconds"
                           type="number"
                           {...field}
-                          className="glassBorder"
+                          className="glassBorder text-black"
                           ref={livenessProbeTimeoutSecondsRef}
                           defaultValue={imageDetails?.liveness_probe_timeout_seconds}
                         />
@@ -691,7 +691,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                           placeholder="Liveness Probe Success Threshold"
                           type="number"
                           {...field}
-                          className="glassBorder"
+                          className="glassBorder text-black"
                           ref={livenessProbeSuccessThresholdRef}
                           defaultValue={imageDetails?.liveness_probe_success_threshold}
                         />
@@ -712,7 +712,7 @@ const NewImageForm: FC<INewImageForm> = ({ imageDetails }) => {
                           placeholder="Liveness Probe Failure Threshold"
                           type="number"
                           {...field}
-                          className="glassBorder"
+                          className="glassBorder text-black"
                           ref={livenessProbeFailureThresholdRef}
                           defaultValue={imageDetails?.liveness_probe_failure_threshold}
                         />

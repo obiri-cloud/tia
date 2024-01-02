@@ -111,7 +111,7 @@ const LoginForm = () => {
                   defaultValue={email ?? ""}
                   {...field}
                   ref={emailRef}
-                  className="glassBorder"
+                  className="glassBorder text-black"
                 />
               </FormControl>
               <FormMessage />
@@ -130,7 +130,7 @@ const LoginForm = () => {
                   ref={passwordRef}
                   type="password"
                   placeholder="Password"
-                  className="glassBorder"
+                  className="glassBorder text-black"
                 />
               </FormControl>
               <FormMessage />
@@ -140,7 +140,7 @@ const LoginForm = () => {
         <Button
           disabled={logging}
           ref={buttonRef}
-          className="w-full disabled:bg-black-900/10 dark:bg-white dark:text-black bg-black text-white "
+          className="w-full disabled:bg-black-900/10 bg-pink-200 text-white "
           variant="black"
         >
           {logging ? "Logging in..." : "Login"}

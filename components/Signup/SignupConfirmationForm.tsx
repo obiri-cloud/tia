@@ -113,7 +113,7 @@ const SignupConfirmationForm = () => {
                   type="number"
                   {...field}
                   ref={codeRef}
-                  className="glassBorder"
+                  className="glassBorder text-black"
 
                 />
               </FormControl>
@@ -123,7 +123,7 @@ const SignupConfirmationForm = () => {
         />
         <Button
           ref={buttonRef}
-          className="w-full mt-6 disabled:bg-black-900/10 dark:bg-white dark:text-black bg-black text-white "
+          className="w-full mt-6 disabled:bg-black-900/10 bg-pink-200 text-white "
           variant="black"
         >
           Confirm

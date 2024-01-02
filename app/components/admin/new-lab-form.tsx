@@ -129,7 +129,7 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
                     placeholder="Name"
                     type="text"
                     {...field}
-                    className="glassBorder"
+                    className="glassBorder text-black"
                     ref={nameRef}
                     defaultValue={labDetails?.name}
                   />
@@ -152,7 +152,7 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
                       placeholder="Deployment Name"
                       type="text"
                       {...field}
-                      className="glassBorder bg-gray-300"
+                      className="glassBorder bg-gray-300 text-black"
                       ref={deploymenNameRef}
                       defaultValue={labDetails?.deployment_name}
                     />
@@ -179,7 +179,7 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
                       {...field}
                       ref={ingressUrlRef}
                       defaultValue={labDetails?.ingress_url}
-                      className="glassBorder bg-gray-300"
+                      className="glassBorder bg-gray-300 text-black"
                     />
                   </FormControl>
                   <FormMessage />
@@ -198,7 +198,7 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
                       readOnly={true}
 
                     type="text"
-                    className="glassBorder bg-gray-300"
+                    className="glassBorder bg-gray-300 text-black"
                     {...field}
                     ref={imageRef}
                     defaultValue={labDetails?.image}

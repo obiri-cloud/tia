@@ -9,7 +9,7 @@ export default function PathnameProvider(): React.ReactNode {
 
   return (
     <>
-      {pathname !== "/login" && !pathname.match("/signup")  && !pathname.match("/forgot-password") &&  pathname !== "/"  ? <Navbar /> : null}
+      {pathname !== "/login" && !pathname.match("/signup")  && !pathname.match("/forgot-password") &&  pathname !== "/"  ? null : null}
       <ThemeToggle />
 
     </>

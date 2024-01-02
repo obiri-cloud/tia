@@ -160,7 +160,7 @@ const Images = () => {
                               |
                               <Button
                                 onClick={() => deleteImage(image.id)}
-                                className="font-medium text-red-600"
+                                className="font-medium text-red-500"
                                 variant="link"
                               >
                                 Delete

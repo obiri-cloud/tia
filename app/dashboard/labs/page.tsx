@@ -78,6 +78,8 @@ const LabsPage = () => {
 
   const endLab = async () => {
     setDeleting(true);
+    console.log("formData", labInfo);
+    
     let formData = JSON.stringify({ image: labInfo!.id });
     toast({
       title: "Hold on we are cleaning your lab environment.",
@@ -101,7 +103,7 @@ const LabsPage = () => {
           title: "Lab Deleted Successfully...",
           variant: "success",
         });
-        router.push("/dashboard/explore");
+        router.push("/dashboard");
       } else {
         toast({
           title: "Something went wrong. Try again",
