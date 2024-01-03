@@ -285,7 +285,7 @@ spec:
     const windowHeight =
       window.innerHeight || document.documentElement.clientHeight;
     const elementHeight = rect.bottom - rect.top;
-    const threshold = windowHeight * 0.9; // 20% visibility threshold
+    const threshold = windowHeight * 0.5;
 
     return rect.bottom - threshold <= windowHeight && rect.top + threshold >= 0;
   };
@@ -403,8 +403,7 @@ spec:
                 <path pathLength="1" d="M538 777L538 128"></path>
               </svg>
               <Image
-                alt="Screenshot of the Linear app showing the sidebar for the Encom workspace and a few of their projects in the roadmap."
-                // className="sc-a3de4d09-0 tcnjh sc-ae73eb3-7 gKMVY"
+                alt="Screenshot of a sample lab"
                 src={lab}
               />
             </div>

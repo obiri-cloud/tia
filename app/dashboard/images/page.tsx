@@ -93,7 +93,7 @@ const ImagePage = () => {
             })
           );
           setCreatingStarted(false);
-          router.push(`/dashboard/labs?lab=${data.lab_id}`);
+          router.push(`/dashboard/labs?lab=${data.lab_id}$image=${data.image_id}`);
         }
       }
 

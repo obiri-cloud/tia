@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
@@ -36,6 +36,10 @@ const LabsPage = () => {
   const [showInstructions, setShowInstructions] = useState(true);
   const drawerButton = useRef<HTMLButtonElement>(null);
 
+  const searchParams = useSearchParams();
+  const id = searchParams.get("image")
+
+
   //choose the screen size
   const handleResize = () => {
     if (window.innerWidth < 1024) {
@@ -53,28 +57,65 @@ const LabsPage = () => {
     setIsLoading(false);
   };
 
+  // useEffect(() => {
+  //   let tialab_info: ILabInfo | null = JSON.parse(
+  //     (secureLocalStorage.getItem("tialab_info") as string) || ""
+  //   );
+  //   console.log("tialab_info", tialab_info);
+
+  //   if (
+  //     tialab_info &&
+  //     tialab_info.hasOwnProperty("id") &&
+  //     tialab_info.hasOwnProperty("url")
+  //   ) {
+  //     console.log("labInfo ==>", labInfo);
+
+  //     setLabInfo(tialab_info);
+  //   } else {
+  //     setLabInfo({
+  //       id: null,
+  //       url: "",
+  //       creation_date: "",
+  //     });
+  //   }
+  // }, []);
+
   useEffect(() => {
-    let tialab_info: ILabInfo | null = JSON.parse(
-      (secureLocalStorage.getItem("tialab_info") as string) || ""
-    );
-    console.log("tialab_info", tialab_info);
-
-    if (
-      tialab_info &&
-      tialab_info.hasOwnProperty("id") &&
-      tialab_info.hasOwnProperty("url")
-    ) {
-      console.log("labInfo ==>", labInfo);
-
-      setLabInfo(tialab_info);
-    } else {
-      setLabInfo({
-        id: null,
-        url: "",
-        creation_date: "",
-      });
+    try {
+      getCurrentImage();
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        userCheck(error as AxiosError);
+      }
+      if (axios.isCancel(error)) {
+        toast({
+          title: "Image Retrieval Error",
+          variant: "destructive",
+          description: "Error when retrieving image info",
+        });
+      } else {
+        // Handle other errors
+      }
     }
   }, []);
+
+  const getCurrentImage = async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BE_URL}/user/image/${id}/retrieve/`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          // @ts-ignore
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("response", response);
+    if (response.status === 200) {
+      setLabInfo(response.data);
+    }
+  };
 
   const endLab = async () => {
     setDeleting(true);
@@ -260,6 +301,7 @@ import { useTheme } from "next-themes";
 import { CountdownClock } from "@/components/Labs/countdown";
 import { DialogTrigger } from "@/components/ui/dialog";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
+import { userCheck } from "@/lib/utils";
 
 function ResizeHandle({ id }: { id?: string }) {
   return (

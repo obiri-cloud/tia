@@ -19,16 +19,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import NewImageForm from "./new-image-form";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { toast } from "@/components/ui/use-toast";
-import { getImageListX } from "./overview";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { setImageCount, setImageList } from "@/redux/reducers/adminSlice";
+import NewImageForm from "@/app/components/admin/new-image-form";
+import { getImageListX } from "@/app/components/admin/overview";
 
-const Images = () => {
+const AdminImages = () => {
   const { imageCount, imageList } = useSelector(
     (state: RootState) => state.admin
   );
@@ -181,4 +181,4 @@ const Images = () => {
   );
 };
 
-export default Images;
+export default AdminImages;

@@ -13,6 +13,7 @@ interface IUserProfile {
 
 interface ILabImage {
   id: number;
+  image?: number;
   name: string;
   description: string;
   docker_image: string;

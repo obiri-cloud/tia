@@ -12,6 +12,8 @@ import {
 import { Inter } from "next/font/google";
 
 import Link from "next/link";
+import { signOut } from "next-auth/react";
+import secureLocalStorage from "react-secure-storage";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,9 +22,16 @@ export default function UserDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+
+  const logout = () => {
+    signOut({ callbackUrl: "/login" });
+    secureLocalStorage.removeItem("tialabs_info");
+  };
   return (
     <ReduxProvider>
-      <div className={`text-sm font-light dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark  h-screen ${inter.className}`}>
+      <div
+        className={`text-sm font-light dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark  h-screen ${inter.className}`}
+      >
         <button
           data-drawer-target="default-sidebar"
           data-drawer-toggle="default-sidebar"
@@ -48,59 +57,60 @@ export default function UserDashboardLayout({
 
         <aside
           id="default-sidebar"
-          className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge"
+          className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark  "
           aria-label="Sidebar"
         >
-          <div className="h-full px-3 py-4 overflow-y-auto">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="w-full">
-                <div className="flex justify-between items-center  cursor-pointer w-full">
-                  <a className="flex items-center p-2  text-white rounded-lg  hover:bg-menuHov group bg-pink-200">
-                    <span>SY</span>
+          <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
+            <div className="flex justify-between items-center w-full">
+              <a className="flex items-center p-2  text-white rounded-lg  hover:bg-menuHov group bg-pink-200">
+                <span>SY</span>
+              </a>
+              <span className="ms-3 font-light">Sylvester</span>
+            </div>
+            <div className="flex flex-1 flex-col">
+              <ul className="space-y-2 font-medium mt-[50px] flex-1">
+                <li>
+                  <a
+                    href="/dashboard/active-labs"
+                    className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
+                  >
+                    <ActiveLabs className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
+                    <span className="ms-3 font-light">Active Labs</span>
                   </a>
-                  <span className="ms-3 font-light">Sylvester</span>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem className="cursour-pointer p-0">
-                  <Link
-                    href="/dashboard/account"
-                    className="w-full h-full block p-2"
+                </li>
+                <li>
+                  <a
+                    href="/dashboard"
+                    className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
                   >
-                    My Account
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursour-pointer p-0">
-                  <Link
-                    href="/dashboard/account"
-                    className="w-full h-full block p-2"
-                  >
-                    Logout
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <ul className="space-y-2 font-medium mt-[50px]">
-              <li>
-                <a
-                  href="/dashboard/active-labs"
-                  className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
-                >
-                  <ActiveLabs className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
-                  <span className="ms-3 font-light">Active Labs</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/dashboard"
-                  className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
-                >
-                  <AllImages className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-whiteDark dark:fill-white" />
-                  <span className="ms-3 font-light">All Images</span>
-                </a>
-              </li>
-            </ul>
+                    <AllImages className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-whiteDark dark:fill-white" />
+                    <span className="ms-3 font-light">All Images</span>
+                  </a>
+                </li>
+              </ul>
+              <div className="">
+                <ul className="space-y-2 font-medium">
+                  <li>
+                    <a
+                      href="/dashboard/account"
+                      className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
+                    >
+                      <Account className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white" />
+                      <span className="ms-3 font-light">Account</span>
+                    </a>
+                  </li>
+                  <li>
+                    <span
+                      onClick={logout}
+                      className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group cursor-pointer"
+                    >
+                      <Logout className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-whiteDark dark:fill-white" />
+                      <span className="ms-3 font-light">Logout</span>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </aside>
 
@@ -112,6 +122,8 @@ export default function UserDashboardLayout({
         href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet"
       ></link>
+      {/* <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" /> */}
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     </ReduxProvider>
   );
 }
@@ -137,7 +149,7 @@ const AllImages = (props: SVGProps<SVGSVGElement>) => (
 
 const ActiveLabs = (props: SVGProps<SVGSVGElement>) => (
   <svg
-  {...props}
+    {...props}
     fill="none"
     stroke="#current"
     stroke-linecap="round"
@@ -148,5 +160,46 @@ const ActiveLabs = (props: SVGProps<SVGSVGElement>) => (
     style={{ width: "20px" }}
   >
     <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+  </svg>
+);
+
+const Account = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    {...props}
+    version="1.1"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g id="info" />
+    <g id="icons">
+      <g id="user">
+        <ellipse cx="12" cy="8" rx="5" ry="6" />
+        <path
+          d="M21.8,19.1c-0.9-1.8-2.6-3.3-4.8-4.2c-0.6-0.2-1.3-0.2-1.8,0.1c-1,0.6-2,0.9-3.2,0.9s-2.2-0.3-3.2-0.9    C8.3,14.8,7.6,14.7,7,15c-2.2,0.9-3.9,2.4-4.8,4.2C1.5,20.5,2.6,22,4.1,22h15.8C21.4,22,22.5,20.5,21.8,19.1z"
+          fill="#current"
+          stroke="#current"
+        />
+      </g>
+    </g>
+  </svg>
+);
+
+const Logout = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    {...props}
+    height="32"
+    viewBox="0 0 32 32"
+    width="32"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <title />
+    <g data-name="1" id="_1">
+      <path
+        d="M27,3V29a1,1,0,0,1-1,1H6a1,1,0,0,1-1-1V27H7v1H25V4H7V7H5V3A1,1,0,0,1,6,2H26A1,1,0,0,1,27,3ZM10.71,20.29,7.41,17H18V15H7.41l3.3-3.29L9.29,10.29l-5,5a1,1,0,0,0,0,1.42l5,5Z"
+        id="logout_account_exit_door"
+        fill="#current"
+        stroke="#current"
+      />
+    </g>
   </svg>
 );

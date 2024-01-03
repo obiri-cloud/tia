@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const ActiveLabsPage = () => {
   const [labs, setLabs] = useState([]);
@@ -22,7 +24,7 @@ const ActiveLabsPage = () => {
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-
+  const router = useRouter();
 
   useEffect(() => {
     getActiveLabs();
@@ -63,7 +65,9 @@ const ActiveLabsPage = () => {
               <TableHead className="text-right p-1">Action</TableHead>
             </TableRow>
           </TableHeader>
-          {labs?.length === 0 && <TableCaption>You have no active lab...</TableCaption>}
+          {labs?.length === 0 && (
+            <TableCaption>You have no active lab...</TableCaption>
+          )}
           <TableBody>
             {labs
               ? labs.length > 0
@@ -76,13 +80,12 @@ const ActiveLabsPage = () => {
                         {image.difficulty_level}
                       </TableCell>
                       <TableCell className="underline font-medium text-right p-1">
-                        <Button
-                          //   onClick={() => viewImage(image)}
+                        <Link
+                          href={`/dashboard/labs?lab=${image.id}&image=${image.image}`}
                           className="font-medium p-0"
-                          variant="link"
                         >
                           View
-                        </Button>
+                        </Link>
                       </TableCell>
                     </TableRow>
                   ))
@@ -96,7 +99,6 @@ const ActiveLabsPage = () => {
 };
 
 export default ActiveLabsPage;
-
 
 const ChevronRight = (props: SVGProps<SVGSVGElement>) => (
   <svg {...props} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
