@@ -10,14 +10,16 @@ export default function DashboardPage() {
   const isAdmin = useAdminCheck();
 
   if (!isAdmin) {
-    return null; 
+    return null;
   }
   return (
     <ReduxProvider>
-      <GetAdmin />
-      <Overview />
-      <Images />
-      <Labs />
+      <div className="p-4">
+        <GetAdmin />
+        <Overview />
+        {/* <Images />
+        <Labs /> */}
+      </div>
     </ReduxProvider>
   );
 }

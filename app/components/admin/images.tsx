@@ -98,16 +98,6 @@ const Images = () => {
               <div className="text-2xl font-bold">{imageCount}</div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Images
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* <div className="text-2xl font-bold">{labCount}</div> */}
-            </CardContent>
-          </Card>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <Card className="col-span-4">
