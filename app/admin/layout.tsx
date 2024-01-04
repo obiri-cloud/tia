@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { signOut } from "next-auth/react";
 import secureLocalStorage from "react-secure-storage";
 import { SVGProps } from "react";
+import ProfileHeader from "../components/admin/profile-header";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
@@ -54,12 +55,7 @@ export default function DashboardPage({
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
-          <div className="flex justify-between items-center w-full">
-            <a className="flex items-center p-2  text-white rounded-lg  hover:bg-menuHov group bg-pink-200">
-              <span>SY</span>
-            </a>
-            <span className="ms-3 font-light">Sylvester</span>
-          </div>
+         <ProfileHeader/>
           <div className="flex flex-1 flex-col">
             <ul className="space-y-2 font-medium mt-[50px] flex-1">
               <li>
