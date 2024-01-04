@@ -93,7 +93,9 @@ const ImagePage = () => {
             })
           );
           setCreatingStarted(false);
-          router.push(`/dashboard/labs?lab=${data.lab_id}$image=${data.image_id}`);
+          router.push(
+            `/dashboard/labs?lab=${data.lab_id}&image=${data.image_id}`
+          );
         }
       }
 
@@ -169,7 +171,7 @@ const ImagePage = () => {
         })
       );
       setCreatingStarted(false);
-      router.push(`/dashboard/labs?lab=${data.lab_id}`);
+      router.push(`/dashboard/labs?lab=${data.lab_id}&image=${data.image_id}`);
     }
   };
 
@@ -214,6 +216,8 @@ const ImagePage = () => {
     getActiveLabs();
   }, []);
 
+  let isActive = false;
+
   const getActiveLabs = async () => {
     try {
       const response = await axios.get(
@@ -228,7 +232,7 @@ const ImagePage = () => {
         }
       );
       console.log("response.data.results", response.data.results);
-      const isActive = response.data.results.find(
+      isActive = response.data.results.find(
         (res: IActiveLab) => String(res.image) === id
       );
       console.log("isActive", isActive);
@@ -324,19 +328,21 @@ const ImagePage = () => {
               ></l-square>
             ) : (
               <div className="flex gap-4 items-center">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger id="delete-lab">
-                      <Trash
-                        className="fill-black dark:fill-white w-[30px]"
-                        onClick={() => deleteLab(currentImage?.id)}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Delete Lab</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                {isActive ? (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger id="delete-lab">
+                        <Trash
+                          className="fill-black dark:fill-white w-[30px]"
+                          onClick={() => deleteLab(currentImage?.id)}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Delete Lab</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : null}
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
