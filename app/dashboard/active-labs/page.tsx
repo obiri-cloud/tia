@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import secureLocalStorage from "react-secure-storage";
 
 const ActiveLabsPage = () => {
   const [labs, setLabs] = useState([]);
@@ -50,10 +51,22 @@ const ActiveLabsPage = () => {
       userCheck(error as AxiosError);
     }
   };
+
+  const viewLab = (image: IActiveLab) => {
+    secureLocalStorage.setItem(
+      "tialab_info",
+      JSON.stringify({
+        id: image.image,
+        url: image.ingress_url,
+        creation_date: image.creation_date,
+      })
+    );
+    router.push(`/dashboard/labs?lab=${image.id}&image=${image.image}`);
+  };
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge  flex gap-2 p-2">
-        <span className="p-2 ">Active Images</span>
+        <span className="p-2 ">Active Labs</span>
         <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
       </div>
       <div className="p-4">
@@ -61,7 +74,6 @@ const ActiveLabsPage = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="p-1">Name</TableHead>
-              <TableHead className="p-1">Difficulty Level</TableHead>
               <TableHead className="text-right p-1">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -71,21 +83,20 @@ const ActiveLabsPage = () => {
           <TableBody>
             {labs
               ? labs.length > 0
-                ? labs.map((image: ILabImage, i) => (
+                ? labs.map((image: IActiveLab, i) => (
                     <TableRow key={i}>
                       <TableCell className="font-medium p-1">
                         {image.name}
                       </TableCell>
-                      <TableCell className="p-1">
-                        {image.difficulty_level}
-                      </TableCell>
+
                       <TableCell className="underline font-medium text-right p-1">
-                        <Link
-                          href={`/dashboard/labs?lab=${image.id}&image=${image.image}`}
+                        <Button
+                          variant="link"
+                          onClick={() => viewLab(image)}
                           className="font-medium p-0"
                         >
                           View
-                        </Link>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))
