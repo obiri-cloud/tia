@@ -109,12 +109,11 @@ const ImagePage = () => {
         });
       }
 
+      let key = response.data.redis_cache_key;
       if (response.data.status === 200 || response.data.status === 201) {
-        let key = response.data.redis_cache_key;
         pollForLab(key);
       }
       if (response.data.status == 409) {
-        let key = response.data.redis_cache_key;
         pollForLab(key);
       }
     } catch (error) {
@@ -134,178 +133,78 @@ const ImagePage = () => {
       setCreatingStarted(false);
     }
   };
-  let resolved = true;
 
   // const pollForLab = async (key: string | null) => {
-  //   const response = await axios.get(
-  //     `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/callback?key=${key}`,
-  //     {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Accept: "application/json",
-  //         // @ts-ignore
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     }
-  //   );
-  //   if (response.status === 200 || response.status == 408) {
-  //     console.log("response resolved", response.data);
 
-  //     resolved = true;
-  //   } else {
-  //     resolved = false;
-  //   }
+  //   const data = await fetch("/api/poll", {
+  //     method: "GET",
+  //   });
+  //   console.log("data", data);
 
-  //   if (!resolved) {
-  //     pollForLab(key);
-  //   } else {
-  //     resolved = true;
-  //     let data = response.data.data;
-  //     console.log("response.data", response.data);
+  //   return data.status
 
-  //     secureLocalStorage.setItem(
-  //       "tialab_info",
-  //       JSON.stringify({
-  //         id: data.image_id,
-  //         url: data.ingress_url,
-  //         creation_date: data.creation_date,
-  //       })
-  //     );
-  //     setCreatingStarted(false);
-  //     router.push(`/dashboard/labs?lab=${data.lab_id}&image=${data.image_id}`);
-  //   }
   // };
 
-//   const pollForLab = async (key: string | null, maxRetries: number = 500) => {
-//     try {
-//       let retries = 0;
-//       let resolved = false;
-
-//       while (!resolved ) {
-//         console.log("retries", retries);
-
-// axios.get(
-//           `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/callback?key=${key}`,
-//           {
-//             headers: {
-//               "Content-Type": "application/json",
-//               Accept: "application/json",
-//               // @ts-ignore
-//               Authorization: `Bearer ${token}`,
-//             },
-//           }
-//         ).then((response)=>{
-
-//           if (response.status === 200 || response.status === 408) {
-//             console.log("Response resolved 408 ==>", response.data);
-//             resolved = true;
-  
-//             let data = response.data.data;
-  
-//             secureLocalStorage.setItem(
-//               "tialab_info",
-//               JSON.stringify({
-//                 id: data.image_id,
-//                 url: data.ingress_url,
-//                 creation_date: data.creation_date,
-//               })
-//             );
-//             setCreatingStarted(false);
-//             router.push(
-//               `/dashboard/labs?lab=${data.lab_id}&image=${data.image_id}`
-//             );
-//           }
-//           // else if (response.data.status === 408) {
-//           //   setCreatingStarted(false);
-//           //   toast({
-//           //     title: response.data.message,
-//           //     variant: "destructive",
-//           //     description: "Lab timed out",
-//           //   });
-//           // }
-//           else {
-//             console.log("not Response resolved");
-//           }
-  
-//           retries++;
-//         })
-
-//       }
-//     } catch (error) {
-//       // Handle errors if any
-//       console.error("Error occurred:", error);
-      
-//     }
-//   };
-
-  const pollForLab = async (key: string | null, delay: number = 1000, maxRetries: number = 10) => {
+  const pollForLab = async (
+    key: string | null,
+    delay: number = 5000,
+    maxRetries: number = 10
+  ) => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/callback/?key=${key}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-  
-      if (response.status === 200 || response.status === 408) {
-        console.log("Response resolved", response.data);
-        let resolved = false;
-  
-        if (response.status === 200) {
+      let resolved = false;
+
+      const response = await fetch(`/api/poll?key=${key}`, {
+        method: "GET",
+      });
+      let data = await response.json();
+
+      data = data.data;
+
+      console.log("data", data);
+
+      if (data.status === 408) {
+        setCreatingStarted(false);
+        toast({
+          title: data.message,
+          variant: "destructive",
+          description: "Lab timed out",
+        });
+        resolved = true;
+        // if (!resolved) {
+        //   setTimeout(() => pollForLab(key, delay , maxRetries - 1), delay);
+        // }
+      } else {
+        if (data.data) {
           resolved = true;
-          let data = response.data.data;
-  
           secureLocalStorage.setItem(
             "tialab_info",
             JSON.stringify({
-              id: data.image_id,
-              url: data.ingress_url,
-              creation_date: data.creation_date,
+              id: data.data.image_id,
+              url: data.data.ingress_url,
+              creation_date: data.data.creation_date,
             })
           );
           toast({
-            title: response.data.message,
+            title: data.message,
             variant: "destructive",
             description: "Lab Creation",
           });
           setCreatingStarted(false);
-          router.push(`/dashboard/labs?lab=${data.lab_id}&image=${data.image_id}`);
+          router.push(
+            `/dashboard/labs?lab=${data.data.lab_id}&image=${data.data.image_id}`
+          );
         }
-
-        else if (response.data.status === 408) {
-            setCreatingStarted(false);
-            toast({
-              title: response.data.message,
-              variant: "destructive",
-              description: "Lab timed out",
-            });
-          }
-  
-        if (!resolved && maxRetries > 0) {
-          // Retry with increasing delay
-          setTimeout(() => pollForLab(key, delay * 2, maxRetries - 1), delay);
-        }
-      } else {
-        // Retry if status is not 200 or 408
-        if (maxRetries > 0) {
-          setTimeout(() => pollForLab(key, delay * 2, maxRetries - 1), delay);
+        if (!resolved) {
+          setTimeout(() => pollForLab(key, delay, maxRetries - 1), delay);
         }
       }
     } catch (error) {
-      // Handle errors if any
       console.error("Error occurred:", error);
-      // Retry if there's an error and maxRetries is greater than 0
       if (maxRetries > 0) {
-        setTimeout(() => pollForLab(key, delay * 2, maxRetries - 1), delay);
+        setTimeout(() => pollForLab(key, delay, maxRetries - 1), delay);
       }
     }
   };
-  
 
   useEffect(() => {
     try {
@@ -347,7 +246,6 @@ const ImagePage = () => {
   useEffect(() => {
     getActiveLabs();
   }, []);
-
 
   const getActiveLabs = async () => {
     try {
@@ -394,7 +292,7 @@ const ImagePage = () => {
         }
       );
       if (response.data.status === 200) {
-        setIsActive(null)
+        setIsActive(null);
         toast({
           title: response.data.message,
           variant: "success",
