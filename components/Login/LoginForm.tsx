@@ -103,7 +103,7 @@ const LoginForm = () => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className=" form-text">Email</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Email"
@@ -111,7 +111,7 @@ const LoginForm = () => {
                   defaultValue={email ?? ""}
                   {...field}
                   ref={emailRef}
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                 />
               </FormControl>
               <FormMessage />
@@ -123,14 +123,14 @@ const LoginForm = () => {
           name="password"
           render={({ field }) => (
             <FormItem className="my-6">
-              <FormLabel>Password</FormLabel>
+              <FormLabel className=" form-text">Password</FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   ref={passwordRef}
                   type="password"
                   placeholder="Password"
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                 />
               </FormControl>
               <FormMessage />
