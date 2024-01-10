@@ -38,21 +38,7 @@ const UserPage = () => {
     getImages();
   }, []);
 
-  if (typeof window !== "undefined") {
-    //@ts-ignore
-    const driver = window.driver.js.driver;
-    const driverObj = driver({
-      showProgress: true,
-      steps: [
-        { element: '#all-images-list, #active-labs-button', popover: { title: 'Title', description: 'Description' } },
-        { element: '#all-images-button', popover: { title: 'Title', description: 'Description' } },
-        { element: '.sidebar', popover: { title: 'Title', description: 'Description' } },
-        { element: '.footer', popover: { title: 'Title', description: 'Description' } },
-      ]
-    });
-    
-    driverObj.drive();
-  }
+
 
   const getImages = async () => {
     try {
