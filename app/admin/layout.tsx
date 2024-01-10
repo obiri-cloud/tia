@@ -78,7 +78,7 @@ export default function DashboardPage({
               </li>
               <li>
                   <a
-                    href="/dashboard/active-labs"
+                    href="/admin/active-labs"
                     className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
                   >
                     <ActiveLabs className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
