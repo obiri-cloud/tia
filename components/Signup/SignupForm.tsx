@@ -126,13 +126,13 @@ const SignupForm = () => {
             name="first_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>First Name</FormLabel>
+                <FormLabel className=" form-text">First Name</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="First Name"
                     type="text"
                     {...field}
-                    className="glassBorder text-black"
+                    className="glassBorder text-white bg-black/10"
                     ref={firstNameRef}
                   />
                 </FormControl>
@@ -145,13 +145,13 @@ const SignupForm = () => {
             name="last_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel className=" form-text">Last Name</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Last Name"
                     type="text"
                     {...field}
-                    className="glassBorder text-black"
+                    className="glassBorder text-white bg-black/10"
                     ref={lastNameRef}
                   />
                 </FormControl>
@@ -165,13 +165,13 @@ const SignupForm = () => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className=" form-text">Email</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Email"
                   type="email"
                   {...field}
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                   ref={emailRef}
                 />
               </FormControl>
@@ -185,13 +185,13 @@ const SignupForm = () => {
             name="password"
             render={({ field }) => (
               <FormItem className="">
-                <FormLabel>Password</FormLabel>
+                <FormLabel className=" form-text">Password</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     ref={passwordRef}
                     type="password"
-                    className="glassBorder text-black"
+                    className="glassBorder text-white bg-black/10"
                     placeholder="Password"
                   />
                 </FormControl>
@@ -204,13 +204,13 @@ const SignupForm = () => {
             name="confirm_password"
             render={({ field }) => (
               <FormItem className="">
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel className=" form-text">Confirm Password</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     ref={confirmPasswordRef}
                     type="password"
-                    className="glassBorder text-black"
+                    className="glassBorder text-white bg-black/10"
                     placeholder="Confirm Password"
                   />
                 </FormControl>
