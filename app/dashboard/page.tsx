@@ -38,6 +38,22 @@ const UserPage = () => {
     getImages();
   }, []);
 
+  if (typeof window !== "undefined") {
+    //@ts-ignore
+    const driver = window.driver.js.driver;
+    const driverObj = driver({
+      showProgress: true,
+      steps: [
+        { element: '#all-images-list, #active-labs-button', popover: { title: 'Title', description: 'Description' } },
+        { element: '#all-images-button', popover: { title: 'Title', description: 'Description' } },
+        { element: '.sidebar', popover: { title: 'Title', description: 'Description' } },
+        { element: '.footer', popover: { title: 'Title', description: 'Description' } },
+      ]
+    });
+    
+    driverObj.drive();
+  }
+
   const getImages = async () => {
     try {
       const response = await axios.get(
@@ -158,7 +174,7 @@ const UserPage = () => {
         <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
       </div>
       <div className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 keyfeatures">
+        <div id="all-images-list" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 keyfeatures">
           {images && images.length >= -1 ? (
             images.map((image, i) => (
               <div

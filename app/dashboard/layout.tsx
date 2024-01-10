@@ -23,7 +23,6 @@ export default function UserDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   const logout = () => {
     signOut({ callbackUrl: "/login" });
     secureLocalStorage.removeItem("tialabs_info");
@@ -62,10 +61,10 @@ export default function UserDashboardLayout({
           aria-label="Sidebar"
         >
           <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
-            <ProfileHeader/>
+            <ProfileHeader />
             <div className="flex flex-1 flex-col">
               <ul className="space-y-2 font-medium mt-[50px] flex-1">
-                <li>
+                <li id="active-labs-button">
                   <a
                     href="/dashboard/active-labs"
                     className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
@@ -74,7 +73,7 @@ export default function UserDashboardLayout({
                     <span className="ms-3 font-light">Active Labs</span>
                   </a>
                 </li>
-                <li>
+                <li id="all-images-button">
                   <a
                     href="/dashboard"
                     className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
@@ -118,7 +117,11 @@ export default function UserDashboardLayout({
         href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet"
       ></link>
-      {/* <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" /> */}
+      <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"
+      />
       <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     </ReduxProvider>
   );
