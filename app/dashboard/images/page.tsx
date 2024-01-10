@@ -170,6 +170,9 @@ const ImagePage = () => {
           description: "Lab timed out",
         });
         resolved = true;
+        router.push(
+          `/dashboard`
+        );
         // if (!resolved) {
         //   setTimeout(() => pollForLab(key, delay , maxRetries - 1), delay);
         // }
