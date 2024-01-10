@@ -64,16 +64,7 @@ export default function UserDashboardLayout({
             <ProfileHeader />
             <div className="flex flex-1 flex-col">
               <ul className="space-y-2 font-medium mt-[50px] flex-1">
-                <li id="active-labs-button">
-                  <a
-                    href="/dashboard/active-labs"
-                    className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
-                  >
-                    <ActiveLabs className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
-                    <span className="ms-3 font-light">Active Labs</span>
-                  </a>
-                </li>
-                <li id="all-images-button">
+                <li className="all-images-button">
                   <a
                     href="/dashboard"
                     className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
@@ -82,10 +73,19 @@ export default function UserDashboardLayout({
                     <span className="ms-3 font-light">All Images</span>
                   </a>
                 </li>
+                <li className="active-labs-button">
+                  <a
+                    href="/dashboard/active-labs"
+                    className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
+                  >
+                    <ActiveLabs className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
+                    <span className="ms-3 font-light">Active Labs</span>
+                  </a>
+                </li>
               </ul>
               <div className="">
                 <ul className="space-y-2 font-medium">
-                  <li>
+                  <li className="account-button">
                     <a
                       href="/dashboard/account"
                       className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
@@ -94,7 +94,7 @@ export default function UserDashboardLayout({
                       <span className="ms-3 font-light">Account</span>
                     </a>
                   </li>
-                  <li>
+                  <li className="logout-button">
                     <span
                       onClick={logout}
                       className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group cursor-pointer"
