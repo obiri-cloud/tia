@@ -18,7 +18,12 @@ import info from "@/public/svgs/info.svg";
 import info_white from "@/public/svgs/info-white.svg";
 import secureLocalStorage from "react-secure-storage";
 import double_arrow_left from "@/public/svgs/double_arrow_left.svg";
-import { Dialog } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+} from "@/components/ui/dialog";
 import { driver } from "driver.js";
 import {
   Sheet,
@@ -39,9 +44,12 @@ interface ILabInfo {
 
 const LabsPage = () => {
   const { data: session } = useSession();
-  const router = useRouter();
 
-  const [labInfo, setLabInfo] = useState<ILabInfo>();
+  const [labInfo, setLabInfo] = useState<ILabInfo>({
+    id: -1,
+    url: "",
+    creation_date: "",
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
 
@@ -76,9 +84,13 @@ const LabsPage = () => {
   };
 
   useEffect(() => {
-    let tialab_info: ILabInfo | null = JSON.parse(
-      (secureLocalStorage.getItem("tialab_info") as string) || ""
-    );
+    let tialab_info: ILabInfo | null = null;
+
+    if (secureLocalStorage.getItem("tialab_info")) {
+      tialab_info = JSON.parse(
+        (secureLocalStorage.getItem("tialab_info") as string) || ""
+      );
+    }
 
     if (
       tialab_info &&
@@ -87,7 +99,7 @@ const LabsPage = () => {
     ) {
       console.log("labInfo ==>", labInfo);
 
-      setLabInfo(tialab_info);
+      setLabInfo(tialab_info as ILabInfo);
     } else {
       setLabInfo({
         id: null,
@@ -188,11 +200,17 @@ const LabsPage = () => {
         }
       );
       if (response.data.status === 200) {
-        secureLocalStorage.removeItem("tialabs_info");
+        secureLocalStorage.removeItem("tialab_info");
         toast({
           title: "Lab Deleted Successfully...",
           variant: "success",
         });
+
+        let countdown = document.getElementById("countdown");
+        if (countdown) {
+          //@ts-ignore
+          countdown?.classList.add("hidden");
+        }
 
         if (reviewDrawerButton) {
           document.getElementById("closeDialog")?.click();
@@ -224,12 +242,17 @@ const LabsPage = () => {
     }
   };
 
-  const click = () => {
-    document.getElementById("sheet-trigger")?.click();
-  };
+  if (!labInfo.id) {
+    return (
+      <div className="container">
+        Umm...seems you are trying to access an expire.
+      </div>
+    );
+  }
 
   return (
     <Dialog>
+      {JSON.stringify(labInfo)}
       <div className="h-full">
         <PanelGroup
           className="h-full "
@@ -260,7 +283,6 @@ const LabsPage = () => {
             </div>
             <Instructions />
             <div className="absolute bottom-4 left-4 countdown">
-              <button onClick={click}>click</button>
               <CountdownClock
                 startTime={labInfo?.creation_date || ""}
                 endLab={endLab}
@@ -414,6 +436,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { z } from "zod";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 const ReviewDrawer = () => {
   const ratings = [
@@ -442,6 +465,7 @@ const ReviewDrawer = () => {
   const { data: session } = useSession();
   //@ts-ignore
   const token = session?.user!.tokens?.access_token;
+  const router = useRouter();
 
   //@ts-ignore
   const user = session?.user;
@@ -451,6 +475,7 @@ const ReviewDrawer = () => {
   const [value, setValue] = React.useState<string>("");
   const [open, setOpen] = React.useState(false);
   const [comment, setComment] = useState<string>("");
+  const [isOpen, setIsOpen] = useState(false);
 
   const submitReview = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -476,10 +501,14 @@ const ReviewDrawer = () => {
           },
         }
       );
+
+      console.log("response", response);
+
       toast({
-        title: response.data.message,
+        title: "Review submitted.",
         variant: "success",
       });
+      router.push("/dashboard");
     } catch (error) {
       if (error instanceof z.ZodError) {
         error.issues.map((err) =>
@@ -505,17 +534,22 @@ const ReviewDrawer = () => {
   };
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button id="sheet-trigger">Open</Button>
-      </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Review this lab</SheetTitle>
-          <SheetDescription>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className="invisible" id="sheet-trigger"></Button>
+      </DialogTrigger>
+      <DialogContent
+        onClickOutside={() => router.push("/dashboard")}
+        onEsc={() => router.push("/dashboard")}
+      >
+        <DialogHeader>
+          <DialogTitle className="text-black font-bold text-xl">
+            Review this lab
+          </DialogTitle>
+          <DialogDescription>
             Your reviews help us make the lab better for other users.
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
         <form onSubmit={submitReview} className="grid gap-4 py-4 text-black">
           <div className="">
             <Label htmlFor="name" className=" block">
@@ -588,7 +622,7 @@ const ReviewDrawer = () => {
             </SheetClose>
           </SheetFooter>
         </form>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };

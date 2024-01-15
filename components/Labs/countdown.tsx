@@ -62,6 +62,7 @@ export const CountdownClock: React.FC<CountdownProps> = ({
 
   return (
     <div
+    id="countdown"
       className={`font-jet font-bold shadow-md p-2 rounded-lg ${
         tenSecLeft ? "shake-card" : ""
       } ${fiveMinLeft ? "text-red-900 bg-red-500" : "text-black bg-green-300"}`}
