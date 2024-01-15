@@ -70,7 +70,7 @@ export default function UserDashboardLayout({
                     className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
                   >
                     <AllImages className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-whiteDark dark:fill-white" />
-                    <span className="ms-3 font-light">All Images</span>
+                    <span className="ms-3 font-light">Labs</span>
                   </a>
                 </li>
                 <li className="active-labs-button">

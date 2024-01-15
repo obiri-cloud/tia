@@ -22,8 +22,16 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Skeleton } from "@/components/ui/skeleton";
-import Image from "next/image";
-import trash from "@/public/svgs/trash.svg";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 square.register();
 lineWobble.register();
@@ -37,7 +45,6 @@ const ImagePage = () => {
 
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
-  console.log("id", id);
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -46,6 +53,31 @@ const ImagePage = () => {
   const [runningInstanceFound, setRunningInstanceFound] = useState(false);
   const [currentImage, setCurrentImage] = useState<ILabImage>();
   const [isActive, setIsActive] = useState(null);
+  const [jokes, setJokes] = useState<string[]>([]);
+
+  useEffect(() => {
+    const driverObj = driver({
+      showProgress: true,
+      steps: [
+        {
+          element: ".play-button",
+          popover: {
+            title: "Start lab",
+            description: "Click here to start a lab.",
+          },
+        },
+        {
+          element: ".reviews",
+          popover: {
+            title: "Lab reviews",
+            description: "Read reviews about this lab here.",
+          },
+        },
+      ],
+    });
+
+    driverObj.drive();
+  }, []);
 
   const startLab = async (id: number | undefined) => {
     setCreatingStarted(true);
@@ -134,26 +166,15 @@ const ImagePage = () => {
     }
   };
 
-  // const pollForLab = async (key: string | null) => {
-
-  //   const data = await fetch("/api/poll", {
-  //     method: "GET",
-  //   });
-  //   console.log("data", data);
-
-  //   return data.status
-
-  // };
-
   const pollForLab = async (
     key: string | null,
-    delay: number = 5000,
+    delay: number = 8000,
     maxRetries: number = 10
   ) => {
     try {
       let resolved = false;
 
-      const response = await fetch(`/api/poll?key=${key}`, {
+      const response = await fetch(`/api/poll?key=${key}&token=${token}`, {
         method: "GET",
       });
       let data = await response.json();
@@ -170,12 +191,7 @@ const ImagePage = () => {
           description: "Lab timed out",
         });
         resolved = true;
-        router.push(
-          `/dashboard`
-        );
-        // if (!resolved) {
-        //   setTimeout(() => pollForLab(key, delay , maxRetries - 1), delay);
-        // }
+        router.push(`/dashboard`);
       } else {
         if (data.data) {
           resolved = true;
@@ -189,7 +205,7 @@ const ImagePage = () => {
           );
           toast({
             title: data.message,
-            variant: "destructive",
+            variant: "success",
             description: "Lab Creation",
           });
           setCreatingStarted(false);
@@ -198,6 +214,9 @@ const ImagePage = () => {
           );
         }
         if (!resolved) {
+          console.log("data", data);
+          setJokes((prev) => [data.joke, ...prev]);
+
           setTimeout(() => pollForLab(key, delay, maxRetries - 1), delay);
         }
       }
@@ -381,7 +400,7 @@ const ImagePage = () => {
                   <Tooltip>
                     <TooltipTrigger>
                       <Play
-                        className="fill-black dark:fill-white"
+                        className="fill-black dark:fill-white play-button"
                         onClick={() => startLab(currentImage?.id)}
                       />
                     </TooltipTrigger>
@@ -439,52 +458,69 @@ const ImagePage = () => {
             </div>
           ) : null}
 
-          <h3 className="text-xl font-normal">Reviews</h3>
-          <div className="mt-3">
-            <ol className="relative border-s border-gray-200 dark:border-gray-700">
-              <li className="mb-10 ms-4">
-                <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-                  1st March 2022
-                </time>
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                  Michael Scott
-                </h3>
-                <p className=" font-normal">
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                  Earum atque, laudantium tenetur officiis natus beatae ab autem
-                  recusandae ex est molestiae aspernatur! Blanditiis alias
-                  consequuntur officia magni animi, molestiae iste.
-                </p>
-              </li>
-              <li className="mb-10 ms-4">
-                <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-                  2nd March 2022
-                </time>
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                  Dwight Schrute
-                </h3>
-                <p className=" font-normal">
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                  Earum atque, laudantium tenetur officiis natus beatae ab autem
-                  recusandae ex est molestiae aspernatur! Blanditiis alias
-                  consequuntur officia magni animi, molestiae iste.
-                </p>
-              </li>
-            </ol>
-          </div>
-          <div className="relative">
-            <Textarea
-              className="glassBorder  bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder  fbdyXp  focus-visible:ring-ring focus-visible:ring-offset-0 p-[12px_16px] resize-none"
-              placeholder="Leave a review"
-            />
-            <Button
-              variant="outline"
-              className="bg-pink-200 text-xs h-auto p-2 absolute hover:bg-pink-200 text-white bottom-4 right-4"
-            >
-              Submit
-            </Button>
+          {jokes.length > 0 ? (
+            <div className="px-8 py-8">
+              <Carousel>
+                <CarouselContent>
+                  {jokes.map((joke, i) => (
+                    <CarouselItem className="text-center" key={i}>
+                      {joke}
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </div>
+          ) : null}
+          <div className="reviews">
+            <h3 className="text-xl font-normal">Reviews</h3>
+            <div className="mt-3">
+              <ol className="relative border-s border-gray-200 dark:border-gray-700">
+                <li className="mb-10 ms-4">
+                  <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                  <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
+                    1st March 2022
+                  </time>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                    Michael Scott
+                  </h3>
+                  <p className=" font-normal">
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                    Earum atque, laudantium tenetur officiis natus beatae ab
+                    autem recusandae ex est molestiae aspernatur! Blanditiis
+                    alias consequuntur officia magni animi, molestiae iste.
+                  </p>
+                </li>
+                <li className="mb-10 ms-4">
+                  <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                  <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
+                    2nd March 2022
+                  </time>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                    Dwight Schrute
+                  </h3>
+                  <p className=" font-normal">
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                    Earum atque, laudantium tenetur officiis natus beatae ab
+                    autem recusandae ex est molestiae aspernatur! Blanditiis
+                    alias consequuntur officia magni animi, molestiae iste.
+                  </p>
+                </li>
+              </ol>
+            </div>
+            <div className="relative">
+              <Textarea
+                className="glassBorder  bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder  fbdyXp  focus-visible:ring-ring focus-visible:ring-offset-0 p-[12px_16px] resize-none"
+                placeholder="Leave a review"
+              />
+              <Button
+                variant="outline"
+                className="bg-pink-200 text-xs h-auto p-2 absolute hover:bg-pink-200 text-white bottom-4 right-4"
+              >
+                Submit
+              </Button>
+            </div>
           </div>
         </div>
       </div>

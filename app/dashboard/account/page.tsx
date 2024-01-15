@@ -42,6 +42,8 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { driver } from "driver.js";
+
 
 const frameworks = [
   {
@@ -284,6 +286,17 @@ const AccountPage = () => {
       }
     }
   };
+useEffect(()=>{
+  const driverObj = driver({
+    showProgress: true,
+    steps: [
+      { element: '.theme-selector', popover: { title: 'Themes', description: 'Switch between light and dark mode.' } },
+   
+    ]
+  });
+  
+  driverObj.drive();
+},[])
 
   return (
     <div className="sc-hLBbgP sc-fLjoTV jAQqIz jVzpQn">
@@ -431,7 +444,7 @@ const AccountPage = () => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-[200px] justify-between dark:bg-comboBg bg-white"
+                    className="w-[200px] justify-between dark:bg-comboBg bg-white theme-selector"
                   >
                     {value
                       ? themes.find((theme) => theme.value === value)?.label

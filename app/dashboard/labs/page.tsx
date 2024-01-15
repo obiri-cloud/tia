@@ -4,7 +4,13 @@ import { toast } from "@/components/ui/use-toast";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { MagicSpinner } from "react-spinners-kit";
 import { Drawer } from "vaul";
@@ -13,6 +19,18 @@ import info_white from "@/public/svgs/info-white.svg";
 import secureLocalStorage from "react-secure-storage";
 import double_arrow_left from "@/public/svgs/double_arrow_left.svg";
 import { Dialog } from "@/components/ui/dialog";
+import { driver } from "driver.js";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
 interface ILabInfo {
   id: number | null;
   url: string;
@@ -35,10 +53,10 @@ const LabsPage = () => {
   const [isNotDesktop, setIsNotDesktop] = useState(false);
   const [showInstructions, setShowInstructions] = useState(true);
   const drawerButton = useRef<HTMLButtonElement>(null);
+  const reviewDrawerButton = useRef<HTMLButtonElement>(null);
 
   const searchParams = useSearchParams();
-  const id = searchParams.get("image")
-
+  const id = searchParams.get("image");
 
   //choose the screen size
   const handleResize = () => {
@@ -61,7 +79,6 @@ const LabsPage = () => {
     let tialab_info: ILabInfo | null = JSON.parse(
       (secureLocalStorage.getItem("tialab_info") as string) || ""
     );
-    console.log("tialab_info", tialab_info);
 
     if (
       tialab_info &&
@@ -78,6 +95,38 @@ const LabsPage = () => {
         creation_date: "",
       });
     }
+  }, []);
+
+  useEffect(() => {
+    const driverObj = driver({
+      showProgress: true,
+      steps: [
+        {
+          element: ".instructions",
+          popover: {
+            title: "Instructions",
+            description: "Instructions about the lab and be found here",
+          },
+        },
+        {
+          element: ".playground",
+          popover: {
+            title: "Playground",
+            description: "Play around and experiment here.",
+          },
+        },
+        {
+          element: ".countdown",
+          popover: {
+            title: "Countdown",
+            description:
+              "This timer keep track of how much you have left on your lab.",
+          },
+        },
+      ],
+    });
+
+    driverObj.drive();
   }, []);
 
   // useEffect(() => {
@@ -120,7 +169,7 @@ const LabsPage = () => {
   const endLab = async () => {
     setDeleting(true);
     console.log("formData", labInfo);
-    
+
     let formData = JSON.stringify({ image: labInfo!.id });
     toast({
       title: "Hold on we are cleaning your lab environment.",
@@ -144,7 +193,13 @@ const LabsPage = () => {
           title: "Lab Deleted Successfully...",
           variant: "success",
         });
-        router.push("/dashboard");
+
+        if (reviewDrawerButton) {
+          document.getElementById("closeDialog")?.click();
+          document.getElementById("sheet-trigger")?.click();
+          // reviewDrawerButton.current?.click();
+        }
+        // router.push("/dashboard");
       } else {
         toast({
           title: "Something went wrong. Try again",
@@ -163,11 +218,14 @@ const LabsPage = () => {
   };
 
   const handleClick = () => {
-    console.log("click");
-
     if (drawerButton) {
       drawerButton.current?.click();
+      // reviewDrawerButton.current?.click();
     }
+  };
+
+  const click = () => {
+    document.getElementById("sheet-trigger")?.click();
   };
 
   return (
@@ -178,52 +236,54 @@ const LabsPage = () => {
           autoSaveId="tia-lab"
           direction="horizontal"
         >
-
-            <Panel
-              className={`h-full relative instructions  hidden ${showInstructions? 'lg:block': 'hidden'}`}
-              collapsible={true}
-            >
-              <div className="flex justify-end p-3">
-                <button
-                  onClick={() =>
-                    setShowInstructions(
-                      (setShowInstructions) => !setShowInstructions
-                    )
-                  }
-                  className="bg-gray-300 shadow-md p-3 w-fit rounded-full instructions-toggle"
-                >
-                  <Image
-                    src={double_arrow_left}
-                    alt="double_arrow_left"
-                    className="arrow-img"
-                  />
-                </button>
-              </div>
-              <Instructions />
-              <div className="absolute bottom-4 left-4">
-                <CountdownClock
-                  startTime={labInfo?.creation_date || ""}
-                  endLab={endLab}
+          <Panel
+            className={`h-full relative instructions  hidden ${
+              showInstructions ? "lg:block" : "hidden"
+            }`}
+            collapsible={true}
+          >
+            <div className="flex justify-end p-3">
+              <button
+                onClick={() =>
+                  setShowInstructions(
+                    (setShowInstructions) => !setShowInstructions
+                  )
+                }
+                className="bg-gray-300 shadow-md p-3 w-fit rounded-full instructions-toggle"
+              >
+                <Image
+                  src={double_arrow_left}
+                  alt="double_arrow_left"
+                  className="arrow-img"
                 />
-              </div>
-              <DialogTrigger className="w-full text-left">
-                <Button
-                  disabled={deleting}
-                  variant="destructive"
-                  className="absolute bottom-4 right-4 disabled:bg-red-900/90"
-                >
-                  {deleting ? "Ending Lab..." : "End Lab"}
-                </Button>
-              </DialogTrigger>
-            </Panel>
+              </button>
+            </div>
+            <Instructions />
+            <div className="absolute bottom-4 left-4 countdown">
+              <button onClick={click}>click</button>
+              <CountdownClock
+                startTime={labInfo?.creation_date || ""}
+                endLab={endLab}
+              />
+            </div>
+            <DialogTrigger className="w-full text-left">
+              <Button
+                disabled={deleting}
+                variant="destructive"
+                className="absolute bottom-4 right-4 disabled:bg-red-900/90"
+              >
+                {deleting ? "Ending Lab..." : "End Lab"}
+              </Button>
+            </DialogTrigger>
+          </Panel>
           {showInstructions ? <ResizeHandle /> : null}
           <Panel className="h-full" collapsible={true}>
             {isLoading ? (
-              <div className="h-full flex justify-center items-center">
+              <div className="h-full flex justify-center items-center instructions">
                 <MagicSpinner size={100} color="#686769" loading={isLoading} />
               </div>
             ) : null}
-            <div className="h-full">
+            <div className="h-full playground">
               <iframe
                 src={(labInfo && labInfo.url) || ""}
                 width="100%"
@@ -236,7 +296,7 @@ const LabsPage = () => {
         {isNotDesktop ? (
           <button
             onClick={handleClick}
-            className={` bottom-10 left-10 glassBorder p-5 rounded-full fixed ${
+            className={` bottom-10 right-10 glassBorder p-5 rounded-full fixed ${
               theme == "dark" ? "bg-white" : "bg-black"
             }`}
           >
@@ -289,6 +349,7 @@ const LabsPage = () => {
         confirmText="Yes, Delete this lab"
         confirmFunc={() => endLab()}
       />
+      <ReviewDrawer />
     </Dialog>
   );
 };
@@ -301,7 +362,11 @@ import { useTheme } from "next-themes";
 import { CountdownClock } from "@/components/Labs/countdown";
 import { DialogTrigger } from "@/components/ui/dialog";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
-import { userCheck } from "@/lib/utils";
+import { cn, userCheck } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { DrawerClose, DrawerFooter } from "@/components/ui/drawer";
 
 function ResizeHandle({ id }: { id?: string }) {
   return (
@@ -323,7 +388,7 @@ function ResizeHandle({ id }: { id?: string }) {
 
 const Instructions = () => {
   return (
-    <div className="p-2 overflow-x-auto">
+    <div className="p-2 overflow-x-auto text-black ">
       <h1 className="font-bold text-3xl">Instructions</h1>
       <p className="">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione
@@ -332,5 +397,198 @@ const Instructions = () => {
         cupiditate quod.
       </p>
     </div>
+  );
+};
+
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { z } from "zod";
+
+const ReviewDrawer = () => {
+  const ratings = [
+    {
+      value: "1",
+      label: "1 - Poor",
+    },
+    {
+      value: "2",
+      label: "2 - Fair",
+    },
+    {
+      value: "3",
+      label: "3 - Good",
+    },
+    {
+      value: "4",
+      label: "4 - Very Good",
+    },
+    {
+      value: "5",
+      label: "5 - Excellent",
+    },
+  ];
+
+  const { data: session } = useSession();
+  //@ts-ignore
+  const token = session?.user!.tokens?.access_token;
+
+  //@ts-ignore
+  const user = session?.user;
+
+  const searchParams = useSearchParams();
+  const id = searchParams.get("image");
+  const [value, setValue] = React.useState<string>("");
+  const [open, setOpen] = React.useState(false);
+  const [comment, setComment] = useState<string>("");
+
+  const submitReview = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    let formData = { comments: comment, review: value, image: id, user: "" };
+
+    let formSchema = z.object({
+      image: z.string().optional(),
+      comments: z.string().optional(),
+      review: z.string().optional(),
+      user: z.string().optional(),
+    });
+
+    try {
+      formSchema.parse(formData);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/review/create/`,
+        JSON.stringify(formData),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast({
+        title: response.data.message,
+        variant: "success",
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        error.issues.map((err) =>
+          toast({
+            variant: "destructive",
+            title: "An error occured when submitting your review.",
+            description: err.message,
+          })
+        );
+      }
+      if (error instanceof AxiosError) {
+        toast({
+          variant: "destructive",
+          title: "An error occured when submitting your review.",
+          description: error?.response?.data.message,
+        });
+      }
+    } finally {
+      // if (buttonRef.current) {
+      //   buttonRef.current.disabled = false;
+      // }
+    }
+  };
+
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button id="sheet-trigger">Open</Button>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Review this lab</SheetTitle>
+          <SheetDescription>
+            Your reviews help us make the lab better for other users.
+          </SheetDescription>
+        </SheetHeader>
+        <form onSubmit={submitReview} className="grid gap-4 py-4 text-black">
+          <div className="">
+            <Label htmlFor="name" className=" block">
+              Rating
+            </Label>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className=" mt-1 justify-between dark:bg-comboBg bg-white theme-selector w-full
+                  glassBorder  bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder  fbdyXp  focus-visible:ring-ring focus-visible:ring-offset-0 p-[12px_16px] resize-none
+                  
+                  "
+                >
+                  {value
+                    ? ratings.find((rating) => rating.value == value)?.label
+                    : "Select rating..."}
+                  <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandEmpty>No ratings found.</CommandEmpty>
+                  <CommandGroup className="dark:bg-comboBg bg-white">
+                    {ratings.map((rating) => (
+                      <CommandItem
+                        key={rating.value}
+                        value={rating.value}
+                        onSelect={(currentValue) => {
+                          console.log("currentValue", currentValue);
+
+                          setValue(currentValue === value ? "" : currentValue);
+                          setOpen(false);
+                        }}
+                        className="capitalize"
+                      >
+                        {rating.label}
+                        <CheckIcon
+                          className={cn(
+                            "ml-auto h-4 w-4",
+                            value === rating.value ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div className="">
+            <Label htmlFor="comment" className="text-right">
+              Comment
+            </Label>
+            <div className="relative">
+              <Textarea
+                onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                  setComment(e.target.value)
+                }
+                className="glassBorder  bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder  fbdyXp  focus-visible:ring-ring focus-visible:ring-offset-0 p-[12px_16px] resize-none"
+                placeholder="Leave a review"
+              />
+            </div>
+          </div>
+          <SheetFooter>
+            <SheetClose asChild>
+              <Button type="submit">Submit</Button>
+            </SheetClose>
+          </SheetFooter>
+        </form>
+      </SheetContent>
+    </Sheet>
   );
 };

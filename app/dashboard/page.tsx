@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import React, { SVGProps, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios, { AxiosError } from "axios";
@@ -12,6 +11,7 @@ import { userCheck } from "@/lib/utils";
 import { useDispatch } from "react-redux";
 import { setCurrentImage } from "@/redux/reducers/userSlice";
 import { Skeleton } from "@/components/ui/skeleton";
+import { driver } from "driver.js";
 
 interface ILabListItem {
   id: number;
@@ -37,8 +37,47 @@ const UserPage = () => {
   useEffect(() => {
     getImages();
   }, []);
+  useEffect(() => {
+    const driverObj = driver({
+      showProgress: true,
+      steps: [
+        {
+          element: ".all-images-button",
+          popover: {
+            title: "Labs",
+            description: "Click here to view all available labs.",
+          },
+        },
+        {
+          element: ".active-labs-button",
+          popover: {
+            title: "Active Labs",
+            description: "Click here to view all your active labs.",
+          },
+        },
+        {
+          element: ".account-button",
+          popover: {
+            title: "Account",
+            description: "View and update your account info here.",
+          },
+        },
+        {
+          element: ".logout-button",
+          popover: { title: "Logout", description: "Click here to logout" },
+        },
+        {
+          element: ".all-images-list",
+          popover: {
+            title: "Images",
+            description: "Start a lab by clicking on one of the images.",
+          },
+        },
+      ],
+    });
 
-
+    driverObj.drive();
+  }, []);
 
   const getImages = async () => {
     try {
@@ -160,7 +199,7 @@ const UserPage = () => {
         <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
       </div>
       <div className="p-4">
-        <div id="all-images-list" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 keyfeatures">
+        <div className="all-images-list grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 keyfeatures">
           {images && images.length >= -1 ? (
             images.map((image, i) => (
               <div
