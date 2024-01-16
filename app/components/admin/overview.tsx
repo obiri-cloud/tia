@@ -73,7 +73,7 @@ const Overview = () => {
           </Card>
         </div>
 
-        <NewImageForm imageDetails={null} />
+        <NewImageForm  />
       </Dialog>
     </div>
   );

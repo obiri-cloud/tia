@@ -26,14 +26,13 @@ import { toast } from "@/components/ui/use-toast";
 import { getImageListX } from "./overview";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { setImageCount, setImageList } from "@/redux/reducers/adminSlice";
+import { setCurrentImage, setImageCount, setImageList } from "@/redux/reducers/adminSlice";
 
 const Images = () => {
   const { imageCount, imageList } = useSelector(
     (state: RootState) => state.admin
   );
 
-  const [currentImage, setCurrentImage] = useState<ILabImage | null>(null);
   const { data: session } = useSession();
   const dispatch = useDispatch();
 
@@ -108,7 +107,9 @@ const Images = () => {
                   {/* You have {imageCount} image(s). */}
                 </CardDescription>
               </div>
-              <DialogTrigger onClick={() => setCurrentImage(null)}>
+              
+
+              <DialogTrigger onClick={() => dispatch(setCurrentImage(null))}>
                 <Button>Add Image</Button>
               </DialogTrigger>
             </CardHeader>
@@ -141,7 +142,7 @@ const Images = () => {
                             </TableCell>
                             <TableCell className="underline font-medium text-right">
                               <DialogTrigger
-                                onClick={() => setCurrentImage(image)}
+                                onClick={() => dispatch(setCurrentImage(image))}
                               >
                                 <Button className="font-medium" variant="link">
                                   View
@@ -165,7 +166,7 @@ const Images = () => {
             </CardContent>
           </Card>
         </div>
-        <NewImageForm imageDetails={currentImage} />
+        <NewImageForm  />
       </Dialog>
     </div>
   );
