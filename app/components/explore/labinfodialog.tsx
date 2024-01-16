@@ -208,7 +208,6 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     e: React.KeyboardEvent<HTMLDivElement>,
     text: string
   ) => {
-    console.log("e ==>", e);
     if (e.key === "Escape") {
       e.preventDefault();
       toast({
