@@ -9,14 +9,15 @@ import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getImageListX } from "./overview";
-import { setImageCount, setImageList } from "@/redux/reducers/adminSlice";
+import { setCurrentImage, setImageCount, setImageList } from "@/redux/reducers/adminSlice";
 import { useDispatch } from "react-redux";
 
 interface IImageTableTable {
   imageList: ILabImage[] | null;
 }
 const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
-  const [currentImage, setCurrentImage] = useState<ILabImage | null>(null);
+  console.log("imageList",imageList);
+  
   const dialogRef = useRef<HTMLDialogElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dispatch = useDispatch();
@@ -94,7 +95,9 @@ const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
                 </Avatar>
                 <DialogTrigger
                   className="w-full text-left"
-                  onClick={() => setCurrentImage(lab)}
+                  onClick={() => {
+                    dispatch(setCurrentImage(lab));
+                  }}
                 >
                   <div className="ml-4 space-y-1">
                     <p className="text-sm font-medium leading-none">
@@ -138,7 +141,8 @@ const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
           </>
         )}
       </div>
-      <NewImageForm imageDetails={currentImage} />
+      <NewImageForm
+      />
     </Dialog>
   );
 };

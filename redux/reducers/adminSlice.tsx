@@ -6,6 +6,7 @@ export interface AdminState {
   imageCount: number | null;
   labList: ILabList[] | null;
   imageList: ILabImage[] | null;
+  currentImage: ILabImage | null;
 }
 
 const initialState: AdminState = {
@@ -13,6 +14,7 @@ const initialState: AdminState = {
   imageCount: 0,
   labList: null,
   imageList: null,
+  currentImage: null,
 };
 
 export const adminSlice = createSlice({
@@ -31,10 +33,18 @@ export const adminSlice = createSlice({
     setImageList: (state, action: PayloadAction<ILabImage[]>) => {
       state.imageList = action.payload;
     },
+    setCurrentImage: (state, action: PayloadAction<ILabImage | null>) => {
+      state.currentImage = action.payload;
+    },
   },
 });
 
-export const { setLabCount, setImageCount, setLabList, setImageList } =
-  adminSlice.actions;
+export const {
+  setLabCount,
+  setImageCount,
+  setLabList,
+  setImageList,
+  setCurrentImage,
+} = adminSlice.actions;
 
 export default adminSlice.reducer;
