@@ -467,15 +467,24 @@ const ReviewDrawer = () => {
   const token = session?.user!.tokens?.access_token;
   const router = useRouter();
 
-  //@ts-ignore
-  const user = session?.user;
 
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
   const [value, setValue] = React.useState<string>("");
   const [open, setOpen] = React.useState(false);
   const [comment, setComment] = useState<string>("");
-  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOnEsc = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    console.log("e", e.key);
+    
+    if (e.key === "Escape") {
+      router.push("/dashboard");
+    }
+  };
+
+  const handleOnClickOutside = (e: ContentProps["onPointerDownOutside"]) => {
+    router.push("/dashboard");
+  };
 
   const submitReview = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -536,11 +545,11 @@ const ReviewDrawer = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="invisible" id="sheet-trigger"></Button>
+        <Button className="visible" id="sheet-trigger"></Button>
       </DialogTrigger>
       <DialogContent
-        onClickOutside={() => router.push("/dashboard")}
-        onEsc={() => router.push("/dashboard")}
+        onEsc={(e) => handleOnEsc(e)}
+        onClickOutside={(e) => handleOnClickOutside(e)}
       >
         <DialogHeader>
           <DialogTitle className="text-black font-bold text-xl">
