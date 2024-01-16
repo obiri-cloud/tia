@@ -35,6 +35,7 @@ interface ILabImage {
   liveness_probe_timeout_seconds?: number;
   liveness_probe_success_threshold?: number;
   liveness_probe_failure_threshold?: number;
+  updated_date?: string
 }
 
 interface ILabInfoDialog {
