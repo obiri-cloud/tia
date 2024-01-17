@@ -32,9 +32,22 @@ import {
 
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import { MONTHS } from "@/helpers/months";
 
 square.register();
 lineWobble.register();
+
+interface IReview {
+  comments: string;
+  creation_date: string;
+  review: string;
+  user: IUser;
+}
+
+interface IUser {
+  first_name: string;
+  last_name: string;
+}
 
 const ImagePage = () => {
   // const { currentImage } = useSelector((state: RootState) => state.user);
@@ -53,6 +66,7 @@ const ImagePage = () => {
   const [runningInstanceFound, setRunningInstanceFound] = useState(false);
   const [currentImage, setCurrentImage] = useState<ILabImage>();
   const [isActive, setIsActive] = useState(null);
+  const [reviews, setReviews] = useState<IReview[]>([]);
   const [jokes, setJokes] = useState<string[]>([]);
 
   useEffect(() => {
@@ -337,6 +351,29 @@ const ImagePage = () => {
     }
   };
 
+  const getReviews = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/review/top?image=${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("-->", response.data.data);
+
+      setReviews(response.data.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getReviews();
+  }, []);
+
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge  flex gap-2 p-2 items-center">
@@ -363,7 +400,7 @@ const ImagePage = () => {
             )}
             {currentImage?.difficulty_level ? (
               <p className="text-sm capitalize font-semibold">
-                Level:{" "}{currentImage?.difficulty_level}
+                Level: {currentImage?.difficulty_level}
               </p>
             ) : (
               <Skeleton className="w-[100px] h-[14px] rounded-md" />
@@ -414,26 +451,23 @@ const ImagePage = () => {
           </div>
         </div>
 
-
         {jokes.length > 0 ? (
-            <div className="px-8 py-8">
-              <Carousel>
-                <CarouselContent>
-                  {jokes.map((joke, i) => (
-                    <CarouselItem className="text-center" key={i}>
-                      {joke}
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-              </Carousel>
-            </div>
-          ) : null}
+          <div className="px-8 py-8">
+            <Carousel>
+              <CarouselContent>
+                {jokes.map((joke, i) => (
+                  <CarouselItem className="text-center" key={i}>
+                    {joke}
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
+          </div>
+        ) : null}
 
         <div className="mt-8">
-
-          
           <p className={`${creatingStarted ? "opacity-40" : "opacity-100"}`}>
             {/* {currentImage?.description} */}
             Lorem ipsum dolor sit amet, consectetur adipisicing elit.
@@ -481,36 +515,18 @@ const ImagePage = () => {
             <h3 className="text-xl font-normal">Reviews</h3>
             <div className="mt-3">
               <ol className="relative border-s border-gray-200 dark:border-gray-700">
-                <li className="mb-10 ms-4">
-                  <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                  <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-                    1st March 2022
-                  </time>
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                    Michael Scott
-                  </h3>
-                  <p className=" font-normal">
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Earum atque, laudantium tenetur officiis natus beatae ab
-                    autem recusandae ex est molestiae aspernatur! Blanditiis
-                    alias consequuntur officia magni animi, molestiae iste.
-                  </p>
-                </li>
-                <li className="mb-10 ms-4">
-                  <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                  <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-                    2nd March 2022
-                  </time>
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                    Dwight Schrute
-                  </h3>
-                  <p className=" font-normal">
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Earum atque, laudantium tenetur officiis natus beatae ab
-                    autem recusandae ex est molestiae aspernatur! Blanditiis
-                    alias consequuntur officia magni animi, molestiae iste.
-                  </p>
-                </li>
+                {reviews.map((review, i) => (
+                  <li key={i} className="mb-10 ms-4">
+                    <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                    <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
+                   {new Date(review.creation_date as string).toDateString()}  · {new Date(review.creation_date as string).toLocaleTimeString()}
+                    </time>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                      {review.user.first_name} {review.user.last_name}
+                    </h3>
+                    <p className=" font-normal">{review.comments}</p>
+                  </li>
+                ))}
               </ol>
             </div>
           </div>
