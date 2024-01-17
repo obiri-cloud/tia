@@ -126,7 +126,7 @@ const SignupForm = () => {
             name="first_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className=" form-text">First Name</FormLabel>
+                <FormLabel className=" formTextLight">First Name</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="First Name"
@@ -145,7 +145,7 @@ const SignupForm = () => {
             name="last_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className=" form-text">Last Name</FormLabel>
+                <FormLabel className=" formTextLight">Last Name</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Last Name"
@@ -165,7 +165,7 @@ const SignupForm = () => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" form-text">Email</FormLabel>
+              <FormLabel className=" formTextLight">Email</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Email"
@@ -185,7 +185,7 @@ const SignupForm = () => {
             name="password"
             render={({ field }) => (
               <FormItem className="">
-                <FormLabel className=" form-text">Password</FormLabel>
+                <FormLabel className=" formTextLight">Password</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -204,7 +204,7 @@ const SignupForm = () => {
             name="confirm_password"
             render={({ field }) => (
               <FormItem className="">
-                <FormLabel className=" form-text">Confirm Password</FormLabel>
+                <FormLabel className=" formTextLight">Confirm Password</FormLabel>
                 <FormControl>
                   <Input
                     {...field}

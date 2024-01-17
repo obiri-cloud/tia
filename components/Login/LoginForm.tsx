@@ -103,7 +103,7 @@ const LoginForm = () => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" form-text">Email</FormLabel>
+              <FormLabel className=" formTextLight">Email</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Email"
@@ -123,7 +123,7 @@ const LoginForm = () => {
           name="password"
           render={({ field }) => (
             <FormItem className="my-6">
-              <FormLabel className=" form-text">Password</FormLabel>
+              <FormLabel className=" formTextLight">Password</FormLabel>
               <FormControl>
                 <Input
                   {...field}

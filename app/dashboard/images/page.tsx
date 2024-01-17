@@ -363,7 +363,7 @@ const ImagePage = () => {
             )}
             {currentImage?.difficulty_level ? (
               <p className="text-sm capitalize font-semibold">
-                {currentImage?.difficulty_level}
+                Level:{" "}{currentImage?.difficulty_level}
               </p>
             ) : (
               <Skeleton className="w-[100px] h-[14px] rounded-md" />
@@ -414,7 +414,26 @@ const ImagePage = () => {
           </div>
         </div>
 
+
+        {jokes.length > 0 ? (
+            <div className="px-8 py-8">
+              <Carousel>
+                <CarouselContent>
+                  {jokes.map((joke, i) => (
+                    <CarouselItem className="text-center" key={i}>
+                      {joke}
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </div>
+          ) : null}
+
         <div className="mt-8">
+
+          
           <p className={`${creatingStarted ? "opacity-40" : "opacity-100"}`}>
             {/* {currentImage?.description} */}
             Lorem ipsum dolor sit amet, consectetur adipisicing elit.
@@ -458,21 +477,6 @@ const ImagePage = () => {
             </div>
           ) : null}
 
-          {jokes.length > 0 ? (
-            <div className="px-8 py-8">
-              <Carousel>
-                <CarouselContent>
-                  {jokes.map((joke, i) => (
-                    <CarouselItem className="text-center" key={i}>
-                      {joke}
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-              </Carousel>
-            </div>
-          ) : null}
           <div className="reviews">
             <h3 className="text-xl font-normal">Reviews</h3>
             <div className="mt-3">
@@ -508,18 +512,6 @@ const ImagePage = () => {
                   </p>
                 </li>
               </ol>
-            </div>
-            <div className="relative">
-              <Textarea
-                className="glassBorder  bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder  fbdyXp  focus-visible:ring-ring focus-visible:ring-offset-0 p-[12px_16px] resize-none"
-                placeholder="Leave a review"
-              />
-              <Button
-                variant="outline"
-                className="bg-pink-200 text-xs h-auto p-2 absolute hover:bg-pink-200 text-white bottom-4 right-4"
-              >
-                Submit
-              </Button>
             </div>
           </div>
         </div>

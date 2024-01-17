@@ -343,7 +343,7 @@ const NewImageForm = () => {
           name="readiness_probe_initial_delay_seconds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
+              <FormLabel className=" formTextLight">
                 Readiness Probe Initial Delay Seconds{" "}
                 {imageDetails?.readiness_probe_initial_delay_seconds}
               </FormLabel>
@@ -352,7 +352,7 @@ const NewImageForm = () => {
                   placeholder="Readiness Probe Initial Delay Seconds"
                   type="number"
                   {...field}
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                   onChange={(e) =>
                     setReadinessProbeInitialDelaySeconds(Number(e.target.value))
                   }
@@ -368,14 +368,14 @@ const NewImageForm = () => {
           name="readiness_probe_period_seconds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Readiness Probe Period Seconds</FormLabel>
+              <FormLabel className=" formTextLight">Readiness Probe Period Seconds</FormLabel>
               <FormControl>
                 <Input
                   min={1}
                   placeholder="Readiness Probe Period Seconds"
                   type="number"
                   {...field}
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                   onChange={(e) =>
                     setReadinessProbePeriodSeconds(Number(e.target.value))
                   }
@@ -395,13 +395,13 @@ const NewImageForm = () => {
           name="readiness_probe_timeout_seconds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Readiness Probe Timeout Seconds</FormLabel>
+              <FormLabel className=" formTextLight">Readiness Probe Timeout Seconds</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Readiness Probe Timeout Seconds"
                   type="number"
                   {...field}
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                   onChange={(e) =>
                     setReadinessProbeTimeoutSeconds(Number(e.target.value))
                   }
@@ -418,14 +418,14 @@ const NewImageForm = () => {
           name="readiness_probe_success_threshold"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Readiness Probe Success Threshold</FormLabel>
+              <FormLabel className=" formTextLight">Readiness Probe Success Threshold</FormLabel>
               <FormControl>
                 <Input
                   min={1}
                   placeholder="Readiness Probe Success Threshold"
                   type="number"
                   {...field}
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                   onChange={(e) =>
                     setReadinessProbeSuccessThreshold(Number(e.target.value))
                   }
@@ -445,13 +445,13 @@ const NewImageForm = () => {
           name="readiness_probe_failure_threshold"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Readiness Probe Failure Threshold</FormLabel>
+              <FormLabel className=" formTextLight">Readiness Probe Failure Threshold</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Readiness Probe Failure Threshold"
                   type="number"
                   {...field}
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                   onChange={(e) =>
                     setReadinessProbeFailureThreshold(Number(e.target.value))
                   }
@@ -468,14 +468,14 @@ const NewImageForm = () => {
           name="liveness_probe_initial_delay_seconds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Liveness Probe Initial Delay Seconds</FormLabel>
+              <FormLabel className=" formTextLight">Liveness Probe Initial Delay Seconds</FormLabel>
               <FormControl>
                 <Input
                   min={1}
                   placeholder="Liveness Probe Initial Delay Seconds"
                   type="number"
                   {...field}
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                   onChange={(e) =>
                     setLivenessProbeInitialDelaySeconds(Number(e.target.value))
                   }
@@ -495,13 +495,13 @@ const NewImageForm = () => {
           name="liveness_probe_period_seconds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Liveness Probe Period Seconds</FormLabel>
+              <FormLabel className=" formTextLight">Liveness Probe Period Seconds</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Liveness Probe Period Seconds"
                   type="number"
                   {...field}
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                   onChange={(e) =>
                     setLivenessProbePeriodSeconds(Number(e.target.value))
                   }
@@ -518,14 +518,14 @@ const NewImageForm = () => {
           name="liveness_probe_timeout_seconds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Liveness Probe Timeout Seconds</FormLabel>
+              <FormLabel className=" formTextLight">Liveness Probe Timeout Seconds</FormLabel>
               <FormControl>
                 <Input
                   min={1}
                   placeholder="Liveness Probe Timeout Seconds"
                   type="number"
                   {...field}
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                   onChange={(e) =>
                     setLivenessProbeTimeoutSeconds(Number(e.target.value))
                   }
@@ -545,13 +545,13 @@ const NewImageForm = () => {
           name="liveness_probe_success_threshold"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Liveness Probe Success Threshold</FormLabel>
+              <FormLabel className=" formTextLight">Liveness Probe Success Threshold</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Liveness Probe Success Threshold"
                   type="number"
                   {...field}
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                   onChange={(e) =>
                     setLivenessProbeSuccessThreshold(Number(e.target.value))
                   }
@@ -567,14 +567,14 @@ const NewImageForm = () => {
           name="liveness_probe_failure_threshold"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Liveness Probe Failure Threshold</FormLabel>
+              <FormLabel className=" formTextLight">Liveness Probe Failure Threshold</FormLabel>
               <FormControl>
                 <Input
                   min={1}
                   placeholder="Liveness Probe Failure Threshold"
                   type="number"
                   {...field}
-                  className="glassBorder text-black"
+                  className="glassBorder text-white bg-black/10"
                   onChange={(e) =>
                     setLivenessProbeFailureThreshold(Number(e.target.value))
                   }
@@ -616,7 +616,7 @@ const NewImageForm = () => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
+                <FormLabel className=" formTextLight">
                   Name <sup className="text-red-500">*</sup>
                 </FormLabel>
                 <FormControl>
@@ -624,7 +624,7 @@ const NewImageForm = () => {
                     placeholder="Name"
                     type="text"
                     {...field}
-                    className="glassBorder text-black"
+                    className="glassBorder text-white bg-black/10"
                     ref={nameRef}
                     defaultValue={imageDetails?.name}
                   />
@@ -640,7 +640,7 @@ const NewImageForm = () => {
               name="docker_image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
+                  <FormLabel className=" formTextLight">
                     Docker Image <sup className="text-red-500">*</sup>
                   </FormLabel>
                   <FormControl>
@@ -648,7 +648,7 @@ const NewImageForm = () => {
                       placeholder="Docker Image"
                       type="text"
                       {...field}
-                      className="glassBorder text-black"
+                      className="glassBorder text-white bg-black/10"
                       ref={dockerImageRef}
                       defaultValue={imageDetails?.docker_image}
                     />
@@ -665,7 +665,7 @@ const NewImageForm = () => {
               name="port_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
+                  <FormLabel className=" formTextLight">
                     Port Number <sup className="text-red-500">*</sup>
                   </FormLabel>
                   <FormControl>
@@ -673,7 +673,7 @@ const NewImageForm = () => {
                       placeholder="Port Number"
                       type="number"
                       {...field}
-                      className="glassBorder text-black"
+                      className="glassBorder text-white bg-black/10"
                       ref={portNumberRef}
                       defaultValue={imageDetails?.port_number}
                     />
@@ -687,7 +687,7 @@ const NewImageForm = () => {
               name="duration"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
+                  <FormLabel className=" formTextLight">
                     Duration <sup className="text-red-500">*</sup>
                   </FormLabel>
                   <FormControl>
@@ -696,7 +696,7 @@ const NewImageForm = () => {
                       placeholder="Duration"
                       type="number"
                       {...field}
-                      className="glassBorder text-black"
+                      className="glassBorder text-white bg-black/10"
                       ref={durationRef}
                       defaultValue={imageDetails?.duration}
                     />
@@ -711,7 +711,7 @@ const NewImageForm = () => {
             name="difficulty_level"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
+                <FormLabel className=" formTextLight">
                   Difficulty Level <sup className="text-red-500">*</sup>
                 </FormLabel>
                 <FormControl>
@@ -748,7 +748,7 @@ const NewImageForm = () => {
               name="image_picture"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Image Picture</FormLabel>
+                  <FormLabel className=" formTextLight">Image Picture</FormLabel>
                   <FormControl>
                     {imageDetails &&
                     imageDetails.image_picture &&
@@ -768,7 +768,7 @@ const NewImageForm = () => {
                         type="file"
                         {...field}
                         ref={imagePictureRef}
-                        className="glassBorder text-black"
+                        className="glassBorder text-white bg-black/10"
                       />
                     )}
                   </FormControl>
@@ -783,10 +783,10 @@ const NewImageForm = () => {
               name="command"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Command</FormLabel>
+                  <FormLabel className=" formTextLight">Command</FormLabel>
                   <FormControl>
                     <Input
-                      className="glassBorder text-black"
+                      className="glassBorder text-white bg-black/10"
                       {...field}
                       ref={commandRef}
                       defaultValue={imageDetails?.command}
@@ -805,10 +805,10 @@ const NewImageForm = () => {
               name="arguments"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Arguments</FormLabel>
+                  <FormLabel className=" formTextLight">Arguments</FormLabel>
                   <FormControl>
                     <Input
-                      className="glassBorder text-black"
+                      className="glassBorder text-white bg-black/10"
                       {...field}
                       ref={argumentsRef}
                       defaultValue={imageDetails?.arguments}
@@ -827,10 +827,10 @@ const NewImageForm = () => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel className=" formTextLight">Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="glassBorder text-black"
+                      className="glassBorder text-white bg-black/10"
                       {...field}
                       ref={descriptionRef}
                       defaultValue={imageDetails?.description}

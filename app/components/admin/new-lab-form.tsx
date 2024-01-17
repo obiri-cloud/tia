@@ -123,13 +123,13 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel className="dark:text-black formTextLight">Name</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Name"
                     type="text"
                     {...field}
-                    className="glassBorder text-black"
+                    className="glassBorder text-white bg-black/10"
                     ref={nameRef}
                     defaultValue={labDetails?.name}
                   />
@@ -145,7 +145,7 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
               name="deployment_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Deployment Name</FormLabel>
+                  <FormLabel className=" formTextLight">Deployment Name</FormLabel>
                   <FormControl>
                     <Input
                       readOnly={true}
@@ -169,7 +169,7 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
               name="ingress_url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ingress Url</FormLabel>
+                  <FormLabel className=" formTextLight">Ingress Url</FormLabel>
                   <FormControl>
                     <Input
                       readOnly={true}
@@ -192,7 +192,7 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
             name="image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Image</FormLabel>
+                <FormLabel className=" formTextLight">Image</FormLabel>
                 <FormControl>
                   <Input
                       readOnly={true}

@@ -71,7 +71,8 @@ module.exports = {
         dashboardLightInputBorder: " rgb(223, 225, 228)",
         cardDarkBg: "rgb(32, 33, 46)",
         cardDarkBorder: "rgb(53, 56, 74)",
-        cardLightBorder: "rgb(239, 241, 244)"
+        cardLightBorder: "rgb(239, 241, 244)",
+        formTextLight: "rgb(180, 188, 208)"
 
 
        

@@ -106,7 +106,7 @@ const SignupConfirmationForm = () => {
           name="Code"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" form-text">Code</FormLabel>
+              <FormLabel className=" formTextLight">Code</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Confirmation Number"
