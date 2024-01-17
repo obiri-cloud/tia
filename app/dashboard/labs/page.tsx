@@ -243,11 +243,7 @@ const LabsPage = () => {
   };
 
   if (!labInfo.id) {
-    return (
-      <div className="container">
-        Umm...seems you are trying to access an expire.
-      </div>
-    );
+    window.location.href = "/dashboard";
   }
 
   return (
