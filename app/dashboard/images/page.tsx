@@ -33,6 +33,7 @@ import {
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { MONTHS } from "@/helpers/months";
+import StarRatings from "react-star-ratings";
 
 square.register();
 lineWobble.register();
@@ -66,7 +67,7 @@ const ImagePage = () => {
   const [runningInstanceFound, setRunningInstanceFound] = useState(false);
   const [currentImage, setCurrentImage] = useState<ILabImage>();
   const [isActive, setIsActive] = useState(null);
-  const [reviews, setReviews] = useState<IReview[]>([]);
+  const [reviews, setReviews] = useState<IReview[] | null>(null);
   const [jokes, setJokes] = useState<string[]>([]);
 
   useEffect(() => {
@@ -364,7 +365,7 @@ const ImagePage = () => {
           },
         }
       );
-      console.log("-->", response.data.data);
+      console.log("reviews", response.data.data);
 
       setReviews(response.data.data);
     } catch (error) {}
@@ -515,18 +516,61 @@ const ImagePage = () => {
             <h3 className="text-xl font-normal">Reviews</h3>
             <div className="mt-3">
               <ol className="relative border-s border-gray-200 dark:border-gray-700">
-                {reviews.map((review, i) => (
-                  <li key={i} className="mb-10 ms-4">
-                    <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                    <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-                   {new Date(review.creation_date as string).toDateString()}  · {new Date(review.creation_date as string).toLocaleTimeString()}
-                    </time>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                      {review.user.first_name} {review.user.last_name}
-                    </h3>
-                    <p className=" font-normal">{review.comments}</p>
-                  </li>
-                ))}
+                {reviews ? (
+                  reviews.length > 0 ? (
+                    reviews.map((review, i) => (
+                      <li key={i} className="mb-10 ms-4">
+                        <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                        <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
+                          {new Date(
+                            review.creation_date as string
+                          ).toDateString()}{" "}
+                          ·{" "}
+                          {new Date(
+                            review.creation_date as string
+                          ).toLocaleTimeString()}
+                        </time>
+                        <h3 className="text-base font-semibold text-gray-900 dark:text-white flex gap-3">
+                          <div>
+                            {review.user.first_name} {review.user.last_name}{" "}
+                          </div>{" "}
+                          <div className="">
+                            {" "}
+                            <StarRatings
+                              rating={Number(review.review)}
+                              starDimension="20px"
+                              starSpacing="1px"
+                              starRatedColor="green"
+                              numberOfStars={5}
+                              name="rating"
+                            />
+                          </div>
+                        </h3>
+                        <p className=" font-normal">{review.comments}</p>
+                      </li>
+                    ))
+                  ) : (
+                    <p>No reviews yet...</p>
+                  )
+                ) : null}
+                {reviews === null ? (
+                  <>
+                    <li className="mb-10 ms-4">
+                      <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                      <Skeleton className="h-[16px] w-[250px] rounded-full mb-2" />
+                      <Skeleton className="h-[16px] w-[150px] rounded-full mb-2" />
+                      <StarRatings
+                        rating={5}
+                        starDimension="20px"
+                        starSpacing="1px"
+                        starRatedColor="hsl(210 40% 96.1%)"
+                        numberOfStars={5}
+                        name="rating"
+                      />
+                      <Skeleton className="h-[16px] w-[100px] rounded-full mt-2" />
+                    </li>
+                  </>
+                ) : null}
               </ol>
             </div>
           </div>
