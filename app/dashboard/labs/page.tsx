@@ -337,8 +337,6 @@ const LabsPage = () => {
                   <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
                   <div className="max-w-md mx-auto">
                     <Instructions />
-      <ReviewDrawer />
-
                   </div>
                 </div>
               </Drawer.Content>
@@ -368,6 +366,7 @@ const LabsPage = () => {
         confirmText="Yes, Delete this lab"
         confirmFunc={() => endLab()}
       />
+      <ReviewDrawer />
     </Dialog>
   );
 };
@@ -541,7 +540,7 @@ const ReviewDrawer = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="invisible" id="sheet-trigger"></Button>
+        <Button className="visible absolute top-[-1000px]" id="sheet-trigger"></Button>
       </DialogTrigger>
       <DialogContent
         onEsc={(e) => handleOnEsc(e)}
