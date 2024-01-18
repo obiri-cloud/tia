@@ -457,7 +457,7 @@ const ImagePage = () => {
             <Carousel>
               <CarouselContent>
                 {jokes.map((joke, i) => (
-                  <CarouselItem className="text-center" key={i}>
+                  <CarouselItem className="text-center text-lg font-normal" key={i}>
                     {joke}
                   </CarouselItem>
                 ))}
@@ -470,11 +470,8 @@ const ImagePage = () => {
 
         <div className="mt-8">
           <p className={`${creatingStarted ? "opacity-40" : "opacity-100"}`}>
-            {/* {currentImage?.description} */}
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-            Consequatur, dolores. Impedit non ad perspiciatis distinctio velit
-            soluta perferendis deserunt eligendi, doloribus sequi eos quam quasi
-            libero? Harum, laborum. Sint, reiciendis!
+            {currentImage?.description}
+         
           </p>
           {creatingStarted ? (
             <div className="my-[28px_!important]">

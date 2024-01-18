@@ -15,6 +15,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import secureLocalStorage from "react-secure-storage";
 import ProfileHeader from "../components/admin/profile-header";
+import { usePathname } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +28,9 @@ export default function UserDashboardLayout({
     signOut({ callbackUrl: "/login" });
     secureLocalStorage.removeItem("tialabs_info");
   };
+  const pathname = usePathname();
+  console.log("pathname", pathname);
+
   return (
     <ReduxProvider>
       <div
@@ -55,61 +59,63 @@ export default function UserDashboardLayout({
           </svg>
         </button>
 
-        <aside
-          id="default-sidebar"
-          className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark  "
-          aria-label="Sidebar"
-        >
-          <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
-            <ProfileHeader />
-            <div className="flex flex-1 flex-col">
-              <ul className="space-y-2 font-medium mt-[50px] flex-1">
-                <li className="all-images-button">
-                  <a
-                    href="/dashboard"
-                    className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
-                  >
-                    <AllImages className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-whiteDark dark:fill-white" />
-                    <span className="ms-3 font-light">Labs</span>
-                  </a>
-                </li>
-                <li className="active-labs-button">
-                  <a
-                    href="/dashboard/active-labs"
-                    className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
-                  >
-                    <ActiveLabs className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
-                    <span className="ms-3 font-light">Active Labs</span>
-                  </a>
-                </li>
-              </ul>
-              <div className="">
-                <ul className="space-y-2 font-medium">
-                  <li className="account-button">
+        {!pathname.startsWith("/dashboard/labs") ? (
+          <aside
+            id="default-sidebar"
+            className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark  "
+            aria-label="Sidebar"
+          >
+            <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
+              <ProfileHeader />
+              <div className="flex flex-1 flex-col">
+                <ul className="space-y-2 font-medium mt-[50px] flex-1">
+                  <li className="all-images-button">
                     <a
-                      href="/dashboard/account"
+                      href="/dashboard"
                       className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
                     >
-                      <Account className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white" />
-                      <span className="ms-3 font-light">Account</span>
+                      <AllImages className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-whiteDark dark:fill-white" />
+                      <span className="ms-3 font-light">Labs</span>
                     </a>
                   </li>
-                  <li className="logout-button">
-                    <span
-                      onClick={logout}
-                      className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group cursor-pointer"
+                  <li className="active-labs-button">
+                    <a
+                      href="/dashboard/active-labs"
+                      className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
                     >
-                      <Logout className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-whiteDark dark:fill-white" />
-                      <span className="ms-3 font-light">Logout</span>
-                    </span>
+                      <ActiveLabs className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
+                      <span className="ms-3 font-light">Active Labs</span>
+                    </a>
                   </li>
                 </ul>
+                <div className="">
+                  <ul className="space-y-2 font-medium">
+                    <li className="account-button">
+                      <a
+                        href="/dashboard/account"
+                        className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
+                      >
+                        <Account className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white" />
+                        <span className="ms-3 font-light">Account</span>
+                      </a>
+                    </li>
+                    <li className="logout-button">
+                      <span
+                        onClick={logout}
+                        className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group cursor-pointer"
+                      >
+                        <Logout className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-whiteDark dark:fill-white" />
+                        <span className="ms-3 font-light">Logout</span>
+                      </span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-        </aside>
+          </aside>
+        ) : null}
 
-        <div className="sm:ml-[220px] overflow-y-auto h-screen">{children}</div>
+        <div className={`${!pathname.startsWith("/dashboard/labs")  ? 'sm:ml-[220px]': ''} overflow-y-auto h-screen`}>{children}</div>
       </div>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" />

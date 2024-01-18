@@ -219,10 +219,7 @@ const UserPage = () => {
                     />
 
                     <p className="text-sm text-left anywhere mt-4">
-                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Quos suscipit natus officiis obcaecati blanditiis repellat
-                      aliquam amet sint dolorem porro, cum voluptatibus omnis,
-                      dicta sit aperiam aspernatur, debitis nisi temporibus.
+                      {image.description}
                     </p>
                   </span>
                 </div>
