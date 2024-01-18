@@ -248,7 +248,6 @@ const LabsPage = () => {
 
   return (
     <Dialog>
-      {JSON.stringify(labInfo)}
       <div className="h-full">
         <PanelGroup
           className="h-full "
@@ -338,6 +337,8 @@ const LabsPage = () => {
                   <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
                   <div className="max-w-md mx-auto">
                     <Instructions />
+      <ReviewDrawer />
+
                   </div>
                 </div>
               </Drawer.Content>
@@ -367,7 +368,6 @@ const LabsPage = () => {
         confirmText="Yes, Delete this lab"
         confirmFunc={() => endLab()}
       />
-      <ReviewDrawer />
     </Dialog>
   );
 };
@@ -541,7 +541,7 @@ const ReviewDrawer = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="visible" id="sheet-trigger"></Button>
+        <Button className="hidden" id="sheet-trigger"></Button>
       </DialogTrigger>
       <DialogContent
         onEsc={(e) => handleOnEsc(e)}
