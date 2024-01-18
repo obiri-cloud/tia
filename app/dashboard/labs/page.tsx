@@ -541,7 +541,7 @@ const ReviewDrawer = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="hidden" id="sheet-trigger"></Button>
+        <Button className="invisible" id="sheet-trigger"></Button>
       </DialogTrigger>
       <DialogContent
         onEsc={(e) => handleOnEsc(e)}
