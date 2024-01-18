@@ -400,7 +400,7 @@ const ImagePage = () => {
               <Skeleton className="w-[150px] h-[28px] mb-[4px] rounded-md" />
             )}
             {currentImage?.difficulty_level ? (
-              <p className="text-sm capitalize font-semibold">
+              <p className="text-sm capitalize font-semibold mt-4">
                 Level: {currentImage?.difficulty_level}
               </p>
             ) : (
