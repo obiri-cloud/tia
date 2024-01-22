@@ -58,7 +58,7 @@ export default function DashboardPage({
          <ProfileHeader/>
           <div className="flex flex-1 flex-col">
             <ul className="space-y-2 font-medium mt-[50px] flex-1">
-              <li>
+              {/* <li>
                 <a
                   href="/admin"
                   className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
@@ -66,7 +66,7 @@ export default function DashboardPage({
                   <OverviewIcon className="w-7 h-7 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
                   <span className="ms-3 font-light">Overview</span>
                 </a>
-              </li>
+              </li> */}
               <li>
                 <a
                   href="/admin/images"
@@ -78,11 +78,11 @@ export default function DashboardPage({
               </li>
               <li>
                   <a
-                    href="/admin/active-labs"
+                    href="/admin/labs"
                     className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
                   >
                     <ActiveLabs className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
-                    <span className="ms-3 font-light">Active Labs</span>
+                    <span className="ms-3 font-light">Labs</span>
                   </a>
                 </li>
             </ul>

@@ -26,7 +26,12 @@ import { toast } from "@/components/ui/use-toast";
 import { getImageListX } from "./overview";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { setCurrentImage, setImageCount, setImageList } from "@/redux/reducers/adminSlice";
+import {
+  setCurrentImage,
+  setImageCount,
+  setImageList,
+} from "@/redux/reducers/adminSlice";
+import DeleteConfirmation from "../delete-confirmation";
 
 const Images = () => {
   const { imageCount, imageList } = useSelector(
@@ -36,10 +41,12 @@ const Images = () => {
   const { data: session } = useSession();
   const dispatch = useDispatch();
 
+  const [image, setImage] = useState<ILabImage>();
+
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
-  const deleteImage = async (id: number) => {
+  const deleteImage = async (id: number | undefined) => {
     // setDisabled(true);
 
     let axiosConfig = {
@@ -85,35 +92,39 @@ const Images = () => {
   };
   return (
     <div className="space-y-4">
-      <Dialog>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Images
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{imageCount}</div>
-            </CardContent>
-          </Card>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="col-span-4">
-            <CardHeader className="flex flex-row justify-between items-center w-full">
-              <div>
-                <CardTitle>Image List</CardTitle>
-                <CardDescription>
-                  {/* You have {imageCount} image(s). */}
-                </CardDescription>
-              </div>
-              
-
-              <DialogTrigger onClick={() => dispatch(setCurrentImage(null))}>
-                <Button>Add Image</Button>
-              </DialogTrigger>
-            </CardHeader>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Images</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{imageCount}</div>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="col-span-4">
+          <CardHeader className="flex flex-row justify-between items-center w-full">
+            <div>
+              <CardTitle>Image List</CardTitle>
+              <CardDescription>
+                {/* You have {imageCount} image(s). */}
+              </CardDescription>
+            </div>
+            <Dialog>
+              <AddButton />
+              <NewImageForm />
+            </Dialog>
+          </CardHeader>
+          <Dialog>
             <CardContent className="pl-2">
+              <DeleteConfirmation
+                image={image}
+                text="Do you want to delete this image"
+                noText="No"
+                confirmText="Yes, Delete this image"
+                confirmFunc={() => deleteImage(image?.id)}
+              />
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -149,13 +160,15 @@ const Images = () => {
                                 </Button>
                               </DialogTrigger>
                               |
-                              <Button
-                                onClick={() => deleteImage(image.id)}
-                                className="font-medium text-red-500"
-                                variant="link"
-                              >
-                                Delete
-                              </Button>
+                              <DialogTrigger>
+                                <Button
+                                  onClick={() => setImage(image)}
+                                  className="font-medium text-red-500"
+                                  variant="link"
+                                >
+                                  Delete
+                                </Button>
+                              </DialogTrigger>
                             </TableCell>
                           </TableRow>
                         ))
@@ -164,12 +177,21 @@ const Images = () => {
                 </TableBody>
               </Table>
             </CardContent>
-          </Card>
-        </div>
-        <NewImageForm  />
-      </Dialog>
+          </Dialog>
+        </Card>
+      </div>
     </div>
   );
 };
 
 export default Images;
+
+const AddButton = () => {
+  const dispatch = useDispatch();
+
+  return (
+    <DialogTrigger onClick={() => dispatch(setCurrentImage(null))}>
+      <Button>Add Image</Button>
+    </DialogTrigger>
+  );
+};
