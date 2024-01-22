@@ -118,13 +118,6 @@ const Images = () => {
           </CardHeader>
           <Dialog>
             <CardContent className="pl-2">
-              <DeleteConfirmation
-                image={image}
-                text="Do you want to delete this image"
-                noText="No"
-                confirmText="Yes, Delete this image"
-                confirmFunc={() => deleteImage(image?.id)}
-              />
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -152,23 +145,41 @@ const Images = () => {
                               {image.port_number}
                             </TableCell>
                             <TableCell className="underline font-medium text-right">
-                              <DialogTrigger
-                                onClick={() => dispatch(setCurrentImage(image))}
-                              >
-                                <Button className="font-medium" variant="link">
-                                  View
-                                </Button>
-                              </DialogTrigger>
-                              |
-                              <DialogTrigger>
-                                <Button
-                                  onClick={() => setImage(image)}
-                                  className="font-medium text-red-500"
-                                  variant="link"
+                              <Dialog>
+                                <DialogTrigger
+                                  onClick={() =>
+                                    dispatch(setCurrentImage(image))
+                                  }
                                 >
-                                  Delete
-                                </Button>
-                              </DialogTrigger>
+                                  <Button
+                                    className="font-medium"
+                                    variant="link"
+                                  >
+                                    View
+                                  </Button>
+                                </DialogTrigger>
+              <NewImageForm />
+
+                              </Dialog>
+                              |
+                              <Dialog>
+                                <DialogTrigger>
+                                  <Button
+                                    onClick={() => setImage(image)}
+                                    className="font-medium text-red-500"
+                                    variant="link"
+                                  >
+                                    Delete
+                                  </Button>
+                                </DialogTrigger>
+                                <DeleteConfirmation
+                                  image={image}
+                                  text="Do you want to delete this image"
+                                  noText="No"
+                                  confirmText="Yes, Delete this image"
+                                  confirmFunc={() => deleteImage(image?.id)}
+                                />
+                              </Dialog>
                             </TableCell>
                           </TableRow>
                         ))
