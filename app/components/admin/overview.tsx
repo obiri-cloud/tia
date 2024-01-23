@@ -45,7 +45,7 @@ const Overview = () => {
             </CardContent>
           </Card>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-8">
+        {/* <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-8">
           <Card className="col-span-4">
             <CardHeader className="flex flex-row justify-between items-center w-full">
               <div>
@@ -73,7 +73,7 @@ const Overview = () => {
           </Card>
         </div>
 
-        <NewImageForm  />
+        <NewImageForm  /> */}
       </Dialog>
     </div>
   );
