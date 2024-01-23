@@ -352,7 +352,7 @@ const NewImageForm = () => {
                   placeholder="Readiness Probe Initial Delay Seconds"
                   type="number"
                   {...field}
-                  className="glassBorder text-white bg-black/10"
+                  className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                   onChange={(e) =>
                     setReadinessProbeInitialDelaySeconds(Number(e.target.value))
                   }
@@ -375,7 +375,7 @@ const NewImageForm = () => {
                   placeholder="Readiness Probe Period Seconds"
                   type="number"
                   {...field}
-                  className="glassBorder text-white bg-black/10"
+                  className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                   onChange={(e) =>
                     setReadinessProbePeriodSeconds(Number(e.target.value))
                   }
@@ -401,7 +401,7 @@ const NewImageForm = () => {
                   placeholder="Readiness Probe Timeout Seconds"
                   type="number"
                   {...field}
-                  className="glassBorder text-white bg-black/10"
+                  className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                   onChange={(e) =>
                     setReadinessProbeTimeoutSeconds(Number(e.target.value))
                   }
@@ -425,7 +425,7 @@ const NewImageForm = () => {
                   placeholder="Readiness Probe Success Threshold"
                   type="number"
                   {...field}
-                  className="glassBorder text-white bg-black/10"
+                  className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                   onChange={(e) =>
                     setReadinessProbeSuccessThreshold(Number(e.target.value))
                   }
@@ -451,7 +451,7 @@ const NewImageForm = () => {
                   placeholder="Readiness Probe Failure Threshold"
                   type="number"
                   {...field}
-                  className="glassBorder text-white bg-black/10"
+                  className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                   onChange={(e) =>
                     setReadinessProbeFailureThreshold(Number(e.target.value))
                   }
@@ -475,7 +475,7 @@ const NewImageForm = () => {
                   placeholder="Liveness Probe Initial Delay Seconds"
                   type="number"
                   {...field}
-                  className="glassBorder text-white bg-black/10"
+                  className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                   onChange={(e) =>
                     setLivenessProbeInitialDelaySeconds(Number(e.target.value))
                   }
@@ -501,7 +501,7 @@ const NewImageForm = () => {
                   placeholder="Liveness Probe Period Seconds"
                   type="number"
                   {...field}
-                  className="glassBorder text-white bg-black/10"
+                  className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                   onChange={(e) =>
                     setLivenessProbePeriodSeconds(Number(e.target.value))
                   }
@@ -525,7 +525,7 @@ const NewImageForm = () => {
                   placeholder="Liveness Probe Timeout Seconds"
                   type="number"
                   {...field}
-                  className="glassBorder text-white bg-black/10"
+                  className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                   onChange={(e) =>
                     setLivenessProbeTimeoutSeconds(Number(e.target.value))
                   }
@@ -551,7 +551,7 @@ const NewImageForm = () => {
                   placeholder="Liveness Probe Success Threshold"
                   type="number"
                   {...field}
-                  className="glassBorder text-white bg-black/10"
+                  className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                   onChange={(e) =>
                     setLivenessProbeSuccessThreshold(Number(e.target.value))
                   }
@@ -574,7 +574,7 @@ const NewImageForm = () => {
                   placeholder="Liveness Probe Failure Threshold"
                   type="number"
                   {...field}
-                  className="glassBorder text-white bg-black/10"
+                  className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                   onChange={(e) =>
                     setLivenessProbeFailureThreshold(Number(e.target.value))
                   }
@@ -624,7 +624,7 @@ const NewImageForm = () => {
                     placeholder="Name"
                     type="text"
                     {...field}
-                    className="glassBorder text-white bg-black/10"
+                    className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                     ref={nameRef}
                     defaultValue={imageDetails?.name}
                   />
@@ -648,7 +648,7 @@ const NewImageForm = () => {
                       placeholder="Docker Image"
                       type="text"
                       {...field}
-                      className="glassBorder text-white bg-black/10"
+                      className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                       ref={dockerImageRef}
                       defaultValue={imageDetails?.docker_image}
                     />
@@ -673,7 +673,7 @@ const NewImageForm = () => {
                       placeholder="Port Number"
                       type="number"
                       {...field}
-                      className="glassBorder text-white bg-black/10"
+                      className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                       ref={portNumberRef}
                       defaultValue={imageDetails?.port_number}
                     />
@@ -696,7 +696,7 @@ const NewImageForm = () => {
                       placeholder="Duration"
                       type="number"
                       {...field}
-                      className="glassBorder text-white bg-black/10"
+                      className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                       ref={durationRef}
                       defaultValue={imageDetails?.duration}
                     />
@@ -768,7 +768,7 @@ const NewImageForm = () => {
                         type="file"
                         {...field}
                         ref={imagePictureRef}
-                        className="glassBorder text-white bg-black/10"
+                        className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                       />
                     )}
                   </FormControl>
@@ -786,7 +786,7 @@ const NewImageForm = () => {
                   <FormLabel className=" formTextLight">Command</FormLabel>
                   <FormControl>
                     <Input
-                      className="glassBorder text-white bg-black/10"
+                      className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                       {...field}
                       ref={commandRef}
                       defaultValue={imageDetails?.command}
@@ -808,7 +808,7 @@ const NewImageForm = () => {
                   <FormLabel className=" formTextLight">Arguments</FormLabel>
                   <FormControl>
                     <Input
-                      className="glassBorder text-white bg-black/10"
+                      className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                       {...field}
                       ref={argumentsRef}
                       defaultValue={imageDetails?.arguments}
@@ -830,7 +830,7 @@ const NewImageForm = () => {
                   <FormLabel className=" formTextLight">Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="glassBorder text-white bg-black/10"
+                      className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                       {...field}
                       ref={descriptionRef}
                       defaultValue={imageDetails?.description}
