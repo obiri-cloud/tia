@@ -35,7 +35,7 @@ interface ILabImage {
   liveness_probe_timeout_seconds?: number;
   liveness_probe_success_threshold?: number;
   liveness_probe_failure_threshold?: number;
-  updated_date?: string
+  updated_date?: string;
 }
 
 interface ILabInfoDialog {
@@ -74,4 +74,11 @@ interface IActiveLab {
   image: number;
   ingress_url: string;
   name: string;
+}
+
+interface IReview {
+  comments: string;
+  creation_date: string;
+  review: string;
+  user: IUser;
 }
