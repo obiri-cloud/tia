@@ -55,10 +55,10 @@ export default function DashboardPage({
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
-         <ProfileHeader/>
+          <ProfileHeader />
           <div className="flex flex-1 flex-col">
             <ul className="space-y-2 font-medium mt-[50px] flex-1">
-              {/* <li>
+              <li>
                 <a
                   href="/admin"
                   className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
@@ -66,7 +66,7 @@ export default function DashboardPage({
                   <OverviewIcon className="w-7 h-7 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
                   <span className="ms-3 font-light">Overview</span>
                 </a>
-              </li> */}
+              </li>
               <li>
                 <a
                   href="/admin/images"
@@ -77,14 +77,23 @@ export default function DashboardPage({
                 </a>
               </li>
               <li>
-                  <a
-                    href="/admin/labs"
-                    className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
-                  >
-                    <ActiveLabs className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
-                    <span className="ms-3 font-light">Labs</span>
-                  </a>
-                </li>
+                <a
+                  href="/admin/labs"
+                  className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
+                >
+                  <ActiveLabs className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
+                  <span className="ms-3 font-light">Labs</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/admin/reviews"
+                  className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
+                >
+                  <Star className="w-5 h-5 stroke-1 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
+                  <span className="ms-3 font-light">Reviews</span>
+                </a>
+              </li>
             </ul>
             <div className="">
               <ul className="space-y-2 font-medium">
@@ -154,7 +163,6 @@ const OverviewIcon = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-
 const AllImages = (props: SVGProps<SVGSVGElement>) => (
   <svg
     {...props}
@@ -174,7 +182,6 @@ const AllImages = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-
 const ActiveLabs = (props: SVGProps<SVGSVGElement>) => (
   <svg
     {...props}
@@ -188,5 +195,39 @@ const ActiveLabs = (props: SVGProps<SVGSVGElement>) => (
     style={{ width: "20px" }}
   >
     <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+  </svg>
+);
+
+const Star = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    height="21px"
+    version="1.1"
+    viewBox="0 0 20 21"
+    width="20px"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <title />
+    <desc />
+    <defs />
+    <g
+      fill="none"
+      fill-rule="evenodd"
+      id="Page-1"
+      stroke="none"
+      stroke-width="1"
+    >
+      <g
+        fill="#000000"
+        id="Core"
+        transform="translate(-296.000000, -422.000000)"
+      >
+        <g id="star" transform="translate(296.000000, 422.500000)">
+          <path
+            d="M10,15.273 L16.18,19 L14.545,11.971 L20,7.244 L12.809,6.627 L10,0 L7.191,6.627 L0,7.244 L5.455,11.971 L3.82,19 L10,15.273 Z"
+            id="Shape"
+          />
+        </g>
+      </g>
+    </g>
   </svg>
 );
