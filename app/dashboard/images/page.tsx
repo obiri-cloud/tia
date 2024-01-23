@@ -38,12 +38,6 @@ import StarRatings from "react-star-ratings";
 square.register();
 lineWobble.register();
 
-interface IReview {
-  comments: string;
-  creation_date: string;
-  review: string;
-  user: IUser;
-}
 
 interface IUser {
   first_name: string;
