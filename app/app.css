@@ -1176,3 +1176,19 @@ code{
   margin-right: 2px;
   color: hsl(270, 45%, 24%);
 }
+
+.all-initial{
+  all: revert;
+  font-family: Inter;
+}
+
+.all-initial ol {
+  list-style: revert;
+  margin: revert;
+  padding: revert;
+}
+.all-initial ol li{
+  list-style: initial;
+  margin: initial;
+  padding: initial;
+}
