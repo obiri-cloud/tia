@@ -94,6 +94,15 @@ export default function DashboardPage({
                   <span className="ms-3 font-light">Reviews</span>
                 </a>
               </li>
+              <li>
+                <a
+                  href="/admin/reviews"
+                  className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
+                >
+                  <Star className="w-5 h-5 stroke-1 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
+                  <span className="ms-3 font-light">Instructions</span>
+                </a>
+              </li>
             </ul>
             <div className="">
               <ul className="space-y-2 font-medium">

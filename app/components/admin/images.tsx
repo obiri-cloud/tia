@@ -32,6 +32,7 @@ import {
   setImageList,
 } from "@/redux/reducers/adminSlice";
 import DeleteConfirmation from "../delete-confirmation";
+import { useRouter } from "next/navigation";
 
 const Images = () => {
   const { imageCount, imageList } = useSelector(
@@ -40,6 +41,8 @@ const Images = () => {
 
   const { data: session } = useSession();
   const dispatch = useDispatch();
+  const router = useRouter();
+
 
   const [image, setImage] = useState<ILabImage>();
 
@@ -158,8 +161,7 @@ const Images = () => {
                                     View
                                   </Button>
                                 </DialogTrigger>
-              <NewImageForm />
-
+                                <NewImageForm />
                               </Dialog>
                               |
                               <Dialog>
@@ -180,6 +182,14 @@ const Images = () => {
                                   confirmFunc={() => deleteImage(image?.id)}
                                 />
                               </Dialog>
+                              |
+                              <Button
+                                onClick={() => router.push(`/admin/images/${image.id}/instructions`)}
+                                className="font-medium"
+                                variant="link"
+                              >
+                                Attach Instruction
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))
