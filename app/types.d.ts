@@ -82,3 +82,9 @@ interface IReview {
   review: string;
   user: IUser;
 }
+
+interface IInstruction {
+  id: number;
+  sequence: number;
+  text: string;
+}
