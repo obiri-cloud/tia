@@ -12,8 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { lineWobble } from "ldrs";
-import { square } from "ldrs";
+
 import secureLocalStorage from "react-secure-storage";
 import axios, { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
@@ -34,10 +33,8 @@ import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { MONTHS } from "@/helpers/months";
 import StarRatings from "react-star-ratings";
-
-square.register();
-lineWobble.register();
-
+import SquareLoader from "@/app/loaders/square";
+import LineLoader from "@/app/loaders/line";
 
 interface IUser {
   first_name: string;
@@ -47,7 +44,6 @@ interface IUser {
 const ImagePage = () => {
   // const { currentImage } = useSelector((state: RootState) => state.user);
   const router = useRouter();
-  const { systemTheme, theme, setTheme } = useTheme();
 
   const { data: session } = useSession();
 
@@ -86,6 +82,14 @@ const ImagePage = () => {
     });
 
     driverObj.drive();
+  }, []);
+
+  useEffect(() => {
+    async function getLoader() {
+      const { square } = await import("ldrs");
+      square.register();
+    }
+    getLoader();
   }, []);
 
   const startLab = async (id: number | undefined) => {
@@ -403,14 +407,7 @@ const ImagePage = () => {
           </div>
           <div className="">
             {creatingStarted ? (
-              <l-square
-                size="30"
-                stroke="1"
-                stroke-length="0.25"
-                bg-opacity="0.1"
-                speed="1.2"
-                color={`${theme === "light" ? "black" : "white"}`}
-              ></l-square>
+              <SquareLoader />
             ) : (
               <div className="flex gap-4 items-center">
                 {isActive ? (
@@ -451,7 +448,10 @@ const ImagePage = () => {
             <Carousel>
               <CarouselContent>
                 {jokes.map((joke, i) => (
-                  <CarouselItem className="text-center text-lg font-normal" key={i}>
+                  <CarouselItem
+                    className="text-center text-lg font-normal"
+                    key={i}
+                  >
                     {joke}
                   </CarouselItem>
                 ))}
@@ -465,17 +465,10 @@ const ImagePage = () => {
         <div className="mt-8">
           <p className={`${creatingStarted ? "opacity-40" : "opacity-100"}`}>
             {currentImage?.description}
-         
           </p>
           {creatingStarted ? (
             <div className="my-[28px_!important]">
-              <l-line-wobble
-                size="1000"
-                stroke="1"
-                bg-opacity="0.1"
-                speed="1.75"
-                color={`${theme === "light" ? "black" : "white"}`}
-              ></l-line-wobble>
+              <LineLoader />
             </div>
           ) : (
             <div

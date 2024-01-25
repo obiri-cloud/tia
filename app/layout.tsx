@@ -5,11 +5,12 @@ import "./app.css";
 import { Toaster } from "@/components/ui/toaster";
 import Provider from "@/context/client-provider";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import PathnameProvider from "@/context/pathname-provider";
 import { ThemeProvider } from "next-themes";
 import ThemeProviderWrapper from "./components/theme-provider-wrapper";
 import ThemeToggle from "./components/home/themetoggle";
+import authOptions from "./api/auth/[...nextauth]/options";
 
 const inter = Inter({ subsets: ["latin"] });
 
