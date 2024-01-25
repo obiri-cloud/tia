@@ -6,7 +6,9 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, {
   ChangeEvent,
+  FC,
   FormEvent,
+  SVGProps,
   useEffect,
   useRef,
   useState,
@@ -60,6 +62,8 @@ const LabsPage = () => {
 
   const [isNotDesktop, setIsNotDesktop] = useState(false);
   const [showInstructions, setShowInstructions] = useState(true);
+  const [instructions, setInstructions] = useState<IInstruction[]>([]);
+
   const drawerButton = useRef<HTMLButtonElement>(null);
   const reviewDrawerButton = useRef<HTMLButtonElement>(null);
 
@@ -84,6 +88,7 @@ const LabsPage = () => {
   };
 
   useEffect(() => {
+    getInstructions();
     let tialab_info: ILabInfo | null = null;
 
     if (secureLocalStorage.getItem("tialab_info")) {
@@ -140,6 +145,24 @@ const LabsPage = () => {
 
     driverObj.drive();
   }, []);
+
+  const getInstructions = async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BE_URL}/user/image/${id}/instruction/`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          // @ts-ignore
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("response ==>", response);
+    if (response.status === 200) {
+      setInstructions(response.data.data);
+    }
+  };
 
   // useEffect(() => {
   //   try {
@@ -276,7 +299,7 @@ const LabsPage = () => {
                 />
               </button>
             </div>
-            <Instructions />
+            <Instructions instructions={instructions} />
             <div className="absolute bottom-4 left-4 countdown">
               <CountdownClock
                 startTime={labInfo?.creation_date || ""}
@@ -336,7 +359,7 @@ const LabsPage = () => {
                 <div className=" bg-white rounded-t-[10px] flex-1">
                   <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
                   <div className="max-w-md mx-auto">
-                    <Instructions />
+                    <Instructions instructions={instructions} />
                   </div>
                 </div>
               </Drawer.Content>
@@ -403,16 +426,34 @@ function ResizeHandle({ id }: { id?: string }) {
   );
 }
 
-const Instructions = () => {
+const Instructions: FC<{ instructions: IInstruction[] }> = ({
+  instructions,
+}) => {
+  const [currentInstruction, setCurrentInstruction] = useState<number>(0);
+
   return (
     <div className="p-2 overflow-x-auto text-black ">
-      <h1 className="font-bold text-3xl">Instructions</h1>
-      <p className="">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione
-        dignissimos vel similique impedit praesentium, labore deserunt iure
-        excepturi, odio illo facere quis illum, maiores vitae atque ipsum. Aut,
-        cupiditate quod.
-      </p>
+      <h1 className="font-bold text-3xl mb-3">Instructions</h1>
+      <div className="flex justify-between">
+      {(currentInstruction - 1 > -1) ? (
+          <BackIcon
+          onClick={() => setCurrentInstruction(currentInstruction - 1)}
+          className="w-7 h-7"
+        />
+        ) : <span></span>}
+       
+        {!(currentInstruction + 1 > instructions.length) ? (
+          <ForwardIcon
+            onClick={() => setCurrentInstruction(currentInstruction + 1)}
+            className="w-7 h-7"
+          />
+        ) : <span></span>}
+      </div>
+      <p
+        dangerouslySetInnerHTML={{
+          __html: instructions &&instructions[currentInstruction]  ? instructions[currentInstruction].text : "",
+        }}
+      ></p>
     </div>
   );
 };
@@ -462,7 +503,6 @@ const ReviewDrawer = () => {
   const token = session?.user!.tokens?.access_token;
   const router = useRouter();
 
-
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
   const [value, setValue] = React.useState<string>("");
@@ -471,7 +511,7 @@ const ReviewDrawer = () => {
 
   const handleOnEsc = (e: React.KeyboardEvent<HTMLDivElement>) => {
     console.log("e", e.key);
-    
+
     if (e.key === "Escape") {
       router.push("/dashboard");
     }
@@ -540,7 +580,10 @@ const ReviewDrawer = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="visible absolute top-[-1000px]" id="sheet-trigger"></Button>
+        <Button
+          className="visible absolute top-[-1000px]"
+          id="sheet-trigger"
+        ></Button>
       </DialogTrigger>
       <DialogContent
         onEsc={(e) => handleOnEsc(e)}
@@ -630,3 +673,23 @@ const ReviewDrawer = () => {
     </Dialog>
   );
 };
+
+const ForwardIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...props} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <title />
+    <g>
+      <path d="M1,16A15,15,0,1,1,16,31,15,15,0,0,1,1,16Zm28,0A13,13,0,1,0,16,29,13,13,0,0,0,29,16Z" />
+      <path d="M12.13,21.59,17.71,16l-5.58-5.59a1,1,0,0,1,0-1.41h0a1,1,0,0,1,1.41,0l6.36,6.36a.91.91,0,0,1,0,1.28L13.54,23a1,1,0,0,1-1.41,0h0A1,1,0,0,1,12.13,21.59Z" />
+    </g>
+  </svg>
+);
+
+const BackIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...props} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <title />
+    <g>
+      <path d="M31,16A15,15,0,1,1,16,1,15,15,0,0,1,31,16ZM3,16A13,13,0,1,0,16,3,13,13,0,0,0,3,16Z" />
+      <path d="M19.87,10.41,14.29,16l5.58,5.59a1,1,0,0,1,0,1.41h0a1,1,0,0,1-1.41,0L12.1,16.64a.91.91,0,0,1,0-1.28L18.46,9a1,1,0,0,1,1.41,0h0A1,1,0,0,1,19.87,10.41Z" />
+    </g>
+  </svg>
+);
