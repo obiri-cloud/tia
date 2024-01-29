@@ -15,7 +15,8 @@ const SequencePage = () => {
   console.log("params", params);
 
   const [info, setInfo] = useState<IInstruction>();
-  const [sequence, setSequence] = useState<string>();
+  const [sequence, setSequence] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
 
   const { data: session } = useSession();
 
@@ -25,13 +26,6 @@ const SequencePage = () => {
   useEffect(() => {
     getSequenceInfo();
   }, []);
-
-  const log = () => {
-    if (editorRef.current) {
-      //@ts-ignore
-      console.log(editorRef.current.getContent());
-    }
-  };
 
   const getSequenceInfo = async () => {
     const id = params.id;
@@ -50,6 +44,8 @@ const SequencePage = () => {
     console.log("response ==>", response);
     if (response.status === 200) {
       setInfo(response.data.data);
+      setSequence(response.data.data.sequence);
+      setTitle(response.data.data.title);
     }
   };
 
@@ -62,7 +58,7 @@ const SequencePage = () => {
       //@ts-ignore
       text = editorRef.current.getContent();
     }
-    let formData = JSON.stringify({ sequence: siq, text });
+    let formData = JSON.stringify({ sequence: siq, text, title });
 
     try {
       const response = await axios.patch(
@@ -95,7 +91,7 @@ const SequencePage = () => {
       //@ts-ignore
       text = editorRef.current.getContent();
     }
-    let formData = JSON.stringify({ sequence: Number(sequence), text });
+    let formData = JSON.stringify({ sequence: Number(sequence), text, title });
 
     try {
       const response = await axios.post(
@@ -111,23 +107,46 @@ const SequencePage = () => {
           },
         }
       );
+      console.log("response", response);
+
       if (response.status === 201) {
         toast({
           variant: "success",
           title: "Sequence Instruction created",
         });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Sequence Instruction created",
+        });
       }
-    } catch (error) {}
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        //@ts-ignore
+        title: error.response.data.message,
+      });
+    }
   };
 
   return (
     <div className="p-4">
-      <Input
-        onChange={(e) => setSequence(e.target.value)}
-        placeholder="Sequence Number"
-        type="text"
-        className="shadow-md dark:text-white dark:bg-black/10 bg-white text-black mb-6"
-      />
+      <div className="flex gap-2">
+        <Input
+          value={sequence}
+          onChange={(e) => setSequence(e.target.value)}
+          placeholder="Sequence Number"
+          type="text"
+          className="shadow-md dark:text-white dark:bg-black/10 bg-white text-black mb-6 w-[200px]"
+        />
+        <Input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Sequence Title"
+          type="text"
+          className="shadow-md dark:text-white dark:bg-black/10 bg-white text-black mb-6"
+        />
+      </div>
       <Editor
         apiKey={process.env.NEXT_PUBLIC_TINY_MCE_URL}
         onInit={(evt, editor) => (editorRef.current = editor)}
@@ -149,13 +168,13 @@ const SequencePage = () => {
         }}
         initialValue={info ? info.text : ""}
       />
-      <button onClick={log}>Log editor content</button>
       <Button
+        className="mt-2 ml-auto"
         onClick={() => {
-          Number(params.siq)> 0 ? updateSequenceInst() : createSequenceInst();
+          Number(params.siq) > 0 ? updateSequenceInst() : createSequenceInst();
         }}
       >
-        {Number(params.siq) > 0  ? "Update" : "Save"}
+        {Number(params.siq) > 0 ? "Update" : "Save"}
       </Button>
     </div>
   );

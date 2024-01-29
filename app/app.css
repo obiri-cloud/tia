@@ -1192,3 +1192,7 @@ code{
   margin: initial;
   padding: initial;
 }
+
+.all-initial *:not(code) {
+  all: revert;
+}

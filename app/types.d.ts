@@ -87,4 +87,5 @@ interface IInstruction {
   id: number;
   sequence: number;
   text: string;
+  title: string;
 }

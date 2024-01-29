@@ -13,7 +13,7 @@ const InstructionPage = () => {
   const router = useRouter();
 
   const [currentImage, setCurrentImage] = useState<ILabImage>();
-  const [instructions, setInstructions] = useState<IInstruction[]>([]);
+  const [instructions, setInstructions] = useState<IInstruction[] | null>(null);
 
   const { data: session } = useSession();
 
@@ -96,8 +96,10 @@ const InstructionPage = () => {
           variant: "success",
           title: "Sequence Instruction Deleted",
         });
-        let temp = instructions.filter((ins) => ins.sequence !== siq);
-        setInstructions(temp);
+        if (instructions) {
+          let temp = instructions.filter((ins) => ins.sequence !== siq);
+          setInstructions(temp);
+        }
       }
     } catch (error) {}
   };
@@ -123,39 +125,40 @@ const InstructionPage = () => {
           <Skeleton className="w-[300px] h-[30px] rounded-md" />
         </div>
       )}
-      {instructions.length >0 ? (
-        <div className="">
-          {instructions.map((ins, i) => (
-            <div key={i} className="grid grid-cols-2 gap-4 mt-8">
-              <div className="flex flex-col gap-2">
-                <p className="p-2 shadow-md rounded-md ">
-                  <span className="font-bold">{ins.sequence}</span>.{" "}
-                  <span
-                    className="all-initial font-sans"
-                    dangerouslySetInnerHTML={{ __html: ins.text.slice(0, 200) }}
-                  ></span>
-                </p>
+      {instructions ? (
+        instructions.length > 0 ? (
+          <div className="">
+            {instructions.map((ins, i) => (
+              <div key={i} className="grid grid-cols-2 gap-4 mt-8">
+                <div className="flex flex-col gap-2">
+                  <p className="p-2 shadow-md rounded-md ">
+                    <span className="font-bold">{ins.sequence}</span>.{" "}
+                    <span className="all-initial font-sans">{ins.title}</span>
+                  </p>
+                </div>
+                <div className="gap-2 flex">
+                  <Button
+                    onClick={() =>
+                      router.push(
+                        `/admin/images/${params.id}/instructions/sequence/${ins.id}`
+                      )
+                    }
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    onClick={() => deleteInstruction(ins.sequence)}
+                    variant="destructive"
+                  >
+                    Delete
+                  </Button>
+                </div>
               </div>
-              <div className="gap-2 flex">
-                <Button
-                  onClick={() =>
-                    router.push(
-                      `/admin/images/${params.id}/instructions/sequence/${ins.sequence}`
-                    )
-                  }
-                >
-                  Edit
-                </Button>
-                <Button
-                  onClick={() => deleteInstruction(ins.sequence)}
-                  variant="destructive"
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="">No instructions for this Image...</p>
+        )
       ) : (
         <div className="">
           {new Array(5).fill(0).map((_, i) => (
