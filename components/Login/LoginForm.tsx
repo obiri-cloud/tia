@@ -61,6 +61,7 @@ const LoginForm = () => {
               title: "Login Successful",
               variant: "success",
             });
+            console.log("session", session)
             // @ts-ignore
             let status = session?.user.data.is_admin as boolean;
 

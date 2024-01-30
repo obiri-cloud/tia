@@ -430,11 +430,14 @@ function ResizeHandle({ id }: { id?: string }) {
 const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
   instructions,
 }) => {
+  console.log(
+    "instructions", instructions
+  )
   const [currentInstruction, setCurrentInstruction] = useState<number>(0);
 
   return (
     <div className="p-2 overflow-x-auto text-black overflow-y-scroll h-screen mb-[100px]">
-      <h1 className="font-bold text-3xl mb-3">{instructions ? instructions[currentInstruction].title : ''}</h1>
+      <h1 className="font-bold text-3xl mb-3">{instructions && instructions.length > 0 ? instructions[currentInstruction].title : ''}</h1>
       <div className="flex justify-between">
         {currentInstruction - 1 > -1 ? (
           <BackIcon
@@ -482,8 +485,11 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
 
       <PrismComponent
         content={
+          Array.isArray(instructions) && instructions.length > 0 ?
+
           instructions && instructions[currentInstruction]
             ? instructions[currentInstruction].text
+            : ""
             : ""
         }
       />
