@@ -17,6 +17,7 @@ interface ILabInfo {
 interface IDeleteConfirmation {
   lab?: ILabInfo | ILabList | undefined;
   image?: ILabImage | undefined;
+  instructions?: IInstruction | null;
   text: string;
   noText: string;
   confirmText: string;

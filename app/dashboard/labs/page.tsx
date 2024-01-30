@@ -283,8 +283,8 @@ const LabsPage = () => {
             }`}
             collapsible={true}
           >
-            <div className="flex justify-end p-3">
-              <button
+            <div className="flex justify-between p-3 border-b border-b-gray-200">
+              {/* <button
                 onClick={() =>
                   setShowInstructions(
                     (setShowInstructions) => !setShowInstructions
@@ -297,24 +297,25 @@ const LabsPage = () => {
                   alt="double_arrow_left"
                   className="arrow-img"
                 />
-              </button>
+              </button> */}
+               <div className="countdown">
+                <CountdownClock
+                  startTime={labInfo?.creation_date || ""}
+                  endLab={endLab}
+                />
+              </div>
+              <DialogTrigger className=" text-left">
+                <Button
+                  disabled={deleting}
+                  variant="destructive"
+                  className=" disabled:bg-red-900/90"
+                >
+                  {deleting ? "Ending Lab..." : "End Lab"}
+                </Button>
+              </DialogTrigger>
+             
             </div>
             <Instructions instructions={instructions} />
-            <div className="absolute bottom-4 left-4 countdown">
-              <CountdownClock
-                startTime={labInfo?.creation_date || ""}
-                endLab={endLab}
-              />
-            </div>
-            <DialogTrigger className="w-full text-left">
-              <Button
-                disabled={deleting}
-                variant="destructive"
-                className="absolute bottom-4 right-4 disabled:bg-red-900/90"
-              >
-                {deleting ? "Ending Lab..." : "End Lab"}
-              </Button>
-            </DialogTrigger>
           </Panel>
           {showInstructions ? <ResizeHandle /> : null}
           <Panel className="h-full" collapsible={true}>
@@ -433,7 +434,7 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
 
   return (
     <div className="p-2 overflow-x-auto text-black overflow-y-scroll h-screen mb-[100px]">
-      <h1 className="font-bold text-3xl mb-3">Instructions</h1>
+      <h1 className="font-bold text-3xl mb-3">{instructions ? instructions[currentInstruction].title : ''}</h1>
       <div className="flex justify-between">
         {currentInstruction - 1 > -1 ? (
           <BackIcon
@@ -484,7 +485,7 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
           instructions && instructions[currentInstruction]
             ? instructions[currentInstruction].text
             : ""
-          }
+        }
       />
 
       {/* <p

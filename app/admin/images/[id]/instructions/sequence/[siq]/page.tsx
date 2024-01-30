@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Editor as TinyMCEEditor } from "tinymce";
 import { Input } from "@/components/ui/input";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { toast } from "@/components/ui/use-toast";
 const SequencePage = () => {
   const editorRef = useRef<TinyMCEEditor | null>(null);
   const params = useParams();
-  console.log("params", params);
+  const router = useRouter()
 
   const [info, setInfo] = useState<IInstruction>();
   const [sequence, setSequence] = useState<string>("");
@@ -79,6 +79,7 @@ const SequencePage = () => {
           variant: "success",
           title: "Sequence Instruction update",
         });
+        router.push(`/admin/images/${id}/instructions`)
       }
     } catch (error) {}
   };
@@ -114,6 +115,8 @@ const SequencePage = () => {
           variant: "success",
           title: "Sequence Instruction created",
         });
+        router.push(`/admin/images/${id}/instructions`)
+
       } else {
         toast({
           variant: "destructive",

@@ -1,5 +1,7 @@
 "use client";
+import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
 import { userCheck } from "@/lib/utils";
@@ -14,6 +16,8 @@ const InstructionPage = () => {
 
   const [currentImage, setCurrentImage] = useState<ILabImage>();
   const [instructions, setInstructions] = useState<IInstruction[] | null>(null);
+  const [currentInstruction, setCurrentInstruction] =
+    useState<IInstruction | null>(null);
 
   const { data: session } = useSession();
 
@@ -76,7 +80,7 @@ const InstructionPage = () => {
     }
   };
 
-  const deleteInstruction = async (siq: number) => {
+  const deleteInstruction = async (siq: number | undefined) => {
     const id = params.id;
 
     try {
@@ -97,84 +101,99 @@ const InstructionPage = () => {
           title: "Sequence Instruction Deleted",
         });
         if (instructions) {
-          let temp = instructions.filter((ins) => ins.sequence !== siq);
+          let temp = instructions.filter((ins) => ins.id !== siq);
           setInstructions(temp);
+          document.getElementById("closeDialog")?.click();
+
         }
       }
     } catch (error) {}
   };
 
   return (
-    <div className="p-4">
-      {currentImage?.name ? (
-        <div className="flex justify-between">
-          <p></p>
-          <h1 className="text-center font-bold text-2xl">
-            {currentImage?.name}
-          </h1>
-          <Button
-            onClick={() =>
-              router.push(`/admin/images/${params.id}/instructions/sequence/-1`)
-            }
-          >
-            Add Instruction
-          </Button>
-        </div>
-      ) : (
-        <div className="flex justify-center">
-          <Skeleton className="w-[300px] h-[30px] rounded-md" />
-        </div>
-      )}
-      {instructions ? (
-        instructions.length > 0 ? (
+    <Dialog>
+      <div className="p-4">
+        {currentImage?.name ? (
+          <div className="flex justify-between">
+            <p></p>
+            <h1 className="text-center font-bold text-2xl">
+              {currentImage?.name}
+            </h1>
+            <Button
+              onClick={() =>
+                router.push(
+                  `/admin/images/${params.id}/instructions/sequence/-1`
+                )
+              }
+            >
+              Add Instruction
+            </Button>
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <Skeleton className="w-[300px] h-[30px] rounded-md" />
+          </div>
+        )}
+        {instructions ? (
+          instructions.length > 0 ? (
+            <div className="">
+              {instructions.map((ins, i) => (
+                <div key={ins.id} className="grid grid-cols-2 gap-4 mt-8">
+                  <div className="flex flex-col gap-2">
+                    <p className="p-2 shadow-md rounded-md ">
+                      <span className="font-bold">{ins.sequence}</span>.{" "}
+                      <span className="all-initial font-sans">{ins.title}</span>
+                    </p>
+                  </div>
+                  <div className="gap-2 flex">
+                    <Button
+                      onClick={() =>
+                        router.push(
+                          `/admin/images/${params.id}/instructions/sequence/${ins.id}`
+                        )
+                      }
+                    >
+                      Edit
+                    </Button>
+                  <DialogTrigger>
+                  <Button
+                      onClick={() => setCurrentInstruction(ins)}
+                      variant="destructive"
+                    >
+                      Delete
+                    </Button>
+                  </DialogTrigger>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="">No instructions for this Image...</p>
+          )
+        ) : (
           <div className="">
-            {instructions.map((ins, i) => (
+            {new Array(5).fill(0).map((_, i) => (
               <div key={i} className="grid grid-cols-2 gap-4 mt-8">
                 <div className="flex flex-col gap-2">
-                  <p className="p-2 shadow-md rounded-md ">
-                    <span className="font-bold">{ins.sequence}</span>.{" "}
-                    <span className="all-initial font-sans">{ins.title}</span>
-                  </p>
+                  <Skeleton className="w-full h-[70px] rounded-md" />
                 </div>
                 <div className="gap-2 flex">
-                  <Button
-                    onClick={() =>
-                      router.push(
-                        `/admin/images/${params.id}/instructions/sequence/${ins.id}`
-                      )
-                    }
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    onClick={() => deleteInstruction(ins.sequence)}
-                    variant="destructive"
-                  >
-                    Delete
-                  </Button>
+                  <Skeleton className="w-[100px] h-[40px] rounded-md" />
+                  <Skeleton className="w-[100px] h-[40px] rounded-md" />
                 </div>
               </div>
             ))}
           </div>
-        ) : (
-          <p className="">No instructions for this Image...</p>
-        )
-      ) : (
-        <div className="">
-          {new Array(5).fill(0).map((_, i) => (
-            <div key={i} className="grid grid-cols-2 gap-4 mt-8">
-              <div className="flex flex-col gap-2">
-                <Skeleton className="w-full h-[70px] rounded-md" />
-              </div>
-              <div className="gap-2 flex">
-                <Skeleton className="w-[100px] h-[40px] rounded-md" />
-                <Skeleton className="w-[100px] h-[40px] rounded-md" />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+      <DeleteConfirmation
+        instructions={currentInstruction}
+        text="Do you want to delete this sequence"
+        noText="No"
+        confirmText="Yes, Delete this sequence"
+        confirmFunc={() => deleteInstruction(currentInstruction?.id)}
+      />
+    </Dialog>
   );
 };
 
