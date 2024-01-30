@@ -278,7 +278,7 @@ const LabsPage = () => {
           direction="horizontal"
         >
           <Panel
-            className={`h-full relative instructions  hidden ${
+            className={`h-screen relative instructions  hidden ${
               showInstructions ? "lg:block" : "hidden"
             }`}
             collapsible={true}
@@ -436,7 +436,7 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
   const [currentInstruction, setCurrentInstruction] = useState<number>(0);
 
   return (
-    <div className="p-2 overflow-x-auto text-black overflow-y-scroll h-screen mb-[100px]">
+    <div className="p-2 overflow-x-auto text-black overflow-y-scroll  mb-[100px]">
       <h1 className="font-bold text-3xl mb-3">{instructions && instructions.length > 0 ? instructions[currentInstruction].title : ''}</h1>
       <div className="flex justify-between">
         {currentInstruction - 1 > -1 ? (

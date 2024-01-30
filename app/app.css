@@ -71,6 +71,7 @@ body {
 
 .instructions {
   border-right: 1px solid #dee2e6;
+  overflow-y: scroll !important;
 }
 
 .active-lab-button .delete-button {
