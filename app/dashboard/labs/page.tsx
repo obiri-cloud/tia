@@ -298,7 +298,7 @@ const LabsPage = () => {
                   className="arrow-img"
                 />
               </button> */}
-               <div className="countdown">
+              <div className="countdown">
                 <CountdownClock
                   startTime={labInfo?.creation_date || ""}
                   endLab={endLab}
@@ -313,7 +313,6 @@ const LabsPage = () => {
                   {deleting ? "Ending Lab..." : "End Lab"}
                 </Button>
               </DialogTrigger>
-             
             </div>
             <Instructions instructions={instructions} />
           </Panel>
@@ -430,14 +429,16 @@ function ResizeHandle({ id }: { id?: string }) {
 const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
   instructions,
 }) => {
-  console.log(
-    "instructions", instructions
-  )
+  console.log("instructions", instructions);
   const [currentInstruction, setCurrentInstruction] = useState<number>(0);
 
   return (
     <div className="p-2 overflow-x-auto text-black overflow-y-scroll  mb-[100px]">
-      <h1 className="font-bold text-3xl mb-3">{instructions && instructions.length > 0 ? instructions[currentInstruction].title : ''}</h1>
+      <h1 className="font-bold text-3xl mb-3">
+        {instructions && instructions.length > 0
+          ? instructions[currentInstruction].title
+          : ""}
+      </h1>
       <div className="flex justify-between">
         {currentInstruction - 1 > -1 ? (
           <BackIcon
@@ -449,7 +450,7 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
         )}
 
         {Array.isArray(instructions) ? (
-          !(currentInstruction + 1 > instructions.length) ? (
+          !(currentInstruction  + 1  >= instructions.length) ? (
             <ForwardIcon
               onClick={() => setCurrentInstruction(currentInstruction + 1)}
               className="w-7 h-7"
@@ -459,7 +460,21 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
           )
         ) : null}
       </div>
-      {Array.isArray(instructions) && instructions.length === 0 ? (
+      {Array.isArray(instructions) ? (
+        instructions.length === 0 ? (
+          <p>No instructions found for this lab...</p>
+        ) : (
+          <PrismComponent
+            content={
+              Array.isArray(instructions) && instructions.length > 0
+                ? instructions && instructions[currentInstruction]
+                  ? instructions[currentInstruction].text
+                  : ""
+                : ""
+            }
+          />
+        )
+      ) : (
         <div className="flex flex-col gap-2">
           <Skeleton className={`w-full h-[16.5px] rounded-md`} />
           <Skeleton className={`w-full h-[16.5px] rounded-md`} />
@@ -481,18 +496,7 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
             </div>
           </div>
         </div>
-      ) : null}
-
-      <PrismComponent
-        content={
-          Array.isArray(instructions) && instructions.length > 0 ?
-
-          instructions && instructions[currentInstruction]
-            ? instructions[currentInstruction].text
-            : ""
-            : ""
-        }
-      />
+      )}
 
       {/* <p
         className="all-initial font-sans mb-[500px]"
