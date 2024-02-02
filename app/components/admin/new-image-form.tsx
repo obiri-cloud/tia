@@ -53,7 +53,6 @@ const NewImageForm = () => {
   const commandRef = useRef<HTMLInputElement>(null);
   const argumentsRef = useRef<HTMLInputElement>(null);
 
-
   const [
     readinessProbeInitialDelaySeconds,
     setReadinessProbeInitialDelaySeconds,
@@ -172,57 +171,57 @@ const NewImageForm = () => {
     formData.append("command", commandRef.current?.value || "");
     formData.append("arguments", argumentsRef.current?.value || "");
 
-    if (imageDetails) {
-      formData.append(
-        "readiness_probe_initial_delay_seconds",
-        String(readinessProbeInitialDelaySeconds) || ""
-      );
+    // if (imageDetails) {
+    formData.append(
+      "readiness_probe_initial_delay_seconds",
+      String(readinessProbeInitialDelaySeconds) || ""
+    );
 
-      formData.append(
-        "readiness_probe_period_seconds",
-        String(readinessProbeTimeoutSeconds) || ""
-      );
+    formData.append(
+      "readiness_probe_period_seconds",
+      String(readinessProbeTimeoutSeconds) || ""
+    );
 
-      formData.append(
-        "readiness_probe_timeout_seconds",
-        String(readinessProbeSuccessThreshold) || ""
-      );
+    formData.append(
+      "readiness_probe_timeout_seconds",
+      String(readinessProbeSuccessThreshold) || ""
+    );
 
-      formData.append(
-        "readiness_probe_success_threshold",
-        String(readinessProbeFailureThreshold) || ""
-      );
+    formData.append(
+      "readiness_probe_success_threshold",
+      String(readinessProbeFailureThreshold) || ""
+    );
 
-      formData.append(
-        "readiness_probe_failure_threshold",
-        String(readinessProbeFailureThreshold) || ""
-      );
+    formData.append(
+      "readiness_probe_failure_threshold",
+      String(readinessProbeFailureThreshold) || ""
+    );
 
-      formData.append(
-        "liveness_probe_initial_delay_seconds",
-        String(livenessProbeInitialDelaySeconds) || ""
-      );
+    formData.append(
+      "liveness_probe_initial_delay_seconds",
+      String(livenessProbeInitialDelaySeconds) || ""
+    );
 
-      formData.append(
-        "liveness_probe_period_seconds",
-        String(livenessProbePeriodSeconds) || ""
-      );
+    formData.append(
+      "liveness_probe_period_seconds",
+      String(livenessProbePeriodSeconds) || ""
+    );
 
-      formData.append(
-        "liveness_probe_timeout_seconds",
-        String(livenessProbeTimeoutSeconds) || ""
-      );
+    formData.append(
+      "liveness_probe_timeout_seconds",
+      String(livenessProbeTimeoutSeconds) || ""
+    );
 
-      formData.append(
-        "liveness_probe_success_threshold",
-        String(livenessProbeSuccessThreshold) || ""
-      );
+    formData.append(
+      "liveness_probe_success_threshold",
+      String(livenessProbeSuccessThreshold) || ""
+    );
 
-      formData.append(
-        "liveness_probe_failure_threshold",
-        String(livenessProbeFailureThreshold) || ""
-      );
-    }
+    formData.append(
+      "liveness_probe_failure_threshold",
+      String(livenessProbeFailureThreshold) || ""
+    );
+    // }
 
     // Append the image file to the FormData object
     if (imagePictureRef.current && imagePictureRef.current!.files) {
@@ -368,7 +367,9 @@ const NewImageForm = () => {
           name="readiness_probe_period_seconds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" formTextLight">Readiness Probe Period Seconds</FormLabel>
+              <FormLabel className=" formTextLight">
+                Readiness Probe Period Seconds
+              </FormLabel>
               <FormControl>
                 <Input
                   min={1}
@@ -380,7 +381,6 @@ const NewImageForm = () => {
                     setReadinessProbePeriodSeconds(Number(e.target.value))
                   }
                   value={readinessProbePeriodSeconds ?? ""}
-
                 />
               </FormControl>
               <FormMessage />
@@ -395,7 +395,9 @@ const NewImageForm = () => {
           name="readiness_probe_timeout_seconds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" formTextLight">Readiness Probe Timeout Seconds</FormLabel>
+              <FormLabel className=" formTextLight">
+                Readiness Probe Timeout Seconds
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Readiness Probe Timeout Seconds"
@@ -406,7 +408,6 @@ const NewImageForm = () => {
                     setReadinessProbeTimeoutSeconds(Number(e.target.value))
                   }
                   value={readinessProbeTimeoutSeconds ?? ""}
-
                 />
               </FormControl>
               <FormMessage />
@@ -418,7 +419,9 @@ const NewImageForm = () => {
           name="readiness_probe_success_threshold"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" formTextLight">Readiness Probe Success Threshold</FormLabel>
+              <FormLabel className=" formTextLight">
+                Readiness Probe Success Threshold
+              </FormLabel>
               <FormControl>
                 <Input
                   min={1}
@@ -430,7 +433,6 @@ const NewImageForm = () => {
                     setReadinessProbeSuccessThreshold(Number(e.target.value))
                   }
                   value={readinessProbeSuccessThreshold ?? ""}
-
                 />
               </FormControl>
               <FormMessage />
@@ -445,7 +447,9 @@ const NewImageForm = () => {
           name="readiness_probe_failure_threshold"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" formTextLight">Readiness Probe Failure Threshold</FormLabel>
+              <FormLabel className=" formTextLight">
+                Readiness Probe Failure Threshold
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Readiness Probe Failure Threshold"
@@ -456,7 +460,6 @@ const NewImageForm = () => {
                     setReadinessProbeFailureThreshold(Number(e.target.value))
                   }
                   value={readinessProbeFailureThreshold ?? ""}
-
                 />
               </FormControl>
               <FormMessage />
@@ -468,7 +471,9 @@ const NewImageForm = () => {
           name="liveness_probe_initial_delay_seconds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" formTextLight">Liveness Probe Initial Delay Seconds</FormLabel>
+              <FormLabel className=" formTextLight">
+                Liveness Probe Initial Delay Seconds
+              </FormLabel>
               <FormControl>
                 <Input
                   min={1}
@@ -480,7 +485,6 @@ const NewImageForm = () => {
                     setLivenessProbeInitialDelaySeconds(Number(e.target.value))
                   }
                   value={livenessProbeInitialDelaySeconds ?? ""}
-                  
                 />
               </FormControl>
               <FormMessage />
@@ -495,7 +499,9 @@ const NewImageForm = () => {
           name="liveness_probe_period_seconds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" formTextLight">Liveness Probe Period Seconds</FormLabel>
+              <FormLabel className=" formTextLight">
+                Liveness Probe Period Seconds
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Liveness Probe Period Seconds"
@@ -506,7 +512,6 @@ const NewImageForm = () => {
                     setLivenessProbePeriodSeconds(Number(e.target.value))
                   }
                   value={livenessProbePeriodSeconds ?? ""}
-
                 />
               </FormControl>
               <FormMessage />
@@ -518,7 +523,9 @@ const NewImageForm = () => {
           name="liveness_probe_timeout_seconds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" formTextLight">Liveness Probe Timeout Seconds</FormLabel>
+              <FormLabel className=" formTextLight">
+                Liveness Probe Timeout Seconds
+              </FormLabel>
               <FormControl>
                 <Input
                   min={1}
@@ -530,7 +537,6 @@ const NewImageForm = () => {
                     setLivenessProbeTimeoutSeconds(Number(e.target.value))
                   }
                   value={livenessProbeTimeoutSeconds ?? ""}
-
                 />
               </FormControl>
               <FormMessage />
@@ -545,7 +551,9 @@ const NewImageForm = () => {
           name="liveness_probe_success_threshold"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" formTextLight">Liveness Probe Success Threshold</FormLabel>
+              <FormLabel className=" formTextLight">
+                Liveness Probe Success Threshold
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Liveness Probe Success Threshold"
@@ -567,7 +575,9 @@ const NewImageForm = () => {
           name="liveness_probe_failure_threshold"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" formTextLight">Liveness Probe Failure Threshold</FormLabel>
+              <FormLabel className=" formTextLight">
+                Liveness Probe Failure Threshold
+              </FormLabel>
               <FormControl>
                 <Input
                   min={1}
@@ -579,7 +589,6 @@ const NewImageForm = () => {
                     setLivenessProbeFailureThreshold(Number(e.target.value))
                   }
                   value={livenessProbeFailureThreshold ?? ""}
-
                 />
               </FormControl>
               <FormMessage />
@@ -748,7 +757,9 @@ const NewImageForm = () => {
               name="image_picture"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className=" formTextLight">Image Picture</FormLabel>
+                  <FormLabel className=" formTextLight">
+                    Image Picture
+                  </FormLabel>
                   <FormControl>
                     {imageDetails &&
                     imageDetails.image_picture &&

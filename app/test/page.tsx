@@ -2,11 +2,11 @@
 import React from "react";
 
 const page = () => {
-  const click = () => {
-    fetch("/api/poll?key=ejdjdj", {
-      method: "GET",
-    });
-  };
+  // const click = () => {
+  //   fetch("/api/poll?key=ejdjdj", {
+  //     method: "GET",
+  //   });
+  // };
 
   return (
     <div>
