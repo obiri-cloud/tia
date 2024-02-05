@@ -37,11 +37,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Toaster, toast as sooner } from "sonner";
 
 interface ILabInfo {
   id: number | null;
   url: string;
   creation_date: string;
+  lab_status_key?: string;
 }
 
 const LabsPage = () => {
@@ -69,6 +71,7 @@ const LabsPage = () => {
 
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
+  let intervalId: string | number | NodeJS.Timeout | undefined; 
 
   //choose the screen size
   const handleResize = () => {
@@ -88,6 +91,7 @@ const LabsPage = () => {
   };
 
   useEffect(() => {
+    let msg= ''
     getInstructions();
     let tialab_info: ILabInfo | null = null;
 
@@ -100,11 +104,17 @@ const LabsPage = () => {
     if (
       tialab_info &&
       tialab_info.hasOwnProperty("id") &&
-      tialab_info.hasOwnProperty("url")
+      tialab_info.hasOwnProperty("url") &&
+      tialab_info.hasOwnProperty("lab_status_key")
     ) {
-      console.log("labInfo ==>", labInfo);
-
       setLabInfo(tialab_info as ILabInfo);
+      const startPolling = (key: string) => {
+        intervalId = setInterval(() => {
+          pollStatus(key);
+        }, 5000);
+      };
+      startPolling(tialab_info?.lab_status_key ?? "")
+
     } else {
       setLabInfo({
         id: null,
@@ -163,43 +173,6 @@ const LabsPage = () => {
       setInstructions(response.data.data);
     }
   };
-
-  // useEffect(() => {
-  //   try {
-  //     getCurrentImage();
-  //   } catch (error) {
-  //     if (error instanceof AxiosError) {
-  //       userCheck(error as AxiosError);
-  //     }
-  //     if (axios.isCancel(error)) {
-  //       toast({
-  //         title: "Image Retrieval Error",
-  //         variant: "destructive",
-  //         description: "Error when retrieving image info",
-  //       });
-  //     } else {
-  //       // Handle other errors
-  //     }
-  //   }
-  // }, []);
-
-  // const getCurrentImage = async () => {
-  //   const response = await axios.get(
-  //     `${process.env.NEXT_PUBLIC_BE_URL}/user/image/${id}/retrieve/`,
-  //     {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Accept: "application/json",
-  //         // @ts-ignore
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     }
-  //   );
-  //   console.log("response", response);
-  //   if (response.status === 200) {
-  //     setLabInfo(response.data);
-  //   }
-  // };
 
   const endLab = async () => {
     setDeleting(true);
@@ -265,12 +238,40 @@ const LabsPage = () => {
     }
   };
 
+  useEffect(() => {}, []);
+
+  const pollStatus = async (
+    key: string | null,
+    delay: number = 8000,
+    maxRetries: number = 10
+  ) => {
+    try {
+      const response = await fetch(`/api/pollStatus?key=${key}&token=${token}`, {
+        method: "GET",
+      });
+      const { data } = await response.json();
+      console.log("data -->", data);
+      sooner.info(data?.data);
+      if (data.data.includes("namespace")) {
+        console.log("end");
+        
+        clearInterval(intervalId); 
+      }
+    } catch (error) {
+      console.error("Error occurred:", error);
+      if (maxRetries > 0) {
+        setTimeout(() => pollStatus(key, delay, maxRetries - 1), delay);
+      }
+    }
+  };
+
   if (!labInfo.id) {
     window.location.href = "/dashboard";
   }
 
   return (
     <Dialog>
+      <Toaster  position="top-center"/>
       <div className="h-full">
         <PanelGroup
           className="h-full "
@@ -450,7 +451,7 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
         )}
 
         {Array.isArray(instructions) ? (
-          !(currentInstruction  + 1  >= instructions.length) ? (
+          !(currentInstruction + 1 >= instructions.length) ? (
             <ForwardIcon
               onClick={() => setCurrentInstruction(currentInstruction + 1)}
               className="w-7 h-7"

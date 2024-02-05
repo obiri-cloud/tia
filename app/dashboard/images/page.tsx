@@ -155,11 +155,12 @@ const ImagePage = () => {
       }
 
       let key = response.data.redis_cache_key;
+      let lab_status_key = response.data.lab_status_key;
       if (response.data.status === 200 || response.data.status === 201) {
-        pollForLab(key);
+        pollForLab(key, lab_status_key);
       }
       if (response.data.status == 409) {
-        pollForLab(key);
+        pollForLab(key, lab_status_key);
       }
     } catch (error) {
       console.error("error", error);
@@ -181,6 +182,7 @@ const ImagePage = () => {
 
   const pollForLab = async (
     key: string | null,
+    lab_status_key: string | null,
     delay: number = 8000,
     maxRetries: number = 10
   ) => {
@@ -214,6 +216,7 @@ const ImagePage = () => {
               id: data.data.image_id,
               url: data.data.ingress_url,
               creation_date: data.data.creation_date,
+              lab_status_key
             })
           );
           toast({
@@ -230,13 +233,13 @@ const ImagePage = () => {
           console.log("data", data);
           setJokes((prev) => [data.joke, ...prev]);
 
-          setTimeout(() => pollForLab(key, delay, maxRetries - 1), delay);
+          setTimeout(() => pollForLab(key,lab_status_key, delay, maxRetries - 1), delay);
         }
       }
     } catch (error) {
       console.error("Error occurred:", error);
       if (maxRetries > 0) {
-        setTimeout(() => pollForLab(key, delay, maxRetries - 1), delay);
+        setTimeout(() => pollForLab(key,lab_status_key, delay, maxRetries - 1), delay);
       }
     }
   };

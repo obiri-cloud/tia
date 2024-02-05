@@ -10,7 +10,7 @@ const page = () => {
 
   return (
     <div>
-      <button onClick={click}>click</button>
+      {/* <button onClick={click}>click</button> */}
     </div>
   );
 };
