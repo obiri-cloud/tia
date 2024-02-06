@@ -58,7 +58,7 @@ const SequencePage = () => {
       //@ts-ignore
       text = editorRef.current.getContent();
     }
-    let formData = JSON.stringify({ sequence: siq, text, title });
+    let formData = JSON.stringify({ sequence, text, title });
 
     try {
       const response = await axios.patch(

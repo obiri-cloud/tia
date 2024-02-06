@@ -71,7 +71,7 @@ const LabsPage = () => {
 
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
-  let intervalId: string | number | NodeJS.Timeout | undefined; 
+  let intervalId: string | number | NodeJS.Timeout | undefined;
 
   //choose the screen size
   const handleResize = () => {
@@ -90,8 +90,17 @@ const LabsPage = () => {
     setIsLoading(false);
   };
 
+  const startPolling = (key: string) => {
+    intervalId = setInterval(async () => {
+      const res = await pollStatus(key);
+      if (res.includes("namespace")) {
+        clearInterval(intervalId);
+        console.log("Done!");
+      }
+    }, 5000);
+  };
   useEffect(() => {
-    let msg= ''
+    let msg = "";
     getInstructions();
     let tialab_info: ILabInfo | null = null;
 
@@ -108,13 +117,8 @@ const LabsPage = () => {
       tialab_info.hasOwnProperty("lab_status_key")
     ) {
       setLabInfo(tialab_info as ILabInfo);
-      const startPolling = (key: string) => {
-        intervalId = setInterval(() => {
-          pollStatus(key);
-        }, 5000);
-      };
-      startPolling(tialab_info?.lab_status_key ?? "")
 
+      startPolling(tialab_info?.lab_status_key ?? "");
     } else {
       setLabInfo({
         id: null,
@@ -246,17 +250,15 @@ const LabsPage = () => {
     maxRetries: number = 10
   ) => {
     try {
-      const response = await fetch(`/api/pollStatus?key=${key}&token=${token}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `/api/pollStatus?key=${key}&token=${token}`,
+        {
+          method: "GET",
+        }
+      );
       const { data } = await response.json();
-      console.log("data -->", data);
       sooner.info(data?.data);
-      if (data.data.includes("namespace")) {
-        console.log("end");
-        
-        clearInterval(intervalId); 
-      }
+      return data?.data;
     } catch (error) {
       console.error("Error occurred:", error);
       if (maxRetries > 0) {
@@ -271,7 +273,7 @@ const LabsPage = () => {
 
   return (
     <Dialog>
-      <Toaster  position="top-center"/>
+      <Toaster position="top-center" />
       <div className="h-full">
         <PanelGroup
           className="h-full "
