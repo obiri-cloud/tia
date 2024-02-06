@@ -159,6 +159,17 @@ const NewImageForm = () => {
       description: descriptionRef.current?.value,
     };
 
+    let df: any = {
+      name: nameRef.current?.value || "",
+      docker_image: dockerImageRef.current?.value || "",
+      port_number: portNumberRef.current?.value || "",
+      difficulty_level: difficultyLevel,
+      duration: durationRef.current?.value || "",
+      description: descriptionRef.current?.value || "",
+      command: commandRef.current?.value || "",
+      arguments: argumentsRef.current?.value || "",
+    };
+
     const formData = new FormData();
 
     // Append fields to the FormData object
@@ -171,57 +182,114 @@ const NewImageForm = () => {
     formData.append("command", commandRef.current?.value || "");
     formData.append("arguments", argumentsRef.current?.value || "");
 
+    console.log(
+      "readinessProbeFailureThreshold",
+      readinessProbeFailureThreshold
+    );
+
     // if (imageDetails) {
-    formData.append(
-      "readiness_probe_initial_delay_seconds",
-      String(readinessProbeInitialDelaySeconds) || ""
-    );
+    if (!readinessProbeInitialDelaySeconds) {
+      df["readiness_probe_initial_delay_seconds"] =
+        String(readinessProbeInitialDelaySeconds) || "";
+      formData.append(
+        "readiness_probe_initial_delay_seconds",
+        String(readinessProbeInitialDelaySeconds) || ""
+      );
+    }
 
-    formData.append(
-      "readiness_probe_period_seconds",
-      String(readinessProbeTimeoutSeconds) || ""
-    );
+    if (!readinessProbeTimeoutSeconds) {
+      df["readiness_probe_period_seconds"] =
+        String(readinessProbeTimeoutSeconds) || "";
 
-    formData.append(
-      "readiness_probe_timeout_seconds",
-      String(readinessProbeSuccessThreshold) || ""
-    );
+      formData.append(
+        "readiness_probe_period_seconds",
+        String(readinessProbeTimeoutSeconds) || ""
+      );
+    }
 
-    formData.append(
-      "readiness_probe_success_threshold",
-      String(readinessProbeFailureThreshold) || ""
-    );
+    if (!readinessProbeSuccessThreshold) {
+      df["readiness_probe_timeout_seconds"] =
+        String(readinessProbeSuccessThreshold) || "";
 
-    formData.append(
-      "readiness_probe_failure_threshold",
-      String(readinessProbeFailureThreshold) || ""
-    );
+      formData.append(
+        "readiness_probe_timeout_seconds",
+        String(readinessProbeSuccessThreshold) || ""
+      );
+    }
 
-    formData.append(
-      "liveness_probe_initial_delay_seconds",
-      String(livenessProbeInitialDelaySeconds) || ""
-    );
+    if (!readinessProbeFailureThreshold) {
+      df["readiness_probe_success_threshold"] =
+        String(readinessProbeFailureThreshold) || "";
 
-    formData.append(
-      "liveness_probe_period_seconds",
-      String(livenessProbePeriodSeconds) || ""
-    );
+      formData.append(
+        "readiness_probe_success_threshold",
+        String(readinessProbeFailureThreshold) || ""
+      );
+    }
 
-    formData.append(
-      "liveness_probe_timeout_seconds",
-      String(livenessProbeTimeoutSeconds) || ""
-    );
+    if (!readinessProbeFailureThreshold) {
+      df["readiness_probe_failure_threshold"] =
+        String(readinessProbeFailureThreshold) || "";
 
-    formData.append(
-      "liveness_probe_success_threshold",
-      String(livenessProbeSuccessThreshold) || ""
-    );
+      formData.append(
+        "readiness_probe_failure_threshold",
+        String(readinessProbeFailureThreshold) || ""
+      );
+    }
 
-    formData.append(
-      "liveness_probe_failure_threshold",
-      String(livenessProbeFailureThreshold) || ""
-    );
+    if (!livenessProbeInitialDelaySeconds) {
+      df["liveness_probe_initial_delay_seconds"] =
+        String(livenessProbeInitialDelaySeconds) || "";
+
+      formData.append(
+        "liveness_probe_initial_delay_seconds",
+        String(livenessProbeInitialDelaySeconds) || ""
+      );
+    }
+
+    if (!livenessProbePeriodSeconds) {
+      df["liveness_probe_period_seconds"] =
+        String(livenessProbePeriodSeconds) || "";
+
+      formData.append(
+        "liveness_probe_period_seconds",
+        String(livenessProbePeriodSeconds) || ""
+      );
+    }
+    if (!livenessProbeTimeoutSeconds) {
+      df["liveness_probe_timeout_seconds"] =
+        String(livenessProbeTimeoutSeconds) || "";
+
+      formData.append(
+        "liveness_probe_timeout_seconds",
+        String(livenessProbeTimeoutSeconds) || ""
+      );
+    }
+
+    if (!livenessProbeSuccessThreshold) {
+      df["liveness_probe_success_threshold"] =
+        String(livenessProbeSuccessThreshold) || "";
+
+      formData.append(
+        "liveness_probe_success_threshold",
+        String(livenessProbeSuccessThreshold) || ""
+      );
+    }
+
+    if (!livenessProbeFailureThreshold) {
+      df["liveness_probe_failure_threshold"] =
+        String(livenessProbeFailureThreshold) || "";
+
+      formData.append(
+        "liveness_probe_failure_threshold",
+        String(livenessProbeFailureThreshold) || ""
+      );
+    }
     // }
+
+
+    df = removeNullFields(df);
+    console.log("df", df);
 
     // Append the image file to the FormData object
     if (imagePictureRef.current && imagePictureRef.current!.files) {
@@ -232,10 +300,11 @@ const NewImageForm = () => {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/create/`,
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
+        // "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
-      data: formData,
+      data: df,
     };
 
     if (imageDetails) {
@@ -286,6 +355,15 @@ const NewImageForm = () => {
     }
     setUpdateImage(false);
   };
+
+  function removeNullFields(obj: any) {
+    for (const key in obj) {
+      if (obj[key] === "null") {
+        delete obj[key];
+      }
+    }
+    return obj;
+  }
 
   useEffect(() => {
     if (imageDetails?.difficulty_level) {
@@ -344,7 +422,6 @@ const NewImageForm = () => {
             <FormItem>
               <FormLabel className=" formTextLight">
                 Readiness Probe Initial Delay Seconds{" "}
-                {imageDetails?.readiness_probe_initial_delay_seconds}
               </FormLabel>
               <FormControl>
                 <Input
