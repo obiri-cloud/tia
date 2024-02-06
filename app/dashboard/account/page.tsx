@@ -334,7 +334,7 @@ useEffect(()=>{
                         aria-label="Avatar with initials SA"
                         className="sc-fHSyak bhauWF"
                       >
-                        SA
+                         <span className=" uppercase">{userData?.first_name.slice(0,2)}</span>
                       </div>
                     </div>
                   </div>
