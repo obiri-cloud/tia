@@ -52,7 +52,7 @@ const ActiveLabsPage = () => {
     }
   };
 
-  const viewLab = (image: IActiveLab) => {
+  const viewLab = (image: IActiveLab) => {    
     secureLocalStorage.setItem(
       "tialab_info",
       JSON.stringify({

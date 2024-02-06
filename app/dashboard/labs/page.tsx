@@ -91,12 +91,8 @@ const LabsPage = () => {
   };
 
   const startPolling = (key: string) => {
-    intervalId = setInterval(async () => {
-      const res = await pollStatus(key);
-      if (res.includes("namespace")) {
-        clearInterval(intervalId);
-        console.log("Done!");
-      }
+    intervalId = setInterval(() => {
+      pollStatus(key);
     }, 5000);
   };
   useEffect(() => {
@@ -113,12 +109,13 @@ const LabsPage = () => {
     if (
       tialab_info &&
       tialab_info.hasOwnProperty("id") &&
-      tialab_info.hasOwnProperty("url") &&
-      tialab_info.hasOwnProperty("lab_status_key")
+      tialab_info.hasOwnProperty("url")
+      // tialab_info.hasOwnProperty("lab_status_key")
     ) {
       setLabInfo(tialab_info as ILabInfo);
-
-      startPolling(tialab_info?.lab_status_key ?? "");
+      if (tialab_info?.lab_status_key) {
+        startPolling(tialab_info?.lab_status_key ?? "");
+      }
     } else {
       setLabInfo({
         id: null,
@@ -258,7 +255,12 @@ const LabsPage = () => {
       );
       const { data } = await response.json();
       sooner.info(data?.data);
-      return data?.data;
+      if (data?.data.includes("namespace")) {
+        console.log("intervalId", intervalId);
+
+        clearInterval(intervalId);
+        return;
+      }
     } catch (error) {
       console.error("Error occurred:", error);
       if (maxRetries > 0) {
@@ -267,9 +269,11 @@ const LabsPage = () => {
     }
   };
 
-  if (!labInfo.id) {
-    window.location.href = "/dashboard";
-  }
+  console.log("labInfo", labInfo);
+
+  // if (!labInfo.id) {
+  //   window.location.href = "/dashboard";
+  // }
 
   return (
     <Dialog>
