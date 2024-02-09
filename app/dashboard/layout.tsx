@@ -16,6 +16,7 @@ import { signOut } from "next-auth/react";
 import secureLocalStorage from "react-secure-storage";
 import ProfileHeader from "../components/admin/profile-header";
 import { usePathname } from "next/navigation";
+import { DropToggle } from "./account/page";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -90,6 +91,9 @@ export default function UserDashboardLayout({
                 </ul>
                 <div className="">
                   <ul className="space-y-2 font-medium">
+                    <li className="">
+                      <DropToggle/>
+                    </li> 
                     <li className="account-button">
                       <a
                         href="/dashboard/account"
@@ -115,7 +119,13 @@ export default function UserDashboardLayout({
           </aside>
         ) : null}
 
-        <div className={`${!pathname.startsWith("/dashboard/labs")  ? 'sm:ml-[220px]': ''} overflow-y-auto h-screen`}>{children}</div>
+        <div
+          className={`${
+            !pathname.startsWith("/dashboard/labs") ? "sm:ml-[220px]" : ""
+          } overflow-y-auto h-screen`}
+        >
+          {children}
+        </div>
       </div>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" />

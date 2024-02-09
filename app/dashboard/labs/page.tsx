@@ -277,7 +277,7 @@ const LabsPage = () => {
 
   return (
     <Dialog>
-      <Toaster position="top-center" />
+      <Toaster position="top-right" />
       <div className="h-full">
         <PanelGroup
           className="h-full "

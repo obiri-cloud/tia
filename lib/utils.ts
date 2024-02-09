@@ -14,6 +14,8 @@ export function userCheck(error: AxiosError | null) {
     error instanceof AxiosError &&
     //@ts-ignore
     (error.response.data.code === "user_not_found" ||
+    //@ts-ignore
+    error.response.data.code === "user_inactive" ||
       //@ts-ignore
       error.response.data.code === "token_not_valid")
   ) {

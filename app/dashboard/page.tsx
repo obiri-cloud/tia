@@ -199,7 +199,7 @@ const UserPage = () => {
         <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
       </div>
       <div className="p-4">
-        <div className="all-images-list grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 keyfeatures">
+        <div className="all-images-list grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 keyfeatures">
           {images && images.length >= -1 ? (
             images.map((image, i) => (
               <div
