@@ -1,5 +1,5 @@
 "use client";
-import React, { FormEvent, useRef, useState } from "react";
+import React, { FormEvent, SVGProps, useRef, useState } from "react";
 import {
   Form,
   FormControl,
@@ -17,6 +17,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { ToastAction } from "../ui/toast";
 import { useSession } from "next-auth/react";
+import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 
 const LoginForm = () => {
   const form = useForm();
@@ -30,6 +31,7 @@ const LoginForm = () => {
   const passwordRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [logging, setLogging] = useState(false);
+  const [typePassword, setTypePassword] = useState<boolean>(true);
 
   const formSchema = z.object({
     email: z.string().email({}),
@@ -61,7 +63,7 @@ const LoginForm = () => {
               title: "Login Successful",
               variant: "success",
             });
-            console.log("session", session)
+            console.log("session", session);
             // @ts-ignore
             let status = session?.user.data.is_admin as boolean;
 
@@ -126,13 +128,22 @@ const LoginForm = () => {
             <FormItem className="my-6">
               <FormLabel className=" formTextLight">Password</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  ref={passwordRef}
-                  type="password"
-                  placeholder="Password"
-                  className="glassBorder text-white bg-black/10"
-                />
+                <div className="relative">
+                  <Input
+                    {...field}
+                    ref={passwordRef}
+                    type={typePassword? "password": "text"}
+                    placeholder="Password"
+                    className="glassBorder text-white bg-black/10 pr-7"
+                  />
+                  <span onClick={()=> setTypePassword(!typePassword)} className="absolute top-[50%] right-0 translate-x-[-50%]  translate-y-[-50%]  cursor-pointer p-1" >
+                    {!typePassword? (
+                      <EyeClosedIcon />
+                    ) : (
+                      <EyeOpenIcon />
+                    )}
+                  </span>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Form,
   FormControl,
@@ -18,6 +18,7 @@ import { toast } from "@/components/ui/use-toast";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { FormEvent, useRef } from "react";
+import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 
 const SignupForm = () => {
   const form = useForm();
@@ -29,6 +30,7 @@ const SignupForm = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const [typePassword, setTypePassword] = useState<boolean>(true);
 
   const formSchema = z
     .object({
@@ -187,13 +189,22 @@ const SignupForm = () => {
               <FormItem className="">
                 <FormLabel className=" formTextLight">Password</FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    ref={passwordRef}
-                    type="password"
-                    className="glassBorder text-white bg-black/10"
-                    placeholder="Password"
-                  />
+                  <div className="relative">
+                    <Input
+                      {...field}
+                      ref={passwordRef}
+                      type="password"
+                      className="glassBorder text-white bg-black/10 pr-7"
+
+                      placeholder="Password"
+                    />
+                    <span
+                      onClick={() => setTypePassword(!typePassword)}
+                      className="absolute top-[50%] right-0 translate-x-[-50%]  translate-y-[-50%]  cursor-pointer p-1"
+                    >
+                      {!typePassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
+                    </span>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -204,15 +215,25 @@ const SignupForm = () => {
             name="confirm_password"
             render={({ field }) => (
               <FormItem className="">
-                <FormLabel className=" formTextLight">Confirm Password</FormLabel>
+                <FormLabel className=" formTextLight">
+                  Confirm Password
+                </FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    ref={confirmPasswordRef}
-                    type="password"
-                    className="glassBorder text-white bg-black/10"
-                    placeholder="Confirm Password"
-                  />
+                  <div className="relative">
+                    <Input
+                      {...field}
+                      ref={confirmPasswordRef}
+                      type="password"
+                      className="glassBorder text-white bg-black/10 pr-7"
+                      placeholder="Confirm Password"
+                    />
+                    <span
+                      onClick={() => setTypePassword(!typePassword)}
+                      className="absolute top-[50%] right-0 translate-x-[-50%]  translate-y-[-50%]  cursor-pointer p-1"
+                    >
+                      {!typePassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
+                    </span>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
