@@ -44,6 +44,7 @@ interface ILabInfo {
   url: string;
   creation_date: string;
   lab_status_key?: string;
+  duration: number | null
 }
 
 const LabsPage = () => {
@@ -53,6 +54,7 @@ const LabsPage = () => {
     id: -1,
     url: "",
     creation_date: "",
+    duration: null
   });
   const [isLoading, setIsLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
@@ -99,6 +101,8 @@ const LabsPage = () => {
     let msg = "";
     getInstructions();
     let tialab_info: ILabInfo | null = null;
+    console.log("tialab_info   actual data", tialab_info);
+    
 
     if (secureLocalStorage.getItem("tialab_info")) {
       tialab_info = JSON.parse(
@@ -112,6 +116,7 @@ const LabsPage = () => {
       tialab_info.hasOwnProperty("url")
       // tialab_info.hasOwnProperty("lab_status_key")
     ) {
+      
       setLabInfo(tialab_info as ILabInfo);
       if (tialab_info?.lab_status_key) {
         startPolling(tialab_info?.lab_status_key ?? "");
@@ -121,6 +126,7 @@ const LabsPage = () => {
         id: null,
         url: "",
         creation_date: "",
+        duration: null
       });
     }
   }, []);
@@ -308,6 +314,7 @@ const LabsPage = () => {
               <div className="countdown">
                 <CountdownClock
                   startTime={labInfo?.creation_date || ""}
+                  time={labInfo?.duration || 0}
                   endLab={endLab}
                 />
               </div>

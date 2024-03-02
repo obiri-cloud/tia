@@ -129,6 +129,9 @@ const ImagePage = () => {
           response.data.image_id
         ) {
           let data = response.data;
+          console.log("poll data", data);
+          
+
 
           secureLocalStorage.setItem(
             "tialab_info",
@@ -136,6 +139,7 @@ const ImagePage = () => {
               id: data.image_id,
               url: data.ingress_url,
               creation_date: data.creation_date,
+              duration: data.duration,
             })
           );
           setCreatingStarted(false);
@@ -209,6 +213,8 @@ const ImagePage = () => {
         router.push(`/dashboard`);
       } else {
         if (data.data) {
+          console.log("data duration", data);
+          
           resolved = true;
           secureLocalStorage.setItem(
             "tialab_info",
@@ -216,7 +222,8 @@ const ImagePage = () => {
               id: data.data.image_id,
               url: data.data.ingress_url,
               creation_date: data.data.creation_date,
-              lab_status_key
+              lab_status_key,
+              duration: data.data.duration
             })
           );
           toast({

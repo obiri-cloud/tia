@@ -3,26 +3,26 @@ import moment, { Moment, Duration } from "moment";
 
 interface CountdownProps {
   startTime: string;
+  time: number | null;
   endLab: () => void;
 }
 
 export const CountdownClock: React.FC<CountdownProps> = ({
   startTime,
+  time,
   endLab,
 }) => {
-
   const [timeRemaining, setTimeRemaining] = useState<Duration | null>(null);
   const [fiveMinLeft, setFiveMinLeft] = useState(false);
   const [tenSecLeft, setTenSecLeft] = useState(false);
 
   useEffect(() => {
     const startMoment = moment(startTime);
-    console.log("startMoment", startMoment);
 
     const interval = setInterval(() => {
       const now = moment();
 
-      const futureTime = moment(startMoment).add(60, "minutes");
+      const futureTime = moment(startMoment).add(time, "minutes");
       const duration = moment.duration(futureTime.diff(now));
 
       if (duration.asSeconds() <= 300) {
@@ -62,7 +62,7 @@ export const CountdownClock: React.FC<CountdownProps> = ({
 
   return (
     <div
-    id="countdown"
+      id="countdown"
       className={`font-jet font-bold shadow-md p-2 rounded-lg ${
         tenSecLeft ? "shake-card" : ""
       } ${fiveMinLeft ? "text-red-900 bg-red-500" : "text-black bg-green-300"}`}

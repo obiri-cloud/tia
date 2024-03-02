@@ -193,7 +193,8 @@ const SignupForm = () => {
                     <Input
                       {...field}
                       ref={passwordRef}
-                      type="password"
+                      type={typePassword? "password": "text"}
+
                       className="glassBorder text-white bg-black/10 pr-7"
 
                       placeholder="Password"
@@ -223,7 +224,8 @@ const SignupForm = () => {
                     <Input
                       {...field}
                       ref={confirmPasswordRef}
-                      type="password"
+                      type={typePassword? "password": "text"}
+
                       className="glassBorder text-white bg-black/10 pr-7"
                       placeholder="Confirm Password"
                     />
