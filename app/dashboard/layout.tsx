@@ -16,7 +16,7 @@ import { signOut } from "next-auth/react";
 import secureLocalStorage from "react-secure-storage";
 import ProfileHeader from "../components/admin/profile-header";
 import { usePathname } from "next/navigation";
-import { DropToggle } from "./account/page";
+import { DropToggle } from "../components/DropToggle";
 
 const inter = Inter({ subsets: ["latin"] });
 
