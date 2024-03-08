@@ -36,6 +36,7 @@ interface ILabImage {
   liveness_probe_success_threshold?: number;
   liveness_probe_failure_threshold?: number;
   updated_date?: string;
+  sidecar?: boolean;
 }
 
 interface ILabInfoDialog {
