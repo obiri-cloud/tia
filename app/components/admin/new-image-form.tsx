@@ -34,6 +34,8 @@ import { useDispatch, useSelector } from "react-redux";
 import trash from "@/public/svgs/trash.svg";
 import Image from "next/image";
 import { RootState } from "@/redux/store";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 const NewImageForm = () => {
   const form = useForm();
@@ -96,10 +98,12 @@ const NewImageForm = () => {
     useState<number | null>(
       imageDetails?.liveness_probe_failure_threshold ?? null
     );
+console.log("imageDetails?.sidecar", imageDetails);
 
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const imagePictureRef = useRef<HTMLInputElement>(null);
   const [updateImage, setUpdateImage] = useState(false);
+  const [sideCar, setSideCar] = useState(imageDetails?.sidecar);
   const [difficultyLevel, setDifficultyLevel] = useState(
     imageDetails?.difficulty_level ?? ""
   );
@@ -157,6 +161,7 @@ const NewImageForm = () => {
       command: commandRef.current?.value,
       arguments: argumentsRef.current?.value,
       description: descriptionRef.current?.value,
+      sidecar: sideCar
     };
 
     let df: any = {
@@ -168,6 +173,8 @@ const NewImageForm = () => {
       description: descriptionRef.current?.value || "",
       command: commandRef.current?.value || "",
       arguments: argumentsRef.current?.value || "",
+      sidecar: sideCar
+
     };
 
     const formData = new FormData();
@@ -287,9 +294,7 @@ const NewImageForm = () => {
     }
     // }
 
-
     df = removeNullFields(df);
-    console.log("df", df);
 
     // Append the image file to the FormData object
     if (imagePictureRef.current && imagePictureRef.current!.files) {
@@ -407,6 +412,7 @@ const NewImageForm = () => {
     setLivenessProbeFailureThreshold(
       imageDetails?.liveness_probe_failure_threshold ?? null
     );
+    setSideCar(imageDetails?.sidecar)
   }, [imageDetails]);
 
   const renderProbeSettings = (imageDetails: ILabImage | null) => (
@@ -907,6 +913,14 @@ const NewImageForm = () => {
                 </FormItem>
               )}
             />
+          </div>
+          <div className="my-6 flex items-center space-x-2">
+            <Switch
+              checked={sideCar}
+              onCheckedChange={(e) => setSideCar(e)}
+              id="side-car"
+            />
+            <Label htmlFor="side-car">Side car</Label>
           </div>
 
           <div className="my-6">
