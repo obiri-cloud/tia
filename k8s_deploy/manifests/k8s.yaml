@@ -55,7 +55,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    kubernetes.io/ingress.class: kong-new
+    kubernetes.io/ingress.class: kong
   labels:
     app: tialabs-frontend
   name: tialabs-frontend
