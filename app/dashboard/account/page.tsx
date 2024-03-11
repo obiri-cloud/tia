@@ -173,7 +173,7 @@ const AccountPage = () => {
     }
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}auth/account/deactivate/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/auth/account/deactivate/`,
         {
           headers: {
             Accept: "application/json",
