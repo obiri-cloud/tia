@@ -138,9 +138,9 @@ const LoginForm = () => {
                   />
                   <span onClick={()=> setTypePassword(!typePassword)} className="absolute top-[50%] right-0 translate-x-[-50%]  translate-y-[-50%]  cursor-pointer p-1" >
                     {!typePassword? (
-                      <EyeClosedIcon />
+                      <EyeClosedIcon className="stroke-white fill-white" />
                     ) : (
-                      <EyeOpenIcon />
+                      <EyeOpenIcon className="stroke-white fill-white" />
                     )}
                   </span>
                 </div>

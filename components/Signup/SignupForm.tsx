@@ -203,7 +203,7 @@ const SignupForm = () => {
                       onClick={() => setTypePassword(!typePassword)}
                       className="absolute top-[50%] right-0 translate-x-[-50%]  translate-y-[-50%]  cursor-pointer p-1"
                     >
-                      {!typePassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
+                      {!typePassword ? <EyeClosedIcon className="stroke-white fill-white"/> : <EyeOpenIcon  className="stroke-white fill-white"/>}
                     </span>
                   </div>
                 </FormControl>
@@ -233,7 +233,7 @@ const SignupForm = () => {
                       onClick={() => setTypePassword(!typePassword)}
                       className="absolute top-[50%] right-0 translate-x-[-50%]  translate-y-[-50%]  cursor-pointer p-1"
                     >
-                      {!typePassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
+                      {!typePassword ? <EyeClosedIcon className="stroke-white fill-white" /> : <EyeOpenIcon className="stroke-white fill-white"/>}
                     </span>
                   </div>
                 </FormControl>
