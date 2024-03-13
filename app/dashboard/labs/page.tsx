@@ -44,7 +44,7 @@ interface ILabInfo {
   url: string;
   creation_date: string;
   lab_status_key?: string;
-  duration: number | null
+  duration: number | null;
 }
 
 const LabsPage = () => {
@@ -54,7 +54,7 @@ const LabsPage = () => {
     id: -1,
     url: "",
     creation_date: "",
-    duration: null
+    duration: null,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
@@ -102,7 +102,6 @@ const LabsPage = () => {
     getInstructions();
     let tialab_info: ILabInfo | null = null;
     console.log("tialab_info   actual data", tialab_info);
-    
 
     if (secureLocalStorage.getItem("tialab_info")) {
       tialab_info = JSON.parse(
@@ -116,7 +115,6 @@ const LabsPage = () => {
       tialab_info.hasOwnProperty("url")
       // tialab_info.hasOwnProperty("lab_status_key")
     ) {
-      
       setLabInfo(tialab_info as ILabInfo);
       if (tialab_info?.lab_status_key) {
         startPolling(tialab_info?.lab_status_key ?? "");
@@ -126,7 +124,7 @@ const LabsPage = () => {
         id: null,
         url: "",
         creation_date: "",
-        duration: null
+        duration: null,
       });
     }
   }, []);
@@ -247,6 +245,8 @@ const LabsPage = () => {
 
   useEffect(() => {}, []);
 
+  let cnt = 0;
+
   const pollStatus = async (
     key: string | null,
     delay: number = 8000,
@@ -260,7 +260,19 @@ const LabsPage = () => {
         }
       );
       const { data } = await response.json();
-      sooner.info(data?.data);
+
+      if (cnt >= 10) {
+        clearInterval(intervalId);
+        sooner.info("Response found and populated.");
+        return;
+      }
+      
+      sooner.info(data?.data ? data?.data : data?.message);
+
+      if (data?.message.includes("Response data not available")) {
+        cnt += 1;
+      }
+
       if (data?.data.includes("namespace")) {
         console.log("intervalId", intervalId);
 

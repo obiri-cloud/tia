@@ -305,7 +305,7 @@ const ImagePage = () => {
           },
         }
       );
-      console.log("response.data.results", response.data.results);
+      console.log("active labs", response.data.results);
       setIsActive(
         response.data.results.find(
           (res: IActiveLab) => String(res.image) === id
