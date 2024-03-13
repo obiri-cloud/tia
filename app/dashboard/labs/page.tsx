@@ -261,7 +261,7 @@ const LabsPage = () => {
       );
       const { data } = await response.json();
 
-      if (cnt >= 10) {
+      if (cnt >= 7) {
         clearInterval(intervalId);
         sooner.info("Response found and populated.");
         return;
@@ -269,9 +269,7 @@ const LabsPage = () => {
       
       sooner.info(data?.data ? data?.data : data?.message);
 
-      if (data?.message.includes("Response data not available")) {
-        cnt += 1;
-      }
+     
 
       if (data?.data.includes("namespace")) {
         console.log("intervalId", intervalId);
