@@ -10,9 +10,6 @@ import React, {
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
-import edit from "@/public/svgs/edit.svg";
-import cancel from "@/public/svgs/cancel.svg";
-import Image from "next/image";
 
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
@@ -22,6 +19,8 @@ import * as z from "zod";
 import { userCheck } from "@/lib/utils";
 
 import { driver } from "driver.js";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import DeactivateConfirmation from "@/app/components/deactivate-confirmation";
 
 
 const AccountPage = () => {
@@ -227,6 +226,8 @@ const AccountPage = () => {
   }, []);
 
   return (
+    <Dialog>
+
     <div className="sc-hLBbgP sc-fLjoTV jAQqIz jVzpQn">
       <div className="sc-jEJXZe cyvxRV"></div>
       <div className="sc-hLBbgP sc-cTUoWY ioYMmf jlBsiO">
@@ -370,14 +371,21 @@ const AccountPage = () => {
               Deactivate your account
             </div>
           </div>
-          <div className="">
-            <Button onClick={deactivateAccount} className="bg-red-600 hover:bg-red-700">Deactivate</Button>
-          </div>
+          <DialogTrigger>
+            <Button className="bg-red-600 hover:bg-red-700">Deactivate</Button>
+          </DialogTrigger>
         </div>
         <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
-      
+      <DeactivateConfirmation
+        text="Do you want to deactivate your account?"
+        noText="No, cancel"
+        confirmText="Yes, deactivate"
+        confirmFunc={() => deactivateAccount()}
+      />
       </div>
     </div>
+    </Dialog>
+
   );
 };
 
