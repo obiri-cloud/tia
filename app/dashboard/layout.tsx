@@ -73,7 +73,13 @@ export default function UserDashboardLayout({
                   <li className="all-images-button">
                     <a
                       href="/dashboard"
-                      className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
+                      className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
+                        pathname.startsWith("/dashboard") &&
+                        pathname !== "/dashboard/active-labs" &&
+                        pathname !== "/dashboard/account" 
+                          ? "bg-menuHovWhite"
+                          : ""
+                      }`}
                     >
                       <AllImages className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-whiteDark dark:fill-white" />
                       <span className="ms-3 font-light">Labs</span>
@@ -82,7 +88,11 @@ export default function UserDashboardLayout({
                   <li className="active-labs-button">
                     <a
                       href="/dashboard/active-labs"
-                      className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
+                      className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
+                        pathname === "/dashboard/active-labs"
+                          ? "bg-menuHovWhite"
+                          : ""
+                      }`}
                     >
                       <ActiveLabs className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
                       <span className="ms-3 font-light">Active Labs</span>
@@ -92,12 +102,16 @@ export default function UserDashboardLayout({
                 <div className="">
                   <ul className="space-y-2 font-medium">
                     <li className="">
-                      <DropToggle/>
-                    </li> 
+                      <DropToggle />
+                    </li>
                     <li className="account-button">
                       <a
                         href="/dashboard/account"
-                        className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group"
+                        className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
+                          pathname === "/dashboard/account"
+                            ? "bg-menuHovWhite"
+                            : ""
+                        }`}
                       >
                         <Account className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white" />
                         <span className="ms-3 font-light">Account</span>
