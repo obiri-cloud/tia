@@ -12,6 +12,8 @@ import { useDispatch } from "react-redux";
 import { setCurrentImage } from "@/redux/reducers/userSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import { driver } from "driver.js";
+import arrow from "@/public/svgs/arrow.svg";
+import Image from "next/image";
 
 interface ILabListItem {
   id: number;
@@ -198,37 +200,46 @@ const UserPage = () => {
         <span className="p-2 ">All Images</span>
         <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
       </div>
-      <div className="p-4">
-        <div className="all-images-list grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 keyfeatures">
+      <div className="p-4 ">
+        {/* grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 */}
+        <div className="all-images-list flex flex-wrap w-full  gap-3">
           {images && images.length >= -1 ? (
             images.map((image, i) => (
               <div
                 onClick={() => viewImage(image)}
                 key={i}
-                className="keyfeatures-blocks dark:bg-cardDarkBg border dark:border-cardDarkBorder rounded-[8px] bg-white border-cardLightBorder cursor-pointer"
+                className={`lab-card rounded-2xl p-8 lg:w-[375px] w-full pl-6 neu-shadow sh bg-white cursor-pointer`}
               >
-                <div>
-                  <span>
-                    <h4 className=" mb-2 text-center font-semibold text-[1.125rem]">
-                      {image.name}
-                    </h4>
-                    <img
-                      src={image.image_picture ?? ""}
-                      alt=""
-                      className="flex-1 mx-auto"
-                    />
-
-                    <p className="text-sm text-left anywhere mt-4">
-                      {image.description}
-                    </p>
-                  </span>
+                <img
+                  src={image.image_picture ?? ""}
+                  alt=""
+                  className="w-[60px] h-[60px]"
+                />
+                <div className="mt-[40px] ">
+                  <h6 className="font-semibold leading-[140%] text-2xl app-text-clip h-[65px] max-h-[65px]">
+                    {image.name}
+                  </h6>
+                  <p className="mt-2  app-text-clip ">
+                    {image.description}
+                    {/* Our Kubernetes Fundamentals Sandbox Lab provides a
+                    comprehensive and beginner-friendly introduction to
+                    Kubernetes. */}
+                  </p>
                 </div>
+                <a
+                  // href={image.link}
+                  className="flex gap-[10px] items-center h-fit lg:mt-[36px] mt-[28px] font-medium "
+                >
+                  <h5 className="leading-[150%] font-medium">Go to lab</h5>
+                  {/* <Arrow fill="black" /> */}
+                  <Image className="pointer rot -rotate-45 transition-all delay-150" src={arrow} alt="" />
+                </a>
               </div>
             ))
           ) : (
             <>
               {new Array(6).fill(1).map((_, i) => (
-                <Skeleton key={i} className="w-full h-[200px] rounded-[16px]" />
+                <Skeleton key={i} className="lab-card rounded-2xl p-8 lg:w-[375px] w-full  h-[200px]" />
               ))}
             </>
           )}
