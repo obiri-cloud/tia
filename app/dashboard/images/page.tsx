@@ -507,7 +507,7 @@ const ImagePage = () => {
           ) : null}
 
           <div className="reviews">
-            <h3 className="text-xl font-normal">Reviews</h3>
+            <h3 className="text-xl font-medium">Reviews</h3>
             <div className="mt-3">
               <ol className="relative border-s border-gray-200 dark:border-gray-700">
                 {reviews ? (
