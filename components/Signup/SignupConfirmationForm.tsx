@@ -18,15 +18,21 @@ import { toast } from "@/components/ui/use-toast";
 import axios, { AxiosError } from "axios";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
+
 
 const SignupConfirmationForm = () => {
   const form = useForm();
   const codeRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+
   const router = useRouter();
-
-
-
 
   const searchParams = useSearchParams();
 
@@ -45,6 +51,8 @@ const SignupConfirmationForm = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    
     if (buttonRef.current) {
       buttonRef.current.disabled = true;
       buttonRef.current.textContent = "Confirming";
@@ -92,8 +100,7 @@ const SignupConfirmationForm = () => {
     } finally {
       if (buttonRef.current) {
         buttonRef.current.disabled = false;
-      buttonRef.current.textContent = "Confirm";
-
+        buttonRef.current.textContent = "Confirm";
       }
     }
   };
@@ -106,16 +113,29 @@ const SignupConfirmationForm = () => {
           name="Code"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className=" formTextLight">Code</FormLabel>
               <FormControl>
-                <Input
+                {/* <Input
                   placeholder="Confirmation Number"
                   type="number"
                   {...field}
                   ref={codeRef}
                   className="glassBorder text-white bg-black/10"
 
-                />
+                /> */}
+
+                <InputOTP ref={codeRef} maxLength={6}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
               </FormControl>
               <FormMessage />
             </FormItem>
