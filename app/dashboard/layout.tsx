@@ -77,7 +77,7 @@ export default function UserDashboardLayout({
                         pathname.startsWith("/dashboard") &&
                         pathname !== "/dashboard/active-labs" &&
                         pathname !== "/dashboard/account" 
-                          ? "bg-menuHovWhite"
+                          ? "bg-menuHovWhite dark:bg-menuHov"
                           : ""
                       }`}
                     >
@@ -90,7 +90,7 @@ export default function UserDashboardLayout({
                       href="/dashboard/active-labs"
                       className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
                         pathname === "/dashboard/active-labs"
-                          ? "bg-menuHovWhite"
+                          ? "bg-menuHovWhite dark:bg-menuHov"
                           : ""
                       }`}
                     >
@@ -109,7 +109,7 @@ export default function UserDashboardLayout({
                         href="/dashboard/account"
                         className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
                           pathname === "/dashboard/account"
-                            ? "bg-menuHovWhite"
+                            ? "bg-menuHovWhite dark:bg-menuHov"
                             : ""
                         }`}
                       >
