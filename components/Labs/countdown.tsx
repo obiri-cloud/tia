@@ -12,6 +12,11 @@ export const CountdownClock: React.FC<CountdownProps> = ({
   time,
   endLab,
 }) => {
+  console.log("startTime,time  ", {
+    startTime,
+    time,
+  });
+
   const [timeRemaining, setTimeRemaining] = useState<Duration | null>(null);
   const [fiveMinLeft, setFiveMinLeft] = useState(false);
   const [tenSecLeft, setTenSecLeft] = useState(false);

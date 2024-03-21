@@ -101,9 +101,10 @@ const LabsPage = () => {
     let msg = "";
     getInstructions();
     let tialab_info: ILabInfo | null = null;
-    console.log("tialab_info   actual data", tialab_info);
 
     if (secureLocalStorage.getItem("tialab_info")) {
+    console.log("tialab_info   actual data", tialab_info);
+
       tialab_info = JSON.parse(
         (secureLocalStorage.getItem("tialab_info") as string) || ""
       );
@@ -115,6 +116,8 @@ const LabsPage = () => {
       tialab_info.hasOwnProperty("url")
       // tialab_info.hasOwnProperty("lab_status_key")
     ) {
+      console.log("tialab_info", tialab_info);
+      
       setLabInfo(tialab_info as ILabInfo);
       if (tialab_info?.lab_status_key) {
         startPolling(tialab_info?.lab_status_key ?? "");
