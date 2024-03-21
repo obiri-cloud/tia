@@ -1,17 +1,7 @@
 "use client";
 import ReduxProvider from "@/redux/ReduxProvider";
 import { SVGProps } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Inter } from "next/font/google";
-
-import Link from "next/link";
 import { signOut } from "next-auth/react";
 import secureLocalStorage from "react-secure-storage";
 import ProfileHeader from "../components/admin/profile-header";
