@@ -30,7 +30,6 @@ const LoginForm = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [logging, setLogging] = useState(false);
   const [typePassword, setTypePassword] = useState<boolean>(true);
 
   const formSchema = z.object({
@@ -42,7 +41,12 @@ const LoginForm = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setLogging(true);
+    if (buttonRef.current) {
+      console.log("buttonRef", buttonRef);
+
+      buttonRef.current.disabled = true;
+      buttonRef.current.textContent = "Logging in...";
+    }
 
     try {
       let email = emailRef.current?.value;
@@ -83,7 +87,10 @@ const LoginForm = () => {
           }
         })
         .finally(() => {
-          setLogging(false);
+          if (buttonRef.current) {
+            buttonRef.current.disabled = false;
+            buttonRef.current.textContent = "Login";
+          }
         });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -94,6 +101,11 @@ const LoginForm = () => {
             description: err.message,
           })
         );
+      }
+
+      if (buttonRef.current) {
+        buttonRef.current.disabled = false;
+        buttonRef.current.textContent = "Login";
       }
     }
   };
@@ -132,12 +144,15 @@ const LoginForm = () => {
                   <Input
                     {...field}
                     ref={passwordRef}
-                    type={typePassword? "password": "text"}
+                    type={typePassword ? "password" : "text"}
                     placeholder="Password"
                     className="glassBorder text-white bg-black/10 pr-7"
                   />
-                  <span onClick={()=> setTypePassword(!typePassword)} className="absolute top-[50%] right-0 translate-x-[-50%]  translate-y-[-50%]  cursor-pointer p-1" >
-                    {!typePassword? (
+                  <span
+                    onClick={() => setTypePassword(!typePassword)}
+                    className="absolute top-[50%] right-0 translate-x-[-50%]  translate-y-[-50%]  cursor-pointer p-1"
+                  >
+                    {!typePassword ? (
                       <EyeClosedIcon className="stroke-white fill-white" />
                     ) : (
                       <EyeOpenIcon className="stroke-white fill-white" />
@@ -150,12 +165,11 @@ const LoginForm = () => {
           )}
         />
         <Button
-          disabled={logging}
           ref={buttonRef}
           className="w-full disabled:bg-black-900/10 bg-pink-200 text-white "
           variant="black"
         >
-          {logging ? "Logging in..." : "Login"}
+          Login
         </Button>
       </form>
     </Form>
