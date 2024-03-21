@@ -12,9 +12,7 @@ import { useDispatch } from "react-redux";
 import { setCurrentImage } from "@/redux/reducers/userSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import { driver } from "driver.js";
-import arrow from "@/public/svgs/arrow.svg";
-import Image from "next/image";
-
+import { Arrow } from "@/public/svgs/Arrow";
 interface ILabListItem {
   id: number;
   name: string;
@@ -208,7 +206,7 @@ const UserPage = () => {
               <div
                 onClick={() => viewImage(image)}
                 key={i}
-                className={`lab-card rounded-2xl p-8 lg:w-[375px] w-full pl-6 neu-shadow sh bg-white cursor-pointer`}
+                className={`lab-card rounded-2xl p-8 lg:w-[375px] w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer`}
               >
                 <img
                   src={image.image_picture ?? ""}
@@ -219,27 +217,30 @@ const UserPage = () => {
                   <h6 className="font-semibold leading-[140%] text-2xl app-text-clip h-[65px] max-h-[65px]">
                     {image.name}
                   </h6>
-                  <p className="mt-2  app-text-clip ">
+                  {/* <p className="mt-2  app-text-clip ">
                     {image.description}
-                    {/* Our Kubernetes Fundamentals Sandbox Lab provides a
-                    comprehensive and beginner-friendly introduction to
-                    Kubernetes. */}
-                  </p>
+                  
+                  </p> */}
                 </div>
                 <a
                   // href={image.link}
                   className="flex gap-[10px] items-center h-fit lg:mt-[36px] mt-[28px] font-medium "
                 >
                   <h5 className="leading-[150%] font-medium">Go to lab</h5>
-                  {/* <Arrow fill="black" /> */}
-                  <Image className="pointer rot -rotate-45 transition-all delay-150" src={arrow} alt="" />
+                  <Arrow
+                    className="pointer  -rotate-45 transition-all delay-150 dark:fill-white fill-black"
+                  />
+                  {/* <Image className="pointer rot -rotate-45 transition-all delay-150" src={arrow} alt="" /> */}
                 </a>
               </div>
             ))
           ) : (
             <>
               {new Array(6).fill(1).map((_, i) => (
-                <Skeleton key={i} className="lab-card rounded-2xl p-8 lg:w-[375px] w-full  h-[200px]" />
+                <Skeleton
+                  key={i}
+                  className="lab-card rounded-2xl p-8 lg:w-[375px] w-full  h-[200px]"
+                />
               ))}
             </>
           )}
