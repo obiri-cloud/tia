@@ -309,7 +309,7 @@ const Codes = () => {
           ))}
         </div>
 
-        <div className="relative bg-gray-900 shadow-xl  border border-gray-800   overflow-hidden rounded-2xl h-[500px] ">
+        <div className="relative bg-gray-900 shadow-xl  border border-gray-800   overflow-hidden rounded-2xl h-[500px] flex flex-col">
           <div className="jss138 p-2 bg-black/80">
             <div className="jss139 ">
               <div className="w-[20px] h-[20px] ">{currentLab.sm_icon}</div>
