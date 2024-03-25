@@ -8,6 +8,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import { IInstruction } from "@/app/types";
 
 const SequencePage = () => {
   const editorRef = useRef<TinyMCEEditor | null>(null);
@@ -41,7 +42,6 @@ const SequencePage = () => {
         },
       }
     );
-    console.log("response ==>", response);
     if (response.status === 200) {
       setInfo(response.data.data);
       setSequence(response.data.data.sequence);
@@ -108,7 +108,6 @@ const SequencePage = () => {
           },
         }
       );
-      console.log("response", response);
 
       if (response.status === 201) {
         toast({

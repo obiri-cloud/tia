@@ -196,7 +196,7 @@ const AccountPage = () => {
     } catch (error) {
       userCheck(error as AxiosError);
 
-      console.log("error", error);
+      console.error("error", error);
 
       toast({
         title: "Something went deactivating your account.",

@@ -17,6 +17,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import secureLocalStorage from "react-secure-storage";
+import { IActiveLab } from "@/app/types";
 
 const ActiveLabsPage = () => {
   const [labs, setLabs] = useState([]);
@@ -44,7 +45,6 @@ const ActiveLabsPage = () => {
           },
         }
       );
-      console.log("response.data.results", response.data.results);
 
       setLabs(response.data.results);
     } catch (error) {

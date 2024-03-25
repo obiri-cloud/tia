@@ -72,14 +72,12 @@ const ImagePage = () => {
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
-          console.log("data", data);
 
           const serverTime = new Date(data.unixtime * 1000);
           const localTime = new Date();
           const timeDifference = Math.abs(
             serverTime.getTime() - localTime.getTime()
           );
-          console.log("timeDifference", timeDifference);
 
           if (timeDifference > 300000) {
             toast({
@@ -244,7 +242,6 @@ const ImagePage = () => {
         router.push(`/dashboard`);
       } else {
         if (data.data) {
-          console.log("data duration", data);
 
           resolved = true;
           secureLocalStorage.setItem(
@@ -268,7 +265,6 @@ const ImagePage = () => {
           );
         }
         if (!resolved) {
-          console.log("data", data);
           setJokes((prev) => [data.joke, ...prev]);
 
           setTimeout(

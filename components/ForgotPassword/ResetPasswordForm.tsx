@@ -24,7 +24,6 @@ const ResetPasswordForm = () => {
   const searchParams = useSearchParams();
 
   const code = searchParams.get("code");
-  console.log("code", code);
   
   const email = searchParams.get("email");
 

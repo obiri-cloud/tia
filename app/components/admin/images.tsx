@@ -33,6 +33,7 @@ import {
 } from "@/redux/reducers/adminSlice";
 import DeleteConfirmation from "../delete-confirmation";
 import { useRouter } from "next/navigation";
+import { ILabImage } from "@/app/types";
 
 const Images = () => {
   const { imageCount, imageList } = useSelector(

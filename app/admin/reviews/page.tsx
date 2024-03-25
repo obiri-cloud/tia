@@ -1,5 +1,6 @@
 "use client";
 
+import { IReview } from "@/app/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -27,7 +28,6 @@ const ReviewsPage = () => {
         }
       );
 
-      console.log("response.data.results", response.data.results);
 
       setReviews(response.data.results);
     } catch (error) {}

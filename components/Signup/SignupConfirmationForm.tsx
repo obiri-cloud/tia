@@ -81,7 +81,6 @@ const SConfirmationForm = () => {
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.log("error.issues", error.issues);
 
         error.issues.map((err) =>
           toast({

@@ -1,5 +1,6 @@
 "use client";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
+import { IInstruction, ILabImage } from "@/app/types";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,7 +25,6 @@ const InstructionPage = () => {
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
-  console.log("params", params.id);
   useEffect(() => {
     try {
       getCurrentImage();
@@ -55,7 +55,6 @@ const InstructionPage = () => {
         },
       }
     );
-    console.log("response", response);
     if (response.status === 200) {
       setCurrentImage(response.data);
     }
@@ -74,7 +73,6 @@ const InstructionPage = () => {
         },
       }
     );
-    console.log("response ==>", response);
     if (response.status === 200) {
       setInstructions(response.data.data);
     }

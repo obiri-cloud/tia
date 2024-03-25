@@ -36,6 +36,7 @@ import Image from "next/image";
 import { RootState } from "@/redux/store";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { ContentProps, ILabImage } from "@/app/types";
 
 const NewImageForm = () => {
   const form = useForm();
@@ -98,7 +99,6 @@ const NewImageForm = () => {
     useState<number | null>(
       imageDetails?.liveness_probe_failure_threshold ?? null
     );
-console.log("imageDetails?.sidecar", imageDetails);
 
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const imagePictureRef = useRef<HTMLInputElement>(null);
@@ -189,10 +189,7 @@ console.log("imageDetails?.sidecar", imageDetails);
     formData.append("command", commandRef.current?.value || "");
     formData.append("arguments", argumentsRef.current?.value || "");
 
-    console.log(
-      "readinessProbeFailureThreshold",
-      readinessProbeFailureThreshold
-    );
+   
 
     // if (imageDetails) {
     if (!readinessProbeInitialDelaySeconds) {
@@ -342,7 +339,7 @@ console.log("imageDetails?.sidecar", imageDetails);
         });
       }
     } catch (error) {
-      console.log("error", error);
+      console.error("error", error);
 
       if (error instanceof z.ZodError) {
         error.issues.map((err) =>
@@ -818,7 +815,6 @@ console.log("imageDetails?.sidecar", imageDetails);
                     <SelectContent>
                       {levels.map((dl, i) => (
                         <SelectItem
-                          //   onClick={() => console.log(dl)}
                           className="capitalize"
                           key={i}
                           value={dl}

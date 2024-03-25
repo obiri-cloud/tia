@@ -51,7 +51,6 @@ const UserPage = () => {
           },
         }
       );
-      console.log("response.data.results", response.data.results);
 
       setImages(response.data.results);
     } catch (error) {
@@ -76,7 +75,6 @@ const UserPage = () => {
           },
         }
       );
-      console.log("response.data.results", response.data.results);
 
       setLabs(response.data.results);
     } catch (error) {
@@ -85,7 +83,6 @@ const UserPage = () => {
   };
 
   const resumeLab = (data: ILabListItem) => {
-    console.log("data", data);
 
     secureLocalStorage.setItem(
       "tialab_info",

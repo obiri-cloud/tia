@@ -82,7 +82,6 @@ const SignupForm = () => {
           },
         }
       );
-      console.log("response.data", response.data);
 
       if (response.data.status === 201) {
         router.push(`/signup/confirmation?email=${emailRef.current!.value}`);

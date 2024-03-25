@@ -11,12 +11,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getImageListX } from "./overview";
 import { setCurrentImage, setImageCount, setImageList } from "@/redux/reducers/adminSlice";
 import { useDispatch } from "react-redux";
+import { ILabImage } from "@/app/types";
 
 interface IImageTableTable {
   imageList: ILabImage[] | null;
 }
 const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
-  console.log("imageList",imageList);
   
   const dialogRef = useRef<HTMLDialogElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -30,7 +30,6 @@ const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
   const token = session?.user!.tokens?.access_token;
 
   useEffect(() => {
-    console.log("imageList", imageList);
 
     setLocalImageList(imageList);
   }, [imageList]);

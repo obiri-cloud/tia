@@ -18,6 +18,7 @@ import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
 import { getImageListX } from "./overview";
+import { ILabList } from "@/app/types";
 
 interface INewLabForm {
   labDetails: ILabList | null;
@@ -93,7 +94,7 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
         });
       }
     } catch (error) {
-      console.log("error", error);
+      console.error("error", error);
 
       if (error instanceof z.ZodError) {
         error.issues.map((err) =>

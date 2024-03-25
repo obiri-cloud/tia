@@ -6,6 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import React, { FC } from "react";
+import { IInstruction, ILabImage, ILabList } from "../types";
 
 
 interface ILabInfo {

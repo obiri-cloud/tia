@@ -28,6 +28,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { getLabListX } from "./overview";
 import { setLabCount, setLabList } from "@/redux/reducers/adminSlice";
+import { ILabList } from "@/app/types";
 
 const Labs = () => {
   const { labCount, labList } = useSelector((state: RootState) => state.admin);

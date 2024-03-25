@@ -17,6 +17,7 @@ import { Progress } from "@/components/ui/progress";
 import { createPortal } from "react-dom";
 import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
+import { ContentProps, ILabInfo, ILabInfoDialog } from "@/app/types";
 
 const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
   const { data: session } = useSession();
@@ -87,7 +88,6 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
           description: "Lab timed out",
         });
       }
-      console.log("response.data", response);
 
       if (response.data.status === 200 || response.data.status === 201) {
         delayPush(response.data);

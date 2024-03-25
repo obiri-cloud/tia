@@ -9,6 +9,7 @@ import axios, { AxiosError } from "axios";
 import { errorToJSON } from "next/dist/server/render";
 import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
+import { ILabImage } from "@/app/types";
 
 const LabList = () => {
   const { data: session } = useSession();
@@ -36,11 +37,10 @@ const LabList = () => {
           },
         }
       );
-      console.log("response.data.results", response.data.results);
       setLabs(response.data.results);
     } catch (error) {
       userCheck(error as AxiosError)
-      console.log("error", error);
+      console.error("error", error);
     }
   };
 

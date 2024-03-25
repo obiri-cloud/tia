@@ -1,3 +1,4 @@
+import { ILabImage, ILabList } from "@/app/types";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 

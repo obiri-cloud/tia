@@ -1,7 +1,5 @@
 "use client";
 
-import ThemeToggle from "@/app/components/home/themetoggle";
-import Navbar from "@/components/ui/navbar";
 import { usePathname } from "next/navigation";
 
 export default function PathnameProvider(): React.ReactNode {

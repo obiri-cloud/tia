@@ -3,6 +3,7 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import React, { FC, useState } from "react";
 import NewLabForm from "./new-lab-form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ILabList } from "@/app/types";
 
 interface ILabTable {
   labList: ILabList[] | null;
