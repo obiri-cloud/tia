@@ -276,7 +276,7 @@ const Codes = () => {
   };
 
   return (
-    <div className="">
+    <div className="py-5">
       <h1 className="jss26 jss130 max-w-[950px]">
         Get ready to enhance your DevOps expertise with our hands-on learning
         approach.
