@@ -277,7 +277,7 @@ const LabsPage = () => {
                 <Button
                   disabled={deleting}
                   variant="destructive"
-                  className=" disabled:bg-red-900/90"
+                  className=" disabled:bg-red-900/90 font-normal"
                 >
                   {deleting ? "Ending Lab..." : "End Lab"}
                 </Button>
@@ -372,7 +372,6 @@ import { CountdownClock } from "@/components/Labs/countdown";
 import { DialogTrigger } from "@/components/ui/dialog";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { cn, userCheck } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DrawerClose, DrawerFooter } from "@/components/ui/drawer";
@@ -497,6 +496,7 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import PrismComponent from "@/app/components/PrismComponent";
 import { ContentProps, IInstruction } from "@/app/types";
+import { Label } from "@/components/ui/neo-label";
 
 const ReviewDrawer = () => {
   const ratings = [
@@ -610,7 +610,7 @@ const ReviewDrawer = () => {
         onClickOutside={(e) => handleOnClickOutside(e)}
       >
         <DialogHeader>
-          <DialogTitle className="text-black font-bold text-xl">
+          <DialogTitle className="text-black dark:text-white font-bold text-xl">
             Review this lab
           </DialogTitle>
           <DialogDescription>
