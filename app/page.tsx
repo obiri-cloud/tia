@@ -366,7 +366,7 @@ spec:
                 <br /> Engineer with Tialabs
               </h1>
               <p className=" icTiAa fpOzFb haagJq">
-                Empower Your Skills, Embrace Efficiency:
+                Unlock Your Potential, Embrace Productivity:
                 <br /> Hands-On Learning for DevOps Mastery at Your Fingertips.
               </p>
             </div>
@@ -402,10 +402,7 @@ spec:
                 <path pathLength="1" d="M220 777L220 1"></path>
                 <path pathLength="1" d="M538 777L538 128"></path>
               </svg>
-              <Image
-                alt="Screenshot of a sample lab"
-                src={lab}
-              />
+              <Image alt="Screenshot of a sample lab" src={lab} />
             </div>
           </section>
         </div>

@@ -12,11 +12,7 @@ export const CountdownClock: React.FC<CountdownProps> = ({
   time,
   endLab,
 }) => {
-  console.log("startTime,time  ", {
-    startTime,
-    time,
-  });
-
+  
   const [timeRemaining, setTimeRemaining] = useState<Duration | null>(null);
   const [fiveMinLeft, setFiveMinLeft] = useState(false);
   const [tenSecLeft, setTenSecLeft] = useState(false);
@@ -68,9 +64,9 @@ export const CountdownClock: React.FC<CountdownProps> = ({
   return (
     <div
       id="countdown"
-      className={`font-jet font-bold shadow-md p-2 rounded-lg ${
+      className={`font-jet font- shadow-md p-2 rounded-lg ${
         tenSecLeft ? "shake-card" : ""
-      } ${fiveMinLeft ? "text-red-900 bg-red-500" : "text-black bg-green-300"}`}
+      } ${fiveMinLeft ? "text-red-900 bg-danger" : "text-white bg-mint "}`}
     >
       <p>{formatTime(timeRemaining)}</p>
     </div>

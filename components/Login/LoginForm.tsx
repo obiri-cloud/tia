@@ -1,15 +1,6 @@
 "use client";
-import React, { FormEvent, SVGProps, useRef, useState } from "react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
+import React, { FormEvent, useRef, useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import * as z from "zod";
 import { toast } from "@/components/ui/use-toast";
@@ -18,9 +9,14 @@ import { signIn } from "next-auth/react";
 import { ToastAction } from "../ui/toast";
 import { useSession } from "next-auth/react";
 import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+import { BottomGradient } from "../Signup/SForm";
+import { EyeIcon, EyeOff } from "lucide-react";
+import { LabelInputContainer } from "../ui/label-input-container";
+import { Label } from "../ui/neo-label";
+import Link from "next/link";
+import { Input } from "../ui/neo-input";
 
 const LoginForm = () => {
-  const form = useForm();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { data: session } = useSession();
@@ -42,8 +38,6 @@ const LoginForm = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (buttonRef.current) {
-      console.log("buttonRef", buttonRef);
-
       buttonRef.current.disabled = true;
       buttonRef.current.textContent = "Logging in...";
     }
@@ -111,68 +105,75 @@ const LoginForm = () => {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={handleSubmit} className="max-w-[500px] w-full">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className=" formTextLight">Email</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Email"
-                  type="email"
-                  defaultValue={email ?? ""}
-                  {...field}
-                  ref={emailRef}
-                  className="glassBorder text-white bg-black/10"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem className="my-6">
-              <FormLabel className=" formTextLight">Password</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Input
-                    {...field}
-                    ref={passwordRef}
-                    type={typePassword ? "password" : "text"}
-                    placeholder="Password"
-                    className="glassBorder text-white bg-black/10 pr-7"
-                  />
-                  <span
-                    onClick={() => setTypePassword(!typePassword)}
-                    className="absolute top-[50%] right-0 translate-x-[-50%]  translate-y-[-50%]  cursor-pointer p-1"
-                  >
-                    {!typePassword ? (
-                      <EyeClosedIcon className="stroke-white fill-white" />
-                    ) : (
-                      <EyeOpenIcon className="stroke-white fill-white" />
-                    )}
-                  </span>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button
+    <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
+      <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
+        Log in to Tialabs
+      </h2>
+      <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
+        Continue learning on Tialabs
+      </p>
+
+      <form className="my-8" onSubmit={handleSubmit}>
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="email">Email Address</Label>
+          <Input
+            ref={emailRef}
+            id="email"
+            placeholder="example@example.com"
+            type="email"
+          />
+        </LabelInputContainer>
+        <LabelInputContainer className="mb-4 relative">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            ref={passwordRef}
+            id="password"
+            placeholder="••••••••"
+            type={typePassword ? "password" : "text"}
+          />
+          <span
+            onClick={() => setTypePassword(!typePassword)}
+            className="absolute top-[55%] right-0 translate-x-[-50%]  translate-y-[-55%]  cursor-pointer p-1"
+          >
+            {!typePassword ? (
+              <EyeIcon className="stroke-black fill-transparent w-4 h-4" />
+            ) : (
+              <EyeOff className="stroke-black fill-transparent w-4 h-4" />
+            )}
+          </span>
+        </LabelInputContainer>
+
+        <button
           ref={buttonRef}
-          className="w-full disabled:bg-black-900/10 bg-pink-200 text-white "
-          variant="black"
+          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] disabled:opacity-50 cursor-pointer"
+          type="submit"
         >
-          Login
-        </Button>
+          Login &rarr;
+          <BottomGradient />
+        </button>
+
+        <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
+
+        <div className="flex flex-col space-y-4">
+          <Link
+            href="/signup"
+            className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
+          >
+            Don't have any account? Sign up
+            <BottomGradient />
+          </Link>
+          <Link
+            href="/forgot-password"
+            className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
+          >
+            <span className="text-neutral-700 dark:text-neutral-300 text-sm">
+              Forgot Password?
+            </span>
+            <BottomGradient />
+          </Link>
+        </div>
       </form>
-    </Form>
+    </div>
   );
 };
 

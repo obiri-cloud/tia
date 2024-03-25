@@ -25,55 +25,29 @@ const Overview = () => {
   return (
     <div className="space-y-4">
       <Dialog>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Labs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{imageCount}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+        <div className="flex gap-4 ">
+          <div
+            className={`lab-card rounded-2xl p-8 lg:w-[375px] w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer`}
+          >
+            <span className="text-[40px] font-bold">{imageCount}</span>
+            <div className="mt-[40px] ">
+              <h6 className="font-semibold leading-[140%] text-2xl app-text-clip h-[65px] max-h-[65px]">
                 Total Images
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{labCount}</div>
-            </CardContent>
-          </Card>
-        </div>
-        {/* <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-8">
-          <Card className="col-span-4">
-            <CardHeader className="flex flex-row justify-between items-center w-full">
-              <div>
-                <CardTitle>Image List</CardTitle>
-                <CardDescription>
-                  You have {imageCount} image(s).
-                </CardDescription>
-              </div>
-              <DialogTrigger>
-                <Button>Add Image</Button>
-              </DialogTrigger>
-            </CardHeader>
-            <CardContent className="pl-2">
-              <ImageTable imageList={imageList} />
-            </CardContent>
-          </Card>
-          <Card className="col-span-4">
-            <CardHeader>
-              <CardTitle>Lab List</CardTitle>
-              <CardDescription>You have {labCount} lab(s).</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <LabTable labList={labList} />
-            </CardContent>
-          </Card>
-        </div>
+              </h6>
+            </div>
+          </div>
 
-        <NewImageForm  /> */}
+          <div
+            className={`lab-card rounded-2xl p-8 lg:w-[375px] w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer`}
+          >
+            <span className="text-[40px] font-bold">{labCount}</span>
+            <div className="mt-[40px] ">
+              <h6 className="font-semibold leading-[140%] text-2xl app-text-clip h-[65px] max-h-[65px]">
+                Total Labs
+              </h6>
+            </div>
+          </div>
+        </div>
       </Dialog>
     </div>
   );

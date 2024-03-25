@@ -23,7 +23,7 @@ const themes = [
       label: (
         <span>
           <div className="sc-hLBbgP jouEsA">
-            <div aria-hidden="true" className="sc-gMHJKX GATXs">
+            <div  className="sc-gMHJKX GATXs">
               <span className="sc-bcXHqe sc-csNZvx cvSnkm jlBvVU">Aa</span>
             </div>
             <span className="sc-bcXHqe sc-cxiiTX clfcKZ dvLDyp">Dark</span>
@@ -36,7 +36,7 @@ const themes = [
       label: (
         <span>
           <div className="sc-hLBbgP jouEsA">
-            <div aria-hidden="true" className="sc-gMHJKX GATXs">
+            <div  className="sc-gMHJKX GATXs">
               <span className="sc-bcXHqe sc-csNZvx cvSnkm dnrtPT">Aa</span>
             </div>
             <span className="sc-bcXHqe sc-cxiiTX chGwny dvLDyp">Light</span>

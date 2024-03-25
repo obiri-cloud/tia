@@ -7,6 +7,7 @@ import secureLocalStorage from "react-secure-storage";
 import ProfileHeader from "../components/admin/profile-header";
 import { usePathname } from "next/navigation";
 import { DropToggle } from "../components/DropToggle";
+import { LogOut, Play, ShapesIcon, User } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,6 @@ export default function UserDashboardLayout({
     secureLocalStorage.removeItem("tialabs_info");
   };
   const pathname = usePathname();
-  console.log("pathname", pathname);
 
   return (
     <ReduxProvider>
@@ -37,14 +37,13 @@ export default function UserDashboardLayout({
           <span className="sr-only">Open sidebar</span>
           <svg
             className="w-6 h-6"
-            aria-hidden="true"
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              clip-rule="evenodd"
-              fill-rule="evenodd"
+              clipRule="evenodd"
+              fillRule="evenodd"
               d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
             ></path>
           </svg>
@@ -53,8 +52,7 @@ export default function UserDashboardLayout({
         {!pathname.startsWith("/dashboard/labs") ? (
           <aside
             id="default-sidebar"
-            className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark  "
-            aria-label="Sidebar"
+            className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark"
           >
             <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
               <ProfileHeader />
@@ -66,13 +64,43 @@ export default function UserDashboardLayout({
                       className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
                         pathname.startsWith("/dashboard") &&
                         pathname !== "/dashboard/active-labs" &&
-                        pathname !== "/dashboard/account" 
+                        pathname !== "/dashboard/account"
                           ? "bg-menuHovWhite dark:bg-menuHov"
                           : ""
                       }`}
                     >
-                      <AllImages className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-whiteDark dark:fill-white" />
-                      <span className="ms-3 font-light">Labs</span>
+                      <ShapesIcon
+                        className={`
+
+
+${
+  pathname.startsWith("/dashboard") &&
+  pathname !== "/dashboard/active-labs" &&
+  pathname !== "/dashboard/account"
+    ? "w-5 h-5  transition duration-75 dark:group-hover:text-white fill-white dark:fill-whiteDark stroke-2"
+    : ""
+}
+
+
+`}
+                      />
+                      <span
+                        className={`ms-3 
+                      
+                      ${
+                        pathname.startsWith("/dashboard") &&
+                        pathname !== "/dashboard/active-labs" &&
+                        pathname !== "/dashboard/account"
+                          ? "bg-menuHovWhite dark:bg-menuHov font-semibold"
+                          : "font-light"
+                      }
+
+
+                      
+                      `}
+                      >
+                        Labs
+                      </span>
                     </a>
                   </li>
                   <li className="active-labs-button">
@@ -84,14 +112,40 @@ export default function UserDashboardLayout({
                           : ""
                       }`}
                     >
-                      <ActiveLabs className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white" />
-                      <span className="ms-3 font-light">Active Labs</span>
+                      <Play
+                        className={`
+                        
+                        ${
+                          pathname === "/dashboard/active-labs"
+                            ? " w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white stroke-2"
+                            : ""
+                        }
+                        
+                  
+                        
+                        `}
+                      />
+                      <span
+                        className={`
+                      ms-3 
+                      ${
+                        pathname === "/dashboard/active-labs"
+                          ? "font-semibold"
+                          : "font-light "
+                      }
+                      
+                      `}
+                      >
+                        Active Labs
+                      </span>
                     </a>
                   </li>
                 </ul>
                 <div className="">
                   <ul className="space-y-2 font-medium">
-                    <li className="">
+                    <li className="py-1">
+                      <span className="font-light">Theme:</span>
+
                       <DropToggle />
                     </li>
                     <li className="account-button">
@@ -103,8 +157,33 @@ export default function UserDashboardLayout({
                             : ""
                         }`}
                       >
-                        <Account className="w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white" />
-                        <span className="ms-3 font-light">Account</span>
+                        <User
+                          className={`
+                          
+                          
+                          
+                          ${
+                            pathname === "/dashboard/account"
+                              ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
+                              : " "
+                          }
+
+
+
+                          `}
+                        />
+                        <span
+                          className={`
+                        ms-3 
+                        ${
+                          pathname === "/dashboard/account"
+                            ? "font-semibold"
+                            : "font-light "
+                        }
+                        `}
+                        >
+                          Account
+                        </span>
                       </a>
                     </li>
                     <li className="logout-button">
@@ -112,7 +191,7 @@ export default function UserDashboardLayout({
                         onClick={logout}
                         className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group cursor-pointer"
                       >
-                        <Logout className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-whiteDark dark:fill-white" />
+                        <LogOut className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-white dark:fill-whiteDark" />
                         <span className="ms-3 font-light">Logout</span>
                       </span>
                     </li>
@@ -146,79 +225,3 @@ export default function UserDashboardLayout({
     </ReduxProvider>
   );
 }
-
-const AllImages = (props: SVGProps<SVGSVGElement>) => (
-  <svg
-    {...props}
-    viewBox="0 0 512 512"
-    xmlns="http://www.w3.org/2000/svg"
-    enableBackground="new 0 0 512 512"
-    style={{ width: "24px" }}
-  >
-    <path
-      d="m457.6 140.2-82.5-4-4.8-53.8c-1-11.3-11.1-19.2-22.9-18.3l-296 24.3c-11.8 1-20.3 10.5-19.4 21.7l21.2 235.8c1 11.3 11.2 19.2 22.9 18.3l15-1.2-2.4 45.8c-.6 12.6 9.2 22.8 22.4 23.5L441.3 448c13.2.6 24.1-8.6 24.8-21.2L480 163.5c.6-12.5-9.3-22.7-22.4-23.3zm-355 5.3-7.1 134.8L78.1 305l-16-178v-1c.5-5 4.3-9 9.5-9.4l261-21.4c5.2-.4 9.7 3 10.5 7.9 0 .2.3.2.3.4 0 .1.3.2.3.4l2.7 30.8-219-10.5c-13.2-.4-24.2 8.8-24.8 21.3zm334.1 236.9L390 327.1l-27.5-32.7c-2.4-2.9-6.3-5.3-10.6-5.5-4.3-.2-7.5 1.5-11.1 4.1l-16.4 11.9c-3.5 2.1-6.2 3.5-9.9 3.3-3.6-.2-6.8-1.6-9.1-3.8-.8-.8-2.3-2.2-3.5-3.4l-42.8-48.9c-3.1-3.9-8.2-6.4-13.8-6.7-5.7-.3-11.2 2.1-14.8 5.6L129.4 359.8l-6.8 7.4.3-6.8 6.8-128.9 3.3-62.9v-1c1.4-5.4 6.2-9.3 11.9-9l204.2 9.8 28.7 1.4 58.3 2.8c5.8.3 10.3 4.7 10.4 10.2 0 .2.3.3.3.5s.3.3.3.5l-10.4 198.6z"
-      fill="#current"
-    ></path>
-    <path
-      d="M373.2 262.3c19.4 0 35.2-15.8 35.2-35.2s-15.7-35.2-35.2-35.2c-19.4 0-35.2 15.7-35.2 35.2s15.7 35.2 35.2 35.2z"
-      fill="#current"
-    ></path>
-  </svg>
-);
-
-const ActiveLabs = (props: SVGProps<SVGSVGElement>) => (
-  <svg
-    {...props}
-    fill="none"
-    stroke="#current"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    strokeWidth="2"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    style={{ width: "20px" }}
-  >
-    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-  </svg>
-);
-
-const Account = (props: SVGProps<SVGSVGElement>) => (
-  <svg
-    {...props}
-    version="1.1"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <g id="info" />
-    <g id="icons">
-      <g id="user">
-        <ellipse cx="12" cy="8" rx="5" ry="6" />
-        <path
-          d="M21.8,19.1c-0.9-1.8-2.6-3.3-4.8-4.2c-0.6-0.2-1.3-0.2-1.8,0.1c-1,0.6-2,0.9-3.2,0.9s-2.2-0.3-3.2-0.9    C8.3,14.8,7.6,14.7,7,15c-2.2,0.9-3.9,2.4-4.8,4.2C1.5,20.5,2.6,22,4.1,22h15.8C21.4,22,22.5,20.5,21.8,19.1z"
-          fill="#current"
-          stroke="#current"
-        />
-      </g>
-    </g>
-  </svg>
-);
-
-const Logout = (props: SVGProps<SVGSVGElement>) => (
-  <svg
-    {...props}
-    height="32"
-    viewBox="0 0 32 32"
-    width="32"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <title />
-    <g data-name="1" id="_1">
-      <path
-        d="M27,3V29a1,1,0,0,1-1,1H6a1,1,0,0,1-1-1V27H7v1H25V4H7V7H5V3A1,1,0,0,1,6,2H26A1,1,0,0,1,27,3ZM10.71,20.29,7.41,17H18V15H7.41l3.3-3.29L9.29,10.29l-5,5a1,1,0,0,0,0,1.42l5,5Z"
-        id="logout_account_exit_door"
-        fill="#current"
-        stroke="#current"
-      />
-    </g>
-  </svg>
-);

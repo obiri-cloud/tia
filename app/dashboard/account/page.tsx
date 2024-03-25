@@ -18,9 +18,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import * as z from "zod";
 import { userCheck } from "@/lib/utils";
 
-import { driver } from "driver.js";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import DeactivateConfirmation from "@/app/components/deactivate-confirmation";
+import { IUserProfile } from "@/app/types";
 
 
 const AccountPage = () => {
@@ -208,22 +208,6 @@ const AccountPage = () => {
       }
     }
   };
-  useEffect(() => {
-    const driverObj = driver({
-      showProgress: true,
-      steps: [
-        {
-          element: ".theme-selector",
-          popover: {
-            title: "Themes",
-            description: "Switch between light and dark mode.",
-          },
-        },
-      ],
-    });
-
-    driverObj.drive();
-  }, []);
 
   return (
     <Dialog>
@@ -243,7 +227,7 @@ const AccountPage = () => {
         </div>
         <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
         <form onSubmit={handleSubmit}>
-          <div className="sc-gGfaQS gna-dsN">
+          {/* <div className="sc-gGfaQS gna-dsN">
             <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
               <div className="sc-hLBbgP ioYMmf">
                 <label>
@@ -276,7 +260,7 @@ const AccountPage = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
           <div className="sc-hLBbgP ePdqdi mb-[24px]">
             <span className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
               Email
@@ -352,7 +336,7 @@ const AccountPage = () => {
           <button
             ref={buttonRef}
             type="submit"
-            className="sc-fbYMXx dxdUZf bg-pink-200 border border-pink-200"
+            className="sc-fbYMXx dxdUZf bg-black"
           >
             Update
           </button>
@@ -372,7 +356,7 @@ const AccountPage = () => {
             </div>
           </div>
           <DialogTrigger>
-            <Button className="bg-red-600 hover:bg-red-700">Deactivate</Button>
+            <Button variant="destructive" >Deactivate</Button>
           </DialogTrigger>
         </div>
         <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
@@ -389,6 +373,5 @@ const AccountPage = () => {
   );
 };
 
-// driver
 
 export default AccountPage;

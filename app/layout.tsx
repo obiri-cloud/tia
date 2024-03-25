@@ -11,6 +11,7 @@ import { ThemeProvider } from "next-themes";
 import ThemeProviderWrapper from "./components/theme-provider-wrapper";
 import ThemeToggle from "./components/home/themetoggle";
 import authOptions from "./api/auth/[...nextauth]/options";
+import { ReactQueryClientProvider } from "./components/ReactQueryClientProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,40 +28,41 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="en">
-      <body
-        className={`${inter.className} flex flex-col min-h-screen h-screen `}
-      >
-        <ThemeProviderWrapper>
-          <PathnameProvider />
-          <div className="flex-1">
-            <Provider session={session}>{children}</Provider>
-          </div>
-        </ThemeProviderWrapper>
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css"
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        ></link>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&display=swap"
-          rel="stylesheet"
-        ></link>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css"
-        />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <ReactQueryClientProvider>
+      <html lang="en">
+        <body
+          className={`${inter.className} flex flex-col min-h-screen h-screen `}
+        >
+          <ThemeProviderWrapper>
+            <PathnameProvider />
+            <div className="flex-1">
+              <Provider session={session}>{children}</Provider>
+            </div>
+          </ThemeProviderWrapper>
+          <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css"
+          />
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
+            rel="stylesheet"
+          ></link>
+          <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&display=swap"
+            rel="stylesheet"
+          ></link>
+          <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css"
+          />
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
-
-        <script>hljs.highlightAll();</script>
-        <Toaster />
-      </body>
-    </html>
+          <script>hljs.highlightAll();</script>
+          <Toaster />
+        </body>
+      </html>
+    </ReactQueryClientProvider>
   );
 }

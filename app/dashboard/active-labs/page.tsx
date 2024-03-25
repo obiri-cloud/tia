@@ -78,7 +78,7 @@ const ActiveLabsPage = () => {
             </TableRow>
           </TableHeader>
           {labs?.length === 0 && (
-            <TableCaption>You have no active lab..., <Link href='/dashboard' className="underline font-semibold text-black">click here to start one</Link></TableCaption>
+            <TableCaption>You have no active lab..., <Link href='/dashboard' className="underline font-semibold dark:text-white text-black">click here to start one</Link></TableCaption>
           )}
           <TableBody>
             {labs

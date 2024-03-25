@@ -52,9 +52,9 @@ const ResendOTP = () => {
     }
   };
   return (
-    <button onClick={resendCode} className="mt-6 font-medium underline underline-offset-4">
+    <span onClick={resendCode} className="font-medium">
       Resend OTP code
-    </button>
+    </span>
   );
 };
 

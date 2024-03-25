@@ -26,17 +26,7 @@ import {
   DialogDescription,
   DialogHeader,
 } from "@/components/ui/dialog";
-import { driver } from "driver.js";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import {  SheetClose, SheetFooter } from "@/components/ui/sheet";
 import { Toaster, toast as sooner } from "sonner";
 
 interface ILabInfo {
@@ -103,8 +93,6 @@ const LabsPage = () => {
     let tialab_info: ILabInfo | null = null;
 
     if (secureLocalStorage.getItem("tialab_info")) {
-    console.log("tialab_info   actual data", tialab_info);
-
       tialab_info = JSON.parse(
         (secureLocalStorage.getItem("tialab_info") as string) || ""
       );
@@ -116,8 +104,6 @@ const LabsPage = () => {
       tialab_info.hasOwnProperty("url")
       // tialab_info.hasOwnProperty("lab_status_key")
     ) {
-      console.log("tialab_info", tialab_info);
-      
       setLabInfo(tialab_info as ILabInfo);
       if (tialab_info?.lab_status_key) {
         startPolling(tialab_info?.lab_status_key ?? "");
@@ -132,38 +118,6 @@ const LabsPage = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const driverObj = driver({
-      showProgress: true,
-      steps: [
-        {
-          element: ".instructions",
-          popover: {
-            title: "Instructions",
-            description: "Instructions about the lab and be found here",
-          },
-        },
-        {
-          element: ".playground",
-          popover: {
-            title: "Playground",
-            description: "Play around and experiment here.",
-          },
-        },
-        {
-          element: ".countdown",
-          popover: {
-            title: "Countdown",
-            description:
-              "This timer keep track of how much you have left on your lab.",
-          },
-        },
-      ],
-    });
-
-    driverObj.drive();
-  }, []);
-
   const getInstructions = async () => {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_BE_URL}/user/image/${id}/instruction/`,
@@ -176,7 +130,6 @@ const LabsPage = () => {
         },
       }
     );
-    console.log("response ==>", response);
     if (response.status === 200) {
       setInstructions(response.data.data);
     }
@@ -184,7 +137,6 @@ const LabsPage = () => {
 
   const endLab = async () => {
     setDeleting(true);
-    console.log("formData", labInfo);
 
     let formData = JSON.stringify({ image: labInfo!.id });
     toast({
@@ -269,14 +221,10 @@ const LabsPage = () => {
         sooner.info("Response found and populated.");
         return;
       }
-      
+
       sooner.info(data?.data ? data?.data : data?.message);
 
-     
-
       if (data?.data.includes("namespace")) {
-        console.log("intervalId", intervalId);
-
         clearInterval(intervalId);
         return;
       }
@@ -287,12 +235,6 @@ const LabsPage = () => {
       }
     }
   };
-
-  console.log("labInfo", labInfo);
-
-  // if (!labInfo.id) {
-  //   window.location.href = "/dashboard";
-  // }
 
   return (
     <Dialog>
@@ -456,7 +398,6 @@ function ResizeHandle({ id }: { id?: string }) {
 const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
   instructions,
 }) => {
-  console.log("instructions", instructions);
   const [currentInstruction, setCurrentInstruction] = useState<number>(0);
 
   return (
@@ -555,6 +496,7 @@ import { z } from "zod";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import PrismComponent from "@/app/components/PrismComponent";
+import { ContentProps, IInstruction } from "@/app/types";
 
 const ReviewDrawer = () => {
   const ratings = [
@@ -592,8 +534,6 @@ const ReviewDrawer = () => {
   const [comment, setComment] = useState<string>("");
 
   const handleOnEsc = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    console.log("e", e.key);
-
     if (e.key === "Escape") {
       router.push("/dashboard");
     }
@@ -627,8 +567,6 @@ const ReviewDrawer = () => {
           },
         }
       );
-
-      console.log("response", response);
 
       toast({
         title: "Review submitted.",
@@ -710,8 +648,6 @@ const ReviewDrawer = () => {
                         key={rating.value}
                         value={rating.value}
                         onSelect={(currentValue) => {
-                          console.log("currentValue", currentValue);
-
                           setValue(currentValue === value ? "" : currentValue);
                           setOpen(false);
                         }}

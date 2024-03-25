@@ -1,4 +1,11 @@
 /** @type {import('tailwindcss').Config} */
+const defaultTheme = require("tailwindcss/defaultTheme");
+const colors = require("tailwindcss/colors");
+
+const {
+  default: flattenColorPalette,
+} = require("tailwindcss/lib/util/flattenColorPalette");
+ 
 module.exports = {
   darkMode: ["class"],
   content: [
@@ -53,13 +60,13 @@ module.exports = {
         appYellow: "#ffc300",
         appBlue: "#1d4ed8",
         darkGlass: "#ffffff0d",
-        pink:{
-          200: 'hsl(270, 45%, 24%)',
-          500: 'hsl(270, 60%, 52%)'
+        pink: {
+          200: "hsl(270, 45%, 24%)",
+          500: "hsl(270, 60%, 52%)",
         },
         menuHov: "rgb(38, 39, 54)",
         menuHovWhite: "rgb(240, 243, 249)",
-        
+
         dashboardText: "rgb(210, 211, 224)",
         comboBg: "rgb(39, 41, 57)",
         whiteDark: "rgb(40, 42, 48)",
@@ -72,11 +79,11 @@ module.exports = {
         cardDarkBg: "rgb(32, 33, 46)",
         cardDarkBorder: "rgb(53, 56, 74)",
         cardLightBorder: "rgb(239, 241, 244)",
-        formTextLight: "rgb(180, 188, 208)"
-
-
-       
+        formTextLight: "rgb(180, 188, 208)",
+        danger: "rgb(235, 87, 87)",
+        mint: "#4fb05c",
       },
+
       backgroundImage: {
         darkGlass:
           "linear-gradient(rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.05) 100%)",
@@ -86,8 +93,8 @@ module.exports = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      border:{
-        glassBorder: "1px solid hsl(0, 0%, 18%)"
+      border: {
+        glassBorder: "1px solid hsl(0, 0%, 18%)",
       },
       keyframes: {
         "accordion-down": {
@@ -98,15 +105,50 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        spotlight: {
+          "0%": {
+            opacity: 0,
+            transform: "translate(-72%, -62%) scale(0.5)",
+          },
+          "100%": {
+            opacity: 1,
+            transform: "translate(-50%,-40%) scale(1)",
+          },
+        },
+        meteor: {
+          "0%": { transform: "rotate(215deg) translateX(0)", opacity: "1" },
+          "70%": { opacity: "1" },
+          "100%": {
+            transform: "rotate(215deg) translateX(-500px)",
+            opacity: "0",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        spotlight: "spotlight 2s ease .75s 1 forwards",
+        "meteor-effect": "meteor 5s linear infinite",
       },
     },
     fontFamily: {
       jet: "'JetBrains Mono', monospace",
     },
+    boxShadow: {
+      input: `0px 2px 3px -1px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(25,28,33,0.02), 0px 0px 0px 1px rgba(25,28,33,0.08)`,
+    },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), addVariablesForColors],
 };
+
+
+function addVariablesForColors({ addBase, theme }) {
+  let allColors = flattenColorPalette(theme("colors"));
+  let newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+ 
+  addBase({
+    ":root": newVars,
+  });
+}

@@ -656,12 +656,10 @@ header ~ .Layout_content__PrPCk {
 .jss135 {
   gap: 16px;
   color: white;
-  border: 3px solid rgba(255, 255, 255, 0.07);
   cursor: pointer;
   display: flex;
-  padding: 2px 16px;
+  padding: 2px 10px;
   font-size: 16px;
-  background: rgba(255, 255, 255, 0.07);
   transition: 150ms ease all;
   align-items: center;
   border-radius: 8px;
@@ -678,7 +676,7 @@ header ~ .Layout_content__PrPCk {
 }
 
 .jss138 {
-  border-bottom: 3px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.07);
 }
 
 .jss139 {
@@ -698,8 +696,8 @@ code {
 
 .jss51 {
   font-size: 16px;
-  border-top: 2px solid rgba(255, 255, 255, 0.1);
-  background-color: #0d1117;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: black;
 }
 
 .jss52 {

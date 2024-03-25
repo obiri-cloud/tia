@@ -3,12 +3,8 @@ import React from "react";
 
 const ForgotPassword = () => {
   return (
-    <main className="Layout_content__PrPCk">
-
-    <div className="flex flex-col justify-center items-center h-screen cJPsz">
-      <h1 className="cmVMmT bzZmGu">Forgot Password?</h1>
+    <main className="flex flex-col justify-center items-center h-screen">
       <ForgotPasswordForm />
-    </div>
     </main>
   );
 };

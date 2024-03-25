@@ -11,8 +11,8 @@ import { userCheck } from "@/lib/utils";
 import { useDispatch } from "react-redux";
 import { setCurrentImage } from "@/redux/reducers/userSlice";
 import { Skeleton } from "@/components/ui/skeleton";
-import { driver } from "driver.js";
 import { Arrow } from "@/public/svgs/Arrow";
+import { ILabImage } from "../types";
 interface ILabListItem {
   id: number;
   name: string;
@@ -36,47 +36,6 @@ const UserPage = () => {
 
   useEffect(() => {
     getImages();
-  }, []);
-  useEffect(() => {
-    const driverObj = driver({
-      showProgress: true,
-      steps: [
-        {
-          element: ".all-images-button",
-          popover: {
-            title: "Labs",
-            description: "Click here to view all available labs.",
-          },
-        },
-        {
-          element: ".active-labs-button",
-          popover: {
-            title: "Active Labs",
-            description: "Click here to view all your active labs.",
-          },
-        },
-        {
-          element: ".account-button",
-          popover: {
-            title: "Account",
-            description: "View and update your account info here.",
-          },
-        },
-        {
-          element: ".logout-button",
-          popover: { title: "Logout", description: "Click here to logout" },
-        },
-        {
-          element: ".all-images-list",
-          popover: {
-            title: "Images",
-            description: "Start a lab by clicking on one of the images.",
-          },
-        },
-      ],
-    });
-
-    driverObj.drive();
   }, []);
 
   const getImages = async () => {
@@ -200,7 +159,7 @@ const UserPage = () => {
       </div>
       <div className="p-4 ">
         {/* grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 */}
-        <div className="all-images-list flex flex-wrap w-full  gap-3">
+        <div className="all-images-list xl:flex grid lg:grid-cols-3  flex-wrap w-full  gap-3">
           {images && images.length >= -1 ? (
             images.map((image, i) => (
               <div
@@ -227,9 +186,7 @@ const UserPage = () => {
                   className="flex gap-[10px] items-center h-fit lg:mt-[36px] mt-[28px] font-medium "
                 >
                   <h5 className="leading-[150%] font-medium">Go to lab</h5>
-                  <Arrow
-                    className="pointer  -rotate-45 transition-all delay-150 dark:fill-white fill-black"
-                  />
+                  <Arrow className="pointer  -rotate-45 transition-all delay-150 dark:fill-white fill-black" />
                   {/* <Image className="pointer rot -rotate-45 transition-all delay-150" src={arrow} alt="" /> */}
                 </a>
               </div>

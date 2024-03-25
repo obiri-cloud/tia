@@ -1,3 +1,5 @@
+import { Session } from "next-auth";
+
 interface IUserProfile {
   email: string;
   first_name: string;
@@ -89,4 +91,35 @@ interface IInstruction {
   sequence: number;
   text: string;
   title: string;
+}
+
+interface ILabListItem {
+  id: number;
+  name: string;
+  image: number;
+  ingress_url: string;
+  creation_date: string;
+}
+
+interface ISession extends Session {
+  user: {
+    status: number;
+    message: string;
+    tokens: {
+      refresh_token: string;
+      access_token: string;
+    };
+    data: {
+      email: string;
+      first_name: string;
+      last_name: string;
+      username: string;
+      avatar: string;
+      is_admin: boolean;
+      is_superuser: boolean;
+      is_active: boolean;
+      date_joined: string; // You might want to use a Date type here if you plan to work with dates
+      last_login: string | null; // You might want to use a Date type here if you plan to work with dates
+    };
+  };
 }
