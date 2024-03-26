@@ -34,7 +34,7 @@ spec:
         #     name: ashesi-tialabs-frontend-configmap
       restartPolicy: Always
       imagePullSecrets:
-      - name: regcred
+      - name: acrcred-dev
 ---
 apiVersion: v1
 kind: Service
@@ -75,6 +75,3 @@ spec:
   - hosts:
     - ashesi.tialabs-ashesi.tiacloud.dev
     secretName: tialabs.prod.tls.wildcard.tiapod.tiacloud.dev
-
-
-
