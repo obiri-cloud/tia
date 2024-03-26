@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - ashesi
+      - dev
 
 jobs:
   build-and-deploy:
@@ -13,11 +15,17 @@ jobs:
         node-version: [18.x]
 
     env:
-      MANIFESTS_DIRECTORY: ./k8s_deploy/manifests
-      IMAGE_NAME: tialabs-frontend
-      CLUSTER_NAME: argocd-dev-eus-rg
-      RESOURCE_GROUP: argocd-dev-eus-aks
-      IMAGE_TAG: 0.0.1
+      MANIFESTS_DIRECTORY_DEV: ./k8s_deploy/dev
+      MANIFESTS_DIRECTORY_ASHESI: ./k8s_deploy/ashesi
+
+      IMAGE_NAME_DEV: tialabs-frontend
+      IMAGE_NAME_ASHESI: ashesi-tialabs-frontend
+
+      CLUSTER_NAME_DEV: argocd-dev-eus-rg
+      CLUSTER_NAME_PROD: tialabs-prod-eus-aks-admin
+
+      RESOURCE_GROUP_DEV: argocd-dev-eus-aks
+      RESOURCE_GROUP_PROD: tialabs-prod-infra-eastus-rg
 
     steps:
       - name: Checkout code
@@ -29,10 +37,11 @@ jobs:
           time=$(date +'%T')
           echo "::set-output name=date::$(date +'%m-%d-%Y')-${time//:/-}"
 
-      - name: Build and push Docker image
-        id: build-image
+      - name: Build and push Docker Dev image
+        id: build-dev-image
+        if: ${{ github.ref == 'refs/heads/dev' }}
         env:
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME_DEV }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
           TIMESTAMP_TAG: ${{ steps.current-date.outputs.date }}
           ACR_SERVER_NAME: ${{ secrets.ACR_SERVER }}
@@ -48,12 +57,43 @@ jobs:
           docker push $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG
           echo "::set-output name=image::$ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG"
 
-      - uses: azure/k8s-set-context@v1
+      - name: Build and push Docker Ashesi image
+        id: build-ashesi-image
+        if: ${{ github.ref == 'refs/heads/feat/ashesi' }}
+        env:
+          IMAGE_NAME: ${{ env.IMAGE_NAME_ASHESI }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          TIMESTAMP_TAG: ${{ steps.current-date.outputs.date }}
+          ACR_SERVER_NAME: ${{ secrets.ACR_SERVER_PROD }}
+        run: |
+          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID_PROD }} -p ${{ secrets.AZURE_CLIENT_SECRET_PROD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+          az acr login --name ${{ env.ACR_SERVER_NAME }}
+          docker build -f Dockerfile \
+          --build-arg NEXT_PUBLIC_BE_URL=${{ secrets.NEXT_PUBLIC_BE_URL_ASHESI }} \
+          --build-arg NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
+          --build-arg NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} \
+          --build-arg NEXT_PUBLIC_TINY_MCE_URL=${{ secrets.NEXT_PUBLIC_TINY_MCE_URL }} \
+          -t $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG .
+          docker push $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG
+          echo "::set-output name=image::$ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG"
+
+      - name: Set Dev kubeconfig context
+        uses: azure/k8s-set-context@v1
+        id: setup-dev-kubeconfig
+        if: ${{ github.ref == 'refs/heads/dev' }}
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.K8S_CLUSTER_KUBECONFIG }}
           context: argocd-dev-eus-aks  #If left unspecified, current-context from kubeconfig is used as default
-        id: setcontext
+
+      - name: Set Ashesi kubeconfig context
+        uses: azure/k8s-set-context@v1
+        id: setup-ashesi-kubeconfig
+        if: ${{ github.ref == 'refs/heads/feat/ashesi' }}
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K8S_CLUSTER_KUBECONFIG_PROD }}
+          context: tialabs-prod-eus-aks  #If left unspecified, current-context from kubeconfig is used as default
 
       - name: Install kubectl
         id: install-kubectl
@@ -64,13 +104,14 @@ jobs:
           mv ./kubectl ~/.local/bin/kubectl
           kubectl version --short
 
-      - name: Deploy Frontend
-        id: deploy-k8s-yaml
+      - name: Deploy Dev Frontend
+        id: deploy-dev-k8s-yaml
+        if: ${{ github.ref == 'refs/heads/dev' }}
         env:
-          IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+          IMAGE_NAME: ${{ steps.build-dev-image.outputs.image }}
           NAMESPACE: tiacourses
         run: |
-          cd $MANIFESTS_DIRECTORY
+          cd $MANIFESTS_DIRECTORY_DEV
           curl -s -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
           chmod u+x ./kustomize
           ./kustomize edit set image tialabs-frontend=$IMAGE_NAME
@@ -79,4 +120,19 @@ jobs:
           kubectl get services -o wide -n $NAMESPACE
           kubectl get ingress -n $NAMESPACE
 
+      - name: Deploy Ashesi Frontend
+        id: deploy-ashesi-k8s-yaml
+        if: ${{ github.ref == 'refs/heads/feat/ashesi' }}
+        env:
+          IMAGE_NAME: ${{ steps.build-ashesi-image.outputs.image }}
+          NAMESPACE: tiacourses
+        run: |
+          cd $MANIFESTS_DIRECTORY_ASHESI
+          curl -s -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+          chmod u+x ./kustomize
+          ./kustomize edit set image ashesi-tialabs-frontend=$IMAGE_NAME
+          ./kustomize build . | kubectl apply -f -
+          kubectl rollout status deployment/ashesi-tialabs-frontend -n $NAMESPACE
+          kubectl get services -o wide -n $NAMESPACE
+          kubectl get ingress -n $NAMESPACE
 
