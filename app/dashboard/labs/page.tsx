@@ -26,7 +26,7 @@ import {
   DialogDescription,
   DialogHeader,
 } from "@/components/ui/dialog";
-import {  SheetClose, SheetFooter } from "@/components/ui/sheet";
+import { SheetClose, SheetFooter } from "@/components/ui/sheet";
 import { Toaster, toast as sooner } from "sonner";
 
 interface ILabInfo {
@@ -82,12 +82,24 @@ const LabsPage = () => {
     setIsLoading(false);
   };
 
-  const startPolling = (key: string) => {
-    intervalId = setInterval(() => {
-      pollStatus(key);
-    }, 5000);
-  };
+  // const startPolling = (key: string) => {
+  //   intervalId = setInterval(() => {
+  //     pollStatus(key);
+  //   }, 5000);
+  // };
+
   useEffect(() => {
+    const startPolling = (key: string) => {
+      intervalId = setInterval(() => {
+        pollStatus(key);
+      }, 5000);
+    };
+
+    // Call startPolling with the desired key
+    startPolling("your-key");
+
+    // Clean up the interval when the component unmounts
+
     let msg = "";
     getInstructions();
     let tialab_info: ILabInfo | null = null;
@@ -116,6 +128,8 @@ const LabsPage = () => {
         duration: null,
       });
     }
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const getInstructions = async () => {
