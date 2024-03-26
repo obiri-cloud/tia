@@ -136,3 +136,5 @@ jobs:
           kubectl get services -o wide -n $NAMESPACE
           kubectl get ingress -n $NAMESPACE
 
+
+
