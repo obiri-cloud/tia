@@ -76,6 +76,10 @@ const SConfirmationForm = () => {
           },
         }
       );
+      toast({
+        variant: "success",
+        title: "Confirmation succesful. You can login now.",
+      });
       if (response.data.status === 200) {
         router.push(`/login?email=${email}`);
       }
