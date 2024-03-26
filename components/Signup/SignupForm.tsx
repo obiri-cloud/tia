@@ -84,6 +84,10 @@ const SignupForm = () => {
       );
 
       if (response.data.status === 201) {
+        toast({
+          variant: "success",
+          title: "Registration succesful. Check your inbox.",
+        });
         router.push(`/signup/confirmation?email=${emailRef.current!.value}`);
       } else {
         toast({
