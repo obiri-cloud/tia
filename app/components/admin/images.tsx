@@ -34,6 +34,7 @@ import {
 import DeleteConfirmation from "../delete-confirmation";
 import { useRouter } from "next/navigation";
 import { ILabImage } from "@/app/types";
+import { LucideMoreVertical } from "lucide-react";
 
 const Images = () => {
   const { imageCount, imageList } = useSelector(
@@ -43,7 +44,6 @@ const Images = () => {
   const { data: session } = useSession();
   const dispatch = useDispatch();
   const router = useRouter();
-
 
   const [image, setImage] = useState<ILabImage>();
 
@@ -148,49 +148,8 @@ const Images = () => {
                             <TableCell className="text-right">
                               {image.port_number}
                             </TableCell>
-                            <TableCell className="underline font-medium text-right">
-                              <Dialog>
-                                <DialogTrigger
-                                  onClick={() =>
-                                    dispatch(setCurrentImage(image))
-                                  }
-                                >
-                                  <Button
-                                    className="font-medium"
-                                    variant="link"
-                                  >
-                                    View
-                                  </Button>
-                                </DialogTrigger>
-                                <NewImageForm />
-                              </Dialog>
-                              |
-                              <Dialog>
-                                <DialogTrigger>
-                                  <Button
-                                    onClick={() => setImage(image)}
-                                    className="font-medium text-red-500"
-                                    variant="link"
-                                  >
-                                    Delete
-                                  </Button>
-                                </DialogTrigger>
-                                <DeleteConfirmation
-                                  image={image}
-                                  text="Do you want to delete this image"
-                                  noText="No"
-                                  confirmText="Yes, Delete this image"
-                                  confirmFunc={() => deleteImage(image?.id)}
-                                />
-                              </Dialog>
-                              |
-                              <Button
-                                onClick={() => router.push(`/admin/images/${image.id}/instructions`)}
-                                className="font-medium"
-                                variant="link"
-                              >
-                                Attach Instruction
-                              </Button>
+                            <TableCell className="underline scale-75 font-medium flex justify-end">
+                              <LucideMoreVertical  className=""/>
                             </TableCell>
                           </TableRow>
                         ))
@@ -217,3 +176,46 @@ const AddButton = () => {
     </DialogTrigger>
   );
 };
+
+// <Dialog>
+// <DialogTrigger
+//   onClick={() =>
+//     dispatch(setCurrentImage(image))
+//   }
+// >
+//   <Button
+//     className="font-medium"
+//     variant="link"
+//   >
+//     View
+//   </Button>
+// </DialogTrigger>
+// <NewImageForm />
+// </Dialog>
+// |
+// <Dialog>
+// <DialogTrigger>
+//   <Button
+//     onClick={() => setImage(image)}
+//     className="font-medium text-red-500"
+//     variant="link"
+//   >
+//     Delete
+//   </Button>
+// </DialogTrigger>
+// <DeleteConfirmation
+//   image={image}
+//   text="Do you want to delete this image"
+//   noText="No"
+//   confirmText="Yes, Delete this image"
+//   confirmFunc={() => deleteImage(image?.id)}
+// />
+// </Dialog>
+// |
+// <Button
+// onClick={() => router.push(`/admin/images/${image.id}/instructions`)}
+// className="font-medium"
+// variant="link"
+// >
+// Attach Instruction
+// </Button>
