@@ -72,7 +72,6 @@ const ImagePage = () => {
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
-
           const serverTime = new Date(data.unixtime * 1000);
           const localTime = new Date();
           const timeDifference = Math.abs(
@@ -99,6 +98,10 @@ const ImagePage = () => {
         })
         .catch((error) => {
           console.error("Error fetching time from server:", error);
+          toast({
+            title: "Error fetching time from server.",
+            variant: "destructive",
+          });
           setCreatingStarted(false);
           if (buttonRef.current) {
             buttonRef.current.disabled = false;
@@ -242,7 +245,6 @@ const ImagePage = () => {
         router.push(`/dashboard`);
       } else {
         if (data.data) {
-
           resolved = true;
           secureLocalStorage.setItem(
             "tialab_info",
