@@ -135,6 +135,3 @@ jobs:
           kubectl rollout status deployment/ashesi-tialabs-frontend -n $NAMESPACE
           kubectl get services -o wide -n $NAMESPACE
           kubectl get ingress -n $NAMESPACE
-
-
-
