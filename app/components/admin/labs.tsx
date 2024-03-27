@@ -44,14 +44,12 @@ const Labs = () => {
   const token = session?.user!.tokens?.access_token;
 
   const endLab = async (id: number | undefined) => {
-    let formData = JSON.stringify({ image: id });
     toast({
       title: "Hold on we are cleaning your lab environment.",
     });
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/delete/`,
-        formData,
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BE_URL}/moderator/lab/${id}/delete/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -61,7 +59,7 @@ const Labs = () => {
           },
         }
       );
-      if (response.data.status === 200) {
+      if (response.data.status === 204) {
         toast({
           title: "Lab Deleted Successfully...",
           variant: "success",
@@ -170,7 +168,7 @@ const Labs = () => {
                                 text="Do you want to delete this image"
                                 noText="No"
                                 confirmText="Yes, Delete this image"
-                                confirmFunc={() => endLab(image?.image)}
+                                confirmFunc={() => endLab(image?.id)}
                               />
                             </Dialog>
                           </TableCell>
