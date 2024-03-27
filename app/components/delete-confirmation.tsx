@@ -5,15 +5,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import React, { FC } from "react";
+import React, { FC, useRef } from "react";
 import { IInstruction, ILabImage, ILabList } from "../types";
 
-
 interface ILabInfo {
-    id: number | null;
-    url: string;
-    creation_date: string;
-  }
+  id: number | null;
+  url: string;
+  creation_date: string;
+}
 
 interface IDeleteConfirmation {
   lab?: ILabInfo | ILabList | undefined;
@@ -31,8 +30,16 @@ const DeleteConfirmation: FC<IDeleteConfirmation> = ({
   confirmText,
   confirmFunc,
 }) => {
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const closeDialog = () => {
     document.getElementById("closeDialog")?.click();
+  };
+
+  const end = () => {
+    if (buttonRef.current) {
+      buttonRef.current.disabled = true;
+      confirmFunc();
+    }
   };
   return (
     <DialogContent>
@@ -49,9 +56,10 @@ const DeleteConfirmation: FC<IDeleteConfirmation> = ({
           {noText}
         </Button>
         <Button
-          onClick={() => confirmFunc()}
+          ref={buttonRef}
+          onClick={() => end()}
           variant="destructive"
-          className="mt-6 block py-2 px-4 rounded-md"
+          className="mt-6 block py-2 px-4 rounded-md disabled:bg-red-900/90"
         >
           {confirmText}
         </Button>

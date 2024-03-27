@@ -48,11 +48,20 @@ const themes = [
 
 
 export const DropToggle = () => {
+
+  
     const { systemTheme, theme, setTheme } = useTheme();
+    
     const [open, setOpen] = useState(false);
-    const [value, setValue] = useState<string | undefined>("");
+    const [value, setValue] = useState<string | undefined>(theme);
   
     useEffect(() => {
+      console.log("value", value);
+      console.log("theme", theme);
+      console.log("systemTheme", systemTheme)
+      
+      console.log("->", themes.find((th) => th.value === theme)?.label);
+      
       setValue(theme);
     }, []);
   

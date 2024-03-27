@@ -26,7 +26,7 @@ import {
   DialogDescription,
   DialogHeader,
 } from "@/components/ui/dialog";
-import {  SheetClose, SheetFooter } from "@/components/ui/sheet";
+import { SheetClose, SheetFooter } from "@/components/ui/sheet";
 import { Toaster, toast as sooner } from "sonner";
 
 interface ILabInfo {
@@ -400,80 +400,94 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
   const [currentInstruction, setCurrentInstruction] = useState<number>(0);
 
   return (
-    <div className="p-2 overflow-x-auto text-black overflow-y-scroll  mb-[100px]">
-      <h1 className="font-bold text-3xl mb-3">
-        {instructions && instructions.length > 0
-          ? instructions[currentInstruction].title
-          : ""}
-      </h1>
-      <div className="flex justify-between">
-        {currentInstruction - 1 > -1 ? (
-          <BackIcon
-            onClick={() => setCurrentInstruction(currentInstruction - 1)}
-            className="w-7 h-7"
-          />
-        ) : (
-          <span></span>
-        )}
+    <div className="">
+      {instructions && instructions.length > 0 ? (
+        <div className="p-2 overflow-x-auto text-black overflow-y-scroll  mb-[100px]">
+          <h1 className="font-bold text-3xl mb-3">
+            {instructions && instructions.length > 0
+              ? instructions[currentInstruction].title
+              : ""}
+          </h1>
+          <div className="flex justify-between">
+            {currentInstruction - 1 > -1 ? (
+              <BackIcon
+                onClick={() => setCurrentInstruction(currentInstruction - 1)}
+                className="w-7 h-7"
+              />
+            ) : (
+              <span></span>
+            )}
 
-        {Array.isArray(instructions) ? (
-          !(currentInstruction + 1 >= instructions.length) ? (
-            <ForwardIcon
-              onClick={() => setCurrentInstruction(currentInstruction + 1)}
-              className="w-7 h-7"
-            />
+            {Array.isArray(instructions) ? (
+              !(currentInstruction + 1 >= instructions.length) ? (
+                <ForwardIcon
+                  onClick={() => setCurrentInstruction(currentInstruction + 1)}
+                  className="w-7 h-7"
+                />
+              ) : (
+                <span></span>
+              )
+            ) : null}
+          </div>
+          {Array.isArray(instructions) ? (
+            instructions.length === 0 ? (
+              <p>No instructions found for this lab...</p>
+            ) : (
+              <PrismComponent
+                content={
+                  Array.isArray(instructions) && instructions.length > 0
+                    ? instructions && instructions[currentInstruction]
+                      ? instructions[currentInstruction].text
+                      : ""
+                    : ""
+                }
+              />
+            )
           ) : (
-            <span></span>
-          )
-        ) : null}
-      </div>
-      {Array.isArray(instructions) ? (
-        instructions.length === 0 ? (
-          <p>No instructions found for this lab...</p>
-        ) : (
-          <PrismComponent
-            content={
-              Array.isArray(instructions) && instructions.length > 0
-                ? instructions && instructions[currentInstruction]
-                  ? instructions[currentInstruction].text
-                  : ""
-                : ""
-            }
-          />
-        )
-      ) : (
-        <div className="flex flex-col gap-2">
-          <Skeleton className={`w-full h-[16.5px] rounded-md`} />
-          <Skeleton className={`w-full h-[16.5px] rounded-md`} />
-          <Skeleton className={`w-[90%] h-[16.5px] rounded-md`} />
+            <div className="flex flex-col gap-2">
+              <Skeleton className={`w-full h-[16.5px] rounded-md`} />
+              <Skeleton className={`w-full h-[16.5px] rounded-md`} />
+              <Skeleton className={`w-[90%] h-[16.5px] rounded-md`} />
 
-          <div className="mt-5 flex flex-col gap-2">
-            <Skeleton className={`w-[40%] h-[26.5px] rounded-md`} />
-            <Skeleton className={`w-full h-[16.5px] rounded-md`} />
-            <Skeleton className={`w-full h-[16.5px] rounded-md`} />
-            <Skeleton className={`w-[80%] h-[16.5px] rounded-md`} />
-          </div>
-          <div className="mt-5 flex flex-col gap-2">
-            <div className="flex justify-center">
-              <Skeleton className={`w-[40%] h-[26.5px] rounded-md`} />
+              <div className="mt-5 flex flex-col gap-2">
+                <Skeleton className={`w-[40%] h-[26.5px] rounded-md`} />
+                <Skeleton className={`w-full h-[16.5px] rounded-md`} />
+                <Skeleton className={`w-full h-[16.5px] rounded-md`} />
+                <Skeleton className={`w-[80%] h-[16.5px] rounded-md`} />
+              </div>
+              <div className="mt-5 flex flex-col gap-2">
+                <div className="flex justify-center">
+                  <Skeleton className={`w-[40%] h-[26.5px] rounded-md`} />
+                </div>
+                <Skeleton className={`w-full h-[200px] rounded-md`} />
+                <div className="flex justify-center">
+                  <Skeleton className={`w-[80%] h-[12.5px] rounded-md`} />
+                </div>
+              </div>
             </div>
-            <Skeleton className={`w-full h-[200px] rounded-md`} />
-            <div className="flex justify-center">
-              <Skeleton className={`w-[80%] h-[12.5px] rounded-md`} />
-            </div>
-          </div>
+          )}
+        </div>
+      ) : (
+        <div className="p-2">
+          <Skeleton className="w-[70%] h-8 mb-[70px]" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-[70%] h-4 mb-2" />
+
+          <Skeleton className="w-full h-[300px] my-4" />
+
+          <Skeleton className="w-[70%] h-8 mb-4" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-[70%] h-4 mb-2" />
+
+          <Skeleton className="w-full h-[300px] my-4" />
         </div>
       )}
-
-      {/* <p
-        className="all-initial font-sans mb-[500px]"
-        dangerouslySetInnerHTML={{
-          __html:
-            instructions && instructions[currentInstruction]
-              ? instructions[currentInstruction].text
-              : "",
-        }}
-      ></p> */}
     </div>
   );
 };
