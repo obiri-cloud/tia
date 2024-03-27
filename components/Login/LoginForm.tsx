@@ -58,8 +58,9 @@ const LoginForm = () => {
         .then((res) => {
           if (res?.error === null) {
             toast({
-              title: "Login Successful",
+              title: "Login successful, redirecting you now.",
               variant: "success",
+              duration: 2000
             });
             // @ts-ignore
             let status = session?.user.data.is_admin as boolean;
