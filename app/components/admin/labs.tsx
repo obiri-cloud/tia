@@ -29,16 +29,26 @@ import { useSession } from "next-auth/react";
 import { getLabListX } from "./overview";
 import { setLabCount, setLabList } from "@/redux/reducers/adminSlice";
 import { ILabList } from "@/app/types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreVerticalIcon } from "lucide-react";
 
 const Labs = () => {
   const { labCount, labList } = useSelector((state: RootState) => state.admin);
 
   const [currentLab, setCurrentLab] = useState<ILabList | null>(null);
 
-  const dispatch = useDispatch()
+  const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
+    useState<boolean>(false);
+
+  const dispatch = useDispatch();
 
   const { data: session } = useSession();
-
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -59,7 +69,7 @@ const Labs = () => {
           },
         }
       );
-      if (response.data.status === 204) {
+      if (response.data.status === 204 || ) {
         toast({
           title: "Lab Deleted Successfully...",
           variant: "success",
@@ -69,10 +79,7 @@ const Labs = () => {
           dispatch(setLabCount(response.data.count));
           dispatch(setLabList(response.data.results));
           document.getElementById("closeDialog")?.click();
-
         });
-
-     
       } else {
         toast({
           title: "Something went wrong. Try again",
@@ -142,35 +149,32 @@ const Labs = () => {
                             {image.image}
                           </TableCell>
                           <TableCell className="underline font-medium text-right">
-                            <Dialog>
-                              <DialogTrigger
-                                onClick={() => setCurrentLab(image)}
-                              >
-                                <Button className="font-medium" variant="link">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger>
+                                <MoreVerticalIcon className="w-4 h-4" />
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent className="left-[-20px_!important]">
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setIsOpenViewDialog(true);
+                                    setCurrentLab(image);
+                                  }}
+                                  className="cursor-pointer py-2"
+                                >
                                   View
-                                </Button>
-                              </DialogTrigger>
-                              <NewLabForm labDetails={currentLab} />
-                            </Dialog>
-                            |
-                            <Dialog>
-                              <DialogTrigger>
-                                <Button
-                                  className="font-medium text-red-500"
-                                  variant="link"
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setIsOpenDeleteDialog(true);
+                                    setCurrentLab(image);
+                                  }}
+                                  className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
                                 >
                                   Delete
-                                </Button>
-                              </DialogTrigger>
-                              <DeleteConfirmation
-                                //@ts-ignore
-                                lab={currentLab}
-                                text="Do you want to delete this image"
-                                noText="No"
-                                confirmText="Yes, Delete this image"
-                                confirmFunc={() => endLab(image?.id)}
-                              />
-                            </Dialog>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                           
                           </TableCell>
                         </TableRow>
                       ))
@@ -181,7 +185,30 @@ const Labs = () => {
           </CardContent>
         </Card>
       </div>
-      {/* </Dialog> */}
+      <Dialog
+        open={isOpenViewDialogOpen}
+        onOpenChange={
+          isOpenViewDialogOpen ? setIsOpenViewDialog : setIsOpenDeleteDialog
+        }
+      >
+        <NewLabForm labDetails={currentLab} />
+      </Dialog>
+
+      <Dialog
+        open={isOpenDeleteDialogOpen}
+        onOpenChange={
+          isOpenDeleteDialogOpen ? setIsOpenDeleteDialog : setIsOpenViewDialog
+        }
+      >
+        <DeleteConfirmation
+          //@ts-ignore
+          lab={currentLab}
+          text="Do you want to delete this image"
+          noText="No"
+          confirmText="Yes, Delete this image"
+          confirmFunc={() => endLab(currentLab?.id)}
+        />
+      </Dialog>
     </div>
   );
 };
