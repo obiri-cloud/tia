@@ -46,6 +46,8 @@ const ActiveLabsPage = () => {
         }
       );
 
+      console.log("response.data.results", response.data.results);
+      
       setLabs(response.data.results);
     } catch (error) {
       userCheck(error as AxiosError);
@@ -56,9 +58,11 @@ const ActiveLabsPage = () => {
     secureLocalStorage.setItem(
       "tialab_info",
       JSON.stringify({
-        id: image.image,
+        id: image.image.id,
         url: image.ingress_url,
         creation_date: image.creation_date,
+        duration: image.image.duration,
+
       })
     );
     router.push(`/dashboard/labs?lab=${image.id}&image=${image.image}`);
