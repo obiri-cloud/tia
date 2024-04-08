@@ -46,8 +46,6 @@ const ActiveLabsPage = () => {
         }
       );
 
-      console.log("response.data.results", response.data.results);
-      
       setLabs(response.data.results);
     } catch (error) {
       userCheck(error as AxiosError);
