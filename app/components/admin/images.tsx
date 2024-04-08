@@ -34,6 +34,15 @@ import {
 import DeleteConfirmation from "../delete-confirmation";
 import { useRouter } from "next/navigation";
 import { ILabImage } from "@/app/types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreVerticalIcon } from "lucide-react";
 
 const Images = () => {
   const { imageCount, imageList } = useSelector(
@@ -44,8 +53,10 @@ const Images = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-
   const [image, setImage] = useState<ILabImage>();
+  const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
+    useState<boolean>(false);
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -149,48 +160,42 @@ const Images = () => {
                               {image.port_number}
                             </TableCell>
                             <TableCell className="underline font-medium text-right">
-                              <Dialog>
-                                <DialogTrigger
-                                  onClick={() =>
-                                    dispatch(setCurrentImage(image))
-                                  }
-                                >
-                                  <Button
-                                    className="font-medium"
-                                    variant="link"
+                              <DropdownMenu>
+                                <DropdownMenuTrigger>
+                                  <MoreVerticalIcon className="w-4 h-4" />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="left-[-20px_!important]">
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setIsOpenViewDialog(true);
+                                      dispatch(setCurrentImage(image));
+                                    }}
+                                    className="cursor-pointer py-2"
                                   >
                                     View
-                                  </Button>
-                                </DialogTrigger>
-                                <NewImageForm />
-                              </Dialog>
-                              |
-                              <Dialog>
-                                <DialogTrigger>
-                                  <Button
-                                    onClick={() => setImage(image)}
-                                    className="font-medium text-red-500"
-                                    variant="link"
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="cursor-pointer py-2"
+                                    onClick={() =>
+                                      router.push(
+                                        `/admin/images/${image.id}/instructions`
+                                      )
+                                    }
+                                  >
+                                    Attach Instruction
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setIsOpenDeleteDialog(true);
+                                      setImage(image);
+                                    }}
+                                    className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
                                   >
                                     Delete
-                                  </Button>
-                                </DialogTrigger>
-                                <DeleteConfirmation
-                                  image={image}
-                                  text="Do you want to delete this image"
-                                  noText="No"
-                                  confirmText="Yes, Delete this image"
-                                  confirmFunc={() => deleteImage(image?.id)}
-                                />
-                              </Dialog>
-                              |
-                              <Button
-                                onClick={() => router.push(`/admin/images/${image.id}/instructions`)}
-                                className="font-medium"
-                                variant="link"
-                              >
-                                Attach Instruction
-                              </Button>
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                             
                             </TableCell>
                           </TableRow>
                         ))
@@ -202,6 +207,30 @@ const Images = () => {
           </Dialog>
         </Card>
       </div>
+
+      <Dialog
+        open={isOpenViewDialogOpen}
+        onOpenChange={
+          isOpenViewDialogOpen ? setIsOpenViewDialog : setIsOpenDeleteDialog
+        }
+      >
+        <NewImageForm />
+      </Dialog>
+
+      <Dialog
+        open={isOpenDeleteDialogOpen}
+        onOpenChange={
+          isOpenDeleteDialogOpen ? setIsOpenDeleteDialog  : setIsOpenViewDialog
+        }
+      >
+        <DeleteConfirmation
+          image={image}
+          text="Do you want to delete this image"
+          noText="No"
+          confirmText="Yes, Delete this image"
+          confirmFunc={() => deleteImage(image?.id)}
+        />
+      </Dialog>
     </div>
   );
 };
