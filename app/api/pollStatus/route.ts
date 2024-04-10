@@ -20,7 +20,6 @@ const pollStatus = async (key: string | null, token: string | null) => {
     },
   });
   const data = await res.json();
-  console.log("data  ==>", data);
   
   return data;
 };
