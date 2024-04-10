@@ -117,7 +117,7 @@ const SConfirmationForm = () => {
       <form onSubmit={handleSubmit} className="my-8">
         <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Code</Label>
-          <InputOTP ref={codeRef} className="text-black" maxLength={6}>
+          <InputOTP ref={codeRef}  maxLength={6}>
             <InputOTPGroup>
               <InputOTPSlot index={0} />
               <InputOTPSlot index={1} />
