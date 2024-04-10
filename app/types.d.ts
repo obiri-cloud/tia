@@ -74,9 +74,13 @@ interface ILabInfo {
 interface IActiveLab {
   creation_date: string;
   id: number;
-  image: number;
+  image: {
+    id: number,
+    duration: number
+  };
   ingress_url: string;
   name: string;
+
 }
 
 interface IReview {

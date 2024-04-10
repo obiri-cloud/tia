@@ -37,6 +37,7 @@ import { RootState } from "@/redux/store";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ContentProps, ILabImage } from "@/app/types";
+import { Trash } from "lucide-react";
 
 const NewImageForm = () => {
   const form = useForm();
@@ -849,7 +850,8 @@ const NewImageForm = () => {
                           variant={"destructive"}
                           onClick={() => setUpdateImage(true)}
                         >
-                          <Image src={trash} alt="trash" className="w-[25px]" />
+                          <Trash  className="w-[25px]"/>
+
                         </Button>
                       </div>
                     ) : (

@@ -56,9 +56,11 @@ const ActiveLabsPage = () => {
     secureLocalStorage.setItem(
       "tialab_info",
       JSON.stringify({
-        id: image.image,
+        id: image.image.id,
         url: image.ingress_url,
         creation_date: image.creation_date,
+        duration: image.image.duration,
+
       })
     );
     router.push(`/dashboard/labs?lab=${image.id}&image=${image.image}`);
