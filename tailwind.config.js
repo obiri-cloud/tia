@@ -82,6 +82,7 @@ module.exports = {
         formTextLight: "rgb(180, 188, 208)",
         danger: "rgb(235, 87, 87)",
         mint: "#4fb05c",
+        info: "#899090"
       },
 
       backgroundImage: {
