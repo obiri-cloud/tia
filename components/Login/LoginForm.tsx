@@ -56,11 +56,12 @@ const LoginForm = () => {
         redirect: false,
       })
         .then((res) => {
+
           if (res?.error === null) {
             toast({
               title: "Login successful, redirecting you now.",
               variant: "success",
-              duration: 2000
+              duration: 2000,
             });
             // @ts-ignore
             let status = session?.user.data.is_admin as boolean;
@@ -71,12 +72,23 @@ const LoginForm = () => {
               router.push("/dashboard");
             }
           } else {
+            let msg = res?.error;
+
+            if (msg === "CredentialsSignin") {
+              msg =
+                "Please enter the correct email and password. Note that the password field is case-sensitive.";
+            } else if (
+              msg ==
+              "Email is not verified or account is inactive. Kindly check your email for a Token to verify first."
+            ) {
+              router.push(`/signup/confirmation?email=${email}`);
+            }
+
             toast({
               title: "Login Failed",
-              description:
-                "Please enter the correct email and password. Note that both fields may be case-sensitive.",
-              action: <ToastAction altText="Try again">Try again</ToastAction>,
-              variant: "destructive",
+              description: msg,
+              variant: "info",
+              duration: 10_000,
             });
           }
         })
@@ -118,6 +130,7 @@ const LoginForm = () => {
           <Label htmlFor="email">Email Address</Label>
           <Input
             ref={emailRef}
+            defaultValue={email || ""}
             id="email"
             placeholder="example@example.com"
             type="email"
@@ -136,9 +149,9 @@ const LoginForm = () => {
             className="absolute top-[55%] right-0 translate-x-[-50%]  translate-y-[-55%]  cursor-pointer p-1"
           >
             {!typePassword ? (
-              <EyeIcon className="stroke-black fill-transparent w-4 h-4" />
+              <EyeIcon className="stroke-white dark:stroke-black fill-transparent w-4 h-4" />
             ) : (
-              <EyeOff className="stroke-black fill-transparent w-4 h-4" />
+              <EyeOff className="stroke-white  dark:stroke-black fill-transparent w-4 h-4" />
             )}
           </span>
         </LabelInputContainer>

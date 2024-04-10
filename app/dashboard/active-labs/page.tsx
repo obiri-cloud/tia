@@ -63,7 +63,7 @@ const ActiveLabsPage = () => {
 
       })
     );
-    router.push(`/dashboard/labs?lab=${image.id}&image=${image.image}`);
+    router.push(`/dashboard/labs?lab=${image.id}&image=${image.image.id}`);
   };
   return (
     <div className="">

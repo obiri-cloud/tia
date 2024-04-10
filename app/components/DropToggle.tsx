@@ -56,12 +56,7 @@ export const DropToggle = () => {
     const [value, setValue] = useState<string | undefined>(theme);
   
     useEffect(() => {
-      console.log("value", value);
-      console.log("theme", theme);
-      console.log("systemTheme", systemTheme)
-      
-      console.log("->", themes.find((th) => th.value === theme)?.label);
-      
+    
       setValue(theme);
     }, []);
   
