@@ -2,7 +2,9 @@
 import NextAuth, { Account, NextAuthOptions, Profile, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { AdapterUser } from "next-auth/adapters";
- const authOptions: NextAuthOptions = {
+import { toast } from "sonner";
+
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -27,13 +29,24 @@ import { AdapterUser } from "next-auth/adapters";
             }
           );
 
-          const user = await res.json();
-
-          if (res.ok && user) {
+          if (res.ok) {
+            const user = await res.json();
             return user;
+          } else {
+            const errorData = await res.json();
+            throw new Error(
+              JSON.stringify({ errors: errorData.message, status: false })
+            );
           }
         } catch (error) {
-          return error;
+          //@ts-ignore
+
+          const errorObj = JSON.parse(error.message);
+          const errorMessage = errorObj.errors;
+          //@ts-ignore
+
+          throw new Error(errorMessage);
+          // return false;
         }
       },
     }),
