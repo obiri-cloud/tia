@@ -57,7 +57,7 @@ const LabsPage = () => {
   const [isNotDesktop, setIsNotDesktop] = useState(false);
   const [showInstructions, setShowInstructions] = useState(true);
   const [instructions, setInstructions] = useState<IInstruction[]>([]);
-
+  const [term, setTerm] = useState<string>("");
   const drawerButton = useRef<HTMLButtonElement>(null);
   const reviewDrawerButton = useRef<HTMLButtonElement>(null);
 
@@ -82,13 +82,10 @@ const LabsPage = () => {
     setIsLoading(false);
   };
 
-  const startPolling = (key: string) => {
-    intervalId = setInterval(() => {
-      pollStatus(key);
-    }, 5000);
-  };
+  let cnt = 0;
+  let timeoutId;
+
   useEffect(() => {
-    let msg = "";
     getInstructions();
     let tialab_info: ILabInfo | null = null;
 
@@ -106,7 +103,17 @@ const LabsPage = () => {
     ) {
       setLabInfo(tialab_info as ILabInfo);
       if (tialab_info?.lab_status_key) {
-        startPolling(tialab_info?.lab_status_key ?? "");
+        const startPolling = () => {
+          if (cnt < 5 && !term.includes("namespace")) {
+            timeoutId = setTimeout(() => {
+              pollStatus(tialab_info?.lab_status_key ?? "");
+              cnt++;
+              startPolling();
+            }, 5000);
+          }
+        };
+
+        startPolling();
       }
     } else {
       setLabInfo({
@@ -116,6 +123,8 @@ const LabsPage = () => {
         duration: null,
       });
     }
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const getInstructions = async () => {
@@ -160,6 +169,7 @@ const LabsPage = () => {
         toast({
           title: "Lab Deleted Successfully...",
           variant: "success",
+          duration: 2000,
         });
 
         let countdown = document.getElementById("countdown");
@@ -198,10 +208,6 @@ const LabsPage = () => {
     }
   };
 
-  useEffect(() => {}, []);
-
-  let cnt = 0;
-
   const pollStatus = async (
     key: string | null,
     delay: number = 8000,
@@ -223,11 +229,7 @@ const LabsPage = () => {
       }
 
       sooner.info(data?.data ? data?.data : data?.message);
-
-      if (data?.data.includes("namespace")) {
-        clearInterval(intervalId);
-        return;
-      }
+      setTerm(data?.data);
     } catch (error) {
       console.error("Error occurred:", error);
       if (maxRetries > 0) {
@@ -283,7 +285,15 @@ const LabsPage = () => {
                 </Button>
               </DialogTrigger>
             </div>
-            <Instructions instructions={instructions} />
+            <iframe
+              style={{
+                width: "100%",
+                height: "100%",
+                border: "none",
+              }}
+            >
+              <Instructions instructions={instructions} />
+            </iframe>
           </Panel>
           {showInstructions ? <ResizeHandle /> : null}
           <Panel className="h-full" collapsible={true}>
@@ -397,11 +407,12 @@ function ResizeHandle({ id }: { id?: string }) {
 const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
   instructions,
 }) => {
+
   const [currentInstruction, setCurrentInstruction] = useState<number>(0);
 
   return (
     <div className="">
-      {instructions && instructions.length > 0 ? (
+      {instructions ? (
         <div className="p-2 overflow-x-auto text-black overflow-y-scroll  mb-[100px]">
           <h1 className="font-bold text-3xl mb-3">
             {instructions && instructions.length > 0
@@ -511,6 +522,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PrismComponent from "@/app/components/PrismComponent";
 import { ContentProps, IInstruction } from "@/app/types";
 import { Label } from "@/components/ui/neo-label";
+import ShadowDOM from "@/app/components/shadow-dom";
 
 const ReviewDrawer = () => {
   const ratings = [
@@ -559,6 +571,12 @@ const ReviewDrawer = () => {
 
   const submitReview = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (value === "") {
+      toast({
+        variant: "destructive",
+        title: "Select a rating or click out the modal to exit.",
+      });
+    }
     let formData = { comments: comment, review: value, image: id, user: "" };
 
     let formSchema = z.object({
