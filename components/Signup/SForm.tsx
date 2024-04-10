@@ -13,11 +13,15 @@ import { FormEvent, useRef } from "react";
 import { EyeIcon, EyeOff } from "lucide-react";
 import { LabelInputContainer } from "../ui/label-input-container";
 import Link from "next/link";
+import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+import { useTheme } from "next-themes";
 
 export function SignupFormDemo() {
   const form = useForm();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
+
+  const { theme } = useTheme();
 
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
@@ -131,7 +135,7 @@ export function SignupFormDemo() {
             <Input
               ref={firstNameRef}
               id="firstname"
-              placeholder="Tyler"
+              placeholder="John"
               type="text"
             />
           </LabelInputContainer>
@@ -140,7 +144,7 @@ export function SignupFormDemo() {
             <Input
               ref={lastNameRef}
               id="lastname"
-              placeholder="Durden"
+              placeholder="Doe"
               type="text"
             />
           </LabelInputContainer>
@@ -166,10 +170,18 @@ export function SignupFormDemo() {
             onClick={() => setTypePassword(!typePassword)}
             className="absolute top-[55%] right-0 translate-x-[-50%]  translate-y-[-55%]  cursor-pointer p-1"
           >
-            {!typePassword ? (
-              <EyeIcon className="stroke-black fill-transparent w-4 h-4" />
+            {typePassword ? (
+              <EyeClosedIcon
+                className={` ${
+                  theme === "dark" ? "stroke-white" : "stroke-black"
+                }   w-4 h-4`}
+              />
             ) : (
-              <EyeOff className="stroke-black fill-transparent w-4 h-4" />
+              <EyeOpenIcon
+                className={` ${
+                  theme === "dark" ? "stroke-white" : "stroke-black"
+                }   w-4 h-4`}
+              />
             )}
           </span>
         </LabelInputContainer>
@@ -185,10 +197,18 @@ export function SignupFormDemo() {
             onClick={() => setTypePassword(!typePassword)}
             className="absolute top-[55%] right-0 translate-x-[-50%]  translate-y-[-55%]  cursor-pointer p-1"
           >
-            {!typePassword ? (
-              <EyeIcon className="stroke-black fill-transparent w-4 h-4" />
+            {typePassword ? (
+              <EyeClosedIcon
+                className={` ${
+                  theme === "dark" ? "stroke-white" : "stroke-black"
+                }   w-4 h-4`}
+              />
             ) : (
-              <EyeOff className="stroke-black fill-transparent w-4 h-4" />
+              <EyeOpenIcon
+                className={` ${
+                  theme === "dark" ? "stroke-white" : "stroke-black"
+                }   w-4 h-4`}
+              />
             )}
           </span>
         </LabelInputContainer>

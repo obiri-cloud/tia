@@ -8,13 +8,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { ToastAction } from "../ui/toast";
 import { useSession } from "next-auth/react";
-import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import { BottomGradient } from "../Signup/SForm";
 import { EyeIcon, EyeOff } from "lucide-react";
 import { LabelInputContainer } from "../ui/label-input-container";
 import { Label } from "../ui/neo-label";
 import Link from "next/link";
 import { Input } from "../ui/neo-input";
+import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+import { useTheme } from "next-themes";
 
 const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -22,6 +23,7 @@ const LoginForm = () => {
   const { data: session } = useSession();
 
   const email = searchParams.get("email");
+  const { theme } = useTheme();
 
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -56,7 +58,6 @@ const LoginForm = () => {
         redirect: false,
       })
         .then((res) => {
-
           if (res?.error === null) {
             toast({
               title: "Login successful, redirecting you now.",
@@ -148,10 +149,18 @@ const LoginForm = () => {
             onClick={() => setTypePassword(!typePassword)}
             className="absolute top-[55%] right-0 translate-x-[-50%]  translate-y-[-55%]  cursor-pointer p-1"
           >
-            {!typePassword ? (
-              <EyeIcon className="stroke-white dark:stroke-black fill-transparent w-4 h-4" />
+            {typePassword ? (
+              <EyeClosedIcon
+                className={` ${
+                  theme === "dark" ? "stroke-white" : "stroke-black"
+                }   w-4 h-4`}
+              />
             ) : (
-              <EyeOff className="stroke-white  dark:stroke-black fill-transparent w-4 h-4" />
+              <EyeOpenIcon
+                className={` ${
+                  theme === "dark" ? "stroke-white" : "stroke-black"
+                }   w-4 h-4`}
+              />
             )}
           </span>
         </LabelInputContainer>
