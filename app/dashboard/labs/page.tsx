@@ -522,7 +522,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PrismComponent from "@/app/components/PrismComponent";
 import { ContentProps, IInstruction } from "@/app/types";
 import { Label } from "@/components/ui/neo-label";
-import ShadowDOM from "@/app/components/shadow-dom";
+
 
 const ReviewDrawer = () => {
   const ratings = [
