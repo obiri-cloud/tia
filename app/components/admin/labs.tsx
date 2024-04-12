@@ -69,7 +69,9 @@ const Labs = () => {
           },
         }
       );
-      if (response.data.status === 204 ) {
+      console.log("response", response);
+      
+      if (response.status === 204 ) {
         toast({
           title: "Lab Deleted Successfully...",
           variant: "success",
