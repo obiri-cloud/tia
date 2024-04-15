@@ -8,13 +8,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { ToastAction } from "../ui/toast";
 import { useSession } from "next-auth/react";
-import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import { BottomGradient } from "../Signup/SForm";
 import { EyeIcon, EyeOff } from "lucide-react";
 import { LabelInputContainer } from "../ui/label-input-container";
 import { Label } from "../ui/neo-label";
 import Link from "next/link";
 import { Input } from "../ui/neo-input";
+import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+import { useTheme } from "next-themes";
 
 const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -22,6 +23,7 @@ const LoginForm = () => {
   const { data: session } = useSession();
 
   const email = searchParams.get("email");
+  const { theme } = useTheme();
 
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -58,8 +60,9 @@ const LoginForm = () => {
         .then((res) => {
           if (res?.error === null) {
             toast({
-              title: "Login Successful",
+              title: "Login successful, redirecting you now.",
               variant: "success",
+              duration: 2000,
             });
             // @ts-ignore
             let status = session?.user.data.is_admin as boolean;
@@ -70,12 +73,23 @@ const LoginForm = () => {
               router.push("/dashboard");
             }
           } else {
+            let msg = res?.error;
+
+            if (msg === "CredentialsSignin") {
+              msg =
+                "Please enter the correct email and password. Note that the password field is case-sensitive.";
+            } else if (
+              msg ==
+              "Email is not verified or account is inactive. Kindly check your email for a Token to verify first."
+            ) {
+              router.push(`/signup/confirmation?email=${email}`);
+            }
+
             toast({
               title: "Login Failed",
-              description:
-                "Please enter the correct email and password. Note that both fields may be case-sensitive.",
-              action: <ToastAction altText="Try again">Try again</ToastAction>,
-              variant: "destructive",
+              description: msg,
+              variant: "info",
+              duration: 10_000,
             });
           }
         })
@@ -117,6 +131,7 @@ const LoginForm = () => {
           <Label htmlFor="email">Email Address</Label>
           <Input
             ref={emailRef}
+            defaultValue={email || ""}
             id="email"
             placeholder="example@example.com"
             type="email"
@@ -134,10 +149,18 @@ const LoginForm = () => {
             onClick={() => setTypePassword(!typePassword)}
             className="absolute top-[55%] right-0 translate-x-[-50%]  translate-y-[-55%]  cursor-pointer p-1"
           >
-            {!typePassword ? (
-              <EyeIcon className="stroke-black fill-transparent w-4 h-4" />
+            {typePassword ? (
+              <EyeClosedIcon
+                className={` ${
+                  theme === "dark" ? "stroke-white" : "stroke-black"
+                }   w-4 h-4`}
+              />
             ) : (
-              <EyeOff className="stroke-black fill-transparent w-4 h-4" />
+              <EyeOpenIcon
+                className={` ${
+                  theme === "dark" ? "stroke-white" : "stroke-black"
+                }   w-4 h-4`}
+              />
             )}
           </span>
         </LabelInputContainer>

@@ -48,11 +48,15 @@ const themes = [
 
 
 export const DropToggle = () => {
+
+  
     const { systemTheme, theme, setTheme } = useTheme();
+    
     const [open, setOpen] = useState(false);
-    const [value, setValue] = useState<string | undefined>("");
+    const [value, setValue] = useState<string | undefined>(theme);
   
     useEffect(() => {
+    
       setValue(theme);
     }, []);
   

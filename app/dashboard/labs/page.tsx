@@ -57,7 +57,7 @@ const LabsPage = () => {
   const [isNotDesktop, setIsNotDesktop] = useState(false);
   const [showInstructions, setShowInstructions] = useState(true);
   const [instructions, setInstructions] = useState<IInstruction[]>([]);
-
+  const [term, setTerm] = useState<string>("");
   const drawerButton = useRef<HTMLButtonElement>(null);
   const reviewDrawerButton = useRef<HTMLButtonElement>(null);
 
@@ -82,25 +82,10 @@ const LabsPage = () => {
     setIsLoading(false);
   };
 
-  // const startPolling = (key: string) => {
-  //   intervalId = setInterval(() => {
-  //     pollStatus(key);
-  //   }, 5000);
-  // };
+  let cnt = 0;
+  let timeoutId;
 
   useEffect(() => {
-    const startPolling = (key: string) => {
-      intervalId = setInterval(() => {
-        pollStatus(key);
-      }, 5000);
-    };
-
-    // Call startPolling with the desired key
-    startPolling("your-key");
-
-    // Clean up the interval when the component unmounts
-
-    let msg = "";
     getInstructions();
     let tialab_info: ILabInfo | null = null;
 
@@ -118,7 +103,17 @@ const LabsPage = () => {
     ) {
       setLabInfo(tialab_info as ILabInfo);
       if (tialab_info?.lab_status_key) {
-        startPolling(tialab_info?.lab_status_key ?? "");
+        const startPolling = () => {
+          if (cnt < 5 && !term.includes("namespace")) {
+            timeoutId = setTimeout(() => {
+              pollStatus(tialab_info?.lab_status_key ?? "");
+              cnt++;
+              startPolling();
+            }, 5000);
+          }
+        };
+
+        startPolling();
       }
     } else {
       setLabInfo({
@@ -174,6 +169,7 @@ const LabsPage = () => {
         toast({
           title: "Lab Deleted Successfully...",
           variant: "success",
+          duration: 2000,
         });
 
         let countdown = document.getElementById("countdown");
@@ -212,10 +208,6 @@ const LabsPage = () => {
     }
   };
 
-  useEffect(() => {}, []);
-
-  let cnt = 0;
-
   const pollStatus = async (
     key: string | null,
     delay: number = 8000,
@@ -237,11 +229,7 @@ const LabsPage = () => {
       }
 
       sooner.info(data?.data ? data?.data : data?.message);
-
-      if (data?.data.includes("namespace")) {
-        clearInterval(intervalId);
-        return;
-      }
+      setTerm(data?.data);
     } catch (error) {
       console.error("Error occurred:", error);
       if (maxRetries > 0) {
@@ -297,7 +285,15 @@ const LabsPage = () => {
                 </Button>
               </DialogTrigger>
             </div>
-            <Instructions instructions={instructions} />
+            <iframe
+              style={{
+                width: "100%",
+                height: "100%",
+                border: "none",
+              }}
+            >
+              <Instructions instructions={instructions} />
+            </iframe>
           </Panel>
           {showInstructions ? <ResizeHandle /> : null}
           <Panel className="h-full" collapsible={true}>
@@ -411,83 +407,98 @@ function ResizeHandle({ id }: { id?: string }) {
 const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
   instructions,
 }) => {
+
   const [currentInstruction, setCurrentInstruction] = useState<number>(0);
 
   return (
-    <div className="p-2 overflow-x-auto text-black overflow-y-scroll  mb-[100px]">
-      <h1 className="font-bold text-3xl mb-3">
-        {instructions && instructions.length > 0
-          ? instructions[currentInstruction].title
-          : ""}
-      </h1>
-      <div className="flex justify-between">
-        {currentInstruction - 1 > -1 ? (
-          <BackIcon
-            onClick={() => setCurrentInstruction(currentInstruction - 1)}
-            className="w-7 h-7"
-          />
-        ) : (
-          <span></span>
-        )}
+    <div className="">
+      {instructions ? (
+        <div className="p-2 overflow-x-auto text-black overflow-y-scroll  mb-[100px]">
+          <h1 className="font-bold text-3xl mb-3">
+            {instructions && instructions.length > 0
+              ? instructions[currentInstruction].title
+              : ""}
+          </h1>
+          <div className="flex justify-between">
+            {currentInstruction - 1 > -1 ? (
+              <BackIcon
+                onClick={() => setCurrentInstruction(currentInstruction - 1)}
+                className="w-7 h-7"
+              />
+            ) : (
+              <span></span>
+            )}
 
-        {Array.isArray(instructions) ? (
-          !(currentInstruction + 1 >= instructions.length) ? (
-            <ForwardIcon
-              onClick={() => setCurrentInstruction(currentInstruction + 1)}
-              className="w-7 h-7"
-            />
+            {Array.isArray(instructions) ? (
+              !(currentInstruction + 1 >= instructions.length) ? (
+                <ForwardIcon
+                  onClick={() => setCurrentInstruction(currentInstruction + 1)}
+                  className="w-7 h-7"
+                />
+              ) : (
+                <span></span>
+              )
+            ) : null}
+          </div>
+          {Array.isArray(instructions) ? (
+            instructions.length === 0 ? (
+              <p>No instructions found for this lab...</p>
+            ) : (
+              <PrismComponent
+                content={
+                  Array.isArray(instructions) && instructions.length > 0
+                    ? instructions && instructions[currentInstruction]
+                      ? instructions[currentInstruction].text
+                      : ""
+                    : ""
+                }
+              />
+            )
           ) : (
-            <span></span>
-          )
-        ) : null}
-      </div>
-      {Array.isArray(instructions) ? (
-        instructions.length === 0 ? (
-          <p>No instructions found for this lab...</p>
-        ) : (
-          <PrismComponent
-            content={
-              Array.isArray(instructions) && instructions.length > 0
-                ? instructions && instructions[currentInstruction]
-                  ? instructions[currentInstruction].text
-                  : ""
-                : ""
-            }
-          />
-        )
-      ) : (
-        <div className="flex flex-col gap-2">
-          <Skeleton className={`w-full h-[16.5px] rounded-md`} />
-          <Skeleton className={`w-full h-[16.5px] rounded-md`} />
-          <Skeleton className={`w-[90%] h-[16.5px] rounded-md`} />
+            <div className="flex flex-col gap-2">
+              <Skeleton className={`w-full h-[16.5px] rounded-md`} />
+              <Skeleton className={`w-full h-[16.5px] rounded-md`} />
+              <Skeleton className={`w-[90%] h-[16.5px] rounded-md`} />
 
-          <div className="mt-5 flex flex-col gap-2">
-            <Skeleton className={`w-[40%] h-[26.5px] rounded-md`} />
-            <Skeleton className={`w-full h-[16.5px] rounded-md`} />
-            <Skeleton className={`w-full h-[16.5px] rounded-md`} />
-            <Skeleton className={`w-[80%] h-[16.5px] rounded-md`} />
-          </div>
-          <div className="mt-5 flex flex-col gap-2">
-            <div className="flex justify-center">
-              <Skeleton className={`w-[40%] h-[26.5px] rounded-md`} />
+              <div className="mt-5 flex flex-col gap-2">
+                <Skeleton className={`w-[40%] h-[26.5px] rounded-md`} />
+                <Skeleton className={`w-full h-[16.5px] rounded-md`} />
+                <Skeleton className={`w-full h-[16.5px] rounded-md`} />
+                <Skeleton className={`w-[80%] h-[16.5px] rounded-md`} />
+              </div>
+              <div className="mt-5 flex flex-col gap-2">
+                <div className="flex justify-center">
+                  <Skeleton className={`w-[40%] h-[26.5px] rounded-md`} />
+                </div>
+                <Skeleton className={`w-full h-[200px] rounded-md`} />
+                <div className="flex justify-center">
+                  <Skeleton className={`w-[80%] h-[12.5px] rounded-md`} />
+                </div>
+              </div>
             </div>
-            <Skeleton className={`w-full h-[200px] rounded-md`} />
-            <div className="flex justify-center">
-              <Skeleton className={`w-[80%] h-[12.5px] rounded-md`} />
-            </div>
-          </div>
+          )}
+        </div>
+      ) : (
+        <div className="p-2">
+          <Skeleton className="w-[70%] h-8 mb-[70px]" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-[70%] h-4 mb-2" />
+
+          <Skeleton className="w-full h-[300px] my-4" />
+
+          <Skeleton className="w-[70%] h-8 mb-4" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-full h-4 mb-2" />
+          <Skeleton className="w-[70%] h-4 mb-2" />
+
+          <Skeleton className="w-full h-[300px] my-4" />
         </div>
       )}
-
-      {/* <p
-        className="all-initial font-sans mb-[500px]"
-        dangerouslySetInnerHTML={{
-          __html:
-            instructions && instructions[currentInstruction]
-              ? instructions[currentInstruction].text
-              : "",
-        }}
-      ></p> */}
     </div>
   );
 };
@@ -511,6 +522,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PrismComponent from "@/app/components/PrismComponent";
 import { ContentProps, IInstruction } from "@/app/types";
 import { Label } from "@/components/ui/neo-label";
+
 
 const ReviewDrawer = () => {
   const ratings = [
@@ -559,6 +571,12 @@ const ReviewDrawer = () => {
 
   const submitReview = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (value === "") {
+      toast({
+        variant: "destructive",
+        title: "Select a rating or click out the modal to exit.",
+      });
+    }
     let formData = { comments: comment, review: value, image: id, user: "" };
 
     let formSchema = z.object({

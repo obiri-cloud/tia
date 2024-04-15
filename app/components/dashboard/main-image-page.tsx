@@ -201,6 +201,13 @@ const MainImagePage = ({ token }: { token: string }) => {
           description: "Lab timed out",
         });
       }
+
+      if (response.data.status === 409) {
+        toast({
+          title: response.data.message,
+          duration: 2000,
+        });
+      }
       let key = response.data.redis_cache_key;
       let lab_status_key = response.data.lab_status_key;
       if (response.data.status === 200 || response.data.status === 201) {
@@ -435,9 +442,9 @@ const MainImagePage = ({ token }: { token: string }) => {
                   align: "start",
                 }}
                 orientation="vertical"
-                className="w-full max-w-lg -mt-1 h-[400px]"
+                className="w-full max-w-lg -mt-1 h-[150px]"
               >
-                <CarouselContent className="gap-4 -mt-1 h-[400px] p-6 ">
+                <CarouselContent className="gap-4 -mt-1 h-[150px] p-6 ">
                   {jokes.map((joke, i) => (
                     <CarouselItem
                       key={i}

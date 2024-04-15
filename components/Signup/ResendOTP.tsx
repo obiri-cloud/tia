@@ -20,7 +20,7 @@ const ResendOTP = () => {
     });
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/auth/send-otp/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/auth/registration/resend-otp/`,
         JSON.stringify(formData),
         {
           headers: {
@@ -29,30 +29,34 @@ const ResendOTP = () => {
           },
         }
       );
-      if (response.data.status === 200) {
+      if (response.data.status === 201) {
         toast({
           title: "Vefication code sent to mail",
           variant: "success",
+          duration: 2000,
         });
       } else {
         toast({
           title: "Uh oh! Something went wrong.",
           description: "There was a problem with your request.",
-          action: <ToastAction altText="Try again">Try again</ToastAction>,
           variant: "destructive",
+          duration: 2000,
         });
       }
     } catch (error) {
       toast({
         title: "Uh oh! Something went wrong.",
         description: "There was a problem with your request.",
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
         variant: "destructive",
+        duration: 2000,
       });
     }
   };
   return (
-    <span onClick={resendCode} className="font-medium">
+    <span
+      onClick={resendCode}
+      className="font-medium text-black dark:text-white"
+    >
       Resend OTP code
     </span>
   );

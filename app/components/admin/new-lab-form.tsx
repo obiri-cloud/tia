@@ -82,6 +82,7 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
           variant: "success",
           title: "Lab Update Success",
           description: "Image updated successfully",
+          duration: 2000
         });
         getImageListX(token).then(() => {
           document.getElementById("closeDialog")?.click();
@@ -91,6 +92,8 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
           variant: "destructive",
           title: "Lab Update Error",
           description: response.data.message,
+          duration: 2000
+
         });
       }
     } catch (error) {
@@ -102,6 +105,8 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
             variant: "destructive",
             title: "Image Creation Error",
             description: err.message,
+          duration: 2000
+
           })
         );
       }
