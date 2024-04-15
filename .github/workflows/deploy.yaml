@@ -3,7 +3,7 @@ name: Deploy to Azure AKS
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   build-and-deploy:
