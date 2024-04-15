@@ -13,6 +13,7 @@ import { setCurrentImage } from "@/redux/reducers/userSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Arrow } from "@/public/svgs/Arrow";
 import { ILabImage } from "../types";
+import Link from "next/link";
 interface ILabListItem {
   id: number;
   name: string;
@@ -26,6 +27,8 @@ const UserPage = () => {
   const [disabled, setDisabled] = useState(false);
   const { data: session } = useSession();
   const dispatch = useDispatch();
+
+  console.log("session", session);
 
   const router = useRouter();
 
@@ -82,67 +85,6 @@ const UserPage = () => {
     }
   };
 
-  const resumeLab = (data: ILabListItem) => {
-
-    secureLocalStorage.setItem(
-      "tialab_info",
-      JSON.stringify({
-        id: data.image,
-        url: data.ingress_url,
-        creation_date: data.creation_date,
-      })
-    );
-    router.push(`/dashboard/labs?lab=${data.id}`);
-
-    toast({
-      title: "Lab Resumed",
-      variant: "success",
-    });
-  };
-
-  const deleteLab = async (id: number) => {
-    setDisabled(true);
-    let formData = JSON.stringify({ image: id });
-    toast({
-      title: "Hold on we are deleting your lab.",
-    });
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/delete/`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.data.status === 200) {
-        toast({
-          title: response.data.message,
-          variant: "success",
-        });
-        setDisabled(false);
-        setLabs((prev) => prev?.filter((lab) => lab.image !== id));
-      } else {
-        toast({
-          title: response.data.message,
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      userCheck(error as AxiosError);
-
-      toast({
-        title: "Something went wrong. Try again",
-        variant: "destructive",
-      });
-      console.error(error);
-    }
-  };
-
   const viewImage = (image: ILabImage) => {
     dispatch(setCurrentImage(image));
     router.push(`/dashboard/images?image=${image.id}`);
@@ -150,9 +92,19 @@ const UserPage = () => {
 
   return (
     <div className="">
-      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex gap-2 p-2">
-        <span className="p-2 ">All Images</span>
-        <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+        <div className="flex">
+          <span className="p-2 ">All Images</span>
+          <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+        </div>
+        {
+          //@ts-ignore
+          session?.user && session?.user.data.is_admin ? (
+            <Link href="/admin" className="font-medium text-mint">
+              Go to admin
+            </Link>
+          ) : null
+        }
       </div>
       <div className="p-4 ">
         {/* grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 */}
