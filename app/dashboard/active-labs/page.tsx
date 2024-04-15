@@ -52,7 +52,7 @@ const ActiveLabsPage = () => {
     }
   };
 
-  const viewLab = (image: IActiveLab) => {    
+  const viewLab = (image: IActiveLab) => {
     secureLocalStorage.setItem(
       "tialab_info",
       JSON.stringify({
@@ -60,17 +60,27 @@ const ActiveLabsPage = () => {
         url: image.ingress_url,
         creation_date: image.creation_date,
         duration: image.image.duration,
-
       })
     );
     router.push(`/dashboard/labs?lab=${image.id}&image=${image.image.id}`);
   };
   return (
     <div className="">
-      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge  flex gap-2 p-2">
-        <span className="p-2 ">Active Labs</span>
-        <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+        <div className="flex">
+          <span className="p-2 ">Active Labs</span>
+          <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+        </div>
+        {
+          //@ts-ignore
+          session?.user && session?.user.data.is_admin ? (
+            <Link href="/admin" className="font-medium text-mint">
+              Go to admin
+            </Link>
+          ) : null
+        }
       </div>
+
       <div className="p-4">
         <Table>
           <TableHeader>
@@ -80,7 +90,15 @@ const ActiveLabsPage = () => {
             </TableRow>
           </TableHeader>
           {labs?.length === 0 && (
-            <TableCaption>You have no active lab..., <Link href='/dashboard' className="underline font-semibold dark:text-white text-black">click here to start one</Link></TableCaption>
+            <TableCaption>
+              You have no active lab...,{" "}
+              <Link
+                href="/dashboard"
+                className="underline font-semibold dark:text-white text-black"
+              >
+                click here to start one
+              </Link>
+            </TableCaption>
           )}
           <TableBody>
             {labs

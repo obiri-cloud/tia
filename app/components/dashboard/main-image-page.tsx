@@ -335,20 +335,32 @@ const MainImagePage = ({ token }: { token: string }) => {
 
   return (
     <div className="">
-      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge  flex gap-2 p-2 items-center">
-        <Link
-          href="/dashboard"
-          className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
-        >
-          All Images
-        </Link>
-        <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
-        {currentImage?.name ? (
-          <span className="p-2 rounded-md">{currentImage?.name}</span>
-        ) : (
-          <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
-        )}
+      {" "}
+      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+        <div className="flex items-center">
+          <Link
+            href="/dashboard"
+            className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+          >
+            All Images
+          </Link>
+          <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+          {currentImage?.name ? (
+            <span className="p-2 rounded-md">{currentImage?.name}</span>
+          ) : (
+            <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
+          )}
+        </div>
+        {
+          //@ts-ignore
+          session?.user && session?.user.data.is_admin ? (
+            <Link href="/admin" className="font-medium text-mint">
+              Go to admin
+            </Link>
+          ) : null
+        }
       </div>
+     
       <div className="w-full py-12 lg:py-24 xl:py-16">
         <div className="container grid gap-6 px-4 md:px-6 lg:grid-cols-12 xl:gap-12">
           <div className="space-y-4 lg:col-span-8 xl:col-start-1 xl:space-y-8">

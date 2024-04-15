@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Arrow } from "@/public/svgs/Arrow";
 import { ILabImage } from "../types";
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 interface ILabListItem {
   id: number;
   name: string;
@@ -93,7 +94,7 @@ const UserPage = () => {
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
-        <div className="flex">
+        <div className="flex items-center">
           <span className="p-2 ">All Images</span>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
@@ -164,17 +165,6 @@ const UserPage = () => {
 
 export default UserPage;
 
-const ChevronRight = (props: SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M12 25a1 1 0 0 1-.71-.29 1 1 0 0 1 0-1.42l7.3-7.29-7.3-7.29a1 1 0 1 1 1.42-1.42l8 8a1 1 0 0 1 0 1.42l-8 8A1 1 0 0 1 12 25Z"
-      data-name="Layer 2"
-      fill="#current"
-      className="fill-2c2d3c"
-    ></path>
-    <path d="M0 0h32v32H0z" fill="none"></path>
-  </svg>
-);
 
 // <Table>
 // <TableHeader>
