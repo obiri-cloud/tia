@@ -1211,3 +1211,11 @@ code {
 .all-initial *:not(code) {
   all: revert;
 }
+
+
+
+.scroller {
+  height: 100px;
+  overflow-y: scroll;
+  scrollbar-color: #808080 #242425;
+}

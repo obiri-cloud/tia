@@ -316,9 +316,10 @@ const Codes = () => {
               {currentLab.file_name}
             </div>
           </div>
-          <div className="overflow-scroll  ">
-            <pre className="text-sm ">
+          <div className="overflow-scroll  h-full scroller">
+            <pre className="text-sm h-full">
               <code
+              className="h-full"
                 dangerouslySetInnerHTML={{ __html: highlightedCode }}
               ></code>
             </pre>
