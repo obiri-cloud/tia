@@ -114,11 +114,12 @@ const UserPage = () => {
           ) : null
         }
       </div>
+
       <div className="p-4 ">
         {/* grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 */}
         <div className="all-images-list xl:flex grid lg:grid-cols-3  flex-wrap w-full  gap-3">
           {images && images.length >= -1 ? (
-            images.map((image:any, i:number) => (
+            images.map((image:ILabImage, i:number) => (
               <div
                 onClick={() => viewImage(image)}
                 key={i}

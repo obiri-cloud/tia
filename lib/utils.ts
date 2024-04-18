@@ -12,9 +12,9 @@ export function cn(...inputs: ClassValue[]) {
 export function userCheck(error: AxiosError | null) {
   if (
     error instanceof AxiosError &&
-    //@ts-ignore
+     //@ts-ignore
     (error.response.data.code === "user_not_found" ||
-    //@ts-ignore
+     //@ts-ignore
     error.response.data.code === "user_inactive" ||
       //@ts-ignore
       error.response.data.code === "token_not_valid")

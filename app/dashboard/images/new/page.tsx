@@ -141,7 +141,7 @@ const ImagePage = () => {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/create/`,
-        formData,
+         formData,
         {
           headers: {
             "Content-Type": "application/json",
