@@ -23,6 +23,7 @@ import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { IActiveLab } from "@/app/types";
+
 const MainImagePage = ({ token }: { token: string }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -304,6 +305,8 @@ const MainImagePage = ({ token }: { token: string }) => {
       }
     }
   };
+console.log({isLoading});
+
 
   const getActiveLabs = async () => {
     if (!token && session?.expires) {

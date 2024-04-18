@@ -15,6 +15,7 @@ import { Arrow } from "@/public/svgs/Arrow";
 import { ILabImage } from "../types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { useQuery } from "react-query";
 interface ILabListItem {
   id: number;
   name: string;
@@ -36,11 +37,17 @@ const UserPage = () => {
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
-  const [images, setImages] = useState<ILabImage[]>();
+  // const [images, setImages] = useState<ILabImage[]>();
 
-  useEffect(() => {
-    getImages();
-  }, []);
+  const {
+    isLoading,
+    error,
+    data: images,
+  } = useQuery(["Homeimage"], () => getImages());
+
+  // useEffect(() => {
+  //   getImages();
+  // }, []);
 
   const getImages = async () => {
     try {
@@ -56,15 +63,15 @@ const UserPage = () => {
         }
       );
 
-      setImages(response.data.results);
+      return response.data.results;
     } catch (error) {
       userCheck(error as AxiosError);
     }
   };
 
-  useEffect(() => {
-    getActiveLabs();
-  }, []);
+  // useEffect(() => {
+  //   getActiveLabs();
+  // }, []);
 
   const getActiveLabs = async () => {
     try {
@@ -111,7 +118,7 @@ const UserPage = () => {
         {/* grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 */}
         <div className="all-images-list xl:flex grid lg:grid-cols-3  flex-wrap w-full  gap-3">
           {images && images.length >= -1 ? (
-            images.map((image, i) => (
+            images.map((image:any, i:number) => (
               <div
                 onClick={() => viewImage(image)}
                 key={i}
