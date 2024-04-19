@@ -57,6 +57,7 @@ const LabsPage = () => {
   const [isNotDesktop, setIsNotDesktop] = useState(false);
   const [showInstructions, setShowInstructions] = useState(true);
   const [instructions, setInstructions] = useState<IInstruction[]>([]);
+  const [prevTheme, _] = useState<string | undefined>(theme);
   const [term, setTerm] = useState<string>("");
   const drawerButton = useRef<HTMLButtonElement>(null);
   const reviewDrawerButton = useRef<HTMLButtonElement>(null);
@@ -84,6 +85,12 @@ const LabsPage = () => {
 
   let cnt = 0;
   let timeoutId;
+
+  useEffect(() => {
+    setTheme("light");
+
+    return () => setTheme(prevTheme ?? systemTheme ?? "light");
+  });
 
   useEffect(() => {
     getInstructions();
@@ -241,62 +248,45 @@ const LabsPage = () => {
   return (
     <Dialog>
       <Toaster position="bottom-right" />
-      <div className="h-full">
-        <PanelGroup
-          className="h-full "
-          autoSaveId="tia-lab"
-          direction="horizontal"
-        >
-          <Panel
-            className={`h-screen relative instructions  hidden ${
-              showInstructions ? "lg:block" : "hidden"
-            }`}
-            collapsible={true}
-          >
-            <div className="flex justify-between p-3 border-b border-b-gray-200">
-              {/* <button
-                onClick={() =>
-                  setShowInstructions(
-                    (setShowInstructions) => !setShowInstructions
-                  )
-                }
-                className="bg-gray-300 shadow-md p-3 w-fit rounded-full instructions-toggle"
-              >
-                <Image
-                  src={double_arrow_left}
-                  alt="double_arrow_left"
-                  className="arrow-img"
-                />
-              </button> */}
-              <div className="countdown">
-                <CountdownClock
-                  startTime={labInfo?.creation_date || ""}
-                  time={labInfo?.duration || 0}
-                  endLab={endLab}
-                />
+      <div className="h-full flex flex-col">
+        <ResizablePanelGroup direction="horizontal" className="flex-1">
+          <ResizablePanel defaultSize={40} minSize={30} className="">
+            <div className="">
+              <div className="flex justify-between p-3 border-b border-b-gray-200">
+                <div className="countdown">
+                  <CountdownClock
+                    startTime={labInfo?.creation_date || ""}
+                    time={labInfo?.duration || 0}
+                    endLab={endLab}
+                  />
+                </div>
+                <DialogTrigger className=" text-left">
+                  <Button
+                    disabled={deleting}
+                    variant="destructive"
+                    className=" disabled:bg-red-900/90 font-normal"
+                  >
+                    {deleting ? "Ending Lab..." : "End Lab"}
+                  </Button>
+                </DialogTrigger>
               </div>
-              <DialogTrigger className=" text-left">
-                <Button
-                  disabled={deleting}
-                  variant="destructive"
-                  className=" disabled:bg-red-900/90 font-normal"
-                >
-                  {deleting ? "Ending Lab..." : "End Lab"}
-                </Button>
-              </DialogTrigger>
+
+              <div className="h-full playground">
+                <CustomIframe>
+                  <Instructions instructions={instructions} />
+                </CustomIframe>
+                {/* <iframe
+                width="100%"
+                height="100%"
+              >
+                <Instructions instructions={instructions} />
+
+              </iframe> */}
+              </div>
             </div>
-            <iframe
-              style={{
-                width: "100%",
-                height: "100%",
-                border: "none",
-              }}
-            >
-              <Instructions instructions={instructions} />
-            </iframe>
-          </Panel>
-          {showInstructions ? <ResizeHandle /> : null}
-          <Panel className="h-full" collapsible={true}>
+          </ResizablePanel>
+          <ResizableHandle withHandle={true} />
+          <ResizablePanel defaultSize={60} minSize={50}>
             {isLoading ? (
               <div className="h-full flex justify-center items-center instructions">
                 <MagicSpinner size={100} color="#686769" loading={isLoading} />
@@ -310,8 +300,9 @@ const LabsPage = () => {
                 onLoad={handleLoad}
               ></iframe>
             </div>
-          </Panel>
-        </PanelGroup>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+
         {isNotDesktop ? (
           <button
             onClick={handleClick}
@@ -375,43 +366,22 @@ const LabsPage = () => {
 
 export default LabsPage;
 
-import { PanelResizeHandle } from "react-resizable-panels";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { CountdownClock } from "@/components/Labs/countdown";
 import { DialogTrigger } from "@/components/ui/dialog";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { cn, userCheck } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { DrawerClose, DrawerFooter } from "@/components/ui/drawer";
-
-function ResizeHandle({ id }: { id?: string }) {
-  return (
-    <PanelResizeHandle
-      className="resize-handler-outer bg-[#eee] hover:bg-black/30  lg:block hidden"
-      id={id}
-    >
-      <div className="resize-handler-inner hidden rotate-90">
-        <svg className="icon" viewBox="0 0 24 24">
-          <path
-            fill="currentColor"
-            d="M8,18H11V15H2V13H22V15H13V18H16L12,22L8,18M12,2L8,6H11V9H2V11H22V9H13V6H16L12,2Z"
-          />
-        </svg>
-      </div>
-    </PanelResizeHandle>
-  );
-}
 
 const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
   instructions,
 }) => {
-
   const [currentInstruction, setCurrentInstruction] = useState<number>(0);
 
   return (
     <div className="">
+      gghjujjkj
       {instructions ? (
         <div className="p-2 overflow-x-auto text-black overflow-y-scroll  mb-[100px]">
           <h1 className="font-bold text-3xl mb-3">
@@ -522,7 +492,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PrismComponent from "@/app/components/PrismComponent";
 import { ContentProps, IInstruction } from "@/app/types";
 import { Label } from "@/components/ui/neo-label";
-
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import CustomIframe from "@/app/components/custom-iframe";
 
 const ReviewDrawer = () => {
   const ratings = [
