@@ -2,11 +2,7 @@
 import React, { SVGProps, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios, { AxiosError } from "axios";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
-import secureLocalStorage from "react-secure-storage";
-import { MetroSpinner } from "react-spinners-kit";
 import { userCheck } from "@/lib/utils";
 import { useDispatch } from "react-redux";
 import { setCurrentImage } from "@/redux/reducers/userSlice";
@@ -15,32 +11,22 @@ import { Arrow } from "@/public/svgs/Arrow";
 import { ILabImage } from "../types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-interface ILabListItem {
-  id: number;
-  name: string;
-  image: number;
-  ingress_url: string;
-  creation_date: string;
-}
+import { useQuery } from "react-query";
+
 
 const UserPage = () => {
-  const [labs, setLabs] = useState<ILabListItem[]>();
-  const [disabled, setDisabled] = useState(false);
   const { data: session } = useSession();
   const dispatch = useDispatch();
-
-  console.log("session", session);
-
   const router = useRouter();
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
-  const [images, setImages] = useState<ILabImage[]>();
+  const {
+    data: images,
+  } = useQuery(["Homeimage"], () => getImages());
 
-  useEffect(() => {
-    getImages();
-  }, []);
+  
 
   const getImages = async () => {
     try {
@@ -56,35 +42,12 @@ const UserPage = () => {
         }
       );
 
-      setImages(response.data.results);
+      return response.data.results;
     } catch (error) {
       userCheck(error as AxiosError);
     }
   };
 
-  useEffect(() => {
-    getActiveLabs();
-  }, []);
-
-  const getActiveLabs = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/labs/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setLabs(response.data.results);
-    } catch (error) {
-      userCheck(error as AxiosError);
-    }
-  };
 
   const viewImage = (image: ILabImage) => {
     dispatch(setCurrentImage(image));
@@ -107,11 +70,11 @@ const UserPage = () => {
           ) : null
         }
       </div>
+
       <div className="p-4 ">
-        {/* grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 */}
         <div className="all-images-list xl:flex grid lg:grid-cols-3  flex-wrap w-full  gap-3">
           {images && images.length >= -1 ? (
-            images.map((image, i) => (
+            images.map((image:ILabImage, i:number) => (
               <div
                 onClick={() => viewImage(image)}
                 key={i}
@@ -126,19 +89,13 @@ const UserPage = () => {
                   <h6 className="font-semibold leading-[140%] text-2xl app-text-clip h-[65px] max-h-[65px]">
                     {image.name}
                   </h6>
-                  {/* <p className="mt-2  app-text-clip ">
-                    {image.description}
-                  
-                  </p> */}
                 </div>
-                <a
-                  // href={image.link}
+                <span
                   className="flex gap-[10px] items-center h-fit lg:mt-[36px] mt-[28px] font-medium "
                 >
                   <h5 className="leading-[150%] font-medium">Go to lab</h5>
                   <Arrow className="pointer  -rotate-45 transition-all delay-150 dark:fill-white fill-black" />
-                  {/* <Image className="pointer rot -rotate-45 transition-all delay-150" src={arrow} alt="" /> */}
-                </a>
+                </span>
               </div>
             ))
           ) : (
