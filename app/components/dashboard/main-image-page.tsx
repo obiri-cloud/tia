@@ -430,8 +430,9 @@ console.log({isLoading});
                   className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
                 >
                   {creatingStarted ? (
-                    <span className="px-7">
-                      <InfinityLoader />{" "}
+                    <span className="px-7 flex justify-center items-center gap-2">
+                       <InfinityLoader />
+                       <p>loading</p>
                     </span>
                   ) : (
                     "Start Learning"
