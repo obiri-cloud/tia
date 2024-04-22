@@ -42,7 +42,7 @@ const UserPage = () => {
         }
       );
 
-      return response.data.results;
+      return response.data.data;
     } catch (error) {
       userCheck(error as AxiosError);
     }

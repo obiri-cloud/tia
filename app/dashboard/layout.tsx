@@ -143,11 +143,6 @@ ${
                 </ul>
                 <div className="">
                   <ul className="space-y-2 font-medium">
-                    <li className="py-1">
-                      <span className="font-light">Theme:</span>
-
-                      <DropToggle />
-                    </li>
                     <li className="account-button">
                       <a
                         href="/dashboard/account"

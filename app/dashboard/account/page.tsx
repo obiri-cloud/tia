@@ -21,6 +21,7 @@ import { userCheck } from "@/lib/utils";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import DeactivateConfirmation from "@/app/components/deactivate-confirmation";
 import { IUserProfile } from "@/app/types";
+import { DropToggle } from "@/app/components/DropToggle";
 
 
 const AccountPage = () => {
@@ -227,40 +228,7 @@ const AccountPage = () => {
         </div>
         <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
         <form onSubmit={handleSubmit}>
-          {/* <div className="sc-gGfaQS gna-dsN">
-            <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
-              <div className="sc-hLBbgP ioYMmf">
-                <label>
-                  <span className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium">
-                    Profile picture
-                  </span>
-                </label>
-                <div className="sc-hLBbgP fHykyP">
-                  <div
-                    role="button"
-                    className="sc-hLBbgP sc-igtUOe jKWMTP Vihrj sc-lgpvUy dHFqIb"
-                  >
-                    <input
-                      className="hidden"
-                      accept="image/png, image/jpeg"
-                      type="file"
-                      id="avatarUrl"
-                    />
-                    <div className="sc-gJqSRm bPFOEz sc-hRXZVh iZhvmM">
-                      <div
-                        aria-label="Avatar with initials SA"
-                        className="sc-fHSyak bhauWF"
-                      >
-                        <span className=" uppercase">
-                          {userData?.first_name.slice(0, 2)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> */}
+        
           <div className="sc-hLBbgP ePdqdi mb-[24px]">
             <span className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
               Email
@@ -342,9 +310,13 @@ const AccountPage = () => {
           </button>
         </form>
 
+
+        <DropToggle/>
+
+
         <div className="sc-jEJXZe cyvxRV"></div>
 
-        <div className="sc-hLBbgP   flex justify-between">
+        <div className="sc-hLBbgP   flex justify-between mt-10">
           <div className="">
             <div className="sc-hLBbgP gUrCBj">
               <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText whiteDark">
@@ -366,6 +338,13 @@ const AccountPage = () => {
         confirmText="Yes, deactivate"
         confirmFunc={() => deactivateAccount()}
       />
+
+
+
+
+
+
+
       </div>
     </div>
     </Dialog>
