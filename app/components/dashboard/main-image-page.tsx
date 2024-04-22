@@ -424,20 +424,30 @@ console.log({isLoading});
                   )}
                 </Button>
               ) : (
-                <Button
-                  ref={buttonRef}
-                  onClick={() => checkTimeBeforeStart(currentImage?.id)}
-                  className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                >
+                <div className="flex justify-center items-center gap-2">
                   {creatingStarted ? (
-                    <span className="px-7 flex justify-center items-center gap-2">
+                    <Button
+                    ref={buttonRef}
+                    onClick={() => checkTimeBeforeStart(currentImage?.id)}
+                    className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                  >
+                    <div className="px-7 flex justify-center items-center gap-2">
+                    <span className="">
                        <InfinityLoader />
-                       <p>loading</p>
                     </span>
+                    </div>
+                    </Button>
                   ) : (
-                    "Start Learning"
-                  )}
+                    <Button
+                    ref={buttonRef}
+                    onClick={() => checkTimeBeforeStart(currentImage?.id)}
+                    className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                  >
+                    Start Learning
                 </Button>
+                  )}
+                  {creatingStarted&&<p>Lab Loading In Progress</p>}
+                </div>
               )}
 
               {isActive ? (
