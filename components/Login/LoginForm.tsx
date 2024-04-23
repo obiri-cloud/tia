@@ -38,6 +38,7 @@ const LoginForm = () => {
   });
 
   const handleSubmit = (e: FormEvent) => {
+
     e.preventDefault();
     if (buttonRef.current) {
       buttonRef.current.disabled = true;
@@ -52,6 +53,7 @@ const LoginForm = () => {
         email,
         password,
       });
+      
       signIn("credentials", {
         email,
         password,

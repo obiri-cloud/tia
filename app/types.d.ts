@@ -41,6 +41,22 @@ interface ILabImage {
   sidecar?: boolean;
 }
 
+interface IinviteData {
+  id: number;
+  recipient_email: string;
+  invitation_status: string;
+  created_at: string;
+  expires: string;
+}
+
+interface IOrgGroupData {
+  id: number;
+  name: string;
+   organization: {
+    name:string
+   }
+}
+
 interface ILabInfoDialog {
   lab: ILabImage | undefined;
 }

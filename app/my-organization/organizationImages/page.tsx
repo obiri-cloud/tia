@@ -10,6 +10,8 @@ import {
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
+import { useQuery } from "react-query";
+
 import {
   Table,
   TableBody,
@@ -19,11 +21,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import NewImageForm from "./new-image-form";
+
+// import NewImageForm from "./new-image-form";
+import NewImageForm from "@/app/components/admin/new-image-form";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { toast } from "@/components/ui/use-toast";
-import { getImageListX } from "./overview";
+// import { getImageListX } from "./overview";
+
+import { getImageListX } from "@/app/components/admin/overview";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import {
@@ -31,9 +37,12 @@ import {
   setImageCount,
   setImageList,
 } from "@/redux/reducers/adminSlice";
-import DeleteConfirmation from "../delete-confirmation";
+// import DeleteConfirmation from "../delete-confirmation";
+import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { useRouter } from "next/navigation";
 import { ILabImage } from "@/app/types";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,7 +52,11 @@ import {
 import { MoreVerticalIcon } from "lucide-react";
 
 const Images = () => {
-  const { imageCount, imageList } = useSelector((state: RootState) => state.admin );
+  const { imageCount} = useSelector(
+    (state: RootState) => state.admin
+  );
+
+  const [imageList,setimagelist]=useState<ILabImage[]>();
 
   const { data: session } = useSession();
   const dispatch = useDispatch();
@@ -51,79 +64,63 @@ const Images = () => {
 
   const [image, setImage] = useState<ILabImage>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
-  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
-    useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
+  
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
-  const deleteImage = async (id: number | undefined) => {
-    // setDisabled(true);
 
-    let axiosConfig = {
-      method: "DELETE",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/delete/`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
+  const getImages = async () => {
     try {
-      const response = await axios(axiosConfig);
-
-      if (response.status === 204) {
-        toast({
-          variant: "success",
-          title: "Image Deletion",
-          description: "Image deleted successfully",
-        });
-        // setLocalImageList((prev) => prev?.filter((image) => image.id !== id));
-        getImageListX(token).then((response) => {
-          dispatch(setImageCount(response.data.count));
-          dispatch(setImageList(response.data.results));
-          document.getElementById("closeDialog")?.click();
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Image Deletion  Error",
-          description: response.data.message,
-        });
-      }
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/images/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setimagelist(response.data.data)
+      return response.data.data;
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Image Deletion  Error",
-        description: "Something went wrong",
-      });
-    } finally {
-      // setDisabled(false);
+       console.log(error)
     }
   };
+
+  useEffect(()=>{
+    getImages()
+  },[])
+
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Images</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{imageCount}</div>
-          </CardContent>
-        </Card>
+    <div className="space-y-4 m-4">
+              <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+        <div className="flex items-center">
+          <span className="p-2 ">Organzation</span>
+          <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+        </div>
+        {
+          //@ts-ignore
+           session?.user && session?.user.data.is_admin ? (
+            <Link href="/dashboard" className="font-medium text-mint">
+              Go to dashboard
+            </Link>
+          ) : null
+        }
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="col-span-4">
           <CardHeader className="flex flex-row justify-between items-center w-full">
             <div>
-              <CardTitle>Image List</CardTitle>
+              <CardTitle>Organization Image List</CardTitle>
               <CardDescription>
                 {/* You have {imageCount} image(s). */}
               </CardDescription>
             </div>
             <Dialog>
-              <AddButton />
               <NewImageForm />
             </Dialog>
           </CardHeader>
@@ -219,13 +216,13 @@ const Images = () => {
           isOpenDeleteDialogOpen ? setIsOpenDeleteDialog  : setIsOpenViewDialog
         }
       >
-        <DeleteConfirmation
+        {/* <DeleteConfirmation
           image={image}
           text="Do you want to delete this image"
           noText="No"
           confirmText="Yes, Delete this image"
-          confirmFunc={() => deleteImage(image?.id)}
-        />
+        //   confirmFunc={() => deleteImage(image?.id)}
+        /> */}
       </Dialog>
     </div>
   );
