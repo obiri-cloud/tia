@@ -44,7 +44,7 @@ const SConfirmationForm = () => {
     code: z
       .string()
       .min(5, {
-        message: "Code has to be 5 characters or more",
+        message: "Code has to be 5 characters",
       })
       .max(6, {
         message: "Code can't to be more than 5 characters ",
