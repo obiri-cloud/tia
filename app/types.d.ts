@@ -75,12 +75,11 @@ interface IActiveLab {
   creation_date: string;
   id: number;
   image: {
-    id: number,
-    duration: number
+    id: number;
+    duration: number;
   };
   ingress_url: string;
   name: string;
-
 }
 
 interface IReview {
@@ -122,8 +121,33 @@ interface ISession extends Session {
       is_admin: boolean;
       is_superuser: boolean;
       is_active: boolean;
-      date_joined: string; // You might want to use a Date type here if you plan to work with dates
-      last_login: string | null; // You might want to use a Date type here if you plan to work with dates
+      date_joined: string;
+      last_login: string | null;
     };
   };
+}
+
+interface NoInvitationsResponse {
+  message: string;
+  status: number;
+}
+
+interface InvitationsResponse {
+  data: {
+    organization: {
+      id: string;
+      name: string;
+      owner: {
+        username: string;
+      };
+    };
+  }[];
+  status: number;
+}
+
+interface OrganizationGroup {
+  data: {
+    id: number;
+    name: string;
+  }[];
 }
