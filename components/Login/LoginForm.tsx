@@ -35,6 +35,7 @@ const LoginForm = () => {
     password: z.string().min(6, {
       message: "Password has to be longer than 6 characaters",
     }),
+    orgid: z.string().optional(),
   });
 
   const handleSubmit = (e: FormEvent) => {
@@ -55,15 +56,20 @@ const LoginForm = () => {
       signIn("credentials", {
         email,
         password,
+        orgid: searchParams.get("orgid") ?? "",
         redirect: false,
       })
         .then((res) => {
+          console.log("--->", res);
+          
           if (res?.error === null) {
             toast({
               title: "Login successful, redirecting you now.",
               variant: "success",
               duration: 2000,
             });
+            console.log("session", session);
+            
             // @ts-ignore
             let status = session?.user.data.is_admin as boolean;
 

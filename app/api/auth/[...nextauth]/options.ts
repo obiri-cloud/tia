@@ -14,8 +14,14 @@ const authOptions: NextAuthOptions = {
           placeholder: "eg:john@gmail.com",
         },
         password: { label: "Password", type: "password" },
+        orgid: {
+          label: "Organization Id",
+          placeholder: "b5e4db20-9e1c-4db0-a126-756b7c58b787",
+        },
       },
       async authorize(credentials) {
+        console.log("credentials", credentials);
+        
         try {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_BE_URL}/auth/login/`,
@@ -29,10 +35,17 @@ const authOptions: NextAuthOptions = {
             }
           );
 
+
           if (res.ok) {
             const user = await res.json();
+            if(user.status >= 400 && user.status <= 404){
+              throw new Error(
+                JSON.stringify({ errors: user.message, status: false })
+              );
+            }
             return user;
           } else {
+            
             const errorData = await res.json();
             throw new Error(
               JSON.stringify({ errors: errorData.message, status: false })
