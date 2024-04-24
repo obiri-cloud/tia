@@ -60,9 +60,9 @@ export default function UserDashboardLayout({
                 <ul className="space-y-2 font-medium mt-[50px] flex-1">
                   <li className="all-images-button">
                     <a
-                      href="/ManageOrg"
+                      href="/my-organization/organizationImages"
                       className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                        pathname.startsWith("/dashboard") &&
+                        pathname.startsWith("/my-organization") &&
                         pathname !== "/dashboard/active-labs" &&
                         pathname !== "/dashboard/account"
                           ? "bg-menuHovWhite dark:bg-menuHov"

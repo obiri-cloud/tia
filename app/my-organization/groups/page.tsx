@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 import { useQuery } from "react-query"; 
+import AddImgGroupModal from '@/app/components/AddImgGroupModal'
+
 import {
   Table,
   TableBody,
@@ -62,6 +64,7 @@ const Images = () => {
   const [image, setImage] = useState<ILabImage>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] = useState<boolean>(false);
+  const [isOpenViewDialogOpen1, setIsOpenViewDialog1] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
   const [passedData,setPassedData]=useState<IOrgGroupData>()
   
@@ -99,6 +102,36 @@ const Images = () => {
   useEffect(()=>{
     getImages()
   },[])
+
+  const getOrgImages = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/images/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      //  if(response.status===200){
+      //     setstatus(true)
+      //     return
+      //  }
+  
+       console.log(response.data.data);
+       setImage(response.data.data)
+      return response;
+    } catch (error) {
+       console.log(error)
+    }
+  };
+
+useEffect(()=>{
+  getOrgImages()
+ },[])
 
   const deletebtn=(data:IOrgGroupData)=>{
     setPassedData(data)
@@ -164,7 +197,7 @@ const Images = () => {
             <div>
             {!status && (
               <>
-                <Button className="m-4"  onClick={()=>{setIsOpenViewDialog2(true)}}>*</Button>
+                <Button className="m-4"  onClick={()=>{setIsOpenViewDialog2(true)}}>create group</Button>
               </>
             )
             }
@@ -189,7 +222,7 @@ const Images = () => {
                   <TableCaption>
                     No groups available
                     <br />
-                    <Button className="m-4" onClick={()=>setIsOpenViewDialog(true)}>create group</Button>
+                    <Button className="m-4" onClick={()=>setIsOpenViewDialog2(true)}>Create group</Button>
                   </TableCaption>
                 )}
                 <TableBody>
@@ -214,6 +247,12 @@ const Images = () => {
                                     className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
                                   >
                                     Delete
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={()=>setIsOpenViewDialog1(true)}
+                                    className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
+                                  >
+                                    add image
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -244,18 +283,27 @@ const Images = () => {
           confirmText="Yes, Delete!"
           confirmFunc={() => deleteblink(passedData?.id)}
         />
+
       </Dialog>
 
       <Dialog
-        open={isOpenViewDialogOpen}
+        open={isOpenViewDialogOpen2}
         onOpenChange={
-          isOpenViewDialogOpen ? setIsOpenViewDialog : setIsOpenDeleteDialog
+          isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
         }
       >
          <CreateGroupModal/> 
       </Dialog>
 
 
+      <Dialog
+        open={isOpenViewDialogOpen1}
+        onOpenChange={
+          isOpenViewDialogOpen1 ? setIsOpenViewDialog1 : setIsOpenDeleteDialog
+        }
+      >
+         <AddImgGroupModal image={image}/>
+      </Dialog>
 
     </div>
   );

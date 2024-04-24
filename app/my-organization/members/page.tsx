@@ -55,7 +55,7 @@ const Images = () => {
     (state: RootState) => state.admin
   );
 
-  const [imageList,setimagelist]=useState<ILabImage[]>();
+  const [imageList,setimagelist]=useState<any>();
   const [status,setstatus]=useState<boolean>(false)
 
   const { data: session } = useSession();
@@ -86,10 +86,12 @@ const Images = () => {
       );
 
 
-       if(response.status===204){
-          setstatus(true)
-          return
+       if(response.data.status===204){
+           setstatus(true)
+           return
        }
+       console.log({response:response.data.data});
+       setimagelist(response.data.data)
       return response;
     } catch (error) {
        console.log(error)
@@ -142,14 +144,14 @@ const Images = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="">Name</TableHead>
-                    <TableHead>email</TableHead>
-                    <TableHead>Duration</TableHead>
-                    <TableHead className="text-right">Port Number</TableHead>
+                    <TableHead className="">Email</TableHead>
+                    <TableHead>First_Name</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right"></TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
-                {imageList?.length === 0 || status===true && (
+                {imageList?.length === 0 || status && (
                   <TableCaption>
                      No Members Found In This Organization 
                     <br />
@@ -159,13 +161,13 @@ const Images = () => {
                 <TableBody>
                   {imageList
                     ? imageList.length > 0
-                      ? imageList.map((image, i) => (
+                      ? imageList.map((image:any, i:any) => (
                           <TableRow key={i}>
                             <TableCell className="font-medium">
-                              {image.name}
+                              {image.member.email}
                             </TableCell>
-                            <TableCell>{image.difficulty_level}</TableCell>
-                            <TableCell>{image.duration}</TableCell>
+                            <TableCell>{image.member.first_name}</TableCell>
+                            <TableCell>{image.invitation_status}</TableCell>
                             <TableCell className="text-right">
                               {image.port_number}
                             </TableCell>
