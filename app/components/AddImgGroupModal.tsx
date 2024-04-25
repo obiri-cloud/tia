@@ -17,9 +17,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { useRouter } from "next/router";
+import { useRef, useState } from "react";
 import { toast } from "@/components/ui/use-toast"
-import { useEffect } from "react";
- 
+import { useSession } from "next-auth/react"; 
+
 const items = [
   {
     id: "recents",
@@ -46,7 +48,7 @@ const items = [
     label: "Documents",
   },
 ] 
- 
+
 const FormSchema = z.object({
   image: z.array(z.number()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one item.",
@@ -55,28 +57,81 @@ const FormSchema = z.object({
 
 
  
- function CheckboxReactHookFormMultiple(image:any) {
+ function CheckboxReactHookFormMultiple(image:any,gid:any) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  console.log(gid);
+
+  
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       image: [],
     },
   })
-  
+
+
+    
+  const { data: session } = useSession();
+  // @ts-ignore
+  const token = session?.user!.tokens?.access_token;
  
-  function onSubmit(data:z.infer<typeof FormSchema>) {
-    let image_ids=data
-     console.log(image_ids);
- 
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
-  }
+
+ async function onSubmit(data:z.infer<typeof FormSchema>){
+    let image_ids=data.image
+    console.log(image,{...gid});
+
+
+    let axiosConfig = {
+      method: "POST",
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${gid.gid}/image/add/`,
+      data:image_ids,
+      headers: {
+        "Content-Type": "application/json",
+        // "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      }
+    };
+    try {
+      const response = await axios(axiosConfig);
+      console.log({response});
+      if (response.status === 201 || response.status === 200) {
+        toast({
+          variant: "success",
+          title: `Image added sucessfully`,
+          description: ``,
+        });
+        // router.push(`/my-organization/groups`);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "image  adding  Error",
+          description: response.data,
+        });
+      }
+    } catch (error:any) {
+      console.error("error", error);
+      const responseData = error.response.data;
+      if (error.response) {
+        toast({
+          variant: "destructive",
+          title: `${responseData.data}`,
+          // description: responseData.message || "An error occurred",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: `${responseData.data}`,
+          // description: error.message || "An error occurred",
+        });
+      }
+    } finally {
+      if (buttonRef.current) {
+        buttonRef.current.disabled = false;
+      }
+    }
+  };
 
 
 

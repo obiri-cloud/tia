@@ -23,9 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import * as z from "zod";
 import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
-import { useSession } from "next-auth/react";
 // import { getImageListX } from "./overview";
-import { getImageListX } from "./admin/overview";
 import {
   setCurrentImage,
   setImageCount,
@@ -40,21 +38,22 @@ import { Switch } from "@/components/ui/switch";
 import { ContentProps, ILabImage } from "@/app/types";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Dialog } from "@radix-ui/react-dialog";
+import { useSession } from "next-auth/react";
 
 const NewImageForm = () => {
   const form = useForm();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
-  const dispatch = useDispatch();
+  const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
+  const [isOpenViewDialogOpen2, setIsOpenViewDialog2] = useState<boolean>(true);
+  const [isOpenViewDialogOpen1, setIsOpenViewDialog1] = useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
 
   const emailRef = useRef<HTMLInputElement>(null);
   const { data: session } = useSession();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-
-
-
-  
 
 
   const handleSubmit = async (e: FormEvent) => {
@@ -77,13 +76,13 @@ const NewImageForm = () => {
     const formData = new FormData();
 
     // Append fields to the FormData object
-    formData.append("email", emailRef.current?.value || "");
+    formData.append("name", emailRef.current?.value || "");
 
     // }
 
     let axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/create/`,
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/create/`,
       data:formData,
       headers: {
         "Content-Type": "application/json",
@@ -91,7 +90,9 @@ const NewImageForm = () => {
         Authorization: `Bearer ${token}`,
       }
     };
+
     console.log({formData});
+
     try {
       formSchema.parse(parseFormData);
       const response = await axios(axiosConfig);
@@ -145,24 +146,15 @@ const NewImageForm = () => {
     return obj;
   }
 
-
-
-
-  const handleOnEsc = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Escape") {
-      dispatch(setCurrentImage(null));
-    }
-  };
-
-  const handleOnClickOutside = (e: ContentProps["onPointerDownOutside"]) => {
-    dispatch(setCurrentImage(null));
-  };
-
   return (
-    <DialogContent
-      onEsc={(e) => handleOnEsc(e)}
-      onClickOutside={(e) => handleOnClickOutside(e)}
-      className="flex justify-center items-center overflow-y-scroll h-[40vh] "
+    <Dialog
+     open={isOpenViewDialogOpen2}
+     onOpenChange={
+        isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
+      }
+    >
+  <DialogContent
+      className="flex justify-center items-center overflow-y-scroll h-[60vh] "
     >
       <Form {...form}>
         <form
@@ -175,7 +167,7 @@ const NewImageForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className=" formTextLight">
-                  Name <sup className="text-red-500">*</sup>
+                  Name of organization
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -197,11 +189,12 @@ const NewImageForm = () => {
             className="w-full disabled:bg-black-900/10 mt-6 dark:bg-white dark:text-black bg-black text-white "
             variant="black"
           >
-            {"Send Invitation Link"}
+            {"create organization"}
           </Button>
         </form>
       </Form>
-    </DialogContent>
+      </DialogContent>
+    </Dialog>
   );
 };
 

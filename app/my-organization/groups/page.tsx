@@ -67,7 +67,7 @@ const Images = () => {
   const [isOpenViewDialogOpen1, setIsOpenViewDialog1] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
   const [passedData,setPassedData]=useState<IOrgGroupData>()
-  
+  const [gid,setgid]=useState<any>()
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -169,6 +169,7 @@ useEffect(()=>{
       }
   }
 
+
   return (
     <div className="space-y-4 m-4">
               <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
@@ -242,6 +243,11 @@ useEffect(()=>{
                                   <MoreVerticalIcon className="w-4 h-4" />
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="left-[-20px_!important]">
+                                <DropdownMenuItem
+                                    className="font-medium cursor-pointer hover:text-white-500 text-white-500 py-2"
+                                  >
+                                    View
+                                  </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={()=>deletebtn(image)}
                                     className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
@@ -249,7 +255,7 @@ useEffect(()=>{
                                     Delete
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
-                                    onClick={()=>setIsOpenViewDialog1(true)}
+                                    onClick={()=>{setIsOpenViewDialog1(true),setgid(image.id)}}
                                     className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
                                   >
                                     add image
@@ -302,7 +308,7 @@ useEffect(()=>{
           isOpenViewDialogOpen1 ? setIsOpenViewDialog1 : setIsOpenDeleteDialog
         }
       >
-         <AddImgGroupModal image={image}/>
+         <AddImgGroupModal image={image} {...gid}/>
       </Dialog>
 
     </div>
