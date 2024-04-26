@@ -62,7 +62,7 @@ const Images = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const [image, setImage] = useState<ILabImage>();
+  const [image, setImage] = useState<any>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
   
@@ -101,6 +101,40 @@ const Images = () => {
   useEffect(()=>{
     getImages()
   },[])
+
+  const deletelink=async(data:any)=>{
+    try {
+        const response = await axios.delete(
+          `${process.env.NEXT_PUBLIC_BE_URL}/organization/member/${data}/delete/`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              // @ts-ignore
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+         if(response.data.status===204){
+            toast({
+                variant:  "success",
+                title: "Invitation Deleted Sucessfully",
+                description: response.data.data,
+              });
+              setIsOpenViewDialog(false)
+              getImages()
+         }
+  
+         console.log({response});
+        setimagelist(response.data.data)
+        return response;
+      } catch (error) {
+         console.log(error)
+      }
+  }
+
+  console.log({image});
+  
 
   return (
     <div className="space-y-4 m-4">
@@ -180,21 +214,10 @@ const Images = () => {
                                   <DropdownMenuItem
                                     onClick={() => {
                                       setIsOpenViewDialog(true);
-                                      dispatch(setCurrentImage(image));
                                     }}
                                     className="cursor-pointer py-2"
                                   >
-                                    View
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="cursor-pointer py-2"
-                                    onClick={() =>
-                                      router.push(
-                                        `/admin/images/${image.id}/instructions`
-                                      )
-                                    }
-                                  >
-                                    Attach Instruction
+                                    Add to group
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => {
@@ -235,13 +258,13 @@ const Images = () => {
           isOpenDeleteDialogOpen ? setIsOpenDeleteDialog  : setIsOpenViewDialog
         }
       >
-        {/* <DeleteConfirmation
+        <DeleteConfirmation
           image={image}
-          text="Do you want to delete this image"
+          text={`Do you want to delete ${image?.member.first_name} from your organizatio`}
           noText="No"
-          confirmText="Yes, Delete this image"
-        //   confirmFunc={() => deleteImage(image?.id)}
-        /> */}
+          confirmText="Yes, Delete "
+          confirmFunc={() => deletelink(image?.member.id)}
+        />
       </Dialog>
     </div>
   );
