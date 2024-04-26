@@ -1,5 +1,6 @@
 "use client";
-import React, { ChangeEvent, FC, FormEvent, SVGProps, useEffect, useRef, useState } from "react";
+import { userCheck } from "@/lib/utils";
+import { useParams} from "next/navigation";
 import {
   Card,
   CardContent,
@@ -12,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 import { useQuery } from "react-query"; 
 import AddImgGroupModal from '@/app/components/AddImgGroupModal'
-
+import { useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -28,6 +29,7 @@ import NewImageForm from "@/app/components/admin/new-image-form";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { toast } from "@/components/ui/use-toast";
+import { useState } from "react";
 // import { getImageListX } from "./overview";
 
 import { getImageListX } from "@/app/components/admin/overview";
@@ -52,35 +54,37 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
 import AddMembersModal from "@/app/components/AddMembersModal";
-import { log } from "console";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const Images = () => {
 
-  const [imageList,setimagelist]=useState<IOrgGroupData[]>();
-  const [status,setstatus]=useState<boolean>(false)
+const OrganizationGroupImagePage = () => {
 
-  const { data: session } = useSession();
-  const dispatch = useDispatch();
+const [image, setImage] = useState<any>();
+const [imageList,setImagelist]=useState<any>()
+const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
+const [isOpenViewDialogOpen2, setIsOpenViewDialog2] = useState<boolean>(false);
+const [isOpenViewDialogOpen1, setIsOpenViewDialog1] = useState<boolean>(false);
+const [isOpenViewDialogOpen3, setIsOpenViewDialog3] = useState<boolean>(false);
+const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
+const [members,setallMembers]=useState<any>([])
+const [passedData,setPassedData]=useState<any>()
+const [gid,setgid]=useState<number>()
+    
+  const params = useParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const id = params.id;
+  const gids = params.gid;
+  const name = searchParams.get("name");
+  const group = searchParams.get("group_name");
+  const { data: session } = useSession();
 
-  const [image, setImage] = useState<ILabImage>();
-  const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
-  const [isOpenViewDialogOpen2, setIsOpenViewDialog2] = useState<boolean>(false);
-  const [isOpenViewDialogOpen1, setIsOpenViewDialog1] = useState<boolean>(false);
-  const [isOpenViewDialogOpen3, setIsOpenViewDialog3] = useState<boolean>(false);
-  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
-  const [members,setallMembers]=useState<any>([])
-  const [passedData,setPassedData]=useState<IOrgGroupData>()
-  const [gid,setgid]=useState<number>()
-
-  // @ts-ignore
-  const token = session?.user!.tokens?.access_token;
 
   // get groups
-  const getgroups = async () => {
+  const getGroupMembers = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/member/list/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -95,8 +99,7 @@ const Images = () => {
       //     return
       //  }
 
-       console.log({response});
-      setimagelist(response.data.data)
+      setImagelist(response.data.data[0].member)
       return response;
     } catch (error) {
        console.log(error)
@@ -104,7 +107,7 @@ const Images = () => {
   };
 
   useEffect(()=>{
-    getgroups()
+    getGroupMembers()
   },[])
 
   //get members
@@ -121,13 +124,13 @@ const Images = () => {
           },
         }
       );
-      setallMembers(response.data.data)
-       if(response.status===200){
-          setstatus(true)
-          return
-       }
+      //  if(response.status===200){
+      //     setstatus(true)
+      //     return
+      //  }
+
        console.log({response});
-     
+      setallMembers(response.data.data)
       return response;
     } catch (error) {
        console.log(error)
@@ -152,7 +155,7 @@ const Images = () => {
       //     return
       //  }
   
-       console.log(response.data.data);
+
        setImage(response.data.data)
       return response;
     } catch (error) {
@@ -167,15 +170,14 @@ useEffect(()=>{
 
   const deletebtn=(data:IOrgGroupData)=>{
     setPassedData(data)
-    console.log(data)
     setIsOpenViewDialog(true)
   }
 
-  //delete groups
+ //delete members in the group
   const deleteblink=async(data:any)=>{
     try {
         const response = await axios.delete(
-          `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${data}/delete/`,
+          `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/member/${data}/delete/`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -186,18 +188,17 @@ useEffect(()=>{
           }
         );
          if(response.data.status===204){
-          setIsOpenViewDialog(false)
-          getgroups()
+            setIsOpenViewDialog(false)
+            getGroupMembers()
             toast({
                 variant:  "success",
-                title: "Group Deleted Sucessfully",
+                title: "member Deleted Sucessfully",
                 description: response.data.data,
               });
-
          }
   
-         console.log(response.data.data);
-        setimagelist(response.data.data)
+
+        setImagelist(response.data.data)
         return response;
       } catch (error) {
          console.log(error)
@@ -205,34 +206,61 @@ useEffect(()=>{
   }
 
 
+
+  // @ts-ignore
+  const token = session?.user!.tokens?.access_token;
+
+
   return (
     <div className="space-y-4 m-4">
-              <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
-          <span className="p-2 ">Organzation</span>
+          <Link
+            href={`/dashboard/organizations`}
+            className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+          >
+            Organizations
+          </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
-        </div>
+          {name ? (
+            <Link
+              className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+              href={`/my-organization/groups`}
+            >
+              {name}
+            </Link>
+          ) : (
+            <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
+          )}
+          <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
 
+          {group ? (
+            <span className="p-2 rounded-md">{group}</span>
+          ) : (
+            <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
+          )}
+        </div>
         {
           //@ts-ignore
-           session?.user && session?.user.data.is_admin ? (
-            <Link href="/dashboard" className="font-medium text-mint">
-              Go to dashboard
+          session?.user && session?.user.data.is_admin ? (
+            <Link href="/admin" className="font-medium text-mint">
+              Go to admin
             </Link>
           ) : null
         }
       </div>
+
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="col-span-4">
           <CardHeader className="flex flex-row justify-between items-center w-full">
             <div>
-              <CardTitle>Organizations Groups</CardTitle>
+              <CardTitle>{group} Group List</CardTitle>
               <CardDescription>
                 {/* You have {imageCount} image(s). */}
               </CardDescription>
             </div>
             <div>
-            {status && (
+            {!status && (
               <>
                 <Button className="m-4"  onClick={()=>{setIsOpenViewDialog2(true)}}>create group</Button>
               </>
@@ -248,76 +276,70 @@ useEffect(()=>{
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="">Group Name</TableHead>
-                    <TableHead>organization</TableHead>
+                    <TableHead className="">Email</TableHead>
+                    <TableHead>Name</TableHead>
                     {/* <TableHead>created_at</TableHead> */}
                     {/* <TableHead>expires</TableHead> */}
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
-                {imageList?.length === 0 || !status&& (
+                {imageList?.length === 0 || status && (
                   <TableCaption>
                     No groups available
                     <br />
                     <Button className="m-4" onClick={()=>setIsOpenViewDialog2(true)}>Create group</Button>
                   </TableCaption>
                 )}
-                <TableBody>
-                  {imageList
-                    ? imageList.length > 0
-                      ? imageList.map((image, i) => (
-                          <TableRow key={i}>
-                            <TableCell className="font-medium">
-                              {image.name}
-                            </TableCell>
-                            <TableCell>{image.organization.name}</TableCell>
-                            {/* <TableCell>{image.created_at}</TableCell>
-                            <TableCell>{image.expires}</TableCell> */}
-                            <TableCell className="underline font-medium text-right">
-                              <DropdownMenu>
-                                <DropdownMenuTrigger>
-                                  <MoreVerticalIcon className="w-4 h-4" />
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="left-[-20px_!important]">
+                    <TableBody>
+                    {imageList && imageList.length > 0 ? (
+                    imageList.map((image:any, i:any) => (
+                        <TableRow key={i}>
+                        <TableCell className="font-medium">
+                            {image.email}
+                        </TableCell>
+                        <TableCell>{image.first_name}</TableCell>
+                        {/* <TableCell>{image.created_at}</TableCell>
+                        <TableCell>{image.expires}</TableCell> */}
+                        <TableCell className="underline font-medium text-right">
+                            <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <MoreVerticalIcon className="w-4 h-4" />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="left-[-20px_!important]">
+                                {/* <DropdownMenuItem
+                                onClick={()=>{setgid(image.id),setIsOpenViewDialog3(true)}}
+                                className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
+                                >
+                                add members
+                                </DropdownMenuItem>
                                 <DropdownMenuItem
-                                    onClick={()=>{setgid(image.id),setIsOpenViewDialog3(true)}}
-                                    className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
-                                  >
-                                    Add members
-                                  </DropdownMenuItem>
+                                className="font-medium cursor-pointer hover:text-white-500 text-white-500 py-2"
+                                >
+                                View
+                                </DropdownMenuItem> */}
                                 <DropdownMenuItem
-                                    className="font-medium cursor-pointer hover:text-white-500 text-white-500 py-2"
-                                    onClick={()=> {router.push(`/my-organization/groups/${image.id}/members?name=group&group_name=${image.name}`)}}
-                                  >
-                                    View members
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="font-medium cursor-pointer hover:text-white-500 text-white-500 py-2"
-                                    onClick={()=> {router.push(`/my-organization/groups/${image.id}/images?name=Group&group_name=${image.name} Image`)}}
-                                  >
-                                    View Images
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={()=>deletebtn(image)}
-                                    className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
-                                  >
-                                    Delete
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={()=>{setgid(image.id),setIsOpenViewDialog1(true)}}
-                                    className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
-                                  >
-                                    Add Image(s)
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                             
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      : null
-                    : null}
-                </TableBody>
+                                onClick={()=>deletebtn(image)}
+                                className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
+                                >
+                                Delete
+                                </DropdownMenuItem>
+                                {/* <DropdownMenuItem
+                                onClick={()=>{setgid(image.id),setIsOpenViewDialog1(true)}}
+                                className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
+                                >
+                                add image
+                                </DropdownMenuItem> */}
+                            </DropdownMenuContent>
+                            </DropdownMenu>
+                        </TableCell>
+                        </TableRow>
+                    ))
+                    ) : (
+                    <TableRow>
+                        <TableCell colSpan={3} className="text-center">No members in this group</TableCell>
+                    </TableRow>
+                    )}
+                    </TableBody>
               </Table>
             </CardContent>
           </Dialog>
@@ -333,7 +355,7 @@ useEffect(()=>{
         
         <DeleteConfirmation
           //@ts-ignore
-          text={`Do you want to delete  ${passedData?.name} group ? `}
+          text={`Do you want to delete ${passedData?.first_name} from ${group} group ?`}
           noText="No"
           confirmText="Yes, Delete!"
           confirmFunc={() => deleteblink(passedData?.id)}
@@ -373,60 +395,10 @@ useEffect(()=>{
   );
 };
 
-export default Images;
+export default OrganizationGroupImagePage;
 
-const AddButton = () => {
-  const dispatch = useDispatch();
 
-  return (
-    <DialogTrigger onClick={() => dispatch(setCurrentImage(null))}>
-      <Button>Add Image</Button>
-    </DialogTrigger>
-  );
-};
 
-// <Dialog>
-// <DialogTrigger
-//   onClick={() =>
-//     dispatch(setCurrentImage(image))
-//   }
-// >
-//   <Button
-//     className="font-medium"
-//     variant="link"
-//   >
-//     View
-//   </Button>
-// </DialogTrigger>
-// <NewImageForm />
-// </Dialog>
-// |
-// <Dialog>
-// <DialogTrigger>
-//   <Button
-//     onClick={() => setImage(image)}
-//     className="font-medium text-red-500"
-//     variant="link"
-//   >
-//     Delete
-//   </Button>
-// </DialogTrigger>
-// <DeleteConfirmation
-//   image={image}
-//   text="Do you want to delete this image"
-//   noText="No"
-//   confirmText="Yes, Delete this image"
-//   confirmFunc={() => deleteImage(image?.id)}
-// />
-// </Dialog>
-// |
-// <Button
-// onClick={() => router.push(`/admin/images/${image.id}/instructions`)}
-// className="font-medium"
-// variant="link"
-// >
-// Attach Instruction
-// </Button>
 
 
 

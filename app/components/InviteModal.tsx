@@ -91,9 +91,7 @@ const NewImageForm = () => {
         Authorization: `Bearer ${token}`,
       }
     };
-
     console.log({formData});
-
     try {
       formSchema.parse(parseFormData);
       const response = await axios(axiosConfig);
@@ -101,13 +99,13 @@ const NewImageForm = () => {
       
 
       if (response.status === 201 || response.status === 200) {
-
+        router.push(`/my-organization/invitation`);
         toast({
           variant: "success",
           title: `Invitation Sent sucessfully`,
           description: ``,
         });
-        router.push(`/my-organization/invitation`);
+
       } else {
         toast({
           variant: "destructive",

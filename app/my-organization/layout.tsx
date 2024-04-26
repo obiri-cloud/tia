@@ -132,7 +132,7 @@ ${
                       
                       `}
                       >
-                        groups
+                        Groups
                       </span>
                     </a>
                   </li>
@@ -165,7 +165,7 @@ ${
                       
                       `}
                       >
-                        members
+                        Members
                       </span>
                     </a>
                   </li>

@@ -2,6 +2,7 @@
 
 import AdminCheck from "../../hooks/admin-check";
 import { Inter } from "next/font/google";
+import { useState,useEffect } from "react";
 import { signOut } from "next-auth/react";
 import secureLocalStorage from "react-secure-storage";
 import { SVGProps } from "react";
@@ -12,9 +13,11 @@ import {
   PieChart,
   Scroll,
   Star,
+  Users,
 } from "lucide-react";
+import axios from "axios";
 import { usePathname } from "next/navigation";
-
+import { useSession } from "next-auth/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function DashboardPage({
@@ -26,8 +29,46 @@ export default function DashboardPage({
     signOut({ callbackUrl: "/login" });
     secureLocalStorage.removeItem("tialabs_info");
   };
-
+  const { data: session } = useSession();
+  // @ts-ignore
+  const token = session?.user!.tokens?.access_token;
   const pathname = usePathname();
+
+  const [OrgExist, setOrgExist] = useState<boolean>(false);
+
+  const getOrgOwner = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      //  if(response.status===200){
+      //     setstatus(true)
+      //     return
+      //  }
+  
+       console.log(response.data.status);
+       if(response.data.status==200){
+         setOrgExist(true)
+         return
+       }
+
+      return response;
+    } catch (error) {
+       console.log(error)
+    }
+  };
+
+useEffect(()=>{
+  getOrgOwner()
+ },[])
 
   return (
     <div
@@ -104,6 +145,7 @@ export default function DashboardPage({
                   <span className="ms-3 font-light">Images</span>
                 </a>
               </li>
+
               <li>
                 <a
                   href="/admin/labs"
@@ -147,6 +189,38 @@ export default function DashboardPage({
             </ul>
             <div className="">
               <ul className="space-y-2 font-medium">
+              <li className="account-button">
+                      <a
+                        href={OrgExist?"/my-organization/organizationImages":"/admin/create-organization"}
+                        className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
+                          pathname === "/admin/create-organization"
+                            ? "bg-menuHovWhite dark:bg-menuHov"
+                            : ""
+                        }`}
+                      >
+                        <Users
+                          className={`
+                          ${
+                            pathname === "/admin/create-organization"
+                              ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
+                              : " "
+                          }
+                          `}
+                        />
+                        <span
+                          className={`
+                        ms-3 
+                        ${
+                          pathname === "/admin/create-organization"
+                            ? "font-semibold"
+                            : "font-light "
+                        }
+                        `}
+                        >
+                         {OrgExist?'Organization':'create Organization'} 
+                        </span>
+                      </a>
+                    </li>
                 <li>
                   <span
                     onClick={logout}

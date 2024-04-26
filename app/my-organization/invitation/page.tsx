@@ -185,7 +185,7 @@ const Images = () => {
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
-                {imageList?.length === 0 ||status===true && (
+                {imageList?.length === 0 || status && (
                   <TableCaption>
                      No Invitation Sent
                     <br />

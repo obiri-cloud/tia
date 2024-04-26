@@ -50,17 +50,16 @@ const items = [
 ] 
 
 const FormSchema = z.object({
-  image: z.array(z.number()).refine((value) => value.some((item) => item), {
+  image: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one item.",
   }),
 })
 
 
  
- function CheckboxReactHookFormMultiple(image:any,gid:number) {
+ function CheckboxReactHookFormMultiple(image:any) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  console.log(image.gid);
 
   
 
@@ -79,13 +78,13 @@ const FormSchema = z.object({
  
 
  async function onSubmit(data:z.infer<typeof FormSchema>){
-  let image_ids = { image_ids: data.image }
+  let user_ids = { user_ids: data.image }
 
 
     let axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${image.gid}/image/add/`,
-      data:image_ids,
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${image.gid}/member/add/`,
+      data:user_ids,
       headers: {
         "Content-Type": "application/json",
         // "Content-Type": "multipart/form-data",
@@ -98,7 +97,7 @@ const FormSchema = z.object({
       if (response.status === 201 || response.status === 200) {
         toast({
           variant: "success",
-          title: `Image added to Group sucessfully`,
+          title: `Member added to Group sucessfully`,
           description: ``,
         });
         // router.push(`/my-organization/groups`);
@@ -148,9 +147,9 @@ const FormSchema = z.object({
           render={() => (
             <FormItem>
               <div className="mb-4">
-                <FormLabel className="text-base">Organization Images</FormLabel>
+                <FormLabel className="text-base">Organization Members</FormLabel>
                 <FormDescription>
-                  Select the Images you want to add to the group
+                  Select the members you want to add to the group
                 </FormDescription>
               </div>
               {image.image.map((item:any) => (
@@ -167,21 +166,21 @@ const FormSchema = z.object({
                         <FormControl>
                           <Checkbox
                         
-                            checked={field.value?.includes(item.id)}
+                            checked={field.value?.includes(item.member.id)}
                             onCheckedChange={(checked:any) => {
                               console.log(checked,field);
                               return checked
-                                ? field.onChange([...field.value,item.id])
+                                ? field.onChange([...field.value,item.member.id])
                                 : field.onChange(
                                     field.value?.filter(
-                                      (value) => value !== item.id
+                                      (value) => value !== item.member.id
                                     )
                                   )
                             }}
                           />
                         </FormControl>
                         <FormLabel className="text-sm font-normal">
-                          {item.name}
+                          {item.member.email}
                         </FormLabel>
                       </FormItem>
                     )

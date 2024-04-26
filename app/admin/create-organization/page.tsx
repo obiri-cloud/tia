@@ -23,9 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import * as z from "zod";
 import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
-import { useSession } from "next-auth/react";
 // import { getImageListX } from "./overview";
-import { getImageListX } from "./admin/overview";
 import {
   setCurrentImage,
   setImageCount,
@@ -40,49 +38,50 @@ import { Switch } from "@/components/ui/switch";
 import { ContentProps, ILabImage } from "@/app/types";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Dialog } from "@radix-ui/react-dialog";
+import { useSession } from "next-auth/react";
 
 const NewImageForm = () => {
   const form = useForm();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
-  const dispatch = useDispatch();
+  const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
+  const [isOpenViewDialogOpen2, setIsOpenViewDialog2] = useState<boolean>(true);
+  const [isOpenViewDialogOpen1, setIsOpenViewDialog1] = useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
 
-  const nameRef = useRef<HTMLInputElement>(null);
+  const OrganizationName = useRef<HTMLInputElement>(null);
   const { data: session } = useSession();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
 
-
-  
-
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    let name= nameRef.current?.value;
+    let name = OrganizationName.current?.value;
 
     const formSchema = z.object({
-      name: z.string()
+      name: z.string(),
     });
-
+  
     if (buttonRef.current) {
       buttonRef.current.disabled = true;
     }
 
     let parseFormData = {
-      name: nameRef.current?.value,
+      name: OrganizationName.current?.value,
     };
 
     const formData = new FormData();
 
     // Append fields to the FormData object
-    formData.append("name", nameRef.current?.value || "");
+    formData.append("name", OrganizationName.current?.value || "");
 
     // }
 
     let axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/create/`,
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/create/`,
       data:formData,
       headers: {
         "Content-Type": "application/json",
@@ -91,6 +90,7 @@ const NewImageForm = () => {
       }
     };
 
+
     try {
       formSchema.parse(parseFormData);
       const response = await axios(axiosConfig);
@@ -98,16 +98,17 @@ const NewImageForm = () => {
       
 
       if (response.status === 201 || response.status === 200) {
+        router.push(`/my-organization/organizationImages`);
         toast({
           variant: "success",
-          title: `group created sucessfully`,
+          title: `Organization Created Sucessfully`,
           description: ``,
         });
-        router.push(`/my-organization/groups`);
+
       } else {
         toast({
           variant: "destructive",
-          title: "Invitation  Creation  Error",
+          title: "Organization Creation  Error",
           description: response.data.data,
         });
       }
@@ -143,24 +144,15 @@ const NewImageForm = () => {
     return obj;
   }
 
-
-
-
-  const handleOnEsc = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Escape") {
-      dispatch(setCurrentImage(null));
-    }
-  };
-
-  const handleOnClickOutside = (e: ContentProps["onPointerDownOutside"]) => {
-    dispatch(setCurrentImage(null));
-  };
-
   return (
-    <DialogContent
-      onEsc={(e) => handleOnEsc(e)}
-      onClickOutside={(e) => handleOnClickOutside(e)}
-      className="flex justify-center items-center overflow-y-scroll h-[40vh] "
+    <Dialog
+     open={isOpenViewDialogOpen2}
+     onOpenChange={
+        isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
+      }
+    >
+  <DialogContent
+      className="flex justify-center items-center overflow-y-scroll h-[60vh] "
     >
       <Form {...form}>
         <form
@@ -173,16 +165,16 @@ const NewImageForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className=" formTextLight">
-                  Name Of Group
+                  Name of organization
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Name your group"
+                    placeholder="Name"
                     type="text"
                     {...field}
                     className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
-                    ref={nameRef}
-                    defaultValue=''
+                    ref={OrganizationName}
+                    defaultValue='tiablabs'
                   />
                 </FormControl>
                 <FormMessage />
@@ -194,12 +186,14 @@ const NewImageForm = () => {
             ref={buttonRef}
             className="w-full disabled:bg-black-900/10 mt-6 dark:bg-white dark:text-black bg-black text-white "
             variant="black"
+            onClick={handleSubmit}
           >
-            {"Create Group"}
+            {"create organization"}
           </Button>
         </form>
       </Form>
-    </DialogContent>
+      </DialogContent>
+    </Dialog>
   );
 };
 
