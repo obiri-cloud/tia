@@ -52,6 +52,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
 import AddMembersModal from "@/app/components/AddMembersModal";
+import { log } from "console";
 
 const Images = () => {
 
@@ -166,13 +167,15 @@ useEffect(()=>{
 
   const deletebtn=(data:IOrgGroupData)=>{
     setPassedData(data)
+    console.log(data)
     setIsOpenViewDialog(true)
   }
 
+  //delete groups
   const deleteblink=async(data:any)=>{
     try {
         const response = await axios.delete(
-          `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/${data}/delete/`,
+          `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${data}/delete/`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -183,13 +186,14 @@ useEffect(()=>{
           }
         );
          if(response.data.status===204){
+          setIsOpenViewDialog(false)
+          getgroups()
             toast({
                 variant:  "success",
-                title: "Invitation Deleted Sucessfully",
+                title: "Group Deleted Sucessfully",
                 description: response.data.data,
               });
-              setIsOpenViewDialog(false)
-              getgroups()
+
          }
   
          console.log(response.data.data);
@@ -323,7 +327,7 @@ useEffect(()=>{
         
         <DeleteConfirmation
           //@ts-ignore
-          text={`Do you want to delete ${passedData?.recipient_email} invitation`}
+          text={`Do you want to delete  ${passedData?.name} group ? `}
           noText="No"
           confirmText="Yes, Delete!"
           confirmFunc={() => deleteblink(passedData?.id)}

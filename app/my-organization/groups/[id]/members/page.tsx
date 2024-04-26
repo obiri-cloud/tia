@@ -172,11 +172,12 @@ useEffect(()=>{
     setPassedData(data)
     setIsOpenViewDialog(true)
   }
-
+  
+ //delete members in the group
   const deleteblink=async(data:any)=>{
     try {
         const response = await axios.delete(
-          `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/${data}/delete/`,
+          `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/member/${data}/delete/`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -187,13 +188,13 @@ useEffect(()=>{
           }
         );
          if(response.data.status===204){
+            setIsOpenViewDialog(false)
+            getGroupMembers()
             toast({
                 variant:  "success",
-                title: "Invitation Deleted Sucessfully",
+                title: "member Deleted Sucessfully",
                 description: response.data.data,
               });
-              setIsOpenViewDialog(false)
-              getGroupMembers()
          }
   
 
@@ -354,7 +355,7 @@ useEffect(()=>{
         
         <DeleteConfirmation
           //@ts-ignore
-          text={`Do you want to delete ${passedData?.recipient_email} invitation`}
+          text={`Do you want to delete ${passedData?.first_name} from ${group} group ?`}
           noText="No"
           confirmText="Yes, Delete!"
           confirmFunc={() => deleteblink(passedData?.id)}
