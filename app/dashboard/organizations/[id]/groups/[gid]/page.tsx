@@ -44,7 +44,7 @@ const OrganizationGroupImagePage = () => {
       );
       console.log("Response", response);
 
-      return response.data;
+      return response.data.data;
     } catch (error) {
       userCheck(error as AxiosError);
     }
@@ -54,6 +54,9 @@ const OrganizationGroupImagePage = () => {
     ["organization-group-images", id, gid],
     () => getOrgnaizationGroupImages()
   );
+
+  console.log("images", images);
+  
 
   const viewImage = (image: ILabImage) => {
     router.push(

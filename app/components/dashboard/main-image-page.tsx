@@ -24,11 +24,23 @@ import { userCheck } from "@/lib/utils";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { IActiveLab } from "@/app/types";
 
-const MainImagePage = ({ token }: { token: string }) => {
+const MainImagePage = ({
+  token,
+  labCreationUrl,
+  redirectUrl
+}: {
+  token: string;
+  labCreationUrl: string;
+  redirectUrl: string
+}) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get("image");
   const { data: session } = useSession();
+
+  console.log({labCreationUrl,
+    redirectUrl});
+  
 
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -116,7 +128,7 @@ const MainImagePage = ({ token }: { token: string }) => {
     });
   }
 
-  const checkTimeBeforeStart = async (id: string | undefined) => {
+  const checkTimeBeforeStart = async () => {
     setCreatingStarted(true);
     if (buttonRef.current) {
       buttonRef.current.disabled = true;
@@ -143,7 +155,7 @@ const MainImagePage = ({ token }: { token: string }) => {
     });
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/create/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}${labCreationUrl}`,
         formData,
         {
           headers: {
@@ -180,7 +192,7 @@ const MainImagePage = ({ token }: { token: string }) => {
             buttonRef.current.disabled = false;
           }
           router.push(
-            `/dashboard/labs?lab=${data.lab_id}&image=${data.image_id}`
+            `${redirectUrl}/labs?lab=${data.lab_id}&image=${data.image_id}`
           );
         } else {
           setCreatingStarted(false);
@@ -283,8 +295,9 @@ const MainImagePage = ({ token }: { token: string }) => {
           });
           setCreatingStarted(false);
           router.push(
-            `/dashboard/labs?lab=${data.data.lab_id}&image=${data.data.image_id}`
+            `${redirectUrl}/labs?lab=${data.data.lab_id}&image=${data.data.image_id}`
           );
+    
         }
         if (!resolved) {
           setJokes((prev) => [data.joke, ...prev]);
@@ -305,8 +318,6 @@ const MainImagePage = ({ token }: { token: string }) => {
       }
     }
   };
-console.log({isLoading});
-
 
   const getActiveLabs = async () => {
     if (!token && session?.expires) {
@@ -363,7 +374,6 @@ console.log({isLoading});
           ) : null
         }
       </div>
-     
       <div className="w-full py-12 lg:py-24 xl:py-16">
         <div className="container grid gap-6 px-4 md:px-6 lg:grid-cols-12 xl:gap-12">
           <div className="space-y-4 lg:col-span-8 xl:col-start-1 xl:space-y-8">
@@ -398,21 +408,11 @@ console.log({isLoading});
                 )}
               </p>
             </div>
-            {/* <div className="grid gap-1.5 sm:grid-cols-2">
-        <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-          <Clock className="w-4 h-4 flex-shrink-0" />
-          <span>1-2 weeks</span>
-        </div>
-        <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-          <UsersIcon className="w-4 h-4 flex-shrink-0" />
-          <span>10,000+ learners</span>
-        </div>
-      </div> */}
             <div className="flex gap-2">
               {isActive ? (
                 <Button
                   ref={buttonRef}
-                  onClick={() => checkTimeBeforeStart(currentImage?.id)}
+                  onClick={() => checkTimeBeforeStart()}
                   className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
                 >
                   {creatingStarted ? (
@@ -427,26 +427,26 @@ console.log({isLoading});
                 <div className="flex justify-center items-center gap-2">
                   {creatingStarted ? (
                     <Button
-                    ref={buttonRef}
-                    onClick={() => checkTimeBeforeStart(currentImage?.id)}
-                    className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                  >
-                    <div className="px-7 flex justify-center items-center gap-2">
-                    <span className="">
-                       <InfinityLoader />
-                    </span>
-                    </div>
+                      ref={buttonRef}
+                      onClick={() => checkTimeBeforeStart()}
+                      className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                    >
+                      <div className="px-7 flex justify-center items-center gap-2">
+                        <span className="">
+                          <InfinityLoader />
+                        </span>
+                      </div>
                     </Button>
                   ) : (
                     <Button
-                    ref={buttonRef}
-                    onClick={() => checkTimeBeforeStart(currentImage?.id)}
-                    className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                  >
-                    Start Learning
-                </Button>
+                      ref={buttonRef}
+                      onClick={() => checkTimeBeforeStart()}
+                      className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                    >
+                      Start Learning
+                    </Button>
                   )}
-                  {creatingStarted&&<p>Lab Loading In Progress</p>}
+                  {creatingStarted && <p>Lab Loading In Progress</p>}
                 </div>
               )}
 
