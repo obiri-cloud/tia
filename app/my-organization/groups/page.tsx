@@ -121,13 +121,13 @@ const Images = () => {
           },
         }
       );
-      //  if(response.status===200){
-      //     setstatus(true)
-      //     return
-      //  }
-
-       console.log({response});
       setallMembers(response.data.data)
+       if(response.status===200){
+          setstatus(true)
+          return
+       }
+       console.log({response});
+     
       return response;
     } catch (error) {
        console.log(error)
@@ -232,7 +232,7 @@ useEffect(()=>{
               </CardDescription>
             </div>
             <div>
-            {!status && (
+            {status && (
               <>
                 <Button className="m-4"  onClick={()=>{setIsOpenViewDialog2(true)}}>create group</Button>
               </>
@@ -255,7 +255,7 @@ useEffect(()=>{
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
-                {imageList?.length === 0 || status===true && (
+                {imageList?.length === 0 || !status&& (
                   <TableCaption>
                     No groups available
                     <br />
@@ -290,6 +290,12 @@ useEffect(()=>{
                                     onClick={()=> {router.push(`/my-organization/groups/${image.id}/members?name=group&group_name=${image.name}`)}}
                                   >
                                     View members
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="font-medium cursor-pointer hover:text-white-500 text-white-500 py-2"
+                                    onClick={()=> {router.push(`/my-organization/groups/${image.id}/images?name=Group&group_name=${image.name} Image`)}}
+                                  >
+                                    View Images
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={()=>deletebtn(image)}

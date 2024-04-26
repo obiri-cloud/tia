@@ -50,7 +50,7 @@ const NewImageForm = () => {
   const [isOpenViewDialogOpen1, setIsOpenViewDialog1] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
 
-  const emailRef = useRef<HTMLInputElement>(null);
+  const OrganizationName = useRef<HTMLInputElement>(null);
   const { data: session } = useSession();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -58,25 +58,24 @@ const NewImageForm = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    let email = emailRef.current?.value;
+    let name = OrganizationName.current?.value;
 
     const formSchema = z.object({
-      email: z.string().email(''),
+      name: z.string(),
     });
   
-    console.log({email});
     if (buttonRef.current) {
       buttonRef.current.disabled = true;
     }
 
     let parseFormData = {
-      email: emailRef.current?.value,
+      name: OrganizationName.current?.value,
     };
 
     const formData = new FormData();
 
     // Append fields to the FormData object
-    formData.append("name", emailRef.current?.value || "");
+    formData.append("name", OrganizationName.current?.value || "");
 
     // }
 
@@ -91,7 +90,6 @@ const NewImageForm = () => {
       }
     };
 
-    console.log({formData});
 
     try {
       formSchema.parse(parseFormData);
@@ -100,17 +98,17 @@ const NewImageForm = () => {
       
 
       if (response.status === 201 || response.status === 200) {
-
+        router.push(`/my-organization/organizationImages`);
         toast({
           variant: "success",
-          title: `Invitation Sent sucessfully`,
+          title: `Organization Created Sucessfully`,
           description: ``,
         });
-        router.push(`/my-organization/invitation`);
+
       } else {
         toast({
           variant: "destructive",
-          title: "Invitation  Creation  Error",
+          title: "Organization Creation  Error",
           description: response.data.data,
         });
       }
@@ -175,8 +173,8 @@ const NewImageForm = () => {
                     type="text"
                     {...field}
                     className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
-                    ref={emailRef}
-                    defaultValue='nameRef.current?.value'
+                    ref={OrganizationName}
+                    defaultValue='tiablabs'
                   />
                 </FormControl>
                 <FormMessage />
@@ -188,6 +186,7 @@ const NewImageForm = () => {
             ref={buttonRef}
             className="w-full disabled:bg-black-900/10 mt-6 dark:bg-white dark:text-black bg-black text-white "
             variant="black"
+            onClick={handleSubmit}
           >
             {"create organization"}
           </Button>

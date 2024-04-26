@@ -84,7 +84,7 @@ const [gid,setgid]=useState<number>()
   const getGroupMembers = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/member/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/image/list/?page=1`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -98,8 +98,8 @@ const [gid,setgid]=useState<number>()
       //     setstatus(true)
       //     return
       //  }
-
-      setImagelist(response.data.data[0].member)
+     console.log(response.data.data[0].lab_image)
+      setImagelist(response.data.data[0].lab_image)
       return response;
     } catch (error) {
        console.log(error)
@@ -177,7 +177,7 @@ useEffect(()=>{
   const deleteblink=async(data:any)=>{
     try {
         const response = await axios.delete(
-          `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/member/${data}/delete/`,
+          `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/image/${data}/delete/`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -192,7 +192,7 @@ useEffect(()=>{
             getGroupMembers()
             toast({
                 variant:  "success",
-                title: "member Deleted Sucessfully",
+                title: "Image Deleted Sucessfully",
                 description: response.data.data,
               });
          }
@@ -254,7 +254,7 @@ useEffect(()=>{
         <Card className="col-span-4">
           <CardHeader className="flex flex-row justify-between items-center w-full">
             <div>
-              <CardTitle>{group} Group List</CardTitle>
+              <CardTitle>{group} List</CardTitle>
               <CardDescription>
                 {/* You have {imageCount} image(s). */}
               </CardDescription>
@@ -277,7 +277,7 @@ useEffect(()=>{
                 <TableHeader>
                   <TableRow>
                     <TableHead className="">Email</TableHead>
-                    <TableHead>Name</TableHead>
+                    <TableHead>Image Name</TableHead>
                     {/* <TableHead>created_at</TableHead> */}
                     {/* <TableHead>expires</TableHead> */}
                     <TableHead className="text-right">Action</TableHead>
@@ -285,7 +285,7 @@ useEffect(()=>{
                 </TableHeader>
                 {imageList?.length === 0 || status && (
                   <TableCaption>
-                    No groups available
+                    No Images In This Group
                     <br />
                     <Button className="m-4" onClick={()=>setIsOpenViewDialog2(true)}>Create group</Button>
                   </TableCaption>
@@ -295,7 +295,7 @@ useEffect(()=>{
                     imageList.map((image:any, i:any) => (
                         <TableRow key={i}>
                         <TableCell className="font-medium">
-                            {image.email}
+                            {image.name}
                         </TableCell>
                         <TableCell>{image.first_name}</TableCell>
                         {/* <TableCell>{image.created_at}</TableCell>
@@ -355,7 +355,7 @@ useEffect(()=>{
         
         <DeleteConfirmation
           //@ts-ignore
-          text={`Do you want to delete ${passedData?.first_name} from ${group} group ?`}
+          text={`Do you want to delete ${passedData?.name} from ${group} group ?`}
           noText="No"
           confirmText="Yes, Delete!"
           confirmFunc={() => deleteblink(passedData?.id)}

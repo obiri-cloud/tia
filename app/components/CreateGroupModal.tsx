@@ -103,7 +103,7 @@ const NewImageForm = () => {
           title: `group created sucessfully`,
           description: ``,
         });
-        router.push(`/my-organization/group`);
+        router.push(`/my-organization/groups`);
       } else {
         toast({
           variant: "destructive",
