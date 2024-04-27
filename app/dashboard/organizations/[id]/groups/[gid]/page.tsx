@@ -147,7 +147,7 @@ const OrganizationGroupImagePage = () => {
 
 export default OrganizationGroupImagePage;
 
-export function isNoInvitationsResponse(
+function isNoInvitationsResponse(
   images: NoInvitationsResponse | ILabImage[]
 ): images is NoInvitationsResponse {
   return (
