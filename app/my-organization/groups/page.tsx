@@ -206,7 +206,7 @@ useEffect(()=>{
 
 
   return (
-    <div className="space-y-4 m-4">
+    <div className="">
               <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
           <span className="p-2 ">Organzation</span>
@@ -222,7 +222,7 @@ useEffect(()=>{
           ) : null
         }
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">
           <CardHeader className="flex flex-row justify-between items-center w-full">
             <div>
@@ -234,7 +234,7 @@ useEffect(()=>{
             <div>
             {status && (
               <>
-                <Button className="m-4"  onClick={()=>{setIsOpenViewDialog2(true)}}>create group</Button>
+                <Button  onClick={()=>{setIsOpenViewDialog2(true)}}>Create Group</Button>
               </>
             )
             }
@@ -249,9 +249,7 @@ useEffect(()=>{
                 <TableHeader>
                   <TableRow>
                     <TableHead className="">Group Name</TableHead>
-                    <TableHead>organization</TableHead>
-                    {/* <TableHead>created_at</TableHead> */}
-                    {/* <TableHead>expires</TableHead> */}
+                    <TableHead>Organization</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
