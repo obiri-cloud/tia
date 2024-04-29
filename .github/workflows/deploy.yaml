@@ -72,7 +72,7 @@ jobs:
           --build-arg NEXT_PUBLIC_BE_URL=${{ secrets.NEXT_PUBLIC_BE_URL_ASHESI }} \
           --build-arg NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
           --build-arg NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL_ASHESI }} \
-          --build-arg NEXT_PUBLIC_TINY_MCE_URL=${{ secrets.NEXT_PUBLIC_TINY_MCE_URL }} \
+          --build-arg NEXT_PUBLIC_TINY_MCE_URL=${{ secrets.NEXT_PUBLIC_TINY_MCE_URL_UAT }} \
           -t $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG .
           docker push $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG
           echo "::set-output name=image::$ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG"
