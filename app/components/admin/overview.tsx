@@ -47,7 +47,6 @@ const Overview = () => {
       //     return
       //  }
         console.log(response.data.data.name,{labCount})
-        dispatch(setOrgOwner(response.data.name));
       return response;
     } catch (error) {
        console.log(error)

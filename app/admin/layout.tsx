@@ -56,7 +56,6 @@ export default function DashboardPage({
       //     return
       //  }
   
-      //  dispatch(setOrgOwner(response.data));
 
        if(response.data.status==200){
          setOrgExist(true)
