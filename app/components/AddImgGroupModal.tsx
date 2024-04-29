@@ -22,32 +22,6 @@ import { useRef, useState } from "react";
 import { toast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"; 
 
-const items = [
-  {
-    id: "recents",
-    label: "Recents",
-  },
-  {
-    id: "home",
-    label: "Home",
-  },
-  {
-    id: "applications",
-    label: "Applications",
-  },
-  {
-    id: "desktop",
-    label: "Desktop",
-  },
-  {
-    id: "downloads",
-    label: "Downloads",
-  },
-  {
-    id: "documents",
-    label: "Documents",
-  },
-] 
 
 const FormSchema = z.object({
   image: z.array(z.number()).refine((value) => value.some((item) => item), {
@@ -57,10 +31,10 @@ const FormSchema = z.object({
 
 
  
- function CheckboxReactHookFormMultiple(image:any,gid:number) {
+ function CheckboxReactHookFormMultiple(image:any) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  console.log(image.gid);
+  console.log( typeof image);
 
   
 
@@ -88,7 +62,7 @@ const FormSchema = z.object({
       data:image_ids,
       headers: {
         "Content-Type": "application/json",
-        // "Content-Type": "multipart/form-data",
+        // "Content-Type": "multipart/form-data"
         Authorization: `Bearer ${token}`,
       }
     };
@@ -137,64 +111,52 @@ const FormSchema = z.object({
 
  
   return (
-    <DialogContent
-      className="flex justify-center items-center overflow-y-scroll h-[60vh] "
-    >
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="image"
-          render={() => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel className="text-base">Organization Images</FormLabel>
-                <FormDescription>
-                  Select the Images you want to add to the group
-                </FormDescription>
-              </div>
-              {image.image.map((item:any) => (
-                <FormField
-                  key={item.id}
-                  control={form.control}
-                  name="image"
-                  render={({ field }) => {
-                    return (
-                      <FormItem
-                        key={item.id}
-                        className="flex flex-row items-start space-x-3 space-y-0"
-                      >
-                        <FormControl>
-                          <Checkbox
-                        
-                            checked={field.value?.includes(item.id)}
-                            onCheckedChange={(checked:any) => {
-                              console.log(checked,field);
-                              return checked
-                                ? field.onChange([...field.value,item.id])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value) => value !== item.id
-                                    )
-                                  )
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="text-sm font-normal">
-                          {item.name}
-                        </FormLabel>
-                      </FormItem>
-                    )
-                  }}
-                />
-              ))}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+    <DialogContent className="flex justify-center items-center overflow-y-scroll h-[60vh] ">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="image"
+            render={() => (
+              <FormItem>
+                <div className="mb-4">
+                  <FormLabel className="text-base">Organization Members</FormLabel>
+                  <FormDescription>
+                    Select the members you want to add to the group
+                  </FormDescription>
+                </div>
+                {Array.isArray(image?.image) && image.image.length  > 0 ? (
+                  image.image.map((item: any) => (
+                    <FormItem
+                      key={item.id}
+                      className="flex flex-row items-start space-x-3 space-y-0"
+                    >
+                      <FormControl>
+                        <Checkbox
+                          checked={form.getValues("image")?.includes(item.member.id)}
+                          onCheckedChange={(checked: boolean) => {
+                            const newValue = checked
+                              ? [...form.getValues("image"), item.member.id]
+                              : form.getValues("image")?.filter((value: number) => value !== item.member.id);
+                            form.setValue("image", newValue);
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">
+                        {item.member.email}
+                      </FormLabel>
+                    </FormItem>
+                  ))
+                ) : (
+                  <div>No members available</div>
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
     </DialogContent>
   )
 }

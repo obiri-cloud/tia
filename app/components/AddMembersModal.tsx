@@ -141,57 +141,49 @@ const FormSchema = z.object({
     >
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="image"
-          render={() => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel className="text-base">Organization Members</FormLabel>
-                <FormDescription>
-                  Select the members you want to add to the group
-                </FormDescription>
-              </div>
-              {image.image.map((item:any) => (
-                <FormField
-                  key={item.id}
-                  control={form.control}
-                  name="image"
-                  render={({ field }) => {
-                    return (
-                      <FormItem
-                        key={item.id}
-                        className="flex flex-row items-start space-x-3 space-y-0"
-                      >
-                        <FormControl>
-                          <Checkbox
-                        
-                            checked={field.value?.includes(item.member.id)}
-                            onCheckedChange={(checked:any) => {
-                              console.log(checked,field);
-                              return checked
-                                ? field.onChange([...field.value,item.member.id])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value) => value !== item.member.id
-                                    )
-                                  )
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="text-sm font-normal">
-                          {item.member.email}
-                        </FormLabel>
-                      </FormItem>
-                    )
-                  }}
-                />
-              ))}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
+      <FormField
+  control={form.control}
+  name="image"
+  render={() => (
+    <FormItem>
+      <div className="mb-4">
+        <FormLabel className="text-base">Organization Members</FormLabel>
+        <FormDescription>
+          Select the members you want to add to the group
+        </FormDescription>
+      </div>
+      {Array.isArray(image?.image) && image.image.length > 0 ? (
+        image.image.map((item: any) => (
+          <FormItem
+            key={item.id}
+            className="flex flex-row items-start space-x-3 space-y-0"
+          >
+            <FormControl>
+              <Checkbox
+                checked={form.getValues("image")?.includes(item.member.id)}
+                onCheckedChange={(checked: any) => {
+                  const newValue = checked
+                    ? [...form.getValues("image"), item.member.id]
+                    //@ts-ignore
+                    : form.getValues("image")?.filter((value: number) => value !== item.member.id);
+                  form.setValue("image", newValue);
+                }}
+              />
+            </FormControl>
+            <FormLabel className="text-sm font-normal">
+              {item.member.email}
+            </FormLabel>
+          </FormItem>
+        ))
+      ) : (
+        <div>No members available</div>
+      )}
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+{Array.isArray(image?.image) && image.image.length > 0 ?<Button type="submit">Submit</Button>:null}
+        {/* <Button type="submit">Submit</Button> */}
       </form>
     </Form>
     </DialogContent>
