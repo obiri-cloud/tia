@@ -1,6 +1,6 @@
 "use client";
 import { userCheck } from "@/lib/utils";
-import { useParams} from "next/navigation";
+import { useParams } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -8,11 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
-import { useQuery } from "react-query"; 
-import AddImgGroupModal from '@/app/components/AddImgGroupModal'
+import { useQuery } from "react-query";
+import AddImgGroupModal from "@/app/components/AddImgGroupModal";
 import { useEffect } from "react";
 import {
   Table,
@@ -23,7 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import CreateGroupModal from "@/app/components/CreateGroupModal"
+import CreateGroupModal from "@/app/components/CreateGroupModal";
 // import NewImageForm from "./new-image-form";
 import NewImageForm from "@/app/components/admin/new-image-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -43,7 +48,7 @@ import {
 // import DeleteConfirmation from "../delete-confirmation";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ILabImage, IinviteData ,IOrgGroupData } from "@/app/types";
+import { ILabImage, IinviteData, IOrgGroupData } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import {
@@ -55,21 +60,24 @@ import {
 import { MoreVerticalIcon } from "lucide-react";
 import AddMembersModal from "@/app/components/AddMembersModal";
 import { Skeleton } from "@/components/ui/skeleton";
-
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 const OrganizationGroupImagePage = () => {
+  const [image, setImage] = useState<any>();
+  const [imageList, setImagelist] = useState<any>();
+  const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
+  const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
+    useState<boolean>(false);
+  const [isOpenViewDialogOpen1, setIsOpenViewDialog1] =
+    useState<boolean>(false);
+  const [isOpenViewDialogOpen3, setIsOpenViewDialog3] =
+    useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
+    useState<boolean>(false);
+  const [members, setallMembers] = useState<any>([]);
+  const [passedData, setPassedData] = useState<any>();
+  const [gid, setgid] = useState<number>();
 
-const [image, setImage] = useState<any>();
-const [imageList,setImagelist]=useState<any>()
-const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
-const [isOpenViewDialogOpen2, setIsOpenViewDialog2] = useState<boolean>(false);
-const [isOpenViewDialogOpen1, setIsOpenViewDialog1] = useState<boolean>(false);
-const [isOpenViewDialogOpen3, setIsOpenViewDialog3] = useState<boolean>(false);
-const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
-const [members,setallMembers]=useState<any>([])
-const [passedData,setPassedData]=useState<any>()
-const [gid,setgid]=useState<number>()
-    
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -78,7 +86,6 @@ const [gid,setgid]=useState<number>()
   const name = searchParams.get("name");
   const group = searchParams.get("group_name");
   const { data: session } = useSession();
-
 
   // get groups
   const getGroupMembers = async () => {
@@ -98,17 +105,17 @@ const [gid,setgid]=useState<number>()
       //     setstatus(true)
       //     return
       //  }
-     console.log(response.data.data[0].lab_image)
-      setImagelist(response.data.data[0].lab_image)
+      console.log(response.data.data[0].lab_image);
+      setImagelist(response.data.data[0].lab_image);
       return response;
     } catch (error) {
-       console.log(error)
+      console.log(error);
     }
   };
 
-  useEffect(()=>{
-    getGroupMembers()
-  },[])
+  useEffect(() => {
+    getGroupMembers();
+  }, []);
 
   //get members
   const getmembers = async () => {
@@ -129,11 +136,11 @@ const [gid,setgid]=useState<number>()
       //     return
       //  }
 
-       console.log({response});
-      setallMembers(response.data.data)
+      console.log({ response });
+      setallMembers(response.data.data);
       return response;
     } catch (error) {
-       console.log(error)
+      console.log(error);
     }
   };
 
@@ -154,62 +161,57 @@ const [gid,setgid]=useState<number>()
       //     setstatus(true)
       //     return
       //  }
-  
 
-       setImage(response.data.data)
+      setImage(response.data.data);
       return response;
     } catch (error) {
-       console.log(error)
+      console.log(error);
     }
   };
 
-useEffect(()=>{
-  getOrgImages()
-  getmembers()
- },[])
+  useEffect(() => {
+    getOrgImages();
+    getmembers();
+  }, []);
 
-  const deletebtn=(data:IOrgGroupData)=>{
-    setPassedData(data)
-    setIsOpenViewDialog(true)
-  }
+  const deletebtn = (data: IOrgGroupData) => {
+    setPassedData(data);
+    setIsOpenViewDialog(true);
+  };
 
- //delete members in the group
-  const deleteblink=async(data:any)=>{
+  //delete members in the group
+  const deleteblink = async (data: any) => {
     try {
-        const response = await axios.delete(
-          `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/image/${data}/delete/`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              // @ts-ignore
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-         if(response.data.status===204){
-            setIsOpenViewDialog(false)
-            getGroupMembers()
-            toast({
-                variant:  "success",
-                title: "Image Deleted Sucessfully",
-                description: response.data.data,
-              });
-         }
-  
-
-        setImagelist(response.data.data)
-        return response;
-      } catch (error) {
-         console.log(error)
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/image/${data}/delete/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.status === 204) {
+        setIsOpenViewDialog(false);
+        getGroupMembers();
+        toast({
+          variant: "success",
+          title: "Image Deleted Sucessfully",
+          description: response.data.data,
+        });
       }
-  }
 
-
+      setImagelist(response.data.data);
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-
 
   return (
     <div className="space-y-4 m-4">
@@ -240,14 +242,7 @@ useEffect(()=>{
             <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
           )}
         </div>
-        {
-          //@ts-ignore
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/admin" className="font-medium text-mint">
-              Go to admin
-            </Link>
-          ) : null
-        }
+        <AltRouteCheck />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -260,12 +255,18 @@ useEffect(()=>{
               </CardDescription>
             </div>
             <div>
-            {!status && (
-              <>
-                <Button className="m-4"  onClick={()=>{setIsOpenViewDialog2(true)}}>create group</Button>
-              </>
-            )
-            }
+              {!status && (
+                <>
+                  <Button
+                    className="m-4"
+                    onClick={() => {
+                      setIsOpenViewDialog2(true);
+                    }}
+                  >
+                    create group
+                  </Button>
+                </>
+              )}
             </div>
             <Dialog>
               <NewImageForm />
@@ -283,30 +284,36 @@ useEffect(()=>{
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
-                {imageList?.length === 0 || status && (
-                  <TableCaption>
-                    No Images In This Group
-                    <br />
-                    <Button className="m-4" onClick={()=>setIsOpenViewDialog2(true)}>Create group</Button>
-                  </TableCaption>
-                )}
-                    <TableBody>
-                    {imageList && imageList.length > 0 ? (
-                    imageList.map((image:any, i:any) => (
-                        <TableRow key={i}>
+                {imageList?.length === 0 ||
+                  (status && (
+                    <TableCaption>
+                      No Images In This Group
+                      <br />
+                      <Button
+                        className="m-4"
+                        onClick={() => setIsOpenViewDialog2(true)}
+                      >
+                        Create group
+                      </Button>
+                    </TableCaption>
+                  ))}
+                <TableBody>
+                  {imageList && imageList.length > 0 ? (
+                    imageList.map((image: any, i: any) => (
+                      <TableRow key={i}>
                         <TableCell className="font-medium">
-                            {image.name}
+                          {image.name}
                         </TableCell>
                         <TableCell>{image.first_name}</TableCell>
                         {/* <TableCell>{image.created_at}</TableCell>
                         <TableCell>{image.expires}</TableCell> */}
                         <TableCell className="underline font-medium text-right">
-                            <DropdownMenu>
+                          <DropdownMenu>
                             <DropdownMenuTrigger>
-                                <MoreVerticalIcon className="w-4 h-4" />
+                              <MoreVerticalIcon className="w-4 h-4" />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="left-[-20px_!important]">
-                                {/* <DropdownMenuItem
+                              {/* <DropdownMenuItem
                                 onClick={()=>{setgid(image.id),setIsOpenViewDialog3(true)}}
                                 className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
                                 >
@@ -317,29 +324,31 @@ useEffect(()=>{
                                 >
                                 View
                                 </DropdownMenuItem> */}
-                                <DropdownMenuItem
-                                onClick={()=>deletebtn(image)}
+                              <DropdownMenuItem
+                                onClick={() => deletebtn(image)}
                                 className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
-                                >
+                              >
                                 Delete
-                                </DropdownMenuItem>
-                                {/* <DropdownMenuItem
+                              </DropdownMenuItem>
+                              {/* <DropdownMenuItem
                                 onClick={()=>{setgid(image.id),setIsOpenViewDialog1(true)}}
                                 className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
                                 >
                                 add image
                                 </DropdownMenuItem> */}
                             </DropdownMenuContent>
-                            </DropdownMenu>
+                          </DropdownMenu>
                         </TableCell>
-                        </TableRow>
+                      </TableRow>
                     ))
-                    ) : (
+                  ) : (
                     <TableRow>
-                        <TableCell colSpan={3} className="text-center">No members in this group</TableCell>
+                      <TableCell colSpan={3} className="text-center">
+                        No members in this group
+                      </TableCell>
                     </TableRow>
-                    )}
-                    </TableBody>
+                  )}
+                </TableBody>
               </Table>
             </CardContent>
           </Dialog>
@@ -352,7 +361,6 @@ useEffect(()=>{
           isOpenViewDialogOpen ? setIsOpenViewDialog : setIsOpenDeleteDialog
         }
       >
-        
         <DeleteConfirmation
           //@ts-ignore
           text={`Do you want to delete ${passedData?.name} from ${group} group ?`}
@@ -360,7 +368,6 @@ useEffect(()=>{
           confirmText="Yes, Delete!"
           confirmFunc={() => deleteblink(passedData?.id)}
         />
-
       </Dialog>
 
       <Dialog
@@ -369,9 +376,8 @@ useEffect(()=>{
           isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
         }
       >
-         <CreateGroupModal/> 
+        <CreateGroupModal />
       </Dialog>
-
 
       <Dialog
         open={isOpenViewDialogOpen1}
@@ -379,7 +385,7 @@ useEffect(()=>{
           isOpenViewDialogOpen1 ? setIsOpenViewDialog1 : setIsOpenDeleteDialog
         }
       >
-         <AddImgGroupModal image={image} gid={gid}/>
+        <AddImgGroupModal image={image} gid={gid} />
       </Dialog>
 
       <Dialog
@@ -388,19 +394,10 @@ useEffect(()=>{
           isOpenViewDialogOpen3 ? setIsOpenViewDialog3 : setIsOpenDeleteDialog
         }
       >
-         <AddMembersModal image={members} gid={gid}/>
+        <AddMembersModal image={members} gid={gid} />
       </Dialog>
-
     </div>
   );
 };
 
 export default OrganizationGroupImagePage;
-
-
-
-
-
-
-
-

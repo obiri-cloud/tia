@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import secureLocalStorage from "react-secure-storage";
 import { IActiveLab } from "@/app/types";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 const ActiveLabsPage = () => {
   const [labs, setLabs] = useState([]);
@@ -71,14 +72,7 @@ const ActiveLabsPage = () => {
           <span className="p-2 ">Active Labs</span>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {
-          //@ts-ignore
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/admin" className="font-medium text-mint">
-              Go to admin
-            </Link>
-          ) : null
-        }
+        <AltRouteCheck />
       </div>
 
       <div className="p-4">

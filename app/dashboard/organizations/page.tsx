@@ -15,13 +15,11 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import { InvitationsResponse, NoInvitationsResponse } from "@/app/types";
-
-
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 const OrganizationsPage = () => {
   const { data: session } = useSession();
 
-  
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
@@ -57,14 +55,7 @@ const OrganizationsPage = () => {
           <span className="p-2 ">Organizations</span>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {
-          //@ts-ignore
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/admin" className="font-medium text-mint">
-              Go to admin
-            </Link>
-          ) : null
-        }
+        <AltRouteCheck />
       </div>
 
       <div className="p-4 ">

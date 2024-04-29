@@ -28,6 +28,7 @@ import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { IActiveLab } from "@/app/types";
+import AltRouteCheck from "../alt-route-check";
 
 const MainImagePage = ({
   token,
@@ -416,14 +417,7 @@ const MainImagePage = ({
           </div>
         )}
 
-        {
-          //@ts-ignore
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/admin" className="font-medium text-mint">
-              Go to admin
-            </Link>
-          ) : null
-        }
+        <AltRouteCheck />
       </div>
       <div className="w-full py-12 lg:py-24 xl:py-16">
         <div className="container grid gap-6 px-4 md:px-6 lg:grid-cols-12 xl:gap-12">

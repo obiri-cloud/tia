@@ -12,7 +12,7 @@ import { ILabImage } from "../types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { useQuery } from "react-query";
-
+import AltRouteCheck from "../components/alt-route-check";
 
 const UserPage = () => {
   const { data: session } = useSession();
@@ -22,11 +22,7 @@ const UserPage = () => {
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
-  const {
-    data: images,
-  } = useQuery(["Homeimage"], () => getImages());
-
-  
+  const { data: images } = useQuery(["Homeimage"], () => getImages());
 
   const getImages = async () => {
     try {
@@ -48,7 +44,6 @@ const UserPage = () => {
     }
   };
 
-
   const viewImage = (image: ILabImage) => {
     dispatch(setCurrentImage(image));
     router.push(`/dashboard/images?image=${image.id}`);
@@ -61,20 +56,13 @@ const UserPage = () => {
           <span className="p-2 ">All Images</span>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {
-          //@ts-ignore
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/admin" className="font-medium text-mint">
-              Go to admin
-            </Link>
-          ) : null
-        }
+        <AltRouteCheck />
       </div>
 
       <div className="p-4 ">
         <div className="all-images-list xl:flex grid lg:grid-cols-3  flex-wrap w-full  gap-3">
           {images && images.length >= -1 ? (
-            images.map((image:ILabImage, i:number) => (
+            images.map((image: ILabImage, i: number) => (
               <div
                 onClick={() => viewImage(image)}
                 key={i}
@@ -90,9 +78,7 @@ const UserPage = () => {
                     {image.name}
                   </h6>
                 </div>
-                <span
-                  className="flex gap-[10px] items-center h-fit lg:mt-[36px] mt-[28px] font-medium "
-                >
+                <span className="flex gap-[10px] items-center h-fit lg:mt-[36px] mt-[28px] font-medium ">
                   <h5 className="leading-[150%] font-medium">Go to lab</h5>
                   <Arrow className="pointer  -rotate-45 transition-all delay-150 dark:fill-white fill-black" />
                 </span>

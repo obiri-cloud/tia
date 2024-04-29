@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 const OrganizationPage = () => {
   const params = useParams();
@@ -78,14 +79,8 @@ const OrganizationPage = () => {
             <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
           )}
         </div>
-        {
-          //@ts-ignore
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/admin" className="font-medium text-mint">
-              Go to admin
-            </Link>
-          ) : null
-        }
+        <AltRouteCheck />
+       
       </div>
 
       <div className="p-4 ">

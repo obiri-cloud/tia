@@ -55,6 +55,7 @@ import {
 import { MoreVerticalIcon } from "lucide-react";
 import AddMembersModal from "@/app/components/AddMembersModal";
 import { Skeleton } from "@/components/ui/skeleton";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 
 const OrganizationGroupImagePage = () => {
@@ -240,14 +241,8 @@ useEffect(()=>{
             <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
           )}
         </div>
-        {
-          //@ts-ignore
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/admin" className="font-medium text-mint">
-              Go to admin
-            </Link>
-          ) : null
-        }
+        <AltRouteCheck />
+       
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">

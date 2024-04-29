@@ -10,6 +10,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { useQuery } from "react-query";
 import { Arrow } from "@/public/svgs/Arrow";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 const OrganizationGroupImagePage = () => {
   console.log("OrganizationGroupImagePage");
@@ -92,14 +93,8 @@ const OrganizationGroupImagePage = () => {
             <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
           )}
         </div>
-        {
-          //@ts-ignore
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/admin" className="font-medium text-mint">
-              Go to admin
-            </Link>
-          ) : null
-        }
+        <AltRouteCheck />
+       
       </div>
 
       <div className="p-4 ">
