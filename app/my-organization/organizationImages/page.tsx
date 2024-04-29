@@ -52,9 +52,12 @@ import {
 import { MoreVerticalIcon } from "lucide-react";
 
 const Images = () => {
-  const { imageCount} = useSelector(
-    (state: RootState) => state.admin
+  const name = useSelector(
+    (state: RootState) => state
   );
+
+  console.log({name});
+  
 
   const [imageList,setimagelist]=useState<ILabImage[]>();
 
@@ -95,6 +98,9 @@ const Images = () => {
     getImages()
   },[])
 
+  console.log({name});
+  
+
   return (
     <div className="space-y-4 m-4">
               <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
@@ -133,7 +139,6 @@ const Images = () => {
                     <TableHead>Difficulty Level</TableHead>
                     <TableHead>Duration</TableHead>
                     <TableHead className="text-right">Port Number</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 {imageList?.length === 0 && (
@@ -151,44 +156,6 @@ const Images = () => {
                             <TableCell>{image.duration}</TableCell>
                             <TableCell className="text-right">
                               {image.port_number}
-                            </TableCell>
-                            <TableCell className="underline font-medium text-right">
-                              <DropdownMenu>
-                                <DropdownMenuTrigger>
-                                  <MoreVerticalIcon className="w-4 h-4" />
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="left-[-20px_!important]">
-                                  <DropdownMenuItem
-                                    onClick={() => {
-                                      setIsOpenViewDialog(true);
-                                      dispatch(setCurrentImage(image));
-                                    }}
-                                    className="cursor-pointer py-2"
-                                  >
-                                    View
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="cursor-pointer py-2"
-                                    onClick={() =>
-                                      router.push(
-                                        `/admin/images/${image.id}/instructions`
-                                      )
-                                    }
-                                  >
-                                    Attach Instruction
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => {
-                                      setIsOpenDeleteDialog(true);
-                                      setImage(image);
-                                    }}
-                                    className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
-                                  >
-                                    Delete
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                             
                             </TableCell>
                           </TableRow>
                         ))

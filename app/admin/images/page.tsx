@@ -7,10 +7,18 @@ import useAdminCheck from "@/hooks/admin-check";
 import { ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const AdminImages = () => {
   const isAdmin = useAdminCheck();
   const { data: session } = useSession();
+  const { name} = useSelector(
+    (state: RootState) => state.orgOwner
+  );
+
+  console.log({name});
+  
 
 
   if (!isAdmin) {

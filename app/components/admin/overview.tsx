@@ -17,11 +17,50 @@ import NewImageForm from "./new-image-form";
 import ImageTable from "./image-table";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const Overview = () => {
+  const { data: session } = useSession();
   const { labCount, imageCount, labList, imageList } = useSelector(
     (state: RootState) => state.admin
   );
+  // @ts-ignore
+  const token = session?.user!.tokens?.access_token;
+  const dispatch = useDispatch()
+
+
+  const getOrgOwner = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      //  if(response.status===200){
+      //     setstatus(true)
+      //     return
+      //  }
+        console.log(response.data.data.name,{labCount})
+        dispatch(setOrgOwner(response.data.name));
+      return response;
+    } catch (error) {
+       console.log(error)
+    }
+  };
+
+useEffect(()=>{
+  getOrgOwner()
+ },[])
+
+
+
+
   return (
     <div className="space-y-4">
       <Dialog>
@@ -68,6 +107,22 @@ export async function getLabListX(token: string | undefined) {
     }
   );
 }
+
+export async function getOrgList(token: string | undefined) {
+  return await axios.get(
+    `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        // @ts-ignore
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
+
+
 
 export async function getImageListX(token: string | undefined) {
   return await axios.get(
