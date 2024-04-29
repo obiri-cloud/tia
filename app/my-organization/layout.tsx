@@ -3,11 +3,13 @@ import ReduxProvider from "@/redux/ReduxProvider";
 import { SVGProps } from "react";
 import { Inter } from "next/font/google";
 import { signOut } from "next-auth/react";
+import { useEffect,useState } from "react";
 import secureLocalStorage from "react-secure-storage";
 import ProfileHeader from "../components/admin/profile-header";
 import { usePathname } from "next/navigation";
 import { DropToggle } from "../components/DropToggle";
 import { LogOut, Play, ShapesIcon, User } from "lucide-react";
+import OrganizationHeader from "../components/admin/OrganizationHeader";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +22,10 @@ export default function UserDashboardLayout({
     signOut({ callbackUrl: "/login" });
     secureLocalStorage.removeItem("tialabs_info");
   };
+  const [organizationName,setOrganizationName]=useState()
   const pathname = usePathname();
+
+
 
   return (
     <ReduxProvider>
@@ -55,7 +60,7 @@ export default function UserDashboardLayout({
             className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark"
           >
             <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
-              <ProfileHeader />
+              <OrganizationHeader />
               <div className="flex flex-1 flex-col">
                 <ul className="space-y-2 font-medium mt-[50px] flex-1">
                   <li className="all-images-button">
@@ -207,9 +212,9 @@ ${
                   <ul className="space-y-2 font-medium">
                     <li className="account-button">
                       <a
-                        href="/dashboard/account"
+                        href="/my-organization/account"
                         className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                          pathname === "/dashboard/account"
+                          pathname === "/my-organization/account"
                             ? "bg-menuHovWhite dark:bg-menuHov"
                             : ""
                         }`}
@@ -217,7 +222,7 @@ ${
                         <User
                           className={`
                           ${
-                            pathname === "/dashboard/account"
+                            pathname === "/my-organization/account"
                               ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
                               : " "
                           }
@@ -227,13 +232,13 @@ ${
                           className={`
                         ms-3 
                         ${
-                          pathname === "/dashboard/account"
+                          pathname === "/my-organization/account"
                             ? "font-semibold"
                             : "font-light "
                         }
                         `}
                         >
-                          Account
+                         organization Account
                         </span>
                       </a>
                     </li>
