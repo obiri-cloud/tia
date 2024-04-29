@@ -17,7 +17,6 @@ export default function DashboardPage() {
     return null;
   }
   return (
-    <ReduxProvider>
       <div className="">
         <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
           <div className="flex items-center">
@@ -40,6 +39,6 @@ export default function DashboardPage() {
         {/* <Images />
         <Labs /> */}
       </div>
-    </ReduxProvider>
+
   );
 }

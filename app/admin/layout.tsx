@@ -1,5 +1,4 @@
 "use client";
-
 import AdminCheck from "../../hooks/admin-check";
 import { Inter } from "next/font/google";
 import { useState,useEffect } from "react";
@@ -7,6 +6,8 @@ import { signOut } from "next-auth/react";
 import secureLocalStorage from "react-secure-storage";
 import { SVGProps } from "react";
 import ProfileHeader from "../components/admin/profile-header";
+import { useDispatch } from "react-redux";
+import ReduxProvider from "@/redux/ReduxProvider";
 import {
   GalleryHorizontal,
   LogOut,
@@ -30,6 +31,7 @@ export default function DashboardPage({
     secureLocalStorage.removeItem("tialabs_info");
   };
   const { data: session } = useSession();
+  // const dispatch = useDispatch();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
   const pathname = usePathname();
@@ -54,7 +56,8 @@ export default function DashboardPage({
       //     return
       //  }
   
-       console.log(response.data.status);
+      //  dispatch(setOrgOwner(response.data));
+
        if(response.data.status==200){
          setOrgExist(true)
          return
@@ -71,6 +74,8 @@ useEffect(()=>{
  },[])
 
   return (
+    <ReduxProvider>
+  
     <div
       className={`text-sm font-light dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark  h-screen ${inter.className}`}
     >
@@ -191,7 +196,7 @@ useEffect(()=>{
               <ul className="space-y-2 font-medium">
               <li className="account-button">
                       <a
-                        href={OrgExist?"/my-organization/organizationImages":"/admin/create-organization"}
+                        href={OrgExist?"/my-organization/organizationImages?":"/admin/create-organization"}
                         className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
                           pathname === "/admin/create-organization"
                             ? "bg-menuHovWhite dark:bg-menuHov"
@@ -240,5 +245,7 @@ useEffect(()=>{
 
       <div className="sm:ml-[220px] overflow-y-auto h-screen">{children}</div>
     </div>
+
+    </ReduxProvider>
   );
 }
