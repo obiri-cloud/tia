@@ -12,9 +12,8 @@ import { useQuery } from "react-query";
 import { Arrow } from "@/public/svgs/Arrow";
 
 const OrganizationGroupImagePage = () => {
+  console.log("OrganizationGroupImagePage");
 
-    console.log("OrganizationGroupImagePage");
-    
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -55,14 +54,13 @@ const OrganizationGroupImagePage = () => {
     () => getOrgnaizationGroupImages()
   );
 
-  
-
   const viewImage = (image: ILabImage) => {
     router.push(
       `/dashboard/organizations/${id}/groups/${gid}/images?image=${image.id}&name=${name}&group_name=${group}`
     );
   };
-  
+
+  console.log("images", images);
 
   return (
     <div className="">
@@ -75,7 +73,7 @@ const OrganizationGroupImagePage = () => {
             Organizations
           </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
-          
+
           {name ? (
             <Link
               className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
@@ -137,6 +135,10 @@ const OrganizationGroupImagePage = () => {
                 ))}
               </div>
             )
+          ) : !isLoading && images === undefined ? (
+            <p className="dark:text-white text-black w-full text-center">
+              Organization have not assigned Labs to this group yet
+            </p>
           ) : (
             <></>
           )}
