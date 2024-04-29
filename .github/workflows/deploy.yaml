@@ -59,7 +59,7 @@ jobs:
 
       - name: Build and push Docker Ashesi image
         id: build-ashesi-image
-        if: ${{ github.ref == 'refs/heads/feat/ashesi' }}
+        if: ${{ github.ref == 'refs/heads/ashesi' }}
         env:
           IMAGE_NAME: ${{ env.IMAGE_NAME_ASHESI }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
@@ -89,7 +89,7 @@ jobs:
       - name: Set Ashesi kubeconfig context
         uses: azure/k8s-set-context@v1
         id: setup-ashesi-kubeconfig
-        if: ${{ github.ref == 'refs/heads/feat/ashesi' }}
+        if: ${{ github.ref == 'refs/heads/ashesi' }}
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.K8S_CLUSTER_KUBECONFIG_PROD }}
@@ -122,7 +122,7 @@ jobs:
 
       - name: Deploy Ashesi Frontend
         id: deploy-ashesi-k8s-yaml
-        if: ${{ github.ref == 'refs/heads/feat/ashesi' }}
+        if: ${{ github.ref == 'refs/heads/ashesi' }}
         env:
           IMAGE_NAME: ${{ steps.build-ashesi-image.outputs.image }}
           NAMESPACE: tiacourses
