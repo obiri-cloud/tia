@@ -55,14 +55,14 @@ const OrganizationGroupImagePage = () => {
     () => getOrgnaizationGroupImages()
   );
 
-  console.log("images", images);
   
 
   const viewImage = (image: ILabImage) => {
     router.push(
-      `/dashboard/organizations/${id}/groups/${gid}/images?image=${image.id}`
+      `/dashboard/organizations/${id}/groups/${gid}/images?image=${image.id}&name=${name}&group_name=${group}`
     );
   };
+  
 
   return (
     <div className="">
@@ -75,6 +75,7 @@ const OrganizationGroupImagePage = () => {
             Organizations
           </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+          
           {name ? (
             <Link
               className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"

@@ -21,6 +21,7 @@ import { InvitationsResponse, NoInvitationsResponse } from "@/app/types";
 const OrganizationsPage = () => {
   const { data: session } = useSession();
 
+  
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 

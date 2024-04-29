@@ -7,7 +7,12 @@ import axios, { AxiosError } from "axios";
 import { ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "@/components/ui/use-toast";
@@ -27,20 +32,27 @@ import { IActiveLab } from "@/app/types";
 const MainImagePage = ({
   token,
   labCreationUrl,
-  redirectUrl
+  redirectUrl,
 }: {
   token: string;
   labCreationUrl: string;
-  redirectUrl: string
+  redirectUrl: string;
 }) => {
   const searchParams = useSearchParams();
+  const params = useParams();
   const router = useRouter();
   const id = searchParams.get("image");
+
+  const paramId = params.id;
+  const gid = params.gid;
+  const name = searchParams.get("name") ?? "";
+  const group = searchParams.get("group_name");
+
+  const pathname = usePathname();
+
   const { data: session } = useSession();
 
-  console.log({labCreationUrl,
-    redirectUrl});
-  
+  console.log({ labCreationUrl, redirectUrl });
 
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -297,7 +309,6 @@ const MainImagePage = ({
           router.push(
             `${redirectUrl}/labs?lab=${data.data.lab_id}&image=${data.data.image_id}`
           );
-    
         }
         if (!resolved) {
           setJokes((prev) => [data.joke, ...prev]);
@@ -351,20 +362,60 @@ const MainImagePage = ({
     <div className="">
       {" "}
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
-        <div className="flex items-center">
-          <Link
-            href="/dashboard"
-            className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
-          >
-            All Images
-          </Link>
-          <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
-          {currentImage?.name ? (
-            <span className="p-2 rounded-md">{currentImage?.name}</span>
-          ) : (
-            <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
-          )}
-        </div>
+        {pathname.includes("organizations") ? (
+          <div className="flex items-center">
+            <Link
+              href={`/dashboard/organizations`}
+              className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+            >
+              Organizations
+            </Link>
+            <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+            {name ? (
+              <Link
+                className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+                href={`/dashboard/organizations/${paramId}/groups?name=${name}`}
+              >
+                {name}
+              </Link>
+            ) : (
+              <Skeleton className="w-[200px] h-[16.5px] rounded-md" />
+            )}
+            <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+            {group ? (
+              <Link
+                className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+                href={`/dashboard/organizations/${paramId}/groups/${gid}?name=${name}&group_name=${group}`}
+              >
+                {group}
+              </Link>
+            ) : (
+              <Skeleton className="w-[200px] h-[16.5px] rounded-md" />
+            )}
+            <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+            {currentImage?.name ? (
+              <span className="p-2 rounded-md">{currentImage?.name}</span>
+            ) : (
+              <Skeleton className="w-[200px] h-[16.5px] rounded-md" />
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center">
+            <Link
+              href="/dashboard"
+              className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+            >
+              All Images
+            </Link>
+            <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+            {currentImage?.name ? (
+              <span className="p-2 rounded-md">{currentImage?.name}</span>
+            ) : (
+              <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
+            )}
+          </div>
+        )}
+
         {
           //@ts-ignore
           session?.user && session?.user.data.is_admin ? (
