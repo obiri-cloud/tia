@@ -53,6 +53,7 @@ import {
 import { MoreVerticalIcon } from "lucide-react";
 import AddMembersModal from "@/app/components/AddMembersModal";
 import { log } from "console";
+import useOrgCheck from "@/hooks/orgnization-check";
 
 const Images = () => {
 
@@ -72,6 +73,11 @@ const Images = () => {
   const [members,setallMembers]=useState<any>([])
   const [passedData,setPassedData]=useState<IOrgGroupData>()
   const [gid,setgid]=useState<number>()
+
+  const isOrg = useOrgCheck();
+  if (isOrg) {
+    return null;
+  }
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;

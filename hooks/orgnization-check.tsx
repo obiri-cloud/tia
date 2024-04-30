@@ -3,14 +3,14 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-const useAdminCheck = () => {
+const useOrgCheck = () => {
   const { data: session } = useSession();
   const router = useRouter();
   //@ts-ignore
-  let status = session?.user.data.is_admin as boolean;
+  let status = session?.user.data.subscription_plan === "basic";
 
   useEffect(() => {
-    if (!status) {
+    if (status) {
       router.push("/dashboard");
       toast({
         variant: "destructive",
@@ -24,4 +24,4 @@ const useAdminCheck = () => {
   return status;
 };
 
-export default useAdminCheck;
+export default useOrgCheck;

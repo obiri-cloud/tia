@@ -56,6 +56,7 @@ import { MoreVerticalIcon } from "lucide-react";
 import AddMembersModal from "@/app/components/AddMembersModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import AltRouteCheck from "@/app/components/alt-route-check";
+import useOrgCheck from "@/hooks/orgnization-check";
 
 
 const OrganizationGroupImagePage = () => {
@@ -80,7 +81,10 @@ const [gid,setgid]=useState<number>()
   const group = searchParams.get("group_name");
   const { data: session } = useSession();
 
-
+  const isOrg = useOrgCheck();
+  if (isOrg) {
+    return null;
+  }
   // get groups
   const getGroupMembers = async () => {
     try {

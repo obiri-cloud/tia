@@ -30,17 +30,6 @@ const AltRouteCheck = () => {
         </div>
       );
     }
-    // else if (
-    //   OrgExist
-    // ) {
-    //   return (
-    //     <div className="flex gap-4">
-    //       <Link href="/my-organization" className="font-medium text-mint">
-    //         create organization
-    //       </Link>
-    //     </div>
-    //   );
-    // } 
      else if (
       subscription_plan === "premium" ||  subscription_plan === "standard"
     ) {

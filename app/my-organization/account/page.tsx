@@ -23,6 +23,7 @@ import DeactivateConfirmation from "@/app/components/deactivate-confirmation";
 import { IUserProfile } from "@/app/types";
 import { DropToggle } from "@/app/components/DropToggle";
 import { useRouter } from "next/navigation";
+import useOrgCheck from "@/hooks/orgnization-check";
 
 
 const AccountPage = () => {
@@ -40,6 +41,11 @@ const AccountPage = () => {
       message: "Name has to be 3 characters or more",
     })
   });
+
+  const isOrg = useOrgCheck();
+  if (isOrg) {
+    return null;
+  }
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;

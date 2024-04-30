@@ -55,6 +55,7 @@ import { Form, useForm } from "react-hook-form";
 import * as z from "zod";
 import { Input } from "@/components/ui/input";
 import CreateOrgModal from "@/app/components/CreateOrgModal"
+import useOrgCheck from "@/hooks/orgnization-check";
 
 const Images = () => {
   const name = useSelector((state: RootState) => state);
@@ -73,6 +74,11 @@ const Images = () => {
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
+
+  const isOrg = useOrgCheck();
+  if (isOrg) {
+    return null;
+  }
 
   const getImages = async () => {
     try {
