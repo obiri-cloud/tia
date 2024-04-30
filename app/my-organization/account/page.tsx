@@ -291,9 +291,9 @@ const AccountPage = () => {
         </div>
         <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
       <DeactivateConfirmation
-        text="Do you want to deactivate your account?"
+        text="Do you want to delete your account?"
         noText="No, cancel"
-        confirmText="Yes, deactivate"
+        confirmText="Yes, delete"
         confirmFunc={() => deleteAccount()}
       />
       </div>

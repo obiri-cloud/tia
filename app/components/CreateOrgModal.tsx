@@ -40,8 +40,14 @@ import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Dialog } from "@radix-ui/react-dialog";
 import { useSession } from "next-auth/react";
+import { setOrgData } from "@/redux/reducers/OrganzationSlice";
 
-const NewImageForm = () => {
+interface NewImageFormProps {
+    OrgExist: boolean;
+    setOrgExist: (value: boolean) => void;
+  }
+
+const CreateOrgModal:FC<NewImageFormProps> = ({ OrgExist,setOrgExist }) => {
   const form = useForm();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
@@ -56,7 +62,7 @@ const NewImageForm = () => {
   const token = session?.user!.tokens?.access_token;
 
   const OrganizationName = useRef<HTMLInputElement>(null);
-  
+  console.log(OrgExist)
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     let name = OrganizationName.current?.value;
@@ -96,23 +102,22 @@ const NewImageForm = () => {
       formSchema.parse(parseFormData);
       const response = await axios(axiosConfig);
       console.log({response});
-      
-
       if (response.status === 201 || response.status === 200) {
-        router.push(`/my-organization/`);
         toast({
           variant: "success",
           title: `Organization Created Sucessfully`,
           description: ``,
         });
-
+        router.push(`/my-organization`);
+        setOrgExist(false)
       } else {
         toast({
           variant: "destructive",
           title: "Organization Creation  Error",
-          description: response.data.data,
+          description: response.data.message,
         });
       }
+      
     } catch (error:any) {
       console.error("error", error);
       const responseData = error.response.data;
@@ -147,10 +152,7 @@ const NewImageForm = () => {
 
   return (
     <Dialog
-     open={isOpenViewDialogOpen2}
-     onOpenChange={
-        isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
-      }
+    open={OrgExist} onOpenChange={setIsOpenViewDialog2}
     >
   <DialogContent
       className="flex justify-center items-center overflow-y-scroll h-[60vh] "
@@ -175,7 +177,7 @@ const NewImageForm = () => {
                     {...field}
                     className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
                     ref={OrganizationName}
-                    defaultValue='tiablabs'
+                    defaultValue='tiab-labs'
                   />
                 </FormControl>
                 <FormMessage />
@@ -198,4 +200,4 @@ const NewImageForm = () => {
   );
 };
 
-export default NewImageForm;
+export default CreateOrgModal ;

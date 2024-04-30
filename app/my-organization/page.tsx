@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, FormEvent, useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 import { useQuery } from "react-query";
@@ -50,6 +50,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, useForm } from "react-hook-form";
+import * as z from "zod";
+import { Input } from "@/components/ui/input";
+import CreateOrgModal from "@/app/components/CreateOrgModal"
 
 const Images = () => {
   const name = useSelector((state: RootState) => state);
@@ -64,8 +69,7 @@ const Images = () => {
 
   const [image, setImage] = useState<ILabImage>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
-  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
-    useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] = useState<boolean>(false);
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -90,9 +94,47 @@ const Images = () => {
     }
   };
 
+
+  const [OrgExist, setOrgExist] = useState<boolean>(false);
+
+  const getOrgOwner = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+       if(response.data.status===404){
+           setOrgExist(true)
+          return
+       }
+  
+
+       if(response.data.status==200){
+         setOrgExist(false)
+         return
+       }
+
+      return response;
+    } catch (error) {
+       console.log(error)
+    }
+  };
+
   useEffect(() => {
+    getOrgOwner()
     getImages();
   }, []);
+
+
+
 
   return (
     <div className="">
@@ -171,11 +213,14 @@ const Images = () => {
       </Dialog>
 
       <Dialog
-        open={isOpenDeleteDialogOpen}
+        open={OrgExist}
         onOpenChange={
           isOpenDeleteDialogOpen ? setIsOpenDeleteDialog : setIsOpenViewDialog
         }
-      ></Dialog>
+      >
+
+      <CreateOrgModal OrgExist={OrgExist} setOrgExist={setOrgExist}/>
+      </Dialog>
     </div>
   );
 };

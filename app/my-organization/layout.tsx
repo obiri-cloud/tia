@@ -99,9 +99,6 @@ ${
                           ? "bg-menuHovWhite dark:bg-menuHov font-semibold"
                           : "font-light"
                       }
-
-
-                      
                       `}
                       >
                         Labs

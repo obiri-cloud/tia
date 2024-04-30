@@ -16,6 +16,7 @@ export default function DashboardPage() {
   if (!isAdmin) {
     return null;
   }
+  
   return (
       <div className="">
         <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">

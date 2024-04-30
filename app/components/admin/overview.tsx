@@ -26,37 +26,6 @@ const Overview = () => {
   );
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-  const dispatch = useDispatch()
-
-
-  const getOrgOwner = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      //  if(response.status===200){
-      //     setstatus(true)
-      //     return
-      //  }
-        console.log(response.data.data.name,{labCount})
-      return response;
-    } catch (error) {
-       console.log(error)
-    }
-  };
-
-useEffect(()=>{
-  getOrgOwner()
- },[])
-
 
 
 
