@@ -1,37 +1,79 @@
 "use client";
-import React, { SVGProps, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import axios, { AxiosError } from "axios";
-import { useSession } from "next-auth/react";
-import { userCheck } from "@/lib/utils";
-import { useDispatch } from "react-redux";
-import { setCurrentImage } from "@/redux/reducers/userSlice";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Arrow } from "@/public/svgs/Arrow";
-import { ILabImage } from "../types";
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import React, { FC, useEffect, useRef, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { TabsContent } from "@/components/ui/tabs";
 import { useQuery } from "react-query";
 
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-const UserPage = () => {
+// import NewImageForm from "./new-image-form";
+import NewImageForm from "@/app/components/admin/new-image-form";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { toast } from "@/components/ui/use-toast";
+// import { getImageListX } from "./overview";
+
+import { getImageListX } from "@/app/components/admin/overview";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import {
+  setCurrentImage,
+  setImageCount,
+  setImageList,
+} from "@/redux/reducers/adminSlice";
+// import DeleteConfirmation from "../delete-confirmation";
+import DeleteConfirmation from "@/app/components/delete-confirmation";
+import { useRouter } from "next/navigation";
+import { ILabImage } from "@/app/types";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreVerticalIcon } from "lucide-react";
+
+const Images = () => {
+  const name = useSelector((state: RootState) => state);
+
+  console.log({ name });
+
+  const [imageList, setimagelist] = useState<ILabImage[]>();
+
   const { data: session } = useSession();
   const dispatch = useDispatch();
   const router = useRouter();
 
+  const [image, setImage] = useState<ILabImage>();
+  const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
+    useState<boolean>(false);
+
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-
-  const {
-    data: images,
-  } = useQuery(["Homeimage"], () => getImages());
-
-  
 
   const getImages = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/image/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/images/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -41,18 +83,16 @@ const UserPage = () => {
           },
         }
       );
-
+      setimagelist(response.data.data);
       return response.data.data;
     } catch (error) {
-      userCheck(error as AxiosError);
+      console.log(error);
     }
   };
 
-
-  const viewImage = (image: ILabImage) => {
-    dispatch(setCurrentImage(image));
-    router.push(`/dashboard/images?image=${image.id}`);
-  };
+  useEffect(() => {
+    getImages();
+  }, []);
 
   return (
     <div className="">
@@ -63,101 +103,81 @@ const UserPage = () => {
         </div>
         {
           //@ts-ignore
-           session?.user?(
+          session?.user && session?.user.data.is_admin ? (
             <Link href="/dashboard" className="font-medium text-mint">
               Go to dashboard
             </Link>
           ) : null
         }
       </div>
-      {/* 
-
-      <div className="p-4 ">
-        <div className="all-images-list xl:flex grid lg:grid-cols-3  flex-wrap w-full  gap-3">
-          {images && images.length >= -1 ? (
-            images.map((image:ILabImage, i:number) => (
-              <div
-                onClick={() => viewImage(image)}
-                key={i}
-                className={`lab-card rounded-2xl p-8 lg:w-[375px] w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer`}
-              >
-                <img
-                  src={image.image_picture ?? ""}
-                  alt=""
-                  className="w-[60px] h-[60px]"
-                />
-                <div className="mt-[40px] ">
-                  <h6 className="font-semibold leading-[140%] text-2xl app-text-clip h-[65px] max-h-[65px]">
-                    {image.name}
-                  </h6>
-                </div>
-                <span
-                  className="flex gap-[10px] items-center h-fit lg:mt-[36px] mt-[28px] font-medium "
-                >
-                  <h5 className="leading-[150%] font-medium">Go to lab</h5>
-                  <Arrow className="pointer  -rotate-45 transition-all delay-150 dark:fill-white fill-black" />
-                </span>
-              </div>
-            ))
-          ) : (
-            <>
-              {new Array(6).fill(1).map((_, i) => (
-                <Skeleton
-                  key={i}
-                  className="lab-card rounded-2xl p-8 lg:w-[375px] w-full  h-[200px]"
-                />
-              ))}
-            </>
-          )}
-
-          {images && images.length === 0 ? (
-            <div className="w-full flex justify-center h-[400px] items-center">
-              <p className="text-gray-600">No images found...</p>
+      <div className="grid gap-4 md:grid-cols-2 p-4">
+        <Card className="col-span-4">
+          <CardHeader className="flex flex-row justify-between items-center w-full">
+            <div>
+              <CardTitle>Organization Image List</CardTitle>
+              <CardDescription>
+                {/* You have {imageCount} image(s). */}
+              </CardDescription>
             </div>
-          ) : null}
-        </div>
-      </div> */}
+            <Dialog>
+              <NewImageForm />
+            </Dialog>
+          </CardHeader>
+          <Dialog>
+            <CardContent className="pl-2">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="">Name</TableHead>
+                    <TableHead>Difficulty Level</TableHead>
+                    <TableHead>Duration</TableHead>
+                    <TableHead className="text-right">Port Number</TableHead>
+                  </TableRow>
+                </TableHeader>
+                {imageList?.length === 0 && (
+                  <TableCaption>No images found...</TableCaption>
+                )}
+                <TableBody>
+                  {imageList
+                    ? imageList.length > 0
+                      ? imageList.map((image, i) => (
+                          <TableRow key={i}>
+                            <TableCell className="font-medium">
+                              {image.name}
+                            </TableCell>
+                            <TableCell>{image.difficulty_level}</TableCell>
+                            <TableCell>{image.duration}</TableCell>
+                            <TableCell className="text-right">
+                              {image.port_number}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      : null
+                    : null}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Dialog>
+        </Card>
+      </div>
+
+      <Dialog
+        open={isOpenViewDialogOpen}
+        onOpenChange={
+          isOpenViewDialogOpen ? setIsOpenViewDialog : setIsOpenDeleteDialog
+        }
+      >
+        <NewImageForm />
+      </Dialog>
+
+      <Dialog
+        open={isOpenDeleteDialogOpen}
+        onOpenChange={
+          isOpenDeleteDialogOpen ? setIsOpenDeleteDialog : setIsOpenViewDialog
+        }
+      ></Dialog>
     </div>
   );
 };
 
-export default UserPage;
-
-
-// <Table>
-// <TableHeader>
-//   <TableRow>
-//     <TableHead className="p-1">Name</TableHead>
-//     <TableHead className="p-1">Difficulty Level</TableHead>
-//     <TableHead className="text-right p-1">Action</TableHead>
-//   </TableRow>
-// </TableHeader>
-// {images?.length === 0 && (
-//   <TableCaption>No images found...</TableCaption>
-// )}
-// <TableBody>
-//   {images
-//     ? images.length > 0
-//       ? images.map((image, i) => (
-//           <TableRow key={i}>
-//             <TableCell className="font-medium p-1">
-//               {image.name}
-//             </TableCell>
-//             <TableCell className="p-1">
-//               {image.difficulty_level}
-//             </TableCell>
-//             <TableCell className="underline font-medium text-right p-1">
-//               <Button
-//                 onClick={() => viewImage(image)}
-//                 className="font-medium p-0"
-//                 variant="link"
-//               >
-//                 View
-//               </Button>
-//             </TableCell>
-//           </TableRow>
-//         ))
-//       : null
-//     : null}
-// </TableBody>
-// </Table>
+export default Images;

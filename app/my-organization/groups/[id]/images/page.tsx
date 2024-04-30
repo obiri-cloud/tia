@@ -278,7 +278,7 @@ const OrganizationGroupImagePage = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="">Email</TableHead>
-                    <TableHead>Image Name</TableHead>
+                    <TableHead>Lab Name</TableHead>
                     {/* <TableHead>created_at</TableHead> */}
                     {/* <TableHead>expires</TableHead> */}
                     <TableHead className="text-right">Action</TableHead>
@@ -287,7 +287,7 @@ const OrganizationGroupImagePage = () => {
                 {imageList?.length === 0 ||
                   (status && (
                     <TableCaption>
-                      No Images In This Group
+                     No Labs Available In this Group
                       <br />
                       <Button
                         className="m-4"
@@ -344,7 +344,7 @@ const OrganizationGroupImagePage = () => {
                   ) : (
                     <TableRow>
                       <TableCell colSpan={3} className="text-center">
-                        No members in this group
+                         No Labs Available In this Group
                       </TableCell>
                     </TableRow>
                   )}

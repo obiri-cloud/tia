@@ -23,6 +23,7 @@ import { toast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"; 
 
 
+
 const FormSchema = z.object({
   image: z.array(z.number()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one item.",
@@ -31,10 +32,10 @@ const FormSchema = z.object({
 
 
  
- function CheckboxReactHookFormMultiple(image:any) {
+ function CheckboxReactHookFormMultiple(image:any,gid:number) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  console.log( typeof image);
+  console.log(image.gid);
 
   
 
@@ -111,7 +112,7 @@ const FormSchema = z.object({
 
  
   return (
-    <DialogContent className="flex justify-center items-center overflow-y-scroll h-[60vh] ">
+    <DialogContent>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -119,42 +120,62 @@ const FormSchema = z.object({
             name="image"
             render={() => (
               <FormItem>
-                <div className="mb-4">
-                  <FormLabel className="text-base">Organization Members</FormLabel>
-                  <FormDescription>
+                <div className="mb-6">
+                  <h3 className="text-black dark:text-white mb-1 font-semibold text-lg">
+                    Organization Members
+                  </h3>
+                  <FormDescription className="text-sm">
                     Select the members you want to add to the group
                   </FormDescription>
                 </div>
-                {Array.isArray(image?.image) && image.image.length  > 0 ? (
-                  image.image.map((item: any) => (
-                    <FormItem
-                      key={item.id}
-                      className="flex flex-row items-start space-x-3 space-y-0"
-                    >
-                      <FormControl>
-                        <Checkbox
-                          checked={form.getValues("image")?.includes(item.member.id)}
-                          onCheckedChange={(checked: boolean) => {
-                            const newValue = checked
-                              ? [...form.getValues("image"), item.member.id]
-                              : form.getValues("image")?.filter((value: number) => value !== item.member.id);
-                            form.setValue("image", newValue);
-                          }}
-                        />
-                      </FormControl>
-                      <FormLabel className="text-sm font-normal">
-                        {item.member.email}
-                      </FormLabel>
-                    </FormItem>
-                  ))
-                ) : (
-                  <div>No members available</div>
-                )}
+                <div className="space-y-2"></div>
+                {image.image.map((item: any) => (
+                  <FormField
+                    key={item.id}
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => {
+                      return (
+                        <FormItem
+                          key={item.id}
+                          className="flex flex-row items-start space-x-3 space-y-0"
+                        >
+                          <div className="flex items-center space-x-4">
+                            <Checkbox
+                              className="text-black dark:text-white"
+                              checked={field.value?.includes(item.id)}
+                              onCheckedChange={(checked: any) => {
+                                console.log(checked, field);
+                                return checked
+                                  ? field.onChange([
+                                      ...field.value,
+                                      item.id,
+                                    ])
+                                  : field.onChange(
+                                      field.value?.filter(
+                                        (value) => value !== item.id
+                                      )
+                                    );
+                              }}
+                            />
+                            <div className="flex-1">
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                                {item.name}
+                              </div>
+                            </div>
+                          </div>
+                        </FormItem>
+                      );
+                    }}
+                  />
+                ))}
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button className="w-full" type="submit">
+            Submit
+          </Button>
         </form>
       </Form>
     </DialogContent>

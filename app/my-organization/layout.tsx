@@ -3,7 +3,7 @@ import ReduxProvider from "@/redux/ReduxProvider";
 import { SVGProps } from "react";
 import { Inter } from "next/font/google";
 import { signOut } from "next-auth/react";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import secureLocalStorage from "react-secure-storage";
 import ProfileHeader from "../components/admin/profile-header";
 import { usePathname } from "next/navigation";
@@ -22,10 +22,8 @@ export default function UserDashboardLayout({
     signOut({ callbackUrl: "/login" });
     secureLocalStorage.removeItem("tialabs_info");
   };
-  const [organizationName,setOrganizationName]=useState()
+  const [organizationName, setOrganizationName] = useState();
   const pathname = usePathname();
-
-
 
   return (
     <ReduxProvider>
@@ -65,7 +63,7 @@ export default function UserDashboardLayout({
                 <ul className="space-y-2 font-medium mt-[50px] flex-1">
                   <li className="all-images-button">
                     <a
-                      href="/my-organization/organizationImages"
+                      href="/my-organization"
                       className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
                         pathname.startsWith("/my-organization") &&
                         pathname !== "/dashboard/active-labs" &&
@@ -93,7 +91,9 @@ ${
                         className={`ms-3 
                       
                       ${
-                        pathname.startsWith("/my-organization/organizationImages") &&
+                        pathname.startsWith(
+                          "/my-organization/organizationImages"
+                        ) &&
                         pathname !== "/dashboard/active-labs" &&
                         pathname !== "/dashboard/account"
                           ? "bg-menuHovWhite dark:bg-menuHov font-semibold"
@@ -104,7 +104,7 @@ ${
                       
                       `}
                       >
-                      Images
+                        Labs
                       </span>
                     </a>
                   </li>
@@ -117,15 +117,15 @@ ${
                           : ""
                       }`}
                     >
-                        <User
-                          className={` 
+                      <User
+                        className={` 
                           ${
                             pathname === "/my-organization/groups"
                               ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
                               : " "
                           }
                           `}
-                        />
+                      />
                       <span
                         className={`
                       ms-3 
@@ -150,15 +150,15 @@ ${
                           : ""
                       }`}
                     >
-                        <User
-                          className={` 
+                      <User
+                        className={` 
                           ${
                             pathname === "/my-organization/members"
                               ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
                               : " "
                           }
                           `}
-                        />
+                      />
                       <span
                         className={`
                       ms-3 
@@ -183,15 +183,15 @@ ${
                           : ""
                       }`}
                     >
-                        <User
-                          className={` 
+                      <User
+                        className={` 
                           ${
                             pathname === "/my-organization/invitation"
                               ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
                               : " "
                           }
                           `}
-                        />
+                      />
                       <span
                         className={`
                       ms-3 
@@ -238,7 +238,7 @@ ${
                         }
                         `}
                         >
-                         organization Account
+                          organization Account
                         </span>
                       </a>
                     </li>

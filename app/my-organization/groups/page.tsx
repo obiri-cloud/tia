@@ -206,7 +206,7 @@ useEffect(()=>{
 
 
   return (
-    <div className="space-y-4 m-4">
+    <div className="">
               <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
           <span className="p-2 ">Organzation</span>
@@ -222,7 +222,7 @@ useEffect(()=>{
           ) : null
         }
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">
           <CardHeader className="flex flex-row justify-between items-center w-full">
             <div>
@@ -234,7 +234,7 @@ useEffect(()=>{
             <div>
             {status && (
               <>
-                <Button className="m-4"  onClick={()=>{setIsOpenViewDialog2(true)}}>create group</Button>
+                <Button  onClick={()=>{setIsOpenViewDialog2(true)}}>Create Group</Button>
               </>
             )
             }
@@ -249,9 +249,7 @@ useEffect(()=>{
                 <TableHeader>
                   <TableRow>
                     <TableHead className="">Group Name</TableHead>
-                    <TableHead>organization</TableHead>
-                    {/* <TableHead>created_at</TableHead> */}
-                    {/* <TableHead>expires</TableHead> */}
+                    <TableHead>Organization</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -293,9 +291,9 @@ useEffect(()=>{
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     className="font-medium cursor-pointer hover:text-white-500 text-white-500 py-2"
-                                    onClick={()=> {router.push(`/my-organization/groups/${image.id}/images?name=Group&group_name=${image.name} Image`)}}
+                                    onClick={()=> {router.push(`/my-organization/groups/${image.id}/images?name=Group&group_name=${image.name} Lab`)}}
                                   >
-                                    View Images
+                                    View Lab
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={()=>deletebtn(image)}
@@ -307,7 +305,7 @@ useEffect(()=>{
                                     onClick={()=>{setgid(image.id),setIsOpenViewDialog1(true)}}
                                     className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
                                   >
-                                    Add Image(s)
+                                    Add Lab(s)
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>

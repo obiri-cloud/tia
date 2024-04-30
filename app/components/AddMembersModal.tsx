@@ -1,12 +1,11 @@
+"use client";
 
-"use client"
- 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import axios from "axios";
 import {
   Form,
@@ -16,84 +15,49 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { useRouter } from "next/router";
+} from "@/components/ui/form";
 import { useRef, useState } from "react";
-import { toast } from "@/components/ui/use-toast"
-import { useSession } from "next-auth/react"; 
+import { toast } from "@/components/ui/use-toast";
+import { useSession } from "next-auth/react";
+import { CheckboxItem } from "@radix-ui/react-dropdown-menu";
 
-const items = [
-  {
-    id: "recents",
-    label: "Recents",
-  },
-  {
-    id: "home",
-    label: "Home",
-  },
-  {
-    id: "applications",
-    label: "Applications",
-  },
-  {
-    id: "desktop",
-    label: "Desktop",
-  },
-  {
-    id: "downloads",
-    label: "Downloads",
-  },
-  {
-    id: "documents",
-    label: "Documents",
-  },
-] 
-
-const FormSchema = z.object({
+const formSchema = z.object({
   image: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one item.",
   }),
-})
+});
 
+function AddMembersModal(image: any) {
+  console.log("image", image);
 
- 
- function CheckboxReactHookFormMultiple(image:any) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-
-  
-
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       image: [],
     },
-  })
+  });
 
-
-    
   const { data: session } = useSession();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
- 
 
- async function onSubmit(data:z.infer<typeof FormSchema>){
-  let user_ids = { user_ids: data.image }
-
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    let user_ids = { user_ids: data.image };
 
     let axiosConfig = {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${image.gid}/member/add/`,
-      data:user_ids,
+      data: user_ids,
       headers: {
         "Content-Type": "application/json",
-        // "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
-      }
+      },
     };
     try {
       const response = await axios(axiosConfig);
-      console.log({response});
+      console.log({ response });
       if (response.status === 201 || response.status === 200) {
         toast({
           variant: "success",
@@ -108,7 +72,7 @@ const FormSchema = z.object({
           description: response.data,
         });
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("error", error);
       const responseData = error.response.data;
       if (error.response) {
@@ -129,65 +93,86 @@ const FormSchema = z.object({
         buttonRef.current.disabled = false;
       }
     }
-  };
+  }
 
-
-
-
- 
   return (
-    <DialogContent
-      className="flex justify-center items-center overflow-y-scroll h-[60vh] "
-    >
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-      <FormField
-  control={form.control}
-  name="image"
-  render={() => (
-    <FormItem>
-      <div className="mb-4">
-        <FormLabel className="text-base">Organization Members</FormLabel>
-        <FormDescription>
-          Select the members you want to add to the group
-        </FormDescription>
-      </div>
-      {Array.isArray(image?.image) && image.image.length > 0 ? (
-        image.image.map((item: any) => (
-          <FormItem
-            key={item.id}
-            className="flex flex-row items-start space-x-3 space-y-0"
-          >
-            <FormControl>
-              <Checkbox
-                checked={form.getValues("image")?.includes(item.member.id)}
-                onCheckedChange={(checked: any) => {
-                  const newValue = checked
-                    ? [...form.getValues("image"), item.member.id]
-                    //@ts-ignore
-                    : form.getValues("image")?.filter((value: number) => value !== item.member.id);
-                  form.setValue("image", newValue);
-                }}
-              />
-            </FormControl>
-            <FormLabel className="text-sm font-normal">
-              {item.member.email}
-            </FormLabel>
-          </FormItem>
-        ))
-      ) : (
-        <div>No members available</div>
-      )}
-      <FormMessage />
-    </FormItem>
-  )}
-/>
-{Array.isArray(image?.image) && image.image.length > 0 ?<Button type="submit">Submit</Button>:null}
-        {/* <Button type="submit">Submit</Button> */}
-      </form>
-    </Form>
+    <DialogContent>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="image"
+            render={() => (
+              <FormItem>
+                <div className="mb-6">
+                  <h3 className="text-black dark:text-white mb-1 font-semibold text-lg">
+                    Organization Members
+                  </h3>
+                  <FormDescription className="text-sm">
+                    Select the members you want to add to the group
+                  </FormDescription>
+                </div>
+                <div className="space-y-2"></div>
+                {Array.isArray(image?.image) && image.image.length > 0 ? (
+                  image.image.map((item: any) => (
+                    <FormField
+                      key={item.id}
+                      control={form.control}
+                      name="image"
+                      render={({ field }) => (
+                        <FormItem
+                          key={item.id}
+                          className="flex flex-row items-start space-x-3 space-y-0"
+                        >
+                          <div className="flex items-center space-x-4">
+                            <Checkbox
+                              className="text-black dark:text-white"
+                              checked={field.value?.includes(item.member.id)}
+                              onCheckedChange={(checked: any) => {
+                                console.log(checked, field);
+                                return checked
+                                  ? field.onChange([
+                                      ...field.value,
+                                      item.member.id,
+                                    ])
+                                  : field.onChange(
+                                      field.value?.filter(
+                                        (value) => value !== item.member.id
+                                      )
+                                    );
+                              }}
+                            />
+                            <div className="bg-muted text-black dark:text-white font-bold p-4 w-4 h-4 flex justify-center items-center uppercase  rounded-full">
+                              {item.member.first_name[0]}
+                            </div>
+
+                            <div className="flex-1">
+                              <div className="font-medium text-black dark:text-white ">
+                                {`${item.member.first_name} ${item.member.last_name}`}
+                              </div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                                {item.member.email}
+                              </div>
+                            </div>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  ))
+                ) : (
+                  <div>No members available</div>
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button className="w-full" type="submit">
+            Submit
+          </Button>
+        </form>
+      </Form>
     </DialogContent>
-  )
+  );
 }
 
-export default CheckboxReactHookFormMultiple
+export default AddMembersModal;

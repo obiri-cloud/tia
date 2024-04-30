@@ -257,7 +257,7 @@ useEffect(()=>{
             <div>
             {!status && (
               <>
-                <Button className="m-4"  onClick={()=>{setIsOpenViewDialog2(true)}}>create group</Button>
+                {/* <Button className="m-4"  onClick={()=>{setIsOpenViewDialog2(true)}}>create group</Button> */}
               </>
             )
             }
