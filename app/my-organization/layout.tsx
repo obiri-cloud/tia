@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 import { DropToggle } from "../components/DropToggle";
 import { LogOut, Play, ShapesIcon, User } from "lucide-react";
 import OrganizationHeader from "../components/admin/OrganizationHeader";
-import useOrgCheck from "@/hooks/orgnization-check";
+
 
 const inter = Inter({ subsets: ["latin"] });
 

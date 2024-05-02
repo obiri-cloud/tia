@@ -27,7 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { toast } from "@/components/ui/use-toast";
 // import { getImageListX } from "./overview";
-
+import { formatDistanceToNow,format } from 'date-fns';
 import { getImageListX } from "@/app/components/admin/overview";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
@@ -108,6 +108,22 @@ const Images = () => {
     setPassedData(data)
     setIsOpenViewDialog(true)
   }
+
+  const formatExpiration = (expires: string) => {
+    const expirationDate = new Date(expires);
+    const remainingTime = expirationDate.getTime() - new Date().getTime();
+    if (remainingTime > 0) {
+      return formatDistanceToNow(expirationDate, { addSuffix: true });
+    } else {
+      return 'Expired';
+    }
+  };
+
+  const formatDate = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return format(date, 'MMMM dd, yyyy h:mm a');
+  };
+
 
   const deleteblink=async(data:any)=>{
     try {
@@ -205,8 +221,8 @@ const Images = () => {
                               {image.recipient_email}
                             </TableCell>
                             <TableCell>{image.invitation_status}</TableCell>
-                            <TableCell>{image.created_at}</TableCell>
-                            <TableCell>{image.expires}</TableCell>
+                            <TableCell>{formatDate(image.created_at)}</TableCell>
+                            <TableCell>{image.expires ? formatExpiration(image.expires) : 'Expires soon'}</TableCell>
                             <TableCell className="underline font-medium text-right">
                               <DropdownMenu>
                                 <DropdownMenuTrigger>
