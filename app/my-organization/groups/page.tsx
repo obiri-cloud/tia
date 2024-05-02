@@ -268,6 +268,7 @@ const Images = () => {
     event.preventDefault();
     //@ts-ignore
     (document.getElementById("submit-button") as HTMLButtonElement).disabled =
+    
       true;
     (
       document.getElementById("submit-button") as HTMLButtonElement
@@ -381,7 +382,7 @@ const Images = () => {
                                       );
                                     }}
                                   >
-                                    View Images
+                                    View Lab
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => deletebtn(group)}
@@ -396,7 +397,7 @@ const Images = () => {
                                     }}
                                     className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
                                   >
-                                    Add Image(s)
+                                    Add Lab(s)
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>

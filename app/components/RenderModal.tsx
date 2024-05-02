@@ -28,6 +28,8 @@ const formSchema = z.object({
 });
 
 function AddMembersModal(image: any) {
+  console.log("image", image);
+
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -154,11 +156,13 @@ function AddMembersModal(image: any) {
                             </div>
                           </div>
                         </FormItem>
-                      );
-                    }}
-                  />
-                ))}
-
+                      )}
+                    />
+                  ))
+                ) : (
+                  <div className="text-sm text-black-400 dark:text-black-500">No members available</div>
+                )}
+                <FormMessage />
               </FormItem>
             )}
           />

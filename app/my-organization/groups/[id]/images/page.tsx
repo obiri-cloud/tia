@@ -61,6 +61,7 @@ import { MoreVerticalIcon } from "lucide-react";
 import AddMembersModal from "@/app/components/AddMembersModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import AltRouteCheck from "@/app/components/alt-route-check";
+import useOrgCheck from "@/hooks/orgnization-check";
 
 const OrganizationGroupImagePage = () => {
   const [image, setImage] = useState<any>();
@@ -87,6 +88,10 @@ const OrganizationGroupImagePage = () => {
   const group = searchParams.get("group_name");
   const { data: session } = useSession();
 
+  const isOrg = useOrgCheck();
+  if (isOrg) {
+    return null;
+  }
   // get groups
   const getGroupMembers = async () => {
     try {
@@ -278,7 +283,7 @@ const OrganizationGroupImagePage = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="">Email</TableHead>
-                    <TableHead>Image Name</TableHead>
+                    <TableHead>Lab Name</TableHead>
                     {/* <TableHead>created_at</TableHead> */}
                     {/* <TableHead>expires</TableHead> */}
                     <TableHead className="text-right">Action</TableHead>
@@ -287,7 +292,7 @@ const OrganizationGroupImagePage = () => {
                 {imageList?.length === 0 ||
                   (status && (
                     <TableCaption>
-                      No Images In This Group
+                     No Labs Available In this Group
                       <br />
                       <Button
                         className="m-4"
@@ -344,7 +349,7 @@ const OrganizationGroupImagePage = () => {
                   ) : (
                     <TableRow>
                       <TableCell colSpan={3} className="text-center">
-                        No members in this group
+                         No Labs Available In this Group
                       </TableCell>
                     </TableRow>
                   )}

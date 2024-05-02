@@ -11,6 +11,7 @@ import { DropToggle } from "../components/DropToggle";
 import { LogOut, Play, ShapesIcon, User } from "lucide-react";
 import OrganizationHeader from "../components/admin/OrganizationHeader";
 
+
 const inter = Inter({ subsets: ["latin"] });
 
 export default function UserDashboardLayout({
@@ -24,6 +25,8 @@ export default function UserDashboardLayout({
   };
   const [organizationName, setOrganizationName] = useState();
   const pathname = usePathname();
+
+
 
   return (
     <ReduxProvider>
@@ -99,12 +102,9 @@ ${
                           ? "bg-menuHovWhite dark:bg-menuHov font-semibold"
                           : "font-light"
                       }
-
-
-                      
                       `}
                       >
-                        Images
+                        Labs
                       </span>
                     </a>
                   </li>

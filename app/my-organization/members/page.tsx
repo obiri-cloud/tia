@@ -66,7 +66,11 @@ const Images = () => {
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
   
-
+  const isOrg = useOrgCheck();
+  if (isOrg) {
+    return null;
+  }
+  
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
@@ -359,6 +363,7 @@ import { SheetClose, SheetFooter } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/cn";
 import InviteModal from "@/app/components/InviteModal";
+import useOrgCheck from "@/hooks/orgnization-check";
 
 const ReviewDrawer = () => {
   const ratings = [

@@ -22,34 +22,37 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import DeactivateConfirmation from "@/app/components/deactivate-confirmation";
 import { IUserProfile } from "@/app/types";
 import { DropToggle } from "@/app/components/DropToggle";
+import { useRouter } from "next/navigation";
+import useOrgCheck from "@/hooks/orgnization-check";
 
 
 const AccountPage = () => {
   const { data: session } = useSession();
-  const [userData, setUserData] = useState<IUserProfile>();
+  const [userData, setUserData] = useState<any>();
   const [editMode, setEditMode] = useState(false);
-
+  const router = useRouter();
   const form = useForm();
 
-  const firstNameRef = useRef<HTMLInputElement>(null);
-  const lastNameRef = useRef<HTMLInputElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const NameRef = useRef<HTMLInputElement>(null);
   const deactivateButtonRef = useRef<HTMLButtonElement>(null);
 
   const formSchema = z.object({
-    first_name: z.string().min(3, {
+     name: z.string().min(3, {
       message: "Name has to be 3 characters or more",
-    }),
-    last_name: z.string().min(3, {
-      message: "Name has to be 3 characters or more",
-    }),
+    })
   });
+
+  const isOrg = useOrgCheck();
+  if (isOrg) {
+    return null;
+  }
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
+
   const getUser = async () => {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/auth/user/`,
+      `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -59,8 +62,9 @@ const AccountPage = () => {
         },
       }
     );
-    setUserData(response.data);
+    setUserData(response.data.data);
   };
+
   useEffect(() => {
     try {
       getUser();
@@ -68,6 +72,7 @@ const AccountPage = () => {
       console.error(error);
     }
   }, []);
+
 
   const changeAvatar = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -114,18 +119,17 @@ const AccountPage = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (buttonRef.current) {
-      buttonRef.current.disabled = true;
-    }
+    // if (buttonRef.current) {
+    //   buttonRef.current.disabled = true;
+    // }
     let formData = {
-      first_name: firstNameRef.current?.value,
-      last_name: lastNameRef.current?.value,
+      name: NameRef.current?.value,
     };
 
     try {
       formSchema.parse(formData);
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/auth/user/update/`,
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${userData.id}/update/`,
         JSON.stringify(formData),
         {
           headers: {
@@ -135,13 +139,14 @@ const AccountPage = () => {
           },
         }
       );
-      if (response.data.status === 200) {
+      if (response.status === 200) {
         toast({
           variant: "success",
           title: "Profile Updated Successfully",
         });
         setEditMode(false);
         getUser();
+        router.push('/my-organization/account')
       } else {
         toast({
           variant: "destructive",
@@ -161,20 +166,19 @@ const AccountPage = () => {
         );
       }
     } finally {
-      if (buttonRef.current) {
-        buttonRef.current.disabled = false;
-      }
+    //   if (buttonRef.current) {
+    //     buttonRef.current.disabled = false;
+    //   }
     }
   };
 
-  const deactivateAccount = async () => {
+  const deleteAccount = async () => {
     if (deactivateButtonRef.current) {
       deactivateButtonRef.current.disabled = true;
     }
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/auth/account/deactivate/`,
-        {},
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${userData.id}/delete/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -182,12 +186,12 @@ const AccountPage = () => {
         }
       );
 
-      if (response.status === 200) {
+      if (response.status === 204) {
         toast({
-          title: "Account deactivated successfully!",
+          title: "Account deleted successfully!",
           variant: "success",
         });
-        signOut({ callbackUrl: "/login" });
+       router.push('/dashboard')
       } else {
         toast({
           title: "Something went deactivating your account.",
@@ -234,9 +238,9 @@ const AccountPage = () => {
             </span>
             <div className="sc-hLBbgP sc-svekf hDbocA lhdcYD">
               <div className="sc-hLBbgP fHykyP">
-                {userData?.username ? (
+                {userData?.owner ? (
                   <span className="sc-bcXHqe sc-kgMPZw cpMQpB tJsVO">
-                    {userData.username}
+                    {userData.name}
                   </span>
                 ) : (
                   <Skeleton className="w-[100px] h-[16.5px] rounded-md" />
@@ -254,10 +258,10 @@ const AccountPage = () => {
                 </label>
                 <div className="sc-hLBbgP fHykyP">
                   <input
-                    placeholder="First name"
+                    placeholder="name"
                     className="kFBAIE bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder"
-                    defaultValue={userData?.first_name}
-                    ref={firstNameRef}
+                    defaultValue={userData?.name}
+                    ref={NameRef}
                   />
                 </div>
               </div>
@@ -265,9 +269,10 @@ const AccountPage = () => {
           </div>
 
           <button
-            ref={buttonRef}
+            // ref={buttonRef}
             type="submit"
             className="sc-fbYMXx dxdUZf bg-black"
+            // onClick={handleSubmit}
           >
             Update Organization Name
           </button>
@@ -292,10 +297,10 @@ const AccountPage = () => {
         </div>
         <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
       <DeactivateConfirmation
-        text="Do you want to deactivate your account?"
+        text="Do you want to delete your account?"
         noText="No, cancel"
-        confirmText="Yes, deactivate"
-        confirmFunc={() => deactivateAccount()}
+        confirmText="Yes, delete"
+        confirmFunc={() => deleteAccount()}
       />
       </div>
     </div>

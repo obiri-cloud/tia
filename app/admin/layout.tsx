@@ -36,41 +36,6 @@ export default function DashboardPage({
   const token = session?.user!.tokens?.access_token;
   const pathname = usePathname();
 
-  const [OrgExist, setOrgExist] = useState<boolean>(false);
-
-  const getOrgOwner = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      //  if(response.status===200){
-      //     setstatus(true)
-      //     return
-      //  }
-  
-
-       if(response.data.status==200){
-         setOrgExist(true)
-         return
-       }
-
-      return response;
-    } catch (error) {
-       console.log(error)
-    }
-  };
-
-useEffect(()=>{
-  getOrgOwner()
- },[])
 
   return (
     <ReduxProvider>
@@ -154,11 +119,7 @@ useEffect(()=>{
                 <a
                   href="/admin/labs"
                   className={`
-                    ${
-                      pathname === "/admin/labs"
-                        ? "bg-menuHovWhite dark:bg-menuHov"
-                        : ""
-                    }
+                    ${ pathname === "/admin/labs"? "bg-menuHovWhite dark:bg-menuHov": ""}
                     flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group
                     `}
                 >
@@ -193,38 +154,7 @@ useEffect(()=>{
             </ul>
             <div className="">
               <ul className="space-y-2 font-medium">
-              <li className="account-button">
-                      <a
-                        href={OrgExist?"/my-organization/organizationImages?":"/admin/create-organization"}
-                        className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                          pathname === "/admin/create-organization"
-                            ? "bg-menuHovWhite dark:bg-menuHov"
-                            : ""
-                        }`}
-                      >
-                        <Users
-                          className={`
-                          ${
-                            pathname === "/admin/create-organization"
-                              ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
-                              : " "
-                          }
-                          `}
-                        />
-                        <span
-                          className={`
-                        ms-3 
-                        ${
-                          pathname === "/admin/create-organization"
-                            ? "font-semibold"
-                            : "font-light "
-                        }
-                        `}
-                        >
-                         {OrgExist?'Organization':'create Organization'} 
-                        </span>
-                      </a>
-                    </li>
+
                 <li>
                   <span
                     onClick={logout}
