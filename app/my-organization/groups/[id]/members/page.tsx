@@ -358,24 +358,6 @@ useEffect(()=>{
 
       </Dialog>
 
-      <Dialog
-        open={isOpenViewDialogOpen2}
-        onOpenChange={
-          isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
-        }
-      >
-         <CreateGroupModal/> 
-      </Dialog>
-
-
-      <Dialog
-        open={isOpenViewDialogOpen1}
-        onOpenChange={
-          isOpenViewDialogOpen1 ? setIsOpenViewDialog1 : setIsOpenDeleteDialog
-        }
-      >
-         <AddImgGroupModal image={image} gid={gid}/>
-      </Dialog>
 
       <Dialog
         open={isOpenViewDialogOpen3}

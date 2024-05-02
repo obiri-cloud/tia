@@ -28,8 +28,6 @@ const formSchema = z.object({
 });
 
 function AddMembersModal(image: any) {
-  console.log("image", image);
-
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
