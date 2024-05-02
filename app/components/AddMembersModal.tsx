@@ -157,20 +157,11 @@ function AddMembersModal(image: any) {
                               </div>
                             </div>
                           </div>
-
-                          {/* 
-                          <FormControl>
-                           
-                          </FormControl>
-                          <FormLabel className="text-sm font-normal text-black dark:text-white">
-                            {item.member.email}
-                          </FormLabel> */}
                         </FormItem>
                       );
                     }}
                   />
                 ))}
-                <FormMessage />
               </FormItem>
             )}
           />
