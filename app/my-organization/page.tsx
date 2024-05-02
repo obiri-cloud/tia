@@ -162,7 +162,7 @@ const Images = () => {
         <Card className="col-span-4">
           <CardHeader className="flex flex-row justify-between items-center w-full">
             <div>
-              <CardTitle>Organization Image List</CardTitle>
+              <CardTitle>Organization Lab List</CardTitle>
               <CardDescription>
                 {/* You have {imageCount} image(s). */}
               </CardDescription>
