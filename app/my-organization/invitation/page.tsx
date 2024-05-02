@@ -178,10 +178,10 @@ const Images = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="">recipient_email</TableHead>
-                    <TableHead>status</TableHead>
-                    <TableHead>created_at</TableHead>
-                    <TableHead>expires</TableHead>
+                    <TableHead className="">Recipient Email</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Created At</TableHead>
+                    <TableHead>Expires</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
