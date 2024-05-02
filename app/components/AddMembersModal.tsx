@@ -110,14 +110,16 @@ function AddMembersModal(image: any) {
                     Select the members you want to add to the group
                   </FormDescription>
                 </div>
+
                 <div className="space-y-2"></div>
-                {Array.isArray(image?.image) && image.image.length > 0 ? (
-                  image.image.map((item: any) => (
-                    <FormField
-                      key={item.id}
-                      control={form.control}
-                      name="image"
-                      render={({ field }) => (
+
+                {image.image.map((item: any) => (
+                  <FormField
+                    key={item.id}
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => {
+                      return (
                         <FormItem
                           key={item.id}
                           className="flex flex-row items-start space-x-3 space-y-0"
