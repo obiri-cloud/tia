@@ -167,3 +167,17 @@ interface OrganizationGroup {
     name: string;
   }[];
 }
+
+
+
+
+interface GroupMember {
+  invitation_status: string;
+  join_date: string;
+  member: {
+    email: string;
+    first_name: string;
+    id: string;
+    last_name: string;
+  };
+}
