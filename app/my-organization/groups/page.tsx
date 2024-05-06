@@ -1,28 +1,8 @@
 "use client";
-import React, {
-  ChangeEvent,
-  FC,
-  FormEvent,
-  SVGProps,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import React, { FormEvent, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { TabsContent } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import AddImgGroupModal from "@/app/components/AddImgGroupModal";
 
@@ -36,21 +16,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import CreateGroupModal from "@/app/components/CreateGroupModal";
-// import NewImageForm from "./new-image-form";
-import NewImageForm from "@/app/components/admin/new-image-form";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import { toast } from "@/components/ui/use-toast";
-// import { getImageListX } from "./overview";
 
-import { getImageListX } from "@/app/components/admin/overview";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useSession } from "next-auth/react";
-import { setCurrentImage } from "@/redux/reducers/adminSlice";
-// import DeleteConfirmation from "../delete-confirmation";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ILabImage, IOrgGroupData, GroupMember } from "@/app/types";
+import { useRouter } from "next/navigation";
+import { ILabImage, GroupMember } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import {
@@ -61,8 +33,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
 import AddMembersModal from "@/app/components/AddMembersModal";
-import OrgDialog from "@/app/components/my-organization/org-dialog";
-import { z } from "zod";
 
 interface OrgGroup {
   id: string;
@@ -72,12 +42,9 @@ interface OrgGroup {
   };
 }
 
-const Images = () => {
-  const [imageList, setimagelist] = useState<IOrgGroupData[]>();
-  const [status, setstatus] = useState<boolean>(false);
+const OrganizationGroup = () => {
 
   const { data: session } = useSession();
-  const dispatch = useDispatch();
   const router = useRouter();
 
   const [image, setImage] = useState<ILabImage[]>();
@@ -130,34 +97,7 @@ const Images = () => {
         }
       );
 
-      console.log("response.data.data", response.data.data);
-
       return response.data.data;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getOrgImages = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/images/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      //  if(response.status===200){
-      //     setstatus(true)
-      //     return
-      //  }
-
-      setImage(response.data.data);
-      return response;
     } catch (error) {
       console.log(error);
     }
@@ -177,46 +117,43 @@ const Images = () => {
 
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    getOrgImages();
-    // getMembers()
-  }, []);
+  const deleteGroup = async (id: number) => {
+    const response = await axios.delete(
+      `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/delete/`,
 
-  const deletebtn = (data: OrgGroup) => {
-    setPassedData(data);
-    setIsOpenViewDialog(true);
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          // @ts-ignore
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.data;
   };
 
-  //delete groups
-  const deleteblink = async (data: any) => {
-    try {
-      const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${data}/delete/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.data.status === 204) {
+  const { mutate: deleteGroupMutation } = useMutation(
+    (id: number) => deleteGroup(id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("groups");
         setIsOpenViewDialog(false);
-        getGroups();
+      },
+      onError: (error: any) => {
+        const responseData = error.response.data;
         toast({
-          variant: "success",
-          title: "Group Deleted Sucessfully",
-          description: response.data.data,
+          variant: "destructive",
+          title: responseData.data,
         });
-      }
-
-      console.log(response.data.data);
-      setimagelist(response.data.data);
-      return response;
-    } catch (error) {
-      console.log(error);
+        setIsOpenViewDialog(false);
+      },
     }
+  );
+
+  const prepareDelete = (data: OrgGroup | undefined) => {
+    setPassedData(data);
+    setIsOpenViewDialog(true);
   };
 
   const createGroup = async (formData: FormData) => {
@@ -268,7 +205,6 @@ const Images = () => {
     event.preventDefault();
     //@ts-ignore
     (document.getElementById("submit-button") as HTMLButtonElement).disabled =
-    
       true;
     (
       document.getElementById("submit-button") as HTMLButtonElement
@@ -305,20 +241,10 @@ const Images = () => {
         <Card className="col-span-4">
           <CardHeader className="flex flex-row justify-between items-center w-full">
             <CardTitle>Organizations Groups</CardTitle>
-            {!status && (
-              <Button
-                className="m-4"
-                onClick={() => setIsOpenViewDialog2(true)}
-              >
-                Create group
-              </Button>
-            )}
 
-            {/* <Dialog>
-             <OrgDialog title="hello" onSubmit={()=>{}}>
-              <p>hello</p>
-             </OrgDialog>
-            </Dialog> */}
+            <Button className="m-4" onClick={() => setIsOpenViewDialog2(true)}>
+              Create group
+            </Button>
           </CardHeader>
           <Dialog>
             <CardContent className="pl-2">
@@ -385,7 +311,7 @@ const Images = () => {
                                     View Lab
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
-                                    onClick={() => deletebtn(group)}
+                                    onClick={() => prepareDelete(group)}
                                     className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
                                   >
                                     Delete
@@ -424,7 +350,7 @@ const Images = () => {
           text={`Do you want to delete  ${passedData?.name} group ? `}
           noText="No"
           confirmText="Yes, Delete!"
-          confirmFunc={() => deleteblink(passedData?.id)}
+          confirmFunc={() => deleteGroupMutation(Number(passedData?.id) ?? 0)}
         />
       </Dialog>
 
@@ -462,57 +388,4 @@ const Images = () => {
   );
 };
 
-export default Images;
-
-const AddButton = () => {
-  const dispatch = useDispatch();
-
-  return (
-    <DialogTrigger onClick={() => dispatch(setCurrentImage(null))}>
-      <Button>Add Image</Button>
-    </DialogTrigger>
-  );
-};
-
-// <Dialog>
-// <DialogTrigger
-//   onClick={() =>
-//     dispatch(setCurrentImage(image))
-//   }
-// >
-//   <Button
-//     className="font-medium"
-//     variant="link"
-//   >
-//     View
-//   </Button>
-// </DialogTrigger>
-// <NewImageForm />
-// </Dialog>
-// |
-// <Dialog>
-// <DialogTrigger>
-//   <Button
-//     onClick={() => setImage(image)}
-//     className="font-medium text-red-500"
-//     variant="link"
-//   >
-//     Delete
-//   </Button>
-// </DialogTrigger>
-// <DeleteConfirmation
-//   image={image}
-//   text="Do you want to delete this image"
-//   noText="No"
-//   confirmText="Yes, Delete this image"
-//   confirmFunc={() => deleteImage(image?.id)}
-// />
-// </Dialog>
-// |
-// <Button
-// onClick={() => router.push(`/admin/images/${image.id}/instructions`)}
-// className="font-medium"
-// variant="link"
-// >
-// Attach Instruction
-// </Button>
+export default OrganizationGroup;
