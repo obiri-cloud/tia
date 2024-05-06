@@ -363,7 +363,7 @@ const OrganizationGroupImagePage = () => {
         }
       >
         <DeleteConfirmation
-          //@ts-ignore
+          
           text={`Do you want to delete ${passedData?.name} from ${group} group ?`}
           noText="No"
           confirmText="Yes, Delete!"

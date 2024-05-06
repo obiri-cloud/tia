@@ -6,7 +6,6 @@ import { useEffect } from "react";
 const useOrgCheck = () => {
   const { data: session } = useSession();
   const router = useRouter();
-  //@ts-ignore
   let status = session?.user.data.subscription_plan === "basic";
 
   useEffect(() => {

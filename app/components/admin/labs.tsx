@@ -40,7 +40,7 @@ import { MoreVerticalIcon } from "lucide-react";
 const Labs = () => {
   const { labCount, labList } = useSelector((state: RootState) => state.admin);
 
-  const [currentLab, setCurrentLab] = useState<ILabList | null>(null);
+  const [currentLab, setCurrentLab] = useState<ILabList | undefined>(undefined);
 
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
@@ -203,7 +203,6 @@ const Labs = () => {
         }
       >
         <DeleteConfirmation
-          //@ts-ignore
           lab={currentLab}
           text="Do you want to delete this image"
           noText="No"

@@ -8,7 +8,6 @@ import axios from "axios";
 const useOrgCheck = () => {
   const { data: session } = useSession();
   const router = useRouter();
-  //@ts-ignore
   const token = session?.user!.tokens?.access_token;
 
   let [hasOrg, sethasOrg] = useState(false);

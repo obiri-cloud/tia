@@ -8,8 +8,7 @@ const OrganizationImage = async () => {
   const session = await getServerSession(authOptions);
   
   
-  // @ts-ignore
-  const token = session?.user!.tokens?.access_token;
+  const token = session?.user!.tokens?.access_token ?? "";
 
   return <ClientWrapper token={token} />;
 };

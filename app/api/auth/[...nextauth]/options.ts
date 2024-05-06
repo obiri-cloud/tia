@@ -1,5 +1,5 @@
 // @ts-ignore
-import NextAuth, { Account, NextAuthOptions, Profile, User } from "next-auth";
+import NextAuth, { Account, NextAuthOptions, Profile, Session, User, JWT } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { AdapterUser } from "next-auth/adapters";
 import { toast } from "sonner";
@@ -73,9 +73,10 @@ const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   callbacks: {
-    async session({ session, token }) {
-      //@ts-ignore
-      session.user = token.user;
+    async session({ session, token }: { session: Session; token: JWT }) {
+      if(token){
+        session.user = token.user;
+      }
       return session;
     },
     async jwt({ token, user }) {

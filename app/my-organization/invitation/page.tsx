@@ -156,24 +156,6 @@ const {
   },
 });
 
-const SendInvite = (event: FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
-  //@ts-ignore
-  (document.getElementById("submit-button") as HTMLButtonElement).disabled =
-    true;
-  (
-    document.getElementById("submit-button") as HTMLButtonElement
-  ).textContent = "sending";
-  (
-    document.getElementById("submit-button") as HTMLButtonElement
-  ).textContent = "Sending Invitation...";
-  const email = (document.getElementById("email-id") as HTMLInputElement)
-    ?.value;
-
-  const formData = new FormData();
-  formData.append("email", email || "");
-  SendInviteMutation(formData);
-};
 
   const formatDate = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -266,7 +248,6 @@ const SendInvite = (event: FormEvent<HTMLFormElement>) => {
 
   const addGroup = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    //@ts-ignore
     (document.getElementById("submit-button") as HTMLButtonElement).disabled =
       true;
     (
@@ -291,7 +272,6 @@ const SendInvite = (event: FormEvent<HTMLFormElement>) => {
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
         {
-          //@ts-ignore
           session?.user && session?.user.data.is_admin ? (
             <Link href="/dashboard" className="font-medium text-mint">
               Go to dashboard

@@ -207,7 +207,6 @@ const OrganizationGroup = () => {
 
   const createNewGroup = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    //@ts-ignore
     (document.getElementById("submit-button") as HTMLButtonElement).disabled =
       true;
     (
@@ -233,7 +232,6 @@ const OrganizationGroup = () => {
         </div>
 
         {
-          //@ts-ignore
           session?.user && session?.user.data.is_admin ? (
             <Link href="/dashboard" className="font-medium text-mint">
               Go to dashboard
@@ -352,7 +350,6 @@ const OrganizationGroup = () => {
         }
       >
         <DeleteConfirmation
-          //@ts-ignore
           text={`Do you want to delete  ${passedData?.name} group ? `}
           noText="No"
           confirmText="Yes, Delete!"

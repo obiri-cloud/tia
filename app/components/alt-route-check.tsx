@@ -2,26 +2,23 @@ import axios from "axios";
 import { FormEvent, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { toast } from "sonner";
 import { Dialog } from "@radix-ui/react-dialog";
 import CreateOrgModal from "./CreateOrgModal";
 import useOrgCheck from "@/hooks/createOrgCheck";
 import { useMutation, useQueryClient } from "react-query";
 import { useRouter } from "next/navigation";
+import { toast } from "@/components/ui/use-toast";
 
 const AltRouteCheck = () => {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false); 
-  const router=useRouter()
-//@ts-ignore
+  const router = useRouter()
+
   const token = session?.user?.tokens?.access_token;
   const queryClient = useQueryClient();
   const orgCheck = useOrgCheck();
-//@ts-ignore
   let subscription_plan = session?.user.data.subscription_plan;
-  //@ts-ignore
   let is_super = session?.user.data.is_superuser;
-  //@ts-ignore
   let is_admin = session?.user.data.is_admin;
 
   const createOrg = async (formData: FormData) => {
@@ -46,7 +43,9 @@ const AltRouteCheck = () => {
   } = useMutation((formData: FormData) => createOrg(formData), {
     onSuccess: () => {
       queryClient.invalidateQueries("orgName");
-      router.push('/my-organization')
+
+      router.push('/my-organization');
+      
       (document.getElementById("Org-name") as HTMLInputElement).value = "";
       toast({
         variant: "success",
@@ -72,7 +71,6 @@ const AltRouteCheck = () => {
 
   const createOrganization = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    //@ts-ignore
     (document.getElementById("submit-button") as HTMLButtonElement).disabled =
       true;
     (

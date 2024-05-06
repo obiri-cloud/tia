@@ -179,7 +179,6 @@ const SequencePage = () => {
           )}
         </div>
         {
-          //@ts-ignore
           session?.user && session?.user.data.is_admin ? (
             <Link href="/dashboard" className="font-medium text-mint">
               Go to labs

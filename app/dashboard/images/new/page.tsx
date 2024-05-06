@@ -7,7 +7,7 @@ import { Clock } from "@/public/svgs/Clock";
 import { UsersIcon } from "@/public/svgs/UsersIcon";
 import axios, { AxiosError } from "axios";
 import { ChevronRight } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useRef, useState } from "react";
@@ -18,25 +18,27 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
+import { Session } from "next-auth";
 
 const ImagePage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get("image");
-  const { data: session } = useSession();
+  const { data : session } = useSession() ;
 
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const [creatingStarted, setCreatingStarted] = useState(false);
   const [jokes, setJokes] = useState<string[]>([]);
 
-  // @ts-ignore
-  const token = session?.user!.tokens?.access_token;
+  if(session == null){
+    signOut
+  }
+  
+  const token = session?.user.tokens.access_token ?? "";
 
   const getCurrentImage = async (id: string | null, token: string) => {
     const response = await axios.get(

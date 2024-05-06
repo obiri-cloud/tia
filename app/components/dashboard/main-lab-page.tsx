@@ -187,7 +187,6 @@ const MainLabPage = ({
 
         let countdown = document.getElementById("countdown");
         if (countdown) {
-          //@ts-ignore
           countdown?.classList.add("hidden");
         }
 
@@ -530,7 +529,6 @@ const ReviewDrawer = ({ redirectUrl }: { redirectUrl: string }) => {
   ];
 
   const { data: session } = useSession();
-  //@ts-ignore
   const token = session?.user!.tokens?.access_token;
   const router = useRouter();
 

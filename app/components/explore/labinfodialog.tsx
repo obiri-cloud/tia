@@ -217,16 +217,6 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     }
   };
 
-  const cancelLab = () => {
-    document.getElementById("closeDialog")?.click();
-
-    toast({
-      variant: "destructive",
-      title: `Lab creation stopped`,
-    });
-    //@ts-ignore
-    deleteLab(lab?.id);
-  };
 
   const deleteActiveLab = ()=>{
     deleteLab(labInfo!.image_id)
