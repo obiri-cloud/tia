@@ -39,9 +39,9 @@ const OrganizationHeader = () => {
   };
 
   return (
-    <div className="flex font-medium  justify-center items-center w-full">
+    <div className="font-medium  w-full">
 
-      {isLoading?<Skeleton className="h-3 w-[200px]" />:<span className="ms-3  capitalize">{details?.name} Organization</span>}
+      {isLoading?<Skeleton className="h-3 w-[200px]" />:<span className=" capitalize">{details?.name} Organization</span>}
     </div>
   );
 };
