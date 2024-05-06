@@ -16,6 +16,8 @@ import {
 import Link from "next/link";
 import { InvitationsResponse, NoInvitationsResponse } from "@/app/types";
 import AltRouteCheck from "@/app/components/alt-route-check";
+import { Arrow } from "@/public/svgs/Arrow";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const OrganizationsPage = () => {
   const { data: session } = useSession();
@@ -44,7 +46,7 @@ const OrganizationsPage = () => {
     }
   };
 
-  const { data: invites, isLoading } = useQuery(["invite-list"], () =>
+  const { data: orgnizations, isLoading } = useQuery(["orgnizations"], () =>
     getInvitations()
   );
 
@@ -59,35 +61,52 @@ const OrganizationsPage = () => {
       </div>
 
       <div className="p-4 ">
-        {!isLoading && invites ? (
-          isNoInvitationsResponse(invites) ? (
+        {!isLoading && orgnizations ? (
+          isNoInvitationsResponse(orgnizations) ? (
             <p className="dark:text-white text-black w-full text-center">
-              {invites.message}...
+              {orgnizations.message}...
             </p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="">Organiztion Name</TableHead>
-                  <TableHead>Owner</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invites.data.map((inv, i) => (
-                  <TableRow key={i}>
-                    <TableCell>
-                      <Link
-                        href={`/dashboard/organizations/${inv.organization.id}/groups?name=${inv.organization.name}`}
-                        className="text-blue-500 underline"
-                      >
-                        {inv.organization.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{inv.organization.owner.username}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6">
+              {orgnizations && orgnizations.data.length >= -1 ? (
+                orgnizations.data.map((org, i) => (
+                  <Link
+                    href={`/dashboard/organizations/${org.organization.id}/groups?name=${org.organization.name}`}
+                    key={i}
+                    className={`lab-card rounded-2xl p-8 w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer`}
+                  >
+                    <div className="mt-[40px] ">
+                      <h6 className="font-semibold  leading-[140%] text-4xl app-text-clip h-[65px] max-h-[65px]">
+                        {org.organization.name}
+                      </h6>
+                    </div>
+                    <span className="flex gap-[10px] items-center h-fit lg:mt-[36px] mt-[28px] font-medium ">
+                      <h5 className="leading-[150%] font-medium">
+                        Go to organization
+                      </h5>
+                      <Arrow className="pointer  -rotate-45 transition-all delay-150 dark:fill-white fill-black" />
+                    </span>
+                  </Link>
+                ))
+              ) : (
+                <>
+                  {new Array(6).fill(1).map((_, i) => (
+                    <Skeleton
+                      key={i}
+                      className="lab-card rounded-2xl p-8 lg:w-[375px] w-full  h-[200px]"
+                    />
+                  ))}
+                </>
+              )}
+
+              {orgnizations && orgnizations.data.length === 0 ? (
+                <div className="w-full flex justify-center  items-center col-span-12">
+                  <p className="text-gray-600 dark:text-white">
+                    No images found...
+                  </p>
+                </div>
+              ) : null}
+            </div>
           )
         ) : (
           "Loading"
@@ -100,10 +119,10 @@ const OrganizationsPage = () => {
 export default OrganizationsPage;
 
 function isNoInvitationsResponse(
-  invites: NoInvitationsResponse | InvitationsResponse
-): invites is NoInvitationsResponse {
+  orgnizations: NoInvitationsResponse | InvitationsResponse
+): orgnizations is NoInvitationsResponse {
   return (
-    (invites as NoInvitationsResponse).message !== undefined &&
-    (invites as NoInvitationsResponse).status === 404
+    (orgnizations as NoInvitationsResponse).message !== undefined &&
+    (orgnizations as NoInvitationsResponse).status === 404
   );
 }
