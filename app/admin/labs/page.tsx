@@ -1,7 +1,6 @@
 "use client";
 import GetAdmin from "@/app/components/admin/get-admin";
 import Labs from "@/app/components/admin/labs";
-import useAdminCheck from "@/hooks/admin-check";
 import ReduxProvider from "@/redux/ReduxProvider";
 import { ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -9,13 +8,8 @@ import Link from "next/link";
 import React from "react";
 
 const page = () => {
-  const isAdmin = useAdminCheck();
   const { data: session } = useSession();
 
-
-  if (!isAdmin) {
-    return null;
-  }
   return (
     <ReduxProvider>
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">

@@ -1,25 +1,16 @@
-import { toast } from "@/components/ui/use-toast";
+"use client"
+
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const useAdminCheck = () => {
   const { data: session } = useSession();
   const router = useRouter();
   //@ts-ignore
   let status = session?.user.data.is_admin as boolean;
-
-  useEffect(() => {
-    if (!status) {
-      router.push("/dashboard");
-      toast({
-        variant: "destructive",
-        title: "Protected Page",
-        description:
-          "You are being redirected here because you are not an admin",
-      });
-    }
-  }, [status, router]);
+  console.log("status", status);
 
   return status;
 };

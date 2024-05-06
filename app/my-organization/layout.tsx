@@ -1,27 +1,20 @@
 "use client";
 import ReduxProvider from "@/redux/ReduxProvider";
-import { SVGProps } from "react";
 import { Inter } from "next/font/google";
 import { signOut } from "next-auth/react";
-import { useEffect, useState } from "react";
 import secureLocalStorage from "react-secure-storage";
-import ProfileHeader from "../components/admin/profile-header";
-import { usePathname } from "next/navigation";
-import { DropToggle } from "../components/DropToggle";
+import { usePathname, useRouter } from "next/navigation";
 import {
   GalleryVerticalEndIcon,
-  Group,
   LogOut,
   PanelLeft,
-  Play,
-  ShapesIcon,
-  Ticket,
   TicketIcon,
   User,
   Users,
 } from "lucide-react";
-import OrganizationHeader from "../components/admin/OrganizationHeader";
-import { GroupIcon } from "@radix-ui/react-icons";
+import useOrgCheck from "@/hooks/createOrgCheck";
+import { toast } from "@/components/ui/use-toast";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,8 +27,20 @@ export default function UserDashboardLayout({
     signOut({ callbackUrl: "/login" });
     secureLocalStorage.removeItem("tialabs_info");
   };
-  const [organizationName, setOrganizationName] = useState();
+
   const pathname = usePathname();
+  const router =useRouter()
+
+
+  const isOrg = useOrgCheck();
+  if (isOrg) {
+    toast({
+      title: "You don't have access to this page.",
+      variant: "destructive",
+      duration: 3000
+    })
+    router.push("/dashboard")
+  }
 
   return (
     <ReduxProvider>

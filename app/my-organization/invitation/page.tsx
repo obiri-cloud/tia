@@ -63,10 +63,6 @@ const Images = () => {
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
-  const isOrg = useOrgCheck();
-  if (isOrg) {
-    return null;
-  }
 
   const getInvitations = async (): Promise<IinviteData[] | undefined> => {
     try {

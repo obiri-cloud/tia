@@ -4,18 +4,13 @@ import Images from "../components/admin/images";
 import Labs from "../components/admin/labs";
 import ReduxProvider from "@/redux/ReduxProvider";
 import GetAdmin from "../components/admin/get-admin";
-import useAdminCheck from "@/hooks/admin-check";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 
 export default function DashboardPage() {
-  const isAdmin = useAdminCheck();
   const { data: session } = useSession();
 
-  if (!isAdmin) {
-    return null;
-  }
   
   return (
       <div className="">

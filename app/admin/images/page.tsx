@@ -3,7 +3,6 @@ import React from "react";
 import ReduxProvider from "@/redux/ReduxProvider";
 import Images from "@/app/components/admin/images";
 import GetAdmin from "@/app/components/admin/get-admin";
-import useAdminCheck from "@/hooks/admin-check";
 import { ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -11,19 +10,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 
 const AdminImages = () => {
-  const isAdmin = useAdminCheck();
   const { data: session } = useSession();
-  const { name} = useSelector(
-    (state: RootState) => state.orgOwner
-  );
-
-  console.log({name});
+ 
   
-
-
-  if (!isAdmin) {
-    return null;
-  }
   return (
     <ReduxProvider>
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">

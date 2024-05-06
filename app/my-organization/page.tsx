@@ -79,13 +79,6 @@ const myOrganizationPage = () => {
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
-
-  const isOrg = useOrgCheck();
-  
-  if (isOrg) {
-    return null;
-  }
-
   // useEffect(() => {
     const getOrgOwner = async () => {
       try {

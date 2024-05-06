@@ -42,10 +42,6 @@ const AccountPage = () => {
     })
   });
 
-  const isOrg = useOrgCheck();
-  if (isOrg) {
-    return null;
-  }
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;

@@ -30,6 +30,8 @@ const ReviewsPage = () => {
         }
       );
 
+      console.log("response.data.results", response.data.results);
+
       setReviews(response.data.results);
     } catch (error) {}
   };
@@ -74,7 +76,8 @@ const ReviewsPage = () => {
                       </time>
                       <h3 className="text-base font-semibold text-gray-900 dark:text-white flex gap-3">
                         <div>
-                          {review.user.first_name} {review.user.last_name}{" "}
+                          {review.user?.first_name ?? "John"}{" "}
+                          {review.user?.last_name ?? "Doe"}{" "}
                         </div>{" "}
                         <div className="">
                           {" "}
