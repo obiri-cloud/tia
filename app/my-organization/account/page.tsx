@@ -292,7 +292,7 @@ const AccountPage = () => {
         </div>
         <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
       <DeactivateConfirmation
-        text="Do you want to delete your Organization. You'll loose all your Groups, Members and Labs attached to Group"
+        text="Do you want to delete your Organization. You will lose all your groups, members and labs attached to this group"
         noText="No, cancel"
         confirmText="Yes, delete"
         confirmFunc={() => deleteAccount()}

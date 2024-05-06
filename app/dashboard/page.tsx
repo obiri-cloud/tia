@@ -19,8 +19,9 @@ const UserPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  // @ts-ignore
-  const token = session?.user!.tokens?.access_token;
+  const token = session?.user.tokens?.access_token;
+
+
 
   const { data: images } = useQuery(["images"], () => getImages());
 
@@ -32,7 +33,6 @@ const UserPage = () => {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            // @ts-ignore
             Authorization: `Bearer ${token}`,
           },
         }
