@@ -141,7 +141,7 @@ const Images = () => {
   
 
   return (
-    <div className="space-y-4 m-4">
+    <div className="">
               <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
           <span className="p-2 ">Organzation</span>
@@ -156,7 +156,7 @@ const Images = () => {
           ) : null
         }
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">
           <CardHeader className="flex flex-row justify-between items-center w-full">
             <div>
@@ -168,7 +168,7 @@ const Images = () => {
             <div>
             {!status && (
               <>
-                <Button className="m-4">invite members</Button>
+                <Button className="m-4">Invite members</Button>
               </>
             )
             }
