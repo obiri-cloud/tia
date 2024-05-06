@@ -8,9 +8,20 @@ import secureLocalStorage from "react-secure-storage";
 import ProfileHeader from "../components/admin/profile-header";
 import { usePathname } from "next/navigation";
 import { DropToggle } from "../components/DropToggle";
-import { LogOut, Play, ShapesIcon, User } from "lucide-react";
+import {
+  GalleryVerticalEndIcon,
+  Group,
+  LogOut,
+  PanelLeft,
+  Play,
+  ShapesIcon,
+  Ticket,
+  TicketIcon,
+  User,
+  Users,
+} from "lucide-react";
 import OrganizationHeader from "../components/admin/OrganizationHeader";
-
+import { GroupIcon } from "@radix-ui/react-icons";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,8 +36,6 @@ export default function UserDashboardLayout({
   };
   const [organizationName, setOrganizationName] = useState();
   const pathname = usePathname();
-
-
 
   return (
     <ReduxProvider>
@@ -61,7 +70,7 @@ export default function UserDashboardLayout({
             className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark"
           >
             <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
-              <OrganizationHeader />
+              {/* <OrganizationHeader /> */}
               <div className="flex flex-1 flex-col">
                 <ul className="space-y-2 font-medium mt-[50px] flex-1">
                   <li className="all-images-button">
@@ -69,43 +78,28 @@ export default function UserDashboardLayout({
                       href="/my-organization"
                       className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
                         pathname.startsWith("/my-organization") &&
-                        pathname !== "/dashboard/active-labs" &&
-                        pathname !== "/dashboard/account"
+                        pathname !== "/my-organization/groups" &&
+                        pathname !== "/my-organization/members" &&
+                        pathname !== "/my-organization/invitations" &&
+                        pathname !== "/my-organization/account"
                           ? "bg-menuHovWhite dark:bg-menuHov"
                           : ""
                       }`}
                     >
-                      <ShapesIcon
+                      <PanelLeft
                         className={`
-
-
-${
-  pathname.startsWith("/dashboard") &&
-  pathname !== "/dashboard/active-labs" &&
-  pathname !== "/dashboard/account"
-    ? "w-5 h-5  transition duration-75 dark:group-hover:text-white fill-white dark:fill-whiteDark stroke-2"
-    : ""
-}
-
-
-`}
+                        ${
+                          pathname.startsWith("/my-organization") &&
+                          pathname !== "/my-organization/groups" &&
+                          pathname !== "/my-organization/members" &&
+                          pathname !== "/my-organization/invitations" &&
+                          pathname !== "/my-organization/account"
+                            ? "w-5 h-5  transition duration-75 dark:group-hover:text-white fill-white dark:fill-whiteDark stroke-2"
+                            : ""
+                        }
+                        `}
                       />
-                      <span
-                        className={`ms-3 
-                      
-                      ${
-                        pathname.startsWith(
-                          "/my-organization/organizationImages"
-                        ) &&
-                        pathname !== "/dashboard/active-labs" &&
-                        pathname !== "/dashboard/account"
-                          ? "bg-menuHovWhite dark:bg-menuHov font-semibold"
-                          : "font-light"
-                      }
-                      `}
-                      >
-                        Labs
-                      </span>
+                      <span className={`ms-3  font-light`}>Labs</span>
                     </a>
                   </li>
                   <li className="active-labs-button">
@@ -117,7 +111,7 @@ ${
                           : ""
                       }`}
                     >
-                      <User
+                      <GalleryVerticalEndIcon
                         className={` 
                           ${
                             pathname === "/my-organization/groups"
@@ -126,19 +120,7 @@ ${
                           }
                           `}
                       />
-                      <span
-                        className={`
-                      ms-3 
-                      ${
-                        pathname === "/my-organization/groups"
-                          ? "font-semibold"
-                          : "font-light "
-                      }
-                      
-                      `}
-                      >
-                        Groups
-                      </span>
+                      <span className={`ms-3  font-light`}>Groups</span>
                     </a>
                   </li>
                   <li className="active-labs-button">
@@ -150,7 +132,7 @@ ${
                           : ""
                       }`}
                     >
-                      <User
+                      <Users
                         className={` 
                           ${
                             pathname === "/my-organization/members"
@@ -183,7 +165,7 @@ ${
                           : ""
                       }`}
                     >
-                      <User
+                      <TicketIcon
                         className={` 
                           ${
                             pathname === "/my-organization/invitation"
@@ -238,7 +220,7 @@ ${
                         }
                         `}
                         >
-                          organization Account
+                          Account
                         </span>
                       </a>
                     </li>
