@@ -22,7 +22,7 @@ const UserPage = () => {
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
-  const { data: images } = useQuery(["Homeimage"], () => getImages());
+  const { data: images } = useQuery(["images"], () => getImages());
 
   const getImages = async () => {
     try {
@@ -60,13 +60,13 @@ const UserPage = () => {
       </div>
 
       <div className="p-4 ">
-        <div className="all-images-list xl:flex grid lg:grid-cols-3  flex-wrap w-full  gap-3">
+        <div className=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6">
           {images && images.length >= -1 ? (
             images.map((image: ILabImage, i: number) => (
               <div
                 onClick={() => viewImage(image)}
                 key={i}
-                className={`lab-card rounded-2xl p-8 lg:w-[375px] w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer`}
+                className={`lab-card rounded-2xl p-8 w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer`}
               >
                 <img
                   src={image.image_picture ?? ""}
@@ -96,8 +96,8 @@ const UserPage = () => {
           )}
 
           {images && images.length === 0 ? (
-            <div className="w-full flex justify-center h-[400px] items-center">
-              <p className="text-gray-600">No images found...</p>
+            <div className="w-full flex justify-center  items-center col-span-12">
+              <p className="text-gray-600 dark:text-white">No images found...</p>
             </div>
           ) : null}
         </div>
