@@ -58,8 +58,8 @@ const CreateOrgModal= ({ onSubmit }: { onSubmit: (e: FormEvent<HTMLFormElement>)
 
   return (
     <OrgDialog
-      title="Group Images"
-      description="Select the Images you want to add to the group"
+      title="Create Organization"
+      description=""
     >
       <Form {...form}>
         <form

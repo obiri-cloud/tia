@@ -134,7 +134,7 @@ const myOrganizationPage = () => {
 
 
 
-  const createGroup = async (formData: FormData) => {
+  const createOrg = async (formData: FormData) => {
     const axiosConfig = {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/create/`,
@@ -153,9 +153,10 @@ const myOrganizationPage = () => {
     mutate: createOrganizationMutation,
     isLoading: updating,
     error: UpdateError,
-  } = useMutation((formData: FormData) => createGroup(formData), {
+  } = useMutation((formData: FormData) => createOrg(formData), {
     onSuccess: () => {
       queryClient.invalidateQueries("orgName");
+      router.push('/my-organization')
       setIsOpenViewDialog2(false);
       (document.getElementById("Org-name") as HTMLInputElement).value = "";
       toast({
@@ -291,15 +292,6 @@ const myOrganizationPage = () => {
         }
       >
         <NewImageForm />
-      </Dialog>
-
-      <Dialog
-        open={isOpenViewDialogOpen2}
-        onOpenChange={
-          isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
-        }
-      >
-      <CreateOrgModal  onSubmit={createOrganization} />
       </Dialog>
     </div>
   );
