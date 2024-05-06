@@ -2,19 +2,21 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React,{useState,useEffect} from "react";
+import useOrgCheck from "@/hooks/createOrgCheck";
 
 
 const AltRouteCheck = () => {
   const { data: session } = useSession();
 
+  const orgCheck=useOrgCheck()
   //@ts-ignore
   let subscription_plan = session?.user.data.subscription_plan;
   //@ts-ignore
-
   let is_super = session?.user.data.is_superuser;
   //@ts-ignore
   let is_admin = session?.user.data.is_admin;
 
+  console.log(useOrgCheck())
 
 
   function renderAltRoute() {

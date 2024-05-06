@@ -53,7 +53,6 @@ function AddImgGroupModal({
 
   async function handleSubmit(data: z.infer<typeof FormSchema>) {
     let image_ids = { image_ids: data.image };
-
     (
       document.getElementById("add-image-to-grp-button") as HTMLButtonElement
     ).disabled = true;

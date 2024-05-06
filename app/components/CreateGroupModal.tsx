@@ -12,18 +12,13 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import OrgDialog from "./my-organization/org-dialog";
 
-const CreateGroupModal = ({
-  onSubmit,
-}: {
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
-}) => {
+const CreateGroupModal = ({onSubmit}: {onSubmit: (e: FormEvent<HTMLFormElement>) => void;}) => {
   const form = useForm();
-
 
   return (
     <OrgDialog
-      title="Create a group"
-      description="Separete your members into manageable groups"
+      title="Create Your Organiization"
+      description=""
     >
       <Form {...form}>
         <form

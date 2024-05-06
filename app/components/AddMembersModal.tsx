@@ -164,9 +164,12 @@ function AddMembersModal(image: any) {
               </FormItem>
             )}
           />
+          {Array.isArray(image?.image) && image.image.length > 0 && (
           <Button className="w-full" type="submit">
             Submit
           </Button>
+          )}
+
         </form>
       </Form>
     </DialogContent>

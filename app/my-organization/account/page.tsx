@@ -119,9 +119,6 @@ const AccountPage = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // if (buttonRef.current) {
-    //   buttonRef.current.disabled = true;
-    // }
     let formData = {
       name: NameRef.current?.value,
     };
@@ -188,13 +185,13 @@ const AccountPage = () => {
 
       if (response.status === 204) {
         toast({
-          title: "Account deleted successfully!",
+          title: "Organization Account deleted successfully",
           variant: "success",
         });
        router.push('/dashboard')
       } else {
         toast({
-          title: "Something went deactivating your account.",
+          title: "Something went deactivating your organizaton",
           variant: "destructive",
         });
       }
@@ -258,6 +255,7 @@ const AccountPage = () => {
                 </label>
                 <div className="sc-hLBbgP fHykyP">
                   <input
+                  
                     placeholder="name"
                     className="kFBAIE bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder"
                     defaultValue={userData?.name}
@@ -270,6 +268,7 @@ const AccountPage = () => {
 
           <button
             // ref={buttonRef}
+            id="submit-button"
             type="submit"
             className="sc-fbYMXx dxdUZf bg-black"
             // onClick={handleSubmit}
@@ -297,7 +296,7 @@ const AccountPage = () => {
         </div>
         <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
       <DeactivateConfirmation
-        text="Do you want to delete your account?"
+        text="Do you want to delete your Organization. You'll loose all your Groups, Members and Labs attached to Group"
         noText="No, cancel"
         confirmText="Yes, delete"
         confirmFunc={() => deleteAccount()}

@@ -112,6 +112,73 @@ const Images = () => {
     }
   };
 
+ //mutation
+ const SendInvitation = async (formData: FormData) => {
+  const axiosConfig = {
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/create/`,
+    data: formData,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await axios(axiosConfig);
+  return response.data;
+};
+
+const {
+  mutate: SendInviteMutation,
+  isLoading: updatingGroups,
+  error: groupUpdateError,
+} = useMutation((formData: FormData) => SendInvitation(formData), {
+  onSuccess: () => {
+    queryClient.invalidateQueries("invites");
+    (document.getElementById("email-id") as HTMLInputElement).value = "";
+    toast({
+      variant: "success",
+      title: "Invitation Sent Successfully",
+      description: "",
+    });
+    setIsOpenViewDialog2(false);
+    (
+      document.getElementById("submit-button") as HTMLButtonElement
+    ).textContent = "Invitation Sent";
+  },
+
+
+  onError: (error: any) => {
+    const responseData = error.response.data;
+    toast({
+      variant: "destructive",
+      title: responseData.data,
+    });
+    (
+      document.getElementById("submit-button") as HTMLButtonElement
+    ).textContent = "Error Sending Invitaion";
+  },
+});
+
+const SendInvite = (event: FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  //@ts-ignore
+  (document.getElementById("submit-button") as HTMLButtonElement).disabled =
+    true;
+  (
+    document.getElementById("submit-button") as HTMLButtonElement
+  ).textContent = "sending";
+  (
+    document.getElementById("submit-button") as HTMLButtonElement
+  ).textContent = "Sending Invitation...";
+  const email = (document.getElementById("email-id") as HTMLInputElement)
+    ?.value;
+
+  const formData = new FormData();
+  formData.append("email", email || "");
+  SendInviteMutation(formData);
+};
+
   const formatDate = (timestamp: string) => {
     const date = new Date(timestamp);
     return format(date, "MMMM dd, yyyy h:mm a");

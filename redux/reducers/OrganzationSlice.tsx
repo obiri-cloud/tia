@@ -28,7 +28,6 @@ export const OrganizationSlice = createSlice({
   reducers: {
     setOrgData: (state, action: PayloadAction<OrgState>) => {
       console.log("action.payload",action.payload);
-      
       state = action.payload;
     }
   },

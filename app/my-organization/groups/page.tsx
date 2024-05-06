@@ -33,6 +33,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
 import AddMembersModal from "@/app/components/AddMembersModal";
+import OrgDialog from "@/app/components/my-organization/org-dialog";
+import { z } from "zod";
+import useOrgCheck from "@/hooks/orgnization-check";
 
 interface OrgGroup {
   id: string;
@@ -157,6 +160,7 @@ const OrganizationGroup = () => {
   };
 
   const createGroup = async (formData: FormData) => {
+    console.log({formData});
     const axiosConfig = {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/create/`,
@@ -272,7 +276,9 @@ const OrganizationGroup = () => {
                       ? groups.map((group: OrgGroup, i: number) => (
                           <TableRow key={i}>
                             <TableCell className="font-medium">
-                              {group.name}
+                            {/* <Link href={`/my-organization/groups/${group.id}/images?name=Group&group_name=${group.name} Lab`} className="font-medium text-blue-500"> */}
+                                 {group.name}
+                             {/* </Link> */}
                             </TableCell>
                             <TableCell>{group.organization.name}</TableCell>
                             <TableCell className="underline font-medium text-right">
@@ -304,7 +310,7 @@ const OrganizationGroup = () => {
                                     className="font-medium cursor-pointer hover:text-white-500 text-white-500 py-2"
                                     onClick={() => {
                                       router.push(
-                                        `/my-organization/groups/${group.id}/images?name=Group&group_name=${group.name} Image`
+                                        `/my-organization/groups/${group.id}/images?name=Group&group_name=${group.name} Lab`
                                       );
                                     }}
                                   >
