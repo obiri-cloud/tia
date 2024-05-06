@@ -10,7 +10,7 @@ import {
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import {
   Table,
@@ -56,13 +56,15 @@ import * as z from "zod";
 import { Input } from "@/components/ui/input";
 import CreateOrgModal from "@/app/components/CreateOrgModal"
 import useOrgCheck from "@/hooks/orgnization-check";
+import hasOrgCheck from "@/hooks/createOrgCheck";
 
-const Images = () => {
+const myOrganizationPage = () => {
   const name = useSelector((state: RootState) => state);
-
+  
+  let OrgExist=hasOrgCheck()
   console.log({ name });
 
-  const [imageList, setimagelist] = useState<ILabImage[]>();
+  // const [orgImageList, setorgImagelist] = useState<ILabImage[]>();
 
   const { data: session } = useSession();
   const dispatch = useDispatch();
@@ -70,17 +72,47 @@ const Images = () => {
 
   const [image, setImage] = useState<ILabImage>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
+  const [isOpenViewDialogOpen2, setIsOpenViewDialog2] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] = useState<boolean>(false);
 
+  const queryClient = useQueryClient();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
+
   const isOrg = useOrgCheck();
+  
   if (isOrg) {
     return null;
   }
 
-  const getImages = async () => {
+  // useEffect(() => {
+    const getOrgOwner = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data.status === 404) {
+          setIsOpenViewDialog2(true); 
+        } else if (response.data.status === 200) {
+          setIsOpenViewDialog2(false); 
+        }
+      } catch (error) {
+        console.error("Error checking organization owner:", error);
+      }
+    };
+
+
+
+  const getOrgImages = async () => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BE_URL}/organization/images/`,
@@ -93,7 +125,7 @@ const Images = () => {
           },
         }
       );
-      setimagelist(response.data.data);
+      // setorgImagelist(response.data.data);
       return response.data.data;
     } catch (error) {
       console.log(error);
@@ -101,43 +133,86 @@ const Images = () => {
   };
 
 
-  const [OrgExist, setOrgExist] = useState<boolean>(false);
 
-  const getOrgOwner = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  const createGroup = async (formData: FormData) => {
+    const axiosConfig = {
+      method: "POST",
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/create/`,
+      data: formData,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
 
-       if(response.data.status===404){
-           setOrgExist(true)
-          return
-       }
-  
-
-       if(response.data.status==200){
-         setOrgExist(false)
-         return
-       }
-
-      return response;
-    } catch (error) {
-       console.log(error)
-    }
+    const response = await axios(axiosConfig);
+    return response.data;
   };
 
-  useEffect(() => {
-    getOrgOwner()
-    getImages();
-  }, []);
+  const {
+    mutate: createOrganizationMutation,
+    isLoading: updating,
+    error: UpdateError,
+  } = useMutation((formData: FormData) => createGroup(formData), {
+    onSuccess: () => {
+      queryClient.invalidateQueries("orgName");
+      setIsOpenViewDialog2(false);
+      (document.getElementById("Org-name") as HTMLInputElement).value = "";
+      toast({
+        variant: "success",
+        title: "Orgnaization created successfully",
+        description: "",
+      });
+     
+      (
+        document.getElementById("submit-button") as HTMLButtonElement
+      ).textContent = "Creating Organization";
+    },
+    onError: (error: any) => {
+      const responseData = error.response.data;
+      toast({
+        variant: "destructive",
+        title: responseData.data,
+      });
+      (
+        document.getElementById("submit-button") as HTMLButtonElement
+      ).textContent = "Creating Orgnaization";
+    },
+  });
+
+  const createOrganization = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    //@ts-ignore
+    (document.getElementById("submit-button") as HTMLButtonElement).disabled =
+      true;
+    (
+      document.getElementById("submit-button") as HTMLButtonElement
+    ).textContent = "Creating Orgnaization";
+    (
+      document.getElementById("submit-button") as HTMLButtonElement
+    ).textContent = "Creating Organization...";
+    const name = (document.getElementById("Org-name") as HTMLInputElement)
+      ?.value;
+
+    const formData = new FormData();
+    formData.append("name", name || "");
+    createOrganizationMutation(formData);
+  };
+
+
+
+  const {
+    isLoading: loadingOrgImages,
+    error: errorOnOrgImages,
+    data: orgImageList,
+  } = useQuery(["orgImages"], () => getOrgImages());
+
+  const {
+    isLoading: loadingOrgcheck,
+    error: errorOrgcheck,
+    data: orgcheckk,
+  } = useQuery(["orgcheck"], () => getOrgOwner());
+
 
 
 
@@ -182,13 +257,13 @@ const Images = () => {
                     <TableHead className="text-right">Port Number</TableHead>
                   </TableRow>
                 </TableHeader>
-                {imageList?.length === 0 && (
+                {orgImageList?.length === 0 && (
                   <TableCaption>No images found...</TableCaption>
                 )}
                 <TableBody>
-                  {imageList
-                    ? imageList.length > 0
-                      ? imageList.map((image, i) => (
+                  {orgImageList
+                    ? orgImageList.length > 0
+                      ? orgImageList.map((image:ILabImage, i:number) => (
                           <TableRow key={i}>
                             <TableCell className="font-medium">
                               {image.name}
@@ -219,16 +294,19 @@ const Images = () => {
       </Dialog>
 
       <Dialog
-        open={OrgExist}
+        open={isOpenViewDialogOpen2}
         onOpenChange={
-          isOpenDeleteDialogOpen ? setIsOpenDeleteDialog : setIsOpenViewDialog
+          isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
         }
       >
-
-      <CreateOrgModal OrgExist={OrgExist} setOrgExist={setOrgExist}/>
+      <CreateOrgModal  onSubmit={createOrganization} />
       </Dialog>
     </div>
   );
 };
 
-export default Images;
+export default myOrganizationPage;
+function getOrgOwner(): any {
+  throw new Error("Function not implemented.");
+}
+

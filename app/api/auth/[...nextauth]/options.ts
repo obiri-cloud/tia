@@ -74,7 +74,7 @@ const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async session({ session, token }) {
-      // @ts-ignore
+      //@ts-ignore
       session.user = token.user;
       return session;
     },

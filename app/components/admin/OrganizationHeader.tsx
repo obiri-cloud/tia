@@ -14,7 +14,7 @@ const OrganizationHeader = () => {
   const {
     data: details,
     isLoading
-  } = useQuery(["orgOwner"], () => getOrg());
+  } = useQuery(["orgName"], () => getOrg());
 
   
 

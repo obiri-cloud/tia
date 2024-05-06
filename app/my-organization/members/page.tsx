@@ -183,7 +183,7 @@ const Images = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="">Email</TableHead>
-                    <TableHead>First_Name</TableHead>
+                    <TableHead>First Name</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right"></TableHead>
                     <TableHead className="text-right">Action</TableHead>
