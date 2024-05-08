@@ -89,7 +89,7 @@ const UserPage = () => {
               {new Array(6).fill(1).map((_, i) => (
                 <Skeleton
                   key={i}
-                  className="lab-card rounded-2xl p-8 lg:w-[375px] w-full  h-[200px]"
+                  className="lab-card rounded-2xl  w-full  h-[200px]"
                 />
               ))}
             </>

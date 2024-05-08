@@ -17,8 +17,8 @@ const CreateGroupModal = ({onSubmit}: {onSubmit: (e: FormEvent<HTMLFormElement>)
 
   return (
     <OrgDialog
-      title="Create Your Organiization"
-      description=""
+      title="Create a group"
+      description="With groups, you can separate members in your organization."
     >
       <Form {...form}>
         <form
@@ -47,7 +47,7 @@ const CreateGroupModal = ({onSubmit}: {onSubmit: (e: FormEvent<HTMLFormElement>)
           />
 
           <Button
-            id="submit-button"
+            id="create-group-submit-button"
             className="w-full disabled:bg-black-900/10 mt-6 dark:bg-white dark:text-black bg-black text-white "
             variant="black"
           >

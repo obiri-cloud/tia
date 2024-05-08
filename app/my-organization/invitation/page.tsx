@@ -263,6 +263,8 @@ const {
     formData.append("email", email || "");
     addInviteMutation(formData);
   };
+  console.log("invites", invites);
+  
 
   return (
     <div className="">
@@ -313,8 +315,8 @@ const {
                   </TableRow>
                 </TableHeader>
 
-                {!loadingInvitation && invites && invites.length === 0 ? (
-                  <TableCaption>No invites found...</TableCaption>
+                {!loadingInvitation && ( (invites && invites.length === 0) || !invites) ? (
+                  <TableCaption>No pending invites found...</TableCaption>
                 ) : null}
                 {loadingInvitation ? (
                   <TableCaption>

@@ -37,7 +37,7 @@ import OrgDialog from "@/app/components/my-organization/org-dialog";
 import { z } from "zod";
 import useOrgCheck from "@/hooks/orgnization-check";
 
-interface OrgGroup {
+export interface OrgGroup {
   id: string;
   name: string;
   organization: {
@@ -46,7 +46,6 @@ interface OrgGroup {
 }
 
 const OrganizationGroup = () => {
-
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -61,7 +60,7 @@ const OrganizationGroup = () => {
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<OrgGroup>();
-  const [gid, setgid] = useState<number>();
+  const [gid, setGid] = useState<number>();
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -107,10 +106,9 @@ const OrganizationGroup = () => {
   };
 
   const {
-    isLoading: loadingMembers,
-    error: errorMembers,
     data: members,
   } = useQuery(["members"], () => getMembers());
+
 
   const {
     isLoading: loadingGroups,
@@ -118,6 +116,7 @@ const OrganizationGroup = () => {
     data: groups,
   } = useQuery(["groups"], () => getGroups());
 
+  
   const queryClient = useQueryClient();
 
   const deleteGroup = async (id: number) => {
@@ -160,7 +159,7 @@ const OrganizationGroup = () => {
   };
 
   const createGroup = async (formData: FormData) => {
-    console.log({formData});
+    console.log({ formData });
     const axiosConfig = {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/create/`,
@@ -191,7 +190,7 @@ const OrganizationGroup = () => {
       setIsOpenViewDialog2(false);
       (
         document.getElementById("submit-button") as HTMLButtonElement
-      ).textContent = "Creating Group";
+      ).textContent = "Create Group";
     },
     onError: (error: any) => {
       const responseData = error.response.data;
@@ -201,19 +200,17 @@ const OrganizationGroup = () => {
       });
       (
         document.getElementById("submit-button") as HTMLButtonElement
-      ).textContent = "Creating Group";
+      ).textContent = "Create Group";
     },
   });
 
   const createNewGroup = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    (document.getElementById("submit-button") as HTMLButtonElement).disabled =
-      true;
     (
-      document.getElementById("submit-button") as HTMLButtonElement
-    ).textContent = "Creating Group";
+      document.getElementById("create-group-submit-button") as HTMLButtonElement
+    ).disabled = true;
     (
-      document.getElementById("submit-button") as HTMLButtonElement
+      document.getElementById("create-group-submit-button") as HTMLButtonElement
     ).textContent = "Creating Group...";
     const name = (document.getElementById("group-name") as HTMLInputElement)
       ?.value;
@@ -221,6 +218,100 @@ const OrganizationGroup = () => {
     const formData = new FormData();
     formData.append("name", name || "");
     createGroupMutation(formData);
+  };
+
+  const addMember = (
+    event: FormEvent<HTMLFormElement>,
+    members: Set<string>
+  ) => {
+    event.preventDefault();
+    (
+      document.getElementById("add-member-submit-button") as HTMLButtonElement
+    ).disabled = true;
+    (
+      document.getElementById("add-member-submit-button") as HTMLButtonElement
+    ).textContent = "Updating Member List...";
+
+    addMemberMutation(members);
+  };
+
+  const { mutate: addMemberMutation } = useMutation(
+    (members: Set<string>) => addMemberFn(members),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("members");
+        (document.getElementById("group-name") as HTMLInputElement).value = "";
+        toast({
+          variant: "success",
+          title: "Members updated successfully",
+          description: "",
+        });
+        setIsOpenViewDialog3(false);
+        (
+          document.getElementById(
+            "add-member-submit-button"
+          ) as HTMLButtonElement
+        ).textContent = "Update Member List";
+      },
+      onError: (error: any) => {
+        const responseData = error.response.data;
+        toast({
+          variant: "destructive",
+          title: responseData.data,
+        });
+        (
+          document.getElementById(
+            "add-member-submit-button"
+          ) as HTMLButtonElement
+        ).textContent = "Update Member List";
+      },
+    }
+  );
+
+  const addMemberFn = async (members: Set<string>) => {
+    let axiosConfig = {
+      method: "POST",
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${gid}/member/add/`,
+      data: {
+        user_ids: Array.from(members),
+      },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      const response = await axios(axiosConfig);
+      console.log({ response });
+      if (response.status === 201 || response.status === 200) {
+        toast({
+          variant: "success",
+          title: `Members updated sucessfully`,
+          description: ``,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Group update  error",
+          description: response.data,
+        });
+      }
+    } catch (error: any) {
+      console.error("error", error);
+      const responseData = error.response.data;
+      if (error.response) {
+        toast({
+          variant: "destructive",
+          title: responseData.data,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: responseData.data,
+        });
+      }
+    } finally {
+    }
   };
 
   return (
@@ -231,13 +322,11 @@ const OrganizationGroup = () => {
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
 
-        {
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/dashboard" className="font-medium text-mint">
-              Go to dashboard
-            </Link>
-          ) : null
-        }
+        {session?.user && session?.user.data.is_admin ? (
+          <Link href="/dashboard" className="font-medium text-mint">
+            Go to dashboard
+          </Link>
+        ) : null}
       </div>
       <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">
@@ -273,10 +362,13 @@ const OrganizationGroup = () => {
                     ? groups && groups.length > 0
                       ? groups.map((group: OrgGroup, i: number) => (
                           <TableRow key={i}>
-                            <TableCell className="font-medium">
-                            {/* <Link href={`/my-organization/groups/${group.id}/images?name=Group&group_name=${group.name} Lab`} className="font-medium text-blue-500"> */}
-                                 {group.name}
-                             {/* </Link> */}
+                            <TableCell className="font-medium  underline">
+                              <Link
+                              className="text-blue-400"
+                                href={`/my-organization/groups/${group.id}/images?name=Group&group_name=${group.name} Lab`}
+                              >
+                                {group.name}
+                              </Link>
                             </TableCell>
                             <TableCell>{group.organization.name}</TableCell>
                             <TableCell className="underline font-medium text-right">
@@ -287,32 +379,12 @@ const OrganizationGroup = () => {
                                 <DropdownMenuContent className="left-[-20px_!important]">
                                   <DropdownMenuItem
                                     onClick={() => {
-                                      setgid(Number(group.id)),
+                                      setGid(Number(group.id)),
                                         setIsOpenViewDialog3(true);
                                     }}
                                     className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
                                   >
                                     Add members
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="font-medium cursor-pointer hover:text-white-500 text-white-500 py-2"
-                                    onClick={() => {
-                                      router.push(
-                                        `/my-organization/groups/${group.id}/members?name=group&group_name=${group.name}`
-                                      );
-                                    }}
-                                  >
-                                    View members
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="font-medium cursor-pointer hover:text-white-500 text-white-500 py-2"
-                                    onClick={() => {
-                                      router.push(
-                                        `/my-organization/groups/${group.id}/images?name=Group&group_name=${group.name} Lab`
-                                      );
-                                    }}
-                                  >
-                                    View Lab
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => prepareDelete(group)}
@@ -322,7 +394,7 @@ const OrganizationGroup = () => {
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => {
-                                      setgid(Number(group.id)),
+                                      setGid(Number(group.id)),
                                         setIsOpenViewDialog1(true);
                                     }}
                                     className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
@@ -385,7 +457,7 @@ const OrganizationGroup = () => {
           isOpenViewDialogOpen3 ? setIsOpenViewDialog3 : setIsOpenDeleteDialog
         }
       >
-        <AddMembersModal image={members} gid={gid} />
+        <AddMembersModal members={members} onSubmit={addMember} gId={gid} />
       </Dialog>
     </div>
   );

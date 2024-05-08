@@ -1,8 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,34 +14,26 @@ import { FormEvent, useEffect, useState } from "react";
 
 import { GroupMember } from "../types";
 import axios from "axios";
-import { useQuery } from "react-query";
 import { useSession } from "next-auth/react";
+import { OrgGroup } from "../my-organization/groups/page";
 
-const formSchema = z.object({
-  image: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: "You have to select at least one item.",
-  }),
-});
-
-const AddMembersModal = ({
-  members,
+const AttachMemberToGroup = ({
+  groups,
   onSubmit,
-  gId,
 }: {
-  members: GroupMember[] | undefined;
+  groups: OrgGroup[] | undefined;
 
   onSubmit: (e: FormEvent<HTMLFormElement>, s: Set<string>) => void;
-  gId: number | undefined;
 }) => {
   const form = useForm();
   const { data: session } = useSession();
   const token = session?.user!.tokens?.access_token;
   const [data, setData] = useState<string[]>([]);
 
-  const getMembers = async () => {
+  const getGroups = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${gId}/member/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/list/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -66,7 +56,6 @@ const AddMembersModal = ({
     }
   };
 
-
   const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
     new Set(data)
   );
@@ -80,16 +69,15 @@ const AddMembersModal = ({
     };
   }, [data]);
 
-  useEffect(() => {
-    getMembers();
 
-    return () => {
-      setData([]);
-    };
-  }, [gId]);
-
-
-  
+  function renderIni(str: string){
+    let d: string[] = str.split(" ")
+    if (d.length > 1){
+        return `${d[0][0]}${d[1][0]}`
+    }else{
+        return `${d[0]}${d[1]}`
+    }
+  }
 
   return (
     <DialogContent>
@@ -104,42 +92,43 @@ const AddMembersModal = ({
               <FormItem>
                 <div className="mb-6">
                   <h3 className="text-black dark:text-white mb-1 font-semibold text-lg">
-                    Organization Members
+                    Organization Groups
                   </h3>
                   <FormDescription className="text-sm">
-                    Select the members you want to add to the group
+                    Select the groups you want to attach the user to
                   </FormDescription>
                 </div>
-                {members &&
-                  members.map((member: GroupMember) => (
+                {groups &&
+                  groups.map((group: OrgGroup) => (
                     <FormItem
-                      key={member.member.id}
+                      key={group.id}
                       className="flex flex-row items-start space-x-3 space-y-0"
                     >
                       <div className="flex items-center space-x-4">
                         <Checkbox
                           className="text-black dark:text-white"
-                          checked={selectedMembers?.has(member.member.id)}
-                          onCheckedChange={(checked: boolean) => {
-                            const updatedSet = new Set(selectedMembers);
-                            if (checked) {
-                              updatedSet.add(member.member.id);
-                            } else {
-                              updatedSet.delete(member.member.id);
-                            }
-                            setSelectedMembers(updatedSet);
-                          }}
+                        //   checked={selectedMembers?.has(member.member.id)}
+                        //   onCheckedChange={(checked: boolean) => {
+                        //     const updatedSet = new Set(selectedMembers);
+                        //     if (checked) {
+                        //       updatedSet.add(member.member.id);
+                        //     } else {
+                        //       updatedSet.delete(member.member.id);
+                        //     }
+                        //     setSelectedMembers(updatedSet);
+                        //   }}
                         />
                         <div className="bg-muted text-black dark:text-white font-bold p-4 w-4 h-4 flex justify-center items-center uppercase  rounded-full">
-                          {member.member.first_name[0]}
+                          <span>{renderIni(group.name)}</span>
                         </div>
 
                         <div className="flex-1">
                           <div className="font-medium text-black dark:text-white ">
-                            {`${member.member.first_name} ${member.member.last_name}`}
+                          {group.name}
+
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {member.member.email}
+                            {group.organization.name}
                           </div>
                         </div>
                       </div>
@@ -148,7 +137,7 @@ const AddMembersModal = ({
               </FormItem>
             )}
           />
-          {members && members.length > 0 ? (
+          {groups && groups.length > 0 ? (
             <Button className="w-full" id="add-member-submit-button">
               Update Member List
             </Button>
@@ -159,4 +148,4 @@ const AddMembersModal = ({
   );
 };
 
-export default AddMembersModal;
+export default AttachMemberToGroup;

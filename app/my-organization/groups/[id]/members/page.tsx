@@ -1,5 +1,4 @@
 "use client";
-import { userCheck } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import {
   Card,
@@ -8,12 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 import { useQuery } from "react-query";
@@ -28,27 +22,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import CreateGroupModal from "@/app/components/CreateGroupModal";
-// import NewImageForm from "./new-image-form";
 import NewImageForm from "@/app/components/admin/new-image-form";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
-// import { getImageListX } from "./overview";
 
 import { getImageListX } from "@/app/components/admin/overview";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useSession } from "next-auth/react";
-import {
-  setCurrentImage,
-  setImageCount,
-  setImageList,
-} from "@/redux/reducers/adminSlice";
-// import DeleteConfirmation from "../delete-confirmation";
+
 import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ILabImage, IinviteData, IOrgGroupData } from "@/app/types";
+import { GroupMember, ILabImage, IOrgGroupData } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import {
@@ -61,119 +46,28 @@ import { MoreVerticalIcon } from "lucide-react";
 import AddMembersModal from "@/app/components/AddMembersModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import AltRouteCheck from "@/app/components/alt-route-check";
+import { OrgGroup } from "../../page";
+import AttachMemberToGroup from "@/app/components/AttachMemberToGroup";
 
-const OrganizationGroupImagePage = () => {
-  const [image, setImage] = useState<any>();
+const OrganizationGroupMembersPage = () => {
   const [imageList, setImagelist] = useState<any>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
     useState<boolean>(false);
-  const [isOpenViewDialogOpen1, setIsOpenViewDialog1] =
-    useState<boolean>(false);
+
   const [isOpenViewDialogOpen3, setIsOpenViewDialog3] =
     useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);
-  const [members, setallMembers] = useState<any>([]);
   const [passedData, setPassedData] = useState<any>();
-  const [gid, setgid] = useState<number>();
 
   const params = useParams();
   const searchParams = useSearchParams();
-  const router = useRouter();
+
   const id = params.id;
-  const gids = params.gid;
-  const name = searchParams.get("name");
+
   const group = searchParams.get("group_name");
   const { data: session } = useSession();
-
-
-  // get groups
-  const getGroupMembers = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/member/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      //  if(response.status===200){
-      //     setstatus(true)
-      //     return
-      //  }
-
-      setImagelist(response.data.data[0].member);
-      return response;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getGroupMembers();
-  }, []);
-
-  //get members
-  const getmembers = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/members/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      //  if(response.status===200){
-      //     setstatus(true)
-      //     return
-      //  }
-
-      console.log({ response });
-      setallMembers(response.data.data);
-      return response;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getOrgImages = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/images/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      //  if(response.status===200){
-      //     setstatus(true)
-      //     return
-      //  }
-
-      setImage(response.data.data);
-      return response;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getOrgImages();
-    getmembers();
-  }, []);
 
   const deletebtn = (data: IOrgGroupData) => {
     setPassedData(data);
@@ -196,7 +90,6 @@ const OrganizationGroupImagePage = () => {
       );
       if (response.data.status === 204) {
         setIsOpenViewDialog(false);
-        getGroupMembers();
         toast({
           variant: "success",
           title: "member Deleted Sucessfully",
@@ -214,8 +107,59 @@ const OrganizationGroupImagePage = () => {
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
+  const getGroups = async (): Promise<OrgGroup[] | undefined> => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/list/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data.data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const {
+    isLoading: loadingGroups,
+    error: errorGroups,
+    data: groups,
+  } = useQuery(["groups"], () => getGroups());
+
+  const getMembers = async (): Promise<GroupMember[] | undefined> => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/members/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data.data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const { data: members, isLoading: loadingMembers } = useQuery(
+    ["members"],
+    () => getMembers()
+  );
+
   return (
-    <div className="space-y-4 m-4">
+    <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
           <Link
@@ -242,25 +186,13 @@ const OrganizationGroupImagePage = () => {
         <AltRouteCheck />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">
           <CardHeader className="flex flex-row justify-between items-center w-full">
             <div>
               <CardTitle>{group} Group List</CardTitle>
-              <CardDescription>
-                {/* You have {imageCount} image(s). */}
-              </CardDescription>
+              <CardDescription></CardDescription>
             </div>
-            <div>
-              {!status && (
-                <>
-                  {/* <Button className="m-4"  onClick={()=>{setIsOpenViewDialog2(true)}}>create group</Button> */}
-                </>
-              )}
-            </div>
-            <Dialog>
-              <NewImageForm />
-            </Dialog>
           </CardHeader>
           <Dialog>
             <CardContent className="pl-2">
@@ -269,75 +201,38 @@ const OrganizationGroupImagePage = () => {
                   <TableRow>
                     <TableHead className="">Email</TableHead>
                     <TableHead>Name</TableHead>
-                    {/* <TableHead>created_at</TableHead> */}
-                    {/* <TableHead>expires</TableHead> */}
+
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
-                {imageList?.length === 0 ||
-                  (status && (
-                    <TableCaption>
-                      No groups available
-                      <br />
-                      <Button
-                        className="m-4"
-                        onClick={() => setIsOpenViewDialog2(true)}
-                      >
-                        Create group
-                      </Button>
-                    </TableCaption>
-                  ))}
                 <TableBody>
-                  {imageList && imageList.length > 0 ? (
-                    imageList.map((image: any, i: any) => (
-                      <TableRow key={i}>
-                        <TableCell className="font-medium">
-                          {image.email}
-                        </TableCell>
-                        <TableCell>{image.first_name}</TableCell>
-                        {/* <TableCell>{image.created_at}</TableCell>
-                        <TableCell>{image.expires}</TableCell> */}
-                        <TableCell className="underline font-medium text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger>
-                              <MoreVerticalIcon className="w-4 h-4" />
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="left-[-20px_!important]">
-                              {/* <DropdownMenuItem
-                                onClick={()=>{setgid(image.id),setIsOpenViewDialog3(true)}}
-                                className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
-                                >
-                                add members
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                className="font-medium cursor-pointer hover:text-white-500 text-white-500 py-2"
-                                >
-                                View
-                                </DropdownMenuItem> */}
-                              <DropdownMenuItem
-                                onClick={() => deletebtn(image)}
-                                className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
-                              >
-                                Delete
-                              </DropdownMenuItem>
-                              {/* <DropdownMenuItem
-                                onClick={()=>{setgid(image.id),setIsOpenViewDialog1(true)}}
-                                className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
-                                >
-                                add image
-                                </DropdownMenuItem> */}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={3} className="text-center">
-                        No members in this group
-                      </TableCell>
-                    </TableRow>
-                  )}
+                  {!loadingMembers
+                    ? members && members.length > 0
+                      ? members.map((member: GroupMember, i: number) => (
+                          <TableRow key={i}>
+                            <TableCell className="font-medium">
+                              {member.member.email}
+                            </TableCell>
+                            <TableCell>{member.member.first_name}</TableCell>
+                            <TableCell className="underline font-medium text-right">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger>
+                                  <MoreVerticalIcon className="w-4 h-4" />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="left-[-20px_!important]">
+                                  <DropdownMenuItem
+                                    // onClick={() => deletebtn(image)}
+                                    className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
+                                  >
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      : null
+                    : null}
                 </TableBody>
               </Table>
             </CardContent>
@@ -365,10 +260,10 @@ const OrganizationGroupImagePage = () => {
           isOpenViewDialogOpen3 ? setIsOpenViewDialog3 : setIsOpenDeleteDialog
         }
       >
-        <AddMembersModal image={members} gid={gid} />
+        <AttachMemberToGroup groups={groups} onSubmit={() => {}} />
       </Dialog>
     </div>
   );
 };
 
-export default OrganizationGroupImagePage;
+export default OrganizationGroupMembersPage;

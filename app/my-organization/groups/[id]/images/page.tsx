@@ -378,7 +378,7 @@ const OrganizationGroupImagePage = () => {
           isOpenViewDialogOpen3 ? setIsOpenViewDialog3 : setIsOpenDeleteDialog
         }
       >
-        <AddMembersModal image={members} gid={gid} />
+        <AddMembersModal members={members} gId={1} onSubmit={()=>{}} />
       </Dialog>
     </div>
   );
