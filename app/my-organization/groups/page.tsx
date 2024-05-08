@@ -32,7 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
-import AddMembersModal from "@/app/components/AddMembersModal";
+import AddMembersModal, { IMemberChanges } from "@/app/components/AddMembersModal";
 import OrgDialog from "@/app/components/my-organization/org-dialog";
 import { z } from "zod";
 import useOrgCheck from "@/hooks/orgnization-check";
@@ -220,36 +220,40 @@ const OrganizationGroup = () => {
     createGroupMutation(formData);
   };
 
-  const addMember = (
+  const updateMember = (
     event: FormEvent<HTMLFormElement>,
-    members: Set<string>
+    members: IMemberChanges
   ) => {
     event.preventDefault();
+    console.log("members", members);
+    
     (
-      document.getElementById("add-member-submit-button") as HTMLButtonElement
+      document.getElementById("update-member-submit-button") as HTMLButtonElement
     ).disabled = true;
     (
-      document.getElementById("add-member-submit-button") as HTMLButtonElement
+      document.getElementById("update-member-submit-button") as HTMLButtonElement
     ).textContent = "Updating Member List...";
 
-    addMemberMutation(members);
+    updateMemberMutation({members:members.added, action:"add"});
+    updateMemberMutation({members:members.removed, action:"delete"});
+
   };
 
-  const { mutate: addMemberMutation } = useMutation(
-    (members: Set<string>) => addMemberFn(members),
+  const { mutate: updateMemberMutation } = useMutation(
+    (data:{members: Set<string>, action: string}) => updateMemberFn(data.members, data.action),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("members");
-        (document.getElementById("group-name") as HTMLInputElement).value = "";
         toast({
           variant: "success",
           title: "Members updated successfully",
           description: "",
+          duration: 2000
         });
         setIsOpenViewDialog3(false);
         (
           document.getElementById(
-            "add-member-submit-button"
+            "update-member-submit-button"
           ) as HTMLButtonElement
         ).textContent = "Update Member List";
       },
@@ -258,20 +262,25 @@ const OrganizationGroup = () => {
         toast({
           variant: "destructive",
           title: responseData.data,
+          duration: 2000
+
         });
         (
           document.getElementById(
-            "add-member-submit-button"
+            "update-member-submit-button"
           ) as HTMLButtonElement
         ).textContent = "Update Member List";
       },
     }
   );
 
-  const addMemberFn = async (members: Set<string>) => {
+  const updateMemberFn = async (members: Set<string>, action: string) => {
+    console.log("action", action);
+    console.log("members", members);
+    
     let axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${gid}/member/add/`,
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${gid}/member/${action}/`,
       data: {
         user_ids: Array.from(members),
       },
@@ -287,13 +296,16 @@ const OrganizationGroup = () => {
         toast({
           variant: "success",
           title: `Members updated sucessfully`,
-          description: ``,
+          duration: 2000
+
         });
       } else {
         toast({
           variant: "destructive",
           title: "Group update  error",
           description: response.data,
+          duration: 2000
+
         });
       }
     } catch (error: any) {
@@ -313,6 +325,11 @@ const OrganizationGroup = () => {
     } finally {
     }
   };
+
+
+
+
+  
 
   return (
     <div className="">
@@ -384,7 +401,7 @@ const OrganizationGroup = () => {
                                     }}
                                     className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
                                   >
-                                    Add members
+                                    Update Members
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => prepareDelete(group)}
@@ -399,7 +416,7 @@ const OrganizationGroup = () => {
                                     }}
                                     className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
                                   >
-                                    Add Lab(s)
+                                    Add Labs
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -457,7 +474,7 @@ const OrganizationGroup = () => {
           isOpenViewDialogOpen3 ? setIsOpenViewDialog3 : setIsOpenDeleteDialog
         }
       >
-        <AddMembersModal members={members} onSubmit={addMember} gId={gid} />
+        <AddMembersModal members={members} onSubmit={updateMember} gId={gid} />
       </Dialog>
     </div>
   );

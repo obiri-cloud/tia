@@ -18,12 +18,12 @@ import { GroupMember } from "../types";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { useSession } from "next-auth/react";
+import { CheckedState } from "@radix-ui/react-checkbox";
 
-const formSchema = z.object({
-  image: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: "You have to select at least one item.",
-  }),
-});
+export interface IMemberChanges {
+  added: Set<string>;
+  removed: Set<string>;
+}
 
 const AddMembersModal = ({
   members,
@@ -32,7 +32,7 @@ const AddMembersModal = ({
 }: {
   members: GroupMember[] | undefined;
 
-  onSubmit: (e: FormEvent<HTMLFormElement>, s: Set<string>) => void;
+  onSubmit: (e: FormEvent<HTMLFormElement>, s: IMemberChanges) => void;
   gId: number | undefined;
 }) => {
   const form = useForm();
@@ -66,11 +66,6 @@ const AddMembersModal = ({
     }
   };
 
-
-  const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
-    new Set(data)
-  );
-
   useEffect(() => {
     if (data) {
       setSelectedMembers(new Set(data));
@@ -88,16 +83,47 @@ const AddMembersModal = ({
     };
   }, [gId]);
 
+  const [selectedMembers, setSelectedMembers] = useState(new Set(data));
 
-  
+  // State to track the changes - additions and deletions
+  const [changes, setChanges] = useState<IMemberChanges>({
+    added: new Set(),
+    removed: new Set(),
+  });
+
+  const handleCheckedChange = (checked: CheckedState, memberId: string) => {
+    const updatedSet = new Set(selectedMembers);
+    const updatedChanges = { ...changes };
+
+    if (checked) {
+      updatedSet.add(memberId);
+
+      // Track addition
+      updatedChanges.added.add(memberId);
+      // If this was previously removed, we should untrack the removal
+      if (updatedChanges.removed.has(memberId)) {
+        updatedChanges.removed.delete(memberId);
+      }
+    } else {
+      updatedSet.delete(memberId);
+
+      // Track removal
+      updatedChanges.removed.add(memberId);
+      // If this was previously added, we should untrack the addition
+      if (updatedChanges.added.has(memberId)) {
+        updatedChanges.added.delete(memberId);
+      }
+    }
+
+    setSelectedMembers(updatedSet);
+    setChanges(updatedChanges);
+  };
+  console.log("selectedMembers", selectedMembers);
 
   return (
     <DialogContent>
       <Form {...form}>
-        <form
-          onSubmit={(e) => onSubmit(e, selectedMembers)}
-          className="space-y-8"
-        >
+        <form onSubmit={(e) => onSubmit(e, changes)} className="space-y-8">
           <FormField
             name="image"
             render={() => (
@@ -120,15 +146,18 @@ const AddMembersModal = ({
                         <Checkbox
                           className="text-black dark:text-white"
                           checked={selectedMembers?.has(member.member.id)}
-                          onCheckedChange={(checked: boolean) => {
-                            const updatedSet = new Set(selectedMembers);
-                            if (checked) {
-                              updatedSet.add(member.member.id);
-                            } else {
-                              updatedSet.delete(member.member.id);
-                            }
-                            setSelectedMembers(updatedSet);
-                          }}
+                          onCheckedChange={(checked) =>
+                            handleCheckedChange(checked, member.member.id)
+                          }
+                          // onCheckedChange={(checked: boolean) => {
+                          //   const updatedSet = new Set(selectedMembers);
+                          //   if (checked) {
+                          //     updatedSet.add(member.member.id);
+                          //   } else {
+                          //     updatedSet.delete(member.member.id);
+                          //   }
+                          //   setSelectedMembers(updatedSet);
+                          // }}
                         />
                         <div className="bg-muted text-black dark:text-white font-bold p-4 w-4 h-4 flex justify-center items-center uppercase  rounded-full">
                           {member.member.first_name[0]}
@@ -149,7 +178,7 @@ const AddMembersModal = ({
             )}
           />
           {members && members.length > 0 ? (
-            <Button className="w-full" id="add-member-submit-button">
+            <Button className="w-full" id="update-member-submit-button">
               Update Member List
             </Button>
           ) : null}
