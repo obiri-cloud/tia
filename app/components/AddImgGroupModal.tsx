@@ -58,8 +58,8 @@ function AddImgGroupModal({
     ).disabled = true;
     (
       document.getElementById("add-image-to-grp-button") as HTMLButtonElement
-    ).textContent = "Adding Images..."
-    
+    ).textContent = "Adding Images...";
+
     let axiosConfig = {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${gid}/image/add/`,
@@ -161,10 +161,21 @@ function AddImgGroupModal({
                       }}
                     />
                   ))}
+
+                {image?.length === 0 || !image ? (
+                  <p className="text-center text-black dark:text-white">
+                    No image in your organization...
+                  </p>
+                ) : null}
               </FormItem>
             )}
           />
-          <Button id="add-image-to-grp-button" type="submit" className="w-full">
+          <Button
+            disabled={image?.length === 0 || !image ? true : false}
+            id="add-image-to-grp-button"
+            type="submit"
+            className="w-full"
+          >
             Add Images
           </Button>
         </form>
