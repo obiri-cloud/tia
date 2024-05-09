@@ -7,7 +7,7 @@ const ImagePage = async () => {
 
   const token = session?.user!.tokens?.access_token ?? ""; 
   let labCreationUrl = "/user/lab/create/";
-  let redirectUrl= '/dashboard/labs'
+  let redirectUrl= '/dashboard'
 
   return <MainImagePage token={token} labCreationUrl={labCreationUrl} redirectUrl={redirectUrl}/>;
 };
