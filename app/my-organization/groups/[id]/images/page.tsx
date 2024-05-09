@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import AddImgGroupModal from "@/app/components/AddImgGroupModal";
 import { useEffect } from "react";
 import {
@@ -63,8 +63,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import AltRouteCheck from "@/app/components/alt-route-check";
 
 const OrganizationGroupImagePage = () => {
+  const { data: session } = useSession();
   const [image, setImage] = useState<any>();
-  const [imageList, setImagelist] = useState<any>();
+  // const [imageList, setImagelist] = useState<any>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
     useState<boolean>(false);
@@ -77,19 +78,21 @@ const OrganizationGroupImagePage = () => {
   const [members, setallMembers] = useState<any>([]);
   const [passedData, setPassedData] = useState<any>();
   const [gid, setgid] = useState<number>();
-
+  // @ts-ignore
+  const token = session?.user!.tokens?.access_token;
   const params = useParams();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const router = useRouter();
   const id = params.id;
   const gids = params.gid;
   const name = searchParams.get("name");
   const group = searchParams.get("group_name");
-  const { data: session } = useSession();
+
 
 
   // get groups
-  const getGroupMembers = async () => {
+  const getImagesInGroup =async (): Promise<ILabImage[] | undefined> => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/image/list/?page=1`,
@@ -100,122 +103,87 @@ const OrganizationGroupImagePage = () => {
             // @ts-ignore
             Authorization: `Bearer ${token}`,
           },
-        }
-      );
-      //  if(response.status===200){
-      //     setstatus(true)
-      //     return
-      //  }
-      console.log(response.data.data[0].lab_image);
-      setImagelist(response.data.data[0].lab_image);
-      return response;
+        })
+
+       return response.data.data[0].lab_image
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    getGroupMembers();
-  }, []);
 
-  //get members
-  const getmembers = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/members/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      //  if(response.status===200){
-      //     setstatus(true)
-      //     return
-      //  }
-
-      console.log({ response });
-      setallMembers(response.data.data);
-      return response;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getOrgImages = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/images/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      //  if(response.status===200){
-      //     setstatus(true)
-      //     return
-      //  }
-
-      setImage(response.data.data);
-      return response;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getOrgImages();
-    getmembers();
-  }, []);
 
   const deletebtn = (data: IOrgGroupData) => {
     setPassedData(data);
     setIsOpenViewDialog(true);
   };
 
-  //delete members in the group
-  const deleteblink = async (data: any) => {
+  //delete images in the group
+  const deleteGroupImage = async (data:number) => {
     try {
-      const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/image/${data}/delete/`,
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/image/delete/`,
+        {
+            image_ids: [data]
+        },
         {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            // @ts-ignore
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      if (response.data.status === 204) {
-        setIsOpenViewDialog(false);
-        getGroupMembers();
-        toast({
-          variant: "success",
-          title: "Image Deleted Sucessfully",
-          description: response.data.data,
-        });
-      }
-
-      setImagelist(response.data.data);
+      // if (response.data.status === 204) {
+      //   setIsOpenViewDialog(false);
+      //   toast({
+      //     variant: "success",
+      //     title: "Image Deleted Sucessfully",
+      //     description: response.data.data,
+      //   });
+      // }
       return response;
     } catch (error) {
       console.log(error);
     }
   };
 
-  // @ts-ignore
-  const token = session?.user!.tokens?.access_token;
+  const { data: imageList, isLoading: loadingMembers } = useQuery(
+    ["ImagesInGroup"],
+    () => getImagesInGroup()
+  );
+
+
+  const { mutate: deleteGroupImageMutation } = useMutation(
+    (id: number) => deleteGroupImage(id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("ImagesInGroup");
+        setIsOpenViewDialog(false);
+        toast({
+          variant: "success",
+          title: 'Image  deleted Sucessfully',
+        });
+      },
+      onError: (error: any) => {
+        const responseData = error.response.data;
+        toast({
+          variant: "destructive",
+          title: responseData.data,
+        });
+        setIsOpenViewDialog(false);
+
+      },
+    }
+  );
+
+
+
+
+
 
   return (
-    <div className="space-y-4 m-4">
+    <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
           <Link
@@ -246,7 +214,7 @@ const OrganizationGroupImagePage = () => {
         <AltRouteCheck />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="p-4 grid gap-4 md:grid-cols-2">
         <Card className="col-span-4">
           <CardHeader className="flex flex-row justify-between items-center w-full">
             <div>
@@ -254,20 +222,6 @@ const OrganizationGroupImagePage = () => {
               <CardDescription>
                 {/* You have {imageCount} image(s). */}
               </CardDescription>
-            </div>
-            <div>
-              {!status && (
-                <>
-                  <Button
-                    className="m-4"
-                    onClick={() => {
-                      setIsOpenViewDialog2(true);
-                    }}
-                  >
-                    create group
-                  </Button>
-                </>
-              )}
             </div>
             <Dialog>
               <NewImageForm />
@@ -278,8 +232,9 @@ const OrganizationGroupImagePage = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="">Email</TableHead>
-                    <TableHead>Lab Name</TableHead>
+                    <TableHead className="">Lab Name</TableHead>
+                    <TableHead>Difficulty level</TableHead>
+                    <TableHead>Duration</TableHead>
                     {/* <TableHead>created_at</TableHead> */}
                     {/* <TableHead>expires</TableHead> */}
                     <TableHead className="text-right">Action</TableHead>
@@ -305,9 +260,8 @@ const OrganizationGroupImagePage = () => {
                         <TableCell className="font-medium">
                           {image.name}
                         </TableCell>
-                        <TableCell>{image.first_name}</TableCell>
-                        {/* <TableCell>{image.created_at}</TableCell>
-                        <TableCell>{image.expires}</TableCell> */}
+                        <TableCell className="capitalize">{image.difficulty_level}</TableCell>
+                        <TableCell>{image.duration}</TableCell>
                         <TableCell className="underline font-medium text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger>
@@ -367,18 +321,8 @@ const OrganizationGroupImagePage = () => {
           text={`Do you want to delete ${passedData?.name} from ${group} group ?`}
           noText="No"
           confirmText="Yes, Delete!"
-          confirmFunc={() => deleteblink(passedData?.id)}
+          confirmFunc={() => deleteGroupImageMutation(Number(passedData?.id))}
         />
-      </Dialog>
-
-
-      <Dialog
-        open={isOpenViewDialogOpen3}
-        onOpenChange={
-          isOpenViewDialogOpen3 ? setIsOpenViewDialog3 : setIsOpenDeleteDialog
-        }
-      >
-        <AddMembersModal members={members} gId={1} onSubmit={()=>{}} />
       </Dialog>
     </div>
   );

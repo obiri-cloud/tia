@@ -93,6 +93,11 @@ const AltRouteCheck = () => {
   };
 
   function renderAltRoute() {
+    
+    if (subscription_plan === "basic") {
+      return null;
+    }
+
     if (orgCheck) {
       return (
         <div className="flex gap-4">

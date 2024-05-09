@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 const OrganizationHeader = () => {
   const { data: session } = useSession();
@@ -39,9 +40,13 @@ const OrganizationHeader = () => {
   };
 
   return (
-    <div className="font-medium  w-full">
-
+    <div className="flex items-center justify-center">
+                <Link
+            href={`/my-organization`}
+          >
       {isLoading?<Skeleton className="h-3 w-[200px]" />:<span className=" capitalize">{details?.name} Organization</span>}
+          </Link>
+
     </div>
   );
 };

@@ -206,33 +206,56 @@ const OrganizationGroupMembersPage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {!loadingMembers
-                    ? members && members.length > 0
-                      ? members.map((member: GroupMember, i: number) => (
-                          <TableRow key={i}>
-                            <TableCell className="font-medium">
-                              {member.member.email}
-                            </TableCell>
-                            <TableCell>{member.member.first_name}</TableCell>
-                            <TableCell className="underline font-medium text-right">
-                              <DropdownMenu>
-                                <DropdownMenuTrigger>
-                                  <MoreVerticalIcon className="w-4 h-4" />
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="left-[-20px_!important]">
-                                  <DropdownMenuItem
-                                    // onClick={() => deletebtn(image)}
-                                    className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
-                                  >
-                                    Delete
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      : null
-                    : null}
+                  {imageList && imageList.length > 0 ? (
+                    imageList.map((image: any, i: any) => (
+                      <TableRow key={i}>
+                        <TableCell className="font-medium">
+                          {image.email}
+                        </TableCell>
+                        <TableCell>{image.first_name}</TableCell>
+                        {/* <TableCell>{image.created_at}</TableCell>
+                        <TableCell>{image.expires}</TableCell> */}
+                        <TableCell className="underline font-medium text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger>
+                              <MoreVerticalIcon className="w-4 h-4" />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="left-[-20px_!important]">
+                              {/* <DropdownMenuItem
+                                onClick={()=>{setgid(image.id),setIsOpenViewDialog3(true)}}
+                                className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
+                                >
+                                add members
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                className="font-medium cursor-pointer hover:text-white-500 text-white-500 py-2"
+                                >
+                                View
+                                </DropdownMenuItem> */}
+                              <DropdownMenuItem
+                                onClick={() => deletebtn(image)}
+                                className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
+                              >
+                                Delete
+                              </DropdownMenuItem>
+                              {/* <DropdownMenuItem
+                                onClick={()=>{setgid(image.id),setIsOpenViewDialog1(true)}}
+                                className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
+                                >
+                                add image
+                                </DropdownMenuItem> */}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={3} className="text-center">
+                        No members in this group
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </CardContent>

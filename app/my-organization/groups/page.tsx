@@ -49,7 +49,7 @@ const OrganizationGroup = () => {
   const { data: session } = useSession();
   const router = useRouter();
 
-  const [image, setImage] = useState<ILabImage[]>();
+  // const [image, setImage] = useState<ILabImage[]>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
     useState<boolean>(false);
@@ -108,6 +108,31 @@ const OrganizationGroup = () => {
   const {
     data: members,
   } = useQuery(["members"], () => getMembers());
+
+  const getOrgImages = async (): Promise<ILabImage[] | undefined> => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/images/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data.data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const {
+    data: image,
+  } = useQuery(["orgImages"], () => getOrgImages());
+
 
 
   const {
@@ -328,7 +353,6 @@ const OrganizationGroup = () => {
 
 
 
-
   
 
   return (
@@ -382,7 +406,7 @@ const OrganizationGroup = () => {
                             <TableCell className="font-medium  underline">
                               <Link
                               className="text-blue-400"
-                                href={`/my-organization/groups/${group.id}/images?name=Group&group_name=${group.name} Lab`}
+                                href={`/my-organization/groups/${group.id}/images?name=Groups&group_name=${group.name} Lab`}
                               >
                                 {group.name}
                               </Link>

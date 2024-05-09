@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import useOrgCheck from "@/hooks/createOrgCheck";
 import { toast } from "@/components/ui/use-toast";
+import OrganizationHeader from "../components/admin/OrganizationHeader";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -75,7 +76,7 @@ export default function UserDashboardLayout({
             className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark"
           >
             <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
-              {/* <OrganizationHeader /> */}
+              <OrganizationHeader/>
               <div className="flex flex-1 flex-col">
                 <ul className="space-y-2 font-medium mt-[50px] flex-1">
                   <li className="all-images-button">
@@ -225,7 +226,7 @@ export default function UserDashboardLayout({
                         }
                         `}
                         >
-                          Account
+                         Organization Account
                         </span>
                       </a>
                     </li>

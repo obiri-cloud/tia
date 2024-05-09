@@ -291,7 +291,7 @@ const {
               {!status && (
                 <>
                   <Button
-                    className="m-4"
+                    className=""
                     onClick={() => {
                       setIsOpenViewDialog2(true);
                     }}
