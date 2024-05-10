@@ -42,6 +42,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useForm } from "react-hook-form";
 import { MoreVerticalIcon } from "lucide-react";
 import InviteModal from "@/app/components/InviteModal";
 import useOrgCheck from "@/hooks/orgnization-check";
@@ -52,6 +53,7 @@ const Images = () => {
   const [status, setstatus] = useState<boolean>(false);
 
   const { data: session } = useSession();
+  const {reset} =useForm()
 
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
@@ -59,7 +61,7 @@ const Images = () => {
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<IinviteData>();
-
+  const [multiplEmails,setmultipleEmails]=useState<any>([])
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
@@ -123,6 +125,11 @@ const Images = () => {
   const response = await axios(axiosConfig);
   return response.data;
 };
+
+const addMultiple=()=>{
+   let emails=[]
+   emails.push()
+}
 
 const {
   mutate: SendInviteMutation,
@@ -246,24 +253,45 @@ const {
     }
   );
 
-  const addGroup = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    (document.getElementById("submit-button") as HTMLButtonElement).disabled =
-      true;
-    (
-      document.getElementById("submit-button") as HTMLButtonElement
-    ).textContent = "Sending Invitation Link...";
-    (
-      document.getElementById("submit-button") as HTMLButtonElement
-    ).textContent = "Sending Invitation Link...";
-    const email = (document.getElementById("invite-email") as HTMLInputElement)
-      ?.value;
+  // const addGroup = (event: FormEvent<HTMLFormElement>) => {
 
-    const formData = new FormData();
-    formData.append("email", email || "");
-    addInviteMutation(formData);
+  //   event.preventDefault();
+  //   (document.getElementById("submit-button") as HTMLButtonElement).disabled =
+  //     true;
+  //   (
+  //     document.getElementById("submit-button") as HTMLButtonElement
+  //   ).textContent = "Sending Invitation Link...";
+  //   (
+  //     document.getElementById("submit-button") as HTMLButtonElement
+  //   ).textContent = "Sending Invitation Link...";
+    // const email = (document.getElementById("invite-email") as HTMLInputElement)
+    //   ?.value;
+
+  //   const formData = new FormData();
+  //   formData.append("email", email || "");
+  //   addInviteMutation(formData);
+  // };
+
+  const addGroup = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();  
+  
+    const emailInput = document.getElementById("invite-email") as HTMLInputElement;
+
+    if (emailInput && emailInput.value) {
+      const email = emailInput.value;
+      setmultipleEmails((prevEmails:any) => [...prevEmails, {email:email}]);
+  
+      emailInput.defaultValue='';
+      reset({email:""})
+    }
   };
-  console.log("invites", invites);
+
+  console.log({multiplEmails});
+
+  const removeEmail = (emailToRemove:any) => {
+    setmultipleEmails((currentEmails:any)=> currentEmails.filter((email:string)=> email !== emailToRemove));
+  };
+  
   
 
   return (
@@ -297,6 +325,20 @@ const {
                     }}
                   >
                     Invite members
+                  </Button>
+                </>
+              )}
+            </div>
+            <div>
+              {!status && (
+                <>
+                  <Button
+                    className=""
+                    onClick={() => {
+                      setIsOpenViewDialog2(true);
+                    }}
+                  >
+                    Bulk invite
                   </Button>
                 </>
               )}
@@ -387,7 +429,7 @@ const {
           isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
         }
       >
-        <InviteModal onSubmit={addGroup} />
+        <InviteModal onSubmit={addGroup} bulkEmails={multiplEmails} onRemoveEmail={removeEmail} />
       </Dialog>
     </div>
   );
