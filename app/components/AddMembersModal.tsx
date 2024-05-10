@@ -19,6 +19,8 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import { useSession } from "next-auth/react";
 import { CheckedState } from "@radix-ui/react-checkbox";
+import OrgDialog from "./my-organization/org-dialog";
+import { OrgGroup } from "../my-organization/groups/page";
 
 export interface IMemberChanges {
   added: Set<string>;
@@ -28,12 +30,12 @@ export interface IMemberChanges {
 const AddMembersModal = ({
   members,
   onSubmit,
-  gId,
+  group,
 }: {
   members: GroupMember[] | undefined;
 
-  onSubmit: (e: FormEvent<HTMLFormElement>, s: IMemberChanges) => void;
-  gId: number | undefined;
+  onSubmit: (s: IMemberChanges) => void;
+  group: OrgGroup | undefined;
 }) => {
   const form = useForm();
   const { data: session } = useSession();
@@ -44,7 +46,7 @@ const AddMembersModal = ({
     setIsLoadingMembers(true);
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${gId}/member/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${group?.id}/member/list/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -57,12 +59,11 @@ const AddMembersModal = ({
 
       let data = response.data.data;
       let newData = [];
-      let list = data[0].member
-      
+      let list = data[0].member;
+
       if (list.length > 0) {
         newData = list ? list.map((d: any) => d.id) : [];
       }
-
 
       setSelectedMembers(new Set(newData));
 
@@ -73,14 +74,13 @@ const AddMembersModal = ({
     }
   };
 
- 
   useEffect(() => {
     getMembers();
 
     return () => {
       setSelectedMembers(new Set());
     };
-  }, [gId]);
+  }, [group]);
 
   const [selectedMembers, setSelectedMembers] = useState(new Set());
 
@@ -119,70 +119,69 @@ const AddMembersModal = ({
   };
 
   return (
-    <DialogContent>
-      <Form {...form}>
-        <form onSubmit={(e) => onSubmit(e, changes)} className="space-y-8">
-          <FormField
-            name="image"
-            render={() => (
-              <FormItem>
-                <div className="mb-6">
-                  <h3 className="text-black dark:text-white mb-1 font-semibold text-lg">
-                    Organization Members
-                  </h3>
-                  <FormDescription className="text-sm">
-                    Select the members you want to add to the group
-                  </FormDescription>
-                </div>
-                {loadingMembers ? (
-                  <p className="text-black dark:text-white text-center">
-                    Loading members...
-                  </p>
-                ) : !Array.isArray(members) || members.length === 0 ? (
-                  <p className="ftext-center text-black dark:text-white">
-                    No members in the group.
-                  </p>
-                ) : (
-                  members.map((member: GroupMember) => (
-                    <FormItem
-                      key={member.member.id}
-                      className="flex flex-row items-start space-x-3 space-y-0"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <Checkbox
-                          className="text-black dark:text-white"
-                          checked={selectedMembers?.has(member.member.id)}
-                          onCheckedChange={(checked) =>
-                            handleCheckedChange(checked, member.member.id)
-                          }
-                        />
-                        <div className="bg-muted text-black dark:text-white font-bold p-4 w-4 h-4 flex justify-center items-center uppercase rounded-full">
-                          {member.member.first_name[0]}
-                        </div>
+    <OrgDialog
+      title={`${group?.name} Members`}
+      description="Select the members you want to add to the group"
+    >
+      <div className=" overflow-scroll flex flex-col flex-1 ">
+        <Form {...form}>
+          <form className="space-y-8 flex-1 overflow-scroll">
+            <FormField
+              name="image"
+              render={() => (
+                <FormItem>
+                  {loadingMembers ? (
+                    <p className="text-black dark:text-white text-center">
+                      Loading members...
+                    </p>
+                  ) : !Array.isArray(members) || members.length === 0 ? (
+                    <p className="ftext-center text-black dark:text-white">
+                      No members in the group.
+                    </p>
+                  ) : (
+                    members.map((member: GroupMember) => (
+                      <FormItem
+                        key={member.member.id}
+                        className="flex flex-row items-start space-x-3 space-y-0"
+                      >
+                        <div className="flex items-center space-x-4">
+                          <Checkbox
+                            checked={selectedMembers?.has(member.member.id)}
+                            onCheckedChange={(checked) =>
+                              handleCheckedChange(checked, member.member.id)
+                            }
+                          />
+                          <div className="bg-muted text-black dark:text-white font-bold p-4 w-4 h-4 flex justify-center items-center uppercase rounded-full">
+                            {member.member.first_name[0]}
+                          </div>
 
-                        <div className="flex-1">
-                          <div className="font-medium text-black dark:text-white">
-                            {`${member.member.first_name} ${member.member.last_name}`}
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {member.member.email}
+                          <div className="flex-1">
+                            <div className="font-medium text-black dark:text-white">
+                              {`${member.member.first_name} ${member.member.last_name}`}
+                            </div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                              {member.member.email}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </FormItem>
-                  ))
-                )}
-              </FormItem>
-            )}
-          />
-          {Array.isArray(members) && members.length > 0 && (
-            <Button className="w-full" id="update-member-submit-button">
-              Update Member List
-            </Button>
-          )}
-        </form>
-      </Form>
-    </DialogContent>
+                      </FormItem>
+                    ))
+                  )}
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
+      </div>
+      <Button
+        onClick={() => onSubmit(changes)}
+        disabled={Array.isArray(members) && members.length > 0 ? false : true}
+        className="w-full"
+        id="update-member-submit-button"
+      >
+        Update Member List
+      </Button>
+    </OrgDialog>
   );
 };
 
