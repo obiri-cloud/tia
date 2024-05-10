@@ -36,6 +36,7 @@ import AddMembersModal, { IMemberChanges } from "@/app/components/AddMembersModa
 import OrgDialog from "@/app/components/my-organization/org-dialog";
 import { z } from "zod";
 import useOrgCheck from "@/hooks/orgnization-check";
+import { Sheet } from "@/components/ui/sheet";
 
 export interface OrgGroup {
   id: string;
@@ -423,7 +424,7 @@ const OrganizationGroup = () => {
                                       setGid(Number(group.id)),
                                         setIsOpenViewDialog3(true);
                                     }}
-                                    className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
+                                    className="font-medium cursor-pointer text-white-500 py-2"
                                   >
                                     Update Members
                                   </DropdownMenuItem>
@@ -479,7 +480,7 @@ const OrganizationGroup = () => {
         <CreateGroupModal onSubmit={createNewGroup} />
       </Dialog>
 
-      <Dialog
+      <Sheet
         open={isOpenViewDialogOpen1}
         onOpenChange={
           isOpenViewDialogOpen1 ? setIsOpenViewDialog1 : setIsOpenDeleteDialog
@@ -490,7 +491,7 @@ const OrganizationGroup = () => {
           gid={gid}
           onSubmit={() => setIsOpenViewDialog1(false)}
         />
-      </Dialog>
+      </Sheet>
 
       <Dialog
         open={isOpenViewDialogOpen3}
