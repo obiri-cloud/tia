@@ -14,77 +14,87 @@ import { useRouter } from "next/navigation";
 import OrgDialog from "./my-organization/org-dialog";
 
 type InviteModalProps = {
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  onSubmit: () => void; 
+  setemailInput: (email: string) => void;
+  emailInput: any; 
   bulkEmails: any[]; 
   onRemoveEmail: (email: string) => void; 
+  onSend: () => void;
 };
-const InviteModal = ({ onSubmit, bulkEmails,onRemoveEmail  }: InviteModalProps) => {
+const InviteModal = (
+  {
+    onSubmit,
+    emailInput,
+    setemailInput,
+    bulkEmails,
+    onRemoveEmail,
+    onSend
+  }: InviteModalProps
+) => {
   const form = useForm();
-  const {register}=useForm()
 
-console.log({bulkEmails});
+
 
   return (
     <OrgDialog
       title="Invite Members"
       description="Invites users to your organization"
     >
-
-      <Form {...form}>
-        <form
-          onSubmit={(e) => onSubmit(e)}
-          className=" w-full dark:text-white text-black"
-        >
-<div className="flex flex-wrap gap-2 mb-4 justify-center">
-  {bulkEmails.map((email, index) => (
-    <div key={index} className="flex items-center  dark:bg-white dark:text-blackoverflow-hidden text-white bg-black rounded p-2">
-      <div className="mr-2  dark:text-white w-32 overflow-hidden text-white text-ellipsis whitespace-nowrap">
-        {email.email}
-      </div>
-      <button
-        type="button"
-        onClick={() => onRemoveEmail(email)}
-        className="bg-red-500 text-white p-1 rounded-full w-6 h-6 flex items-center justify-center text-xs"
-      >
-        x
-      </button>
+{bulkEmails.length===0&&(
+    <div className="flex items-center justify-center">
+     <p className=" capitalize dark:text-white text-black">no added email</p>
     </div>
-  ))}
-</div>
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <Input
-                 {...register('email', { required: true })} 
-                  id="invite-email"
-                  placeholder="Email"
-                  type="text"
-                  {...field}
-                  className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
-                  defaultValue=""
-                />
-              </FormItem>
-            )}
-          />
-         <Button
-            id="submit-button"
-            className="w-full disabled:bg-black-900/10 mt-6 dark:bg-white dark:text-black bg-black text-white "
-            variant="black"
-          >
-            Add Email
-          </Button>
+)}
 
-          <Button
-            id="submit-button"
-            className="w-full disabled:bg-black-900/10 mt-6 dark:bg-white dark:text-black bg-black text-white "
-            variant="black"
+<div className="grid grid-cols-2 gap-4 mb-4">
+
+
+      {bulkEmails.map((email, index) => (
+        <div key={index} className="dark:bg-white dark:text-black overflow-hidden text-white bg-black rounded p-2 flex items-center justify-between">
+          <div className="w-32 overflow-hidden text-white text-ellipsis whitespace-nowrap">
+            {email.email}
+          </div>
+          <button
+            type="button"
+            onClick={() => onRemoveEmail(email)}
+            className="bg-red-500 text-white p-1 rounded-full w-6 h-6 flex items-center justify-center text-xs"
           >
-            Send Invitation Link
-          </Button>
-        </form>
-      </Form>
+            x
+          </button>
+        </div>
+      ))}
+    </div>
+
+ 
+    <div className="flex items-center gap-2">
+  <Input
+    value={emailInput}
+    onChange={(e) => setemailInput(e.target.value)}
+    placeholder="Email"
+    type="text"
+    className="flex-grow glassBorder bg-white dark:bg-black/10 dark:text-white text-black"
+  />
+  <Button
+    id="submit-button"
+    className="shrink-0 bg-black text-white disabled:bg-black-900/10"
+    variant="black"
+    onClick={onSubmit}
+  >
+    Add Email
+  </Button>
+</div>
+
+{bulkEmails.length>0&&(
+          <Button
+          id="submit-btn"
+          className="w-full disabled:bg-black-900/10 mt-6 dark:bg-white dark:text-black bg-black text-white "
+          variant="black"
+          onClick={onSend}
+        >
+          Send Invitation Link
+        </Button>
+)}
+
     </OrgDialog>
   );
 };

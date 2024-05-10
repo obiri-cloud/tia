@@ -19,6 +19,8 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import { useSession } from "next-auth/react";
 import { CheckedState } from "@radix-ui/react-checkbox";
+import OrgDialog from "./my-organization/org-dialog";
+import { OrgGroup } from "../my-organization/groups/page";
 
 export interface IMemberChanges {
   added: Set<string>;
@@ -28,24 +30,23 @@ export interface IMemberChanges {
 const AddMembersModal = ({
   members,
   onSubmit,
-  gId,
+  group,
 }: {
   members: GroupMember[] | undefined;
 
-  onSubmit: (e: FormEvent<HTMLFormElement>, s: IMemberChanges) => void;
-  gId: number | undefined;
+  onSubmit: (s: IMemberChanges) => void;
+  group: OrgGroup | undefined;
 }) => {
   const form = useForm();
   const { data: session } = useSession();
   const token = session?.user!.tokens?.access_token;
-  const [data, setData] = useState<string[]>([]);
-  const [loadingMembers,setisLoadingMembers]=useState<boolean>(false)
+  const [loadingMembers, setIsLoadingMembers] = useState<boolean>(false);
 
   const getMembers = async () => {
-    setisLoadingMembers(true)
+    setIsLoadingMembers(true);
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${gId}/member/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${group?.id}/member/list/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -58,36 +59,30 @@ const AddMembersModal = ({
 
       let data = response.data.data;
       let newData = [];
-      if (data[0].member.length > 0) {
-        newData = data ? data.map((d: any) => d.member[0].id) : [];
+      let list = data[0].member;
+
+      if (list.length > 0) {
+        newData = list ? list.map((d: any) => d.id) : [];
       }
 
-      setData(newData);
-      setisLoadingMembers(false)
+      setSelectedMembers(new Set(newData));
+
+      setIsLoadingMembers(false);
     } catch (error) {
       console.log(error);
-      setisLoadingMembers(false)
+      setIsLoadingMembers(false);
     }
   };
-
-  useEffect(() => {
-    if (data) {
-      setSelectedMembers(new Set(data));
-    }
-    return () => {
-      setSelectedMembers(new Set());
-    };
-  }, [data]);
 
   useEffect(() => {
     getMembers();
 
     return () => {
-      setData([]);
+      setSelectedMembers(new Set());
     };
-  }, [gId]);
+  }, [group]);
 
-  const [selectedMembers, setSelectedMembers] = useState(new Set(data));
+  const [selectedMembers, setSelectedMembers] = useState(new Set());
 
   // State to track the changes - additions and deletions
   const [changes, setChanges] = useState<IMemberChanges>({
@@ -122,69 +117,71 @@ const AddMembersModal = ({
     setSelectedMembers(updatedSet);
     setChanges(updatedChanges);
   };
-  console.log("selectedMembers", selectedMembers);
 
   return (
-    <DialogContent>
-    <Form {...form}>
-      <form onSubmit={(e) => onSubmit(e, changes)} className="space-y-8">
-        <FormField
-          name="image"
-          render={() => (
-            <FormItem>
-              <div className="mb-6">
-                <h3 className="text-black dark:text-white mb-1 font-semibold text-lg">
-                  Organization Members
-                </h3>
-                <FormDescription className="text-sm">
-                  Select the members you want to add to the group
-                </FormDescription>
-              </div>
-              {loadingMembers ? (
-                <p>Loading members...</p>
-              ) : !Array.isArray(members) || members.length === 0 ? (
-                <p className="flex items-center justify-center">No members in the group.</p>
-              ) : (
-                members.map((member: GroupMember) => (
-                  <FormItem
-                    key={member.member.id}
-                    className="flex flex-row items-start space-x-3 space-y-0"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <Checkbox
-                        className="text-black dark:text-white"
-                        checked={selectedMembers?.has(member.member.id)}
-                        onCheckedChange={(checked) =>
-                          handleCheckedChange(checked, member.member.id)
-                        }
-                      />
-                      <div className="bg-muted text-black dark:text-white font-bold p-4 w-4 h-4 flex justify-center items-center uppercase rounded-full">
-                        {member.member.first_name[0]}
-                      </div>
+    <OrgDialog
+      title={`${group?.name} Members`}
+      description="Select the members you want to add to the group"
+    >
+      <div className=" overflow-scroll flex flex-col flex-1 ">
+        <Form {...form}>
+          <form className="space-y-8 flex-1 overflow-scroll">
+            <FormField
+              name="image"
+              render={() => (
+                <FormItem>
+                  {loadingMembers ? (
+                    <p className="text-black dark:text-white text-center">
+                      Loading members...
+                    </p>
+                  ) : !Array.isArray(members) || members.length === 0 ? (
+                    <p className="ftext-center text-black dark:text-white">
+                      No members in the group.
+                    </p>
+                  ) : (
+                    members.map((member: GroupMember) => (
+                      <FormItem
+                        key={member.member.id}
+                        className="flex flex-row items-start space-x-3 space-y-0"
+                      >
+                        <div className="flex items-center space-x-4">
+                          <Checkbox
+                            checked={selectedMembers?.has(member.member.id)}
+                            onCheckedChange={(checked) =>
+                              handleCheckedChange(checked, member.member.id)
+                            }
+                          />
+                          <div className="bg-muted text-black dark:text-white font-bold p-4 w-4 h-4 flex justify-center items-center uppercase rounded-full">
+                            {member.member.first_name[0]}
+                          </div>
 
-                      <div className="flex-1">
-                        <div className="font-medium text-black dark:text-white">
-                          {`${member.member.first_name} ${member.member.last_name}`}
+                          <div className="flex-1">
+                            <div className="font-medium text-black dark:text-white">
+                              {`${member.member.first_name} ${member.member.last_name}`}
+                            </div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                              {member.member.email}
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {member.member.email}
-                        </div>
-                      </div>
-                    </div>
-                  </FormItem>
-                ))
+                      </FormItem>
+                    ))
+                  )}
+                </FormItem>
               )}
-            </FormItem>
-          )}
-        />
-        {Array.isArray(members) && members.length > 0 && (
-          <Button className="w-full" id="update-member-submit-button">
-            Update Member List
-          </Button>
-        )}
-      </form>
-    </Form>
-  </DialogContent>
+            />
+          </form>
+        </Form>
+      </div>
+      <Button
+        onClick={() => onSubmit(changes)}
+        disabled={Array.isArray(members) && members.length > 0 ? false : true}
+        className="w-full"
+        id="update-member-submit-button"
+      >
+        Update Member List
+      </Button>
+    </OrgDialog>
   );
 };
 

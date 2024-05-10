@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import AddImgGroupModal from "@/app/components/AddImgGroupModal";
+import AddImgGroupModal, {
+  IImageChanges,
+} from "@/app/components/AddImgGroupModal";
 
 import {
   Table,
@@ -32,10 +34,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
-import AddMembersModal, { IMemberChanges } from "@/app/components/AddMembersModal";
+import AddMembersModal, {
+  IMemberChanges,
+} from "@/app/components/AddMembersModal";
 import OrgDialog from "@/app/components/my-organization/org-dialog";
 import { z } from "zod";
 import useOrgCheck from "@/hooks/orgnization-check";
+import { Sheet } from "@/components/ui/sheet";
 
 export interface OrgGroup {
   id: string;
@@ -47,9 +52,7 @@ export interface OrgGroup {
 
 const OrganizationGroup = () => {
   const { data: session } = useSession();
-  const router = useRouter();
 
-  // const [image, setImage] = useState<ILabImage[]>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
     useState<boolean>(false);
@@ -60,7 +63,7 @@ const OrganizationGroup = () => {
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<OrgGroup>();
-  const [gid, setGid] = useState<number>();
+  const [group, setGroup] = useState<OrgGroup>();
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -105,9 +108,7 @@ const OrganizationGroup = () => {
     }
   };
 
-  const {
-    data: members,
-  } = useQuery(["members"], () => getMembers());
+  const { data: members } = useQuery(["members"], () => getMembers());
 
   const getOrgImages = async (): Promise<ILabImage[] | undefined> => {
     try {
@@ -129,19 +130,12 @@ const OrganizationGroup = () => {
     }
   };
 
-  const {
-    data: image,
-  } = useQuery(["orgImages"], () => getOrgImages());
+  const { data: images } = useQuery(["orgImages"], () => getOrgImages());
 
+  const { isLoading: loadingGroups, data: groups } = useQuery(["groups"], () =>
+    getGroups()
+  );
 
-
-  const {
-    isLoading: loadingGroups,
-    error: errorGroups,
-    data: groups,
-  } = useQuery(["groups"], () => getGroups());
-
-  
   const queryClient = useQueryClient();
 
   const deleteGroup = async (id: number) => {
@@ -166,6 +160,11 @@ const OrganizationGroup = () => {
       onSuccess: () => {
         queryClient.invalidateQueries("groups");
         setIsOpenViewDialog(false);
+        toast({
+          variant: "success",
+          title: "Group deleted successfully",
+          duration: 2000,
+        });
       },
       onError: (error: any) => {
         const responseData = error.response.data;
@@ -199,35 +198,34 @@ const OrganizationGroup = () => {
     return response.data;
   };
 
-  const {
-    mutate: createGroupMutation,
-    isLoading: updatingGroups,
-    error: groupUpdateError,
-  } = useMutation((formData: FormData) => createGroup(formData), {
-    onSuccess: () => {
-      queryClient.invalidateQueries("groups");
-      (document.getElementById("group-name") as HTMLInputElement).value = "";
-      toast({
-        variant: "success",
-        title: "Group created successfully",
-        description: "",
-      });
-      setIsOpenViewDialog2(false);
-      (
-        document.getElementById("submit-button") as HTMLButtonElement
-      ).textContent = "Create Group";
-    },
-    onError: (error: any) => {
-      const responseData = error.response.data;
-      toast({
-        variant: "destructive",
-        title: responseData.data,
-      });
-      (
-        document.getElementById("submit-button") as HTMLButtonElement
-      ).textContent = "Create Group";
-    },
-  });
+  const { mutate: createGroupMutation } = useMutation(
+    (formData: FormData) => createGroup(formData),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("groups");
+        (document.getElementById("group-name") as HTMLInputElement).value = "";
+        toast({
+          variant: "success",
+          title: "Group created successfully",
+          duration: 2000,
+        });
+        setIsOpenViewDialog2(false);
+        (
+          document.getElementById("submit-button") as HTMLButtonElement
+        ).textContent = "Create Group";
+      },
+      onError: (error: any) => {
+        const responseData = error.response.data;
+        toast({
+          variant: "destructive",
+          title: responseData.data,
+        });
+        (
+          document.getElementById("submit-button") as HTMLButtonElement
+        ).textContent = "Create Group";
+      },
+    }
+  );
 
   const createNewGroup = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -245,27 +243,29 @@ const OrganizationGroup = () => {
     createGroupMutation(formData);
   };
 
-  const updateMember = (
-    event: FormEvent<HTMLFormElement>,
-    members: IMemberChanges
-  ) => {
-    event.preventDefault();
+  const updateMember = (members: IMemberChanges) => {
     console.log("members", members);
-    
+
     (
-      document.getElementById("update-member-submit-button") as HTMLButtonElement
+      document.getElementById(
+        "update-member-submit-button"
+      ) as HTMLButtonElement
     ).disabled = true;
     (
-      document.getElementById("update-member-submit-button") as HTMLButtonElement
+      document.getElementById(
+        "update-member-submit-button"
+      ) as HTMLButtonElement
     ).textContent = "Updating Member List...";
 
-    updateMemberMutation({members:members.added, action:"add"});
-    updateMemberMutation({members:members.removed, action:"delete"});
-
+    if (members.added.size > 0)
+      updateMemberMutation({ members: members.added, action: "add" });
+    if (members.removed.size > 0)
+      updateMemberMutation({ members: members.removed, action: "delete" });
   };
 
   const { mutate: updateMemberMutation } = useMutation(
-    (data:{members: Set<string>, action: string}) => updateMemberFn(data.members, data.action),
+    (data: { members: Set<string>; action: string }) =>
+      updateMemberFn(data.members, data.action),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("members");
@@ -273,7 +273,7 @@ const OrganizationGroup = () => {
           variant: "success",
           title: "Members updated successfully",
           description: "",
-          duration: 2000
+          duration: 2000,
         });
         setIsOpenViewDialog3(false);
         (
@@ -287,8 +287,7 @@ const OrganizationGroup = () => {
         toast({
           variant: "destructive",
           title: responseData.data,
-          duration: 2000
-
+          duration: 2000,
         });
         (
           document.getElementById(
@@ -302,10 +301,10 @@ const OrganizationGroup = () => {
   const updateMemberFn = async (members: Set<string>, action: string) => {
     console.log("action", action);
     console.log("members", members);
-    
+
     let axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${gid}/member/${action}/`,
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${group?.id}/member/${action}/`,
       data: {
         user_ids: Array.from(members),
       },
@@ -321,16 +320,14 @@ const OrganizationGroup = () => {
         toast({
           variant: "success",
           title: `Members updated sucessfully`,
-          duration: 2000
-
+          duration: 2000,
         });
       } else {
         toast({
           variant: "destructive",
           title: "Group update  error",
           description: response.data,
-          duration: 2000
-
+          duration: 2000,
         });
       }
     } catch (error: any) {
@@ -351,9 +348,72 @@ const OrganizationGroup = () => {
     }
   };
 
+  const updateImages = (images: IImageChanges) => {
+    (
+      document.getElementById("add-image-to-grp-button") as HTMLButtonElement
+    ).disabled = true;
+    (
+      document.getElementById("add-image-to-grp-button") as HTMLButtonElement
+    ).textContent = "Updating Image List...";
 
+    if (images.added.size > 0)
+      updateImagesMutation({ images: images.added, action: "add" });
+    if (images.removed.size > 0)
+      updateImagesMutation({ images: images.removed, action: "delete" });
+  };
 
-  
+  const { mutate: updateImagesMutation } = useMutation(
+    (data: { images: Set<string>; action: string }) =>
+      updateImagesFn(data.images, data.action),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("members");
+        toast({
+          variant: "success",
+          title: "Image updated successfully",
+          description: "",
+          duration: 2000,
+        });
+        setIsOpenViewDialog1(false);
+        (
+          document.getElementById(
+            "add-image-to-grp-button"
+          ) as HTMLButtonElement
+        ).textContent = "Update Images List";
+      },
+      onError: (error: any) => {
+        const responseData = error.response.data;
+        toast({
+          variant: "destructive",
+          title: responseData.data,
+          duration: 2000,
+        });
+        (
+          document.getElementById(
+            "add-image-to-grp-button"
+          ) as HTMLButtonElement
+        ).textContent = "Update Images List";
+      },
+    }
+  );
+
+  const updateImagesFn = async (images: Set<string>, action: string) => {
+    let axiosConfig = {
+      method: "POST",
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${group?.id}/image/${action}/`,
+      data: {
+        image_ids: Array.from(images),
+      },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    try {
+      await axios(axiosConfig);
+    } catch (error: any) {}
+  };
 
   return (
     <div className="">
@@ -405,7 +465,7 @@ const OrganizationGroup = () => {
                           <TableRow key={i}>
                             <TableCell className="font-medium  underline">
                               <Link
-                              className="text-blue-400"
+                                className="text-blue-400"
                                 href={`/my-organization/groups/${group.id}/images?name=Groups&group_name=${group.name} Lab`}
                               >
                                 {group.name}
@@ -420,10 +480,10 @@ const OrganizationGroup = () => {
                                 <DropdownMenuContent className="left-[-20px_!important]">
                                   <DropdownMenuItem
                                     onClick={() => {
-                                      setGid(Number(group.id)),
+                                      setGroup(group),
                                         setIsOpenViewDialog3(true);
                                     }}
-                                    className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
+                                    className="font-medium cursor-pointer text-white-500 py-2"
                                   >
                                     Update Members
                                   </DropdownMenuItem>
@@ -435,7 +495,7 @@ const OrganizationGroup = () => {
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => {
-                                      setGid(Number(group.id)),
+                                      setGroup(group),
                                         setIsOpenViewDialog1(true);
                                     }}
                                     className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
@@ -479,27 +539,31 @@ const OrganizationGroup = () => {
         <CreateGroupModal onSubmit={createNewGroup} />
       </Dialog>
 
-      <Dialog
+      <Sheet
         open={isOpenViewDialogOpen1}
         onOpenChange={
           isOpenViewDialogOpen1 ? setIsOpenViewDialog1 : setIsOpenDeleteDialog
         }
       >
         <AddImgGroupModal
-          image={image}
-          gid={gid}
-          onSubmit={() => setIsOpenViewDialog1(false)}
+          images={images}
+          group={group}
+          onSubmit={updateImages}
         />
-      </Dialog>
+      </Sheet>
 
-      <Dialog
+      <Sheet
         open={isOpenViewDialogOpen3}
         onOpenChange={
           isOpenViewDialogOpen3 ? setIsOpenViewDialog3 : setIsOpenDeleteDialog
         }
       >
-        <AddMembersModal members={members} onSubmit={updateMember} gId={gid} />
-      </Dialog>
+        <AddMembersModal
+          members={members}
+          onSubmit={updateMember}
+          group={group}
+        />
+      </Sheet>
     </div>
   );
 };

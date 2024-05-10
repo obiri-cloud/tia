@@ -240,19 +240,6 @@ const OrganizationGroupImagePage = () => {
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
-                {imageList?.length === 0 ||
-                  (status && (
-                    <TableCaption>
-                     No Labs Available In this Group
-                      <br />
-                      <Button
-                        className="m-4"
-                        onClick={() => setIsOpenViewDialog2(true)}
-                      >
-                        Create group
-                      </Button>
-                    </TableCaption>
-                  ))}
                 <TableBody>
                   {imageList && imageList.length > 0 ? (
                     imageList.map((image: any, i: any) => (
@@ -298,7 +285,7 @@ const OrganizationGroupImagePage = () => {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={3} className="text-center">
+                      <TableCell colSpan={4} className="text-center">
                          No Labs Available In this Group
                       </TableCell>
                     </TableRow>

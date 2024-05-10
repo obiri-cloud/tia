@@ -51,7 +51,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 const Images = () => {
   const [imageList, setimagelist] = useState<IinviteData[]>();
   const [status, setstatus] = useState<boolean>(false);
-
+  const [emailInput, setemailInput] = useState<any>();
   const { data: session } = useSession();
   const {reset} =useForm()
 
@@ -205,7 +205,7 @@ const {
 
   const queryClient = useQueryClient();
 
-  const addInvite = async (formData: FormData) => {
+  const addInvite = async (formData:any) => {
     const axiosConfig = {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/create/`,
@@ -221,12 +221,12 @@ const {
   };
 
   const { mutate: addInviteMutation } = useMutation(
-    (formData: FormData) => addInvite(formData),
+    (formData:any) => addInvite(formData),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("invites");
-        (document.getElementById("invite-email") as HTMLInputElement).value =
-          "";
+        setemailInput('')
+        setmultipleEmails([])
         toast({
           variant: "success",
           title: `Invitation Sent sucessfully`,
@@ -253,43 +253,41 @@ const {
     }
   );
 
-  // const addGroup = (event: FormEvent<HTMLFormElement>) => {
+  const SendEmails = () => {
+    (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
+      true;
+    (
+      document.getElementById("submit-btn") as HTMLButtonElement
+    ).textContent = "Sending Invitation Link...";
+    (
+      document.getElementById("submit-btn") as HTMLButtonElement
+    ).textContent = "Sending Invitation Link...";
 
-  //   event.preventDefault();
-  //   (document.getElementById("submit-button") as HTMLButtonElement).disabled =
-  //     true;
-  //   (
-  //     document.getElementById("submit-button") as HTMLButtonElement
-  //   ).textContent = "Sending Invitation Link...";
-  //   (
-  //     document.getElementById("submit-button") as HTMLButtonElement
-  //   ).textContent = "Sending Invitation Link...";
-    // const email = (document.getElementById("invite-email") as HTMLInputElement)
-    //   ?.value;
-
-  //   const formData = new FormData();
-  //   formData.append("email", email || "");
-  //   addInviteMutation(formData);
-  // };
-
-  const addGroup = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();  
+    const emailData = {
+      emails: multiplEmails.map((item:any) => item.email) 
+    };
   
-    const emailInput = document.getElementById("invite-email") as HTMLInputElement;
+    addInviteMutation(emailData);
 
-    if (emailInput && emailInput.value) {
-      const email = emailInput.value;
-      setmultipleEmails((prevEmails:any) => [...prevEmails, {email:email}]);
+  };
+
+  const addGroup = () => {
+    // event.preventDefault();  
+
+    if (emailInput) {
+      setmultipleEmails((prevEmails:any) => [...prevEmails,{email:emailInput}]);
   
-      emailInput.defaultValue='';
+      setemailInput('')
       reset({email:""})
     }
   };
 
   console.log({multiplEmails});
 
-  const removeEmail = (emailToRemove:any) => {
-    setmultipleEmails((currentEmails:any)=> currentEmails.filter((email:string)=> email !== emailToRemove));
+  const removeEmail = (emailToRemove: string) => {
+    setmultipleEmails((currentEmails: string[]) =>
+      currentEmails.filter((email: string) => email !== emailToRemove)
+    );
   };
   
   
@@ -329,7 +327,7 @@ const {
                 </>
               )}
             </div>
-            <div>
+            {/* <div>
               {!status && (
                 <>
                   <Button
@@ -342,7 +340,7 @@ const {
                   </Button>
                 </>
               )}
-            </div>
+            </div> */}
           </CardHeader>
           <Dialog>
             <CardContent className="pl-2">
@@ -429,7 +427,8 @@ const {
           isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
         }
       >
-        <InviteModal onSubmit={addGroup} bulkEmails={multiplEmails} onRemoveEmail={removeEmail} />
+        <InviteModal onSubmit={addGroup} bulkEmails={multiplEmails} onRemoveEmail={removeEmail}  emailInput={emailInput}
+        setemailInput={setemailInput} onSend={SendEmails} />
       </Dialog>
     </div>
   );

@@ -79,29 +79,7 @@ const myOrganizationPage = () => {
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
-  // useEffect(() => {
-    const getOrgOwner = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.data.status === 404) {
-          setIsOpenViewDialog2(true); 
-        } else if (response.data.status === 200) {
-          setIsOpenViewDialog2(false); 
-        }
-      } catch (error) {
-        console.error("Error checking organization owner:", error);
-      }
-    };
+  
 
 
 
@@ -118,7 +96,6 @@ const myOrganizationPage = () => {
           },
         }
       );
-      // setorgImagelist(response.data.data);
       return response.data.data;
     } catch (error) {
       console.log(error);
@@ -195,18 +172,8 @@ const myOrganizationPage = () => {
 
 
   const {
-    isLoading: loadingOrgImages,
-    error: errorOnOrgImages,
     data: orgImageList,
   } = useQuery(["orgImages"], () => getOrgImages());
-
-  const {
-    isLoading: loadingOrgcheck,
-    error: errorOrgcheck,
-    data: orgcheckk,
-  } = useQuery(["orgcheck"], () => getOrgOwner());
-
-
 
 
 
@@ -289,7 +256,3 @@ const myOrganizationPage = () => {
 };
 
 export default myOrganizationPage;
-function getOrgOwner(): any {
-  throw new Error("Function not implemented.");
-}
-
