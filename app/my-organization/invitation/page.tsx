@@ -42,6 +42,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useForm } from "react-hook-form";
 import { MoreVerticalIcon } from "lucide-react";
 import InviteModal from "@/app/components/InviteModal";
 import useOrgCheck from "@/hooks/orgnization-check";
@@ -50,8 +51,9 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 const Images = () => {
   const [imageList, setimagelist] = useState<IinviteData[]>();
   const [status, setstatus] = useState<boolean>(false);
-
+  const [emailInput, setemailInput] = useState<any>();
   const { data: session } = useSession();
+  const {reset} =useForm()
 
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
@@ -59,7 +61,7 @@ const Images = () => {
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<IinviteData>();
-
+  const [multiplEmails,setmultipleEmails]=useState<any>([])
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
@@ -123,6 +125,11 @@ const Images = () => {
   const response = await axios(axiosConfig);
   return response.data;
 };
+
+const addMultiple=()=>{
+   let emails=[]
+   emails.push()
+}
 
 const {
   mutate: SendInviteMutation,
@@ -198,7 +205,7 @@ const {
 
   const queryClient = useQueryClient();
 
-  const addInvite = async (formData: FormData) => {
+  const addInvite = async (formData:any) => {
     const axiosConfig = {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/create/`,
@@ -214,12 +221,12 @@ const {
   };
 
   const { mutate: addInviteMutation } = useMutation(
-    (formData: FormData) => addInvite(formData),
+    (formData:any) => addInvite(formData),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("invites");
-        (document.getElementById("invite-email") as HTMLInputElement).value =
-          "";
+        setemailInput('')
+        setmultipleEmails([])
         toast({
           variant: "success",
           title: `Invitation Sent sucessfully`,
@@ -246,24 +253,43 @@ const {
     }
   );
 
-  const addGroup = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    (document.getElementById("submit-button") as HTMLButtonElement).disabled =
+  const SendEmails = () => {
+    (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
       true;
     (
-      document.getElementById("submit-button") as HTMLButtonElement
+      document.getElementById("submit-btn") as HTMLButtonElement
     ).textContent = "Sending Invitation Link...";
     (
-      document.getElementById("submit-button") as HTMLButtonElement
+      document.getElementById("submit-btn") as HTMLButtonElement
     ).textContent = "Sending Invitation Link...";
-    const email = (document.getElementById("invite-email") as HTMLInputElement)
-      ?.value;
 
-    const formData = new FormData();
-    formData.append("email", email || "");
-    addInviteMutation(formData);
+    const emailData = {
+      emails: multiplEmails.map((item:any) => item.email) 
+    };
+  
+    addInviteMutation(emailData);
+
   };
-  console.log("invites", invites);
+
+  const addGroup = () => {
+    // event.preventDefault();  
+
+    if (emailInput) {
+      setmultipleEmails((prevEmails:any) => [...prevEmails,{email:emailInput}]);
+  
+      setemailInput('')
+      reset({email:""})
+    }
+  };
+
+  console.log({multiplEmails});
+
+  const removeEmail = (emailToRemove: string) => {
+    setmultipleEmails((currentEmails: string[]) =>
+      currentEmails.filter((email: string) => email !== emailToRemove)
+    );
+  };
+  
   
 
   return (
@@ -301,6 +327,20 @@ const {
                 </>
               )}
             </div>
+            {/* <div>
+              {!status && (
+                <>
+                  <Button
+                    className=""
+                    onClick={() => {
+                      setIsOpenViewDialog2(true);
+                    }}
+                  >
+                    Bulk invite
+                  </Button>
+                </>
+              )}
+            </div> */}
           </CardHeader>
           <Dialog>
             <CardContent className="pl-2">
@@ -387,7 +427,8 @@ const {
           isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
         }
       >
-        <InviteModal onSubmit={addGroup} />
+        <InviteModal onSubmit={addGroup} bulkEmails={multiplEmails} onRemoveEmail={removeEmail}  emailInput={emailInput}
+        setemailInput={setemailInput} onSend={SendEmails} />
       </Dialog>
     </div>
   );
