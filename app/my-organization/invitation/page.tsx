@@ -1,20 +1,6 @@
 "use client";
-import React, {
-  ChangeEvent,
-  FC,
-  FormEvent,
-  SVGProps,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,8 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import NewImageForm from "@/app/components/admin/new-image-form";
 import { toast } from "@/components/ui/use-toast";
 import { formatDistanceToNow, format } from "date-fns";
 import axios from "axios";
@@ -45,26 +29,23 @@ import {
 import { useForm } from "react-hook-form";
 import { MoreVerticalIcon } from "lucide-react";
 import InviteModal from "@/app/components/InviteModal";
-import useOrgCheck from "@/hooks/orgnization-check";
+
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 const Images = () => {
-  const [imageList, setimagelist] = useState<IinviteData[]>();
-  const [status, setstatus] = useState<boolean>(false);
-  const [emailInput, setemailInput] = useState<any>();
+  const [emailInput, setEmailInput] = useState<string>();
   const { data: session } = useSession();
-  const {reset} =useForm()
+  const { reset } = useForm();
 
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
     useState<boolean>(false);
-  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
+  const [_, setIsOpenDeleteDialog] =
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<IinviteData>();
-  const [multiplEmails,setmultipleEmails]=useState<any>([])
+  const [multiplEmails, setMultipleEmails] = useState<any>([]);
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-
 
   const getInvitations = async (): Promise<IinviteData[] | undefined> => {
     try {
@@ -79,10 +60,7 @@ const Images = () => {
           },
         }
       );
-      // if (response.status === 204) {
-      //   setstatus(true);
-      //   return;
-      // }
+   
       return response.data.data;
     } catch (error) {
       console.log(error);
@@ -91,7 +69,6 @@ const Images = () => {
 
   const {
     isLoading: loadingInvitation,
-    error: invitationError,
     data: invites,
   } = useQuery(["invites"], () => getInvitations());
 
@@ -110,58 +87,6 @@ const Images = () => {
     }
   };
 
- //mutation
- const SendInvitation = async (formData: FormData) => {
-  const axiosConfig = {
-    method: "POST",
-    url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/create/`,
-    data: formData,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
-  const response = await axios(axiosConfig);
-  return response.data;
-};
-
-const addMultiple=()=>{
-   let emails=[]
-   emails.push()
-}
-
-const {
-  mutate: SendInviteMutation,
-  isLoading: updatingGroups,
-  error: groupUpdateError,
-} = useMutation((formData: FormData) => SendInvitation(formData), {
-  onSuccess: () => {
-    queryClient.invalidateQueries("invites");
-    (document.getElementById("email-id") as HTMLInputElement).value = "";
-    toast({
-      variant: "success",
-      title: "Invitation Sent Successfully",
-      description: "",
-    });
-    setIsOpenViewDialog2(false);
-    (
-      document.getElementById("submit-button") as HTMLButtonElement
-    ).textContent = "Invitation Sent";
-  },
-
-
-  onError: (error: any) => {
-    const responseData = error.response.data;
-    toast({
-      variant: "destructive",
-      title: responseData.data,
-    });
-    (
-      document.getElementById("submit-button") as HTMLButtonElement
-    ).textContent = "Error Sending Invitaion";
-  },
-});
 
 
   const formatDate = (timestamp: string) => {
@@ -198,14 +123,13 @@ const {
           title: responseData.data,
         });
         setIsOpenViewDialog(false);
-
       },
     }
   );
 
   const queryClient = useQueryClient();
 
-  const addInvite = async (formData:any) => {
+  const addInvite = async (formData: any) => {
     const axiosConfig = {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/create/`,
@@ -221,12 +145,12 @@ const {
   };
 
   const { mutate: addInviteMutation } = useMutation(
-    (formData:any) => addInvite(formData),
+    (formData: any) => addInvite(formData),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("invites");
-        setemailInput('')
-        setmultipleEmails([])
+        setEmailInput("");
+        setMultipleEmails([]);
         toast({
           variant: "success",
           title: `Invitation Sent sucessfully`,
@@ -253,44 +177,42 @@ const {
     }
   );
 
-  const SendEmails = () => {
+  const sendEmails = () => {
     (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
       true;
-    (
-      document.getElementById("submit-btn") as HTMLButtonElement
-    ).textContent = "Sending Invitation Link...";
-    (
-      document.getElementById("submit-btn") as HTMLButtonElement
-    ).textContent = "Sending Invitation Link...";
+    (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
+      "Sending Invitation Link...";
+    (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
+      "Sending Invitation Link...";
 
     const emailData = {
-      emails: multiplEmails.map((item:any) => item.email) 
+      emails: Array.from(new Set(multiplEmails.map((item: any) => item.email.trim()))),
     };
-  
-    addInviteMutation(emailData);
 
+
+    addInviteMutation(emailData);
   };
 
   const addGroup = () => {
-    // event.preventDefault();  
 
     if (emailInput) {
-      setmultipleEmails((prevEmails:any) => [...prevEmails,{email:emailInput}]);
-  
-      setemailInput('')
-      reset({email:""})
+      setMultipleEmails((prevEmails: any) => [
+        ...prevEmails,
+        { email: emailInput },
+      ]);
+
+      setEmailInput("");
+      reset({ email: "" });
     }
   };
 
-  console.log({multiplEmails});
+  console.log({ multiplEmails });
 
   const removeEmail = (emailToRemove: string) => {
-    setmultipleEmails((currentEmails: string[]) =>
+    setMultipleEmails((currentEmails: string[]) =>
       currentEmails.filter((email: string) => email !== emailToRemove)
     );
   };
-  
-  
 
   return (
     <div className="">
@@ -299,13 +221,11 @@ const {
           <span className="p-2 ">Organzation</span>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/dashboard" className="font-medium text-mint">
-              Go to dashboard
-            </Link>
-          ) : null
-        }
+        {session?.user && session?.user.data.is_admin ? (
+          <Link href="/dashboard" className="font-medium text-mint">
+            Go to dashboard
+          </Link>
+        ) : null}
       </div>
       <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">
@@ -314,33 +234,15 @@ const {
               <CardTitle>Invitation List</CardTitle>
             </div>
             <div>
-              {!status && (
-                <>
-                  <Button
-                    className=""
-                    onClick={() => {
-                      setIsOpenViewDialog2(true);
-                    }}
-                  >
-                    Invite members
-                  </Button>
-                </>
-              )}
+              <Button
+                className=""
+                onClick={() => {
+                  setIsOpenViewDialog2(true);
+                }}
+              >
+                Invite members
+              </Button>
             </div>
-            {/* <div>
-              {!status && (
-                <>
-                  <Button
-                    className=""
-                    onClick={() => {
-                      setIsOpenViewDialog2(true);
-                    }}
-                  >
-                    Bulk invite
-                  </Button>
-                </>
-              )}
-            </div> */}
           </CardHeader>
           <Dialog>
             <CardContent className="pl-2">
@@ -355,7 +257,8 @@ const {
                   </TableRow>
                 </TableHeader>
 
-                {!loadingInvitation && ( (invites && invites.length === 0) || !invites) ? (
+                {!loadingInvitation &&
+                ((invites && invites.length === 0) || !invites) ? (
                   <TableCaption>No pending invites found...</TableCaption>
                 ) : null}
                 {loadingInvitation ? (
@@ -427,8 +330,14 @@ const {
           isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
         }
       >
-        <InviteModal onSubmit={addGroup} bulkEmails={multiplEmails} onRemoveEmail={removeEmail}  emailInput={emailInput}
-        setemailInput={setemailInput} onSend={SendEmails} />
+        <InviteModal
+          onSubmit={addGroup}
+          bulkEmails={multiplEmails}
+          onRemoveEmail={removeEmail}
+          emailInput={emailInput}
+          setEmailInput={setEmailInput}
+          onSend={sendEmails}
+        />
       </Dialog>
     </div>
   );
