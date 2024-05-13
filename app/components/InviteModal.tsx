@@ -1,83 +1,72 @@
 "use client";
 import React from "react";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import OrgDialog from "./my-organization/org-dialog";
+import { Badge } from "@/components/ui/badge";
+import { TrashIcon } from "lucide-react";
 
 type InviteModalProps = {
-  onSubmit: () => void; 
-  setemailInput: (email: string) => void;
-  emailInput: any; 
-  bulkEmails: any[]; 
-  onRemoveEmail: (email: string) => void; 
+  onSubmit: () => void;
+  setEmailInput: (email: string) => void;
+  emailInput: any;
+  bulkEmails: any[];
+  onRemoveEmail: (email: string) => void;
   onSend: () => void;
 };
-const InviteModal = (
-  {
-    onSubmit,
-    emailInput,
-    setemailInput,
-    bulkEmails,
-    onRemoveEmail,
-    onSend
-  }: InviteModalProps
-) => {
-  const form = useForm();
-
-
+const InviteModal = ({
+  onSubmit,
+  emailInput,
+  setEmailInput,
+  bulkEmails,
+  onRemoveEmail,
+  onSend,
+}: InviteModalProps) => {
 
   return (
     <OrgDialog
       title="Invite Members"
       description="Invites users to your organization"
     >
-{bulkEmails.length===0&&(
-    <div className="flex items-center justify-center">
-     <p className=" capitalize dark:text-white text-black">no added email</p>
-    </div>
-)}
-
-<div className="grid grid-cols-2 gap-4 mb-4">
-
-
-      {bulkEmails.map((email, index) => (
-        <div key={index} className="dark:bg-white dark:text-black overflow-hidden text-white bg-black rounded p-2 flex items-center justify-between">
-          <div className="w-32 overflow-hidden dark:text-black text-white text-ellipsis whitespace-nowrap">
-            {email.email}
-          </div>
-          <button
-            type="button"
-            onClick={() => onRemoveEmail(email)}
-            className="bg-red-500 text-white p-1 rounded-full w-6 h-6 flex items-center justify-center text-xs"
-          >
-            x
-          </button>
+      {bulkEmails.length === 0 && (
+        <div className="flex items-center justify-center">
+          <p className=" capitalize dark:text-white text-black">
+            No added email
+          </p>
         </div>
-      ))}
-    </div>
+      )}
 
- 
-    <div className="flex items-center gap-2">
-  <Input
-    value={emailInput}
-    onChange={(e) => setemailInput(e.target.value)}
-    placeholder="Email"
-    type="text"
-    className="flex-grow glassBorder bg-white dark:bg-black/10 dark:text-white text-black"
-  />
-  <Button
-    id="submit-button"
-    className="shrink-0 bg-black dark:bg-white dark:text-black  text-white disabled:bg-black-900/10"
-    variant="black"
-    onClick={onSubmit}
-  >
-    Add Email
-  </Button>
-</div>
+      <div className="flex flex-wrap gap-4 mb-4">
+        {bulkEmails.map((email, i: number) => (
+          <div key={i} className="flex items-center">
+            <Badge variant="outline">{email.email}</Badge>
+            <button onClick={() => onRemoveEmail(email)}>
+              <TrashIcon className="text-red-500 stroke-2 w-4 h-4 " />
+            </button>
+          </div>
+        ))}
+      </div>
 
-{bulkEmails.length>0&&(
-          <Button
+      <div className="flex items-center gap-2">
+        <Input
+          value={emailInput}
+          onChange={(e) => setEmailInput(e.target.value)}
+          placeholder="Email"
+          type="text"
+          className="flex-grow glassBorder bg-white dark:bg-black/10 dark:text-white text-black"
+        />
+        <Button
+          id="submit-button"
+          className="shrink-0 bg-black text-white disabled:bg-black-900/10"
+          variant="black"
+          onClick={onSubmit}
+        >
+          Add Email
+        </Button>
+      </div>
+
+      {bulkEmails.length > 0 && (
+        <Button
           id="submit-btn"
           className="w-full disabled:bg-black-900/10 mt-6 dark:bg-white dark:text-black bg-black text-white "
           variant="black"
@@ -85,8 +74,7 @@ const InviteModal = (
         >
           Send Invitation Link
         </Button>
-)}
-
+      )}
     </OrgDialog>
   );
 };

@@ -1,20 +1,6 @@
 "use client";
-import React, {
-  ChangeEvent,
-  FC,
-  FormEvent,
-  SVGProps,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,8 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import NewImageForm from "@/app/components/admin/new-image-form";
 import { toast } from "@/components/ui/use-toast";
 import { formatDistanceToNow, format } from "date-fns";
 import axios from "axios";
@@ -45,15 +29,15 @@ import {
 import { useForm } from "react-hook-form";
 import { MoreVerticalIcon } from "lucide-react";
 import InviteModal from "@/app/components/InviteModal";
-import useOrgCheck from "@/hooks/orgnization-check";
+
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import BulkInviteModal from "@/app/components/BulkInviteModal";
 
 const Images = () => {
   const [imageList, setimagelist] = useState<IinviteData[]>();
   const [status, setstatus] = useState<boolean>(false);
-  const [emailInput, setemailInput] = useState<any>();
   const [file, setfile] = useState<any>();
+  const [emailInput, setEmailInput] = useState<string>();
   const { data: session } = useSession();
   const { reset } = useForm();
 
@@ -62,10 +46,10 @@ const Images = () => {
     useState<boolean>(false);
   const [isOpenViewDialogOpen3, setIsOpenViewDialog3] =
     useState<boolean>(false);
-  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
-    useState<boolean>(false);
   const [passedData, setPassedData] = useState<IinviteData>();
-  const [multiplEmails, setmultipleEmails] = useState<any>([]);
+  const [_, setIsOpenDeleteDialog] =
+    useState<boolean>(false);
+  const [multiplEmails, setMultipleEmails] = useState<any>([]);
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
@@ -82,10 +66,7 @@ const Images = () => {
           },
         }
       );
-      // if (response.status === 204) {
-      //   setstatus(true);
-      //   return;
-      // }
+   
       return response.data.data;
     } catch (error) {
       console.log(error);
@@ -94,7 +75,6 @@ const Images = () => {
 
   const {
     isLoading: loadingInvitation,
-    error: invitationError,
     data: invites,
   } = useQuery(["invites"], () => getInvitations());
 
@@ -221,15 +201,13 @@ const Images = () => {
   };
 
   const BulkInvite = async (file: any) => {
-    const formData = new FormData();
+    let formData = new FormData();
     formData.append("file", file);
-
-    console.log({ formData });
 
     const axiosConfig = {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/create/bulk/`,
-      data: formData,
+      data:formData,
       headers: {
         "Content-Type": "multipart/form-data",
         Accept: "application/json",
@@ -240,15 +218,14 @@ const Images = () => {
     const response = await axios(axiosConfig);
     return response.data;
   };
-  console.log({ file });
 
   const { mutate: addInviteMutation } = useMutation(
     (formData: any) => addInvite(formData),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("invites");
-        setemailInput("");
-        setmultipleEmails([]);
+        setEmailInput("");
+        setMultipleEmails([]);
         toast({
           variant: "success",
           title: `Invitation Sent sucessfully`,
@@ -307,7 +284,19 @@ const Images = () => {
     }
   );
 
-  const SendEmails = () => {
+  const BulkEmails = () => {
+    (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
+      true;
+    (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
+      "Sending Invitation Link...";
+    (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
+      "Sending Invitation Link...";
+
+      addBulkInviteMutation(file);
+  };
+
+
+  const sendEmails = () => {
     (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
       true;
     (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
@@ -316,34 +305,23 @@ const Images = () => {
       "Sending Invitation Link...";
 
     const emailData = {
-      emails: multiplEmails.map((item: any) => item.email),
+      emails: Array.from(new Set(multiplEmails.map((item: any) => item.email.trim()))),
     };
+
 
     addInviteMutation(emailData);
   };
 
-  const SendBulkEmails = () => {
-    (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
-      true;
-    (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
-      "Sending Invitation Link...";
-    (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
-      "Sending Invitation Link...";
-
-    console.log({ file_from_main: file });
-    addBulkInviteMutation(file);
-  };
 
   const addGroup = () => {
-    // event.preventDefault();
 
     if (emailInput) {
-      setmultipleEmails((prevEmails: any) => [
+      setMultipleEmails((prevEmails: any) => [
         ...prevEmails,
         { email: emailInput },
       ]);
 
-      setemailInput("");
+      setEmailInput("");
       reset({ email: "" });
     }
   };
@@ -351,7 +329,7 @@ const Images = () => {
   console.log({ multiplEmails });
 
   const removeEmail = (emailToRemove: string) => {
-    setmultipleEmails((currentEmails: string[]) =>
+    setMultipleEmails((currentEmails: string[]) =>
       currentEmails.filter((email: string) => email !== emailToRemove)
     );
   };
@@ -375,32 +353,24 @@ const Images = () => {
             <div>
               <CardTitle>Invitation List</CardTitle>
             </div>
-            <div className="flex space-x-4">
-              {!status && (
-                <>
-                  <Button
-                    className=""
-                    onClick={() => {
-                      setIsOpenViewDialog3(true);
-                    }}
-                  >
-                    Bulk invitation
-                  </Button>
-                </>
-              )}
+            <div    className="flex space-x-4">
+            <Button
+             
+                onClick={() => {
+                  setIsOpenViewDialog3(true);
+                }}
+              >
+                Bulk invite
+              </Button>
 
-              {!status && (
-                <>
-                  <Button
-                    className=""
-                    onClick={() => {
-                      setIsOpenViewDialog2(true);
-                    }}
-                  >
-                    Invite members
-                  </Button>
-                </>
-              )}
+              <Button
+                className=""
+                onClick={() => {
+                  setIsOpenViewDialog2(true);
+                }}
+              >
+                Invite members
+              </Button>
             </div>
           </CardHeader>
           <Dialog>
@@ -494,8 +464,8 @@ const Images = () => {
           bulkEmails={multiplEmails}
           onRemoveEmail={removeEmail}
           emailInput={emailInput}
-          setemailInput={setemailInput}
-          onSend={SendEmails}
+          setEmailInput={setEmailInput}
+          onSend={sendEmails}
         />
       </Dialog>
 
@@ -505,7 +475,8 @@ const Images = () => {
           isOpenViewDialogOpen3 ? setIsOpenViewDialog3 : setIsOpenDeleteDialog
         }
       >
-        <BulkInviteModal setfile={setfile} onSend={SendBulkEmails} />
+        <BulkInviteModal setfile={setfile} onSend={BulkEmails} />
+
       </Dialog>
     </div>
   );
