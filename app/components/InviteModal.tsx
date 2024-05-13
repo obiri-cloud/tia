@@ -1,16 +1,8 @@
 "use client";
-import React, { FormEvent, useRef} from "react";
-import { Form, FormField, FormItem } from "@/components/ui/form";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-
-import * as z from "zod";
-import axios from "axios";
-import { toast } from "@/components/ui/use-toast";
-import { useSession } from "next-auth/react";
-
-import { useRouter } from "next/navigation";
 import OrgDialog from "./my-organization/org-dialog";
 
 type InviteModalProps = {
@@ -51,7 +43,7 @@ const InviteModal = (
 
       {bulkEmails.map((email, index) => (
         <div key={index} className="dark:bg-white dark:text-black overflow-hidden text-white bg-black rounded p-2 flex items-center justify-between">
-          <div className="w-32 overflow-hidden text-white text-ellipsis whitespace-nowrap">
+          <div className="w-32 overflow-hidden dark:text-black text-white text-ellipsis whitespace-nowrap">
             {email.email}
           </div>
           <button
@@ -76,7 +68,7 @@ const InviteModal = (
   />
   <Button
     id="submit-button"
-    className="shrink-0 bg-black text-white disabled:bg-black-900/10"
+    className="shrink-0 bg-black dark:bg-white dark:text-black  text-white disabled:bg-black-900/10"
     variant="black"
     onClick={onSubmit}
   >
