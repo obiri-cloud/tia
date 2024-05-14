@@ -31,11 +31,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
+import { DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Images = () => {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
   const [image, setImage] = useState<any>();
+  const [position, setPosition] = React.useState("bottom")
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);
@@ -105,7 +110,60 @@ const Images = () => {
       },
     }
   );
-console.log('iserror',isError,members)
+
+  const updateRole = async ({ id, role }: { id: string; role: string }) => {
+    const response = await axios.put(
+      `${process.env.NEXT_PUBLIC_BE_URL}/organization/member/${id}/update/role/`,
+      { role: role },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  };
+  
+
+  const { mutate: updateRoleMutation } = useMutation(updateRole, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("members");
+      toast({
+        variant: "success",
+        title: 'Member Role Updated Successfully',
+      });
+    },
+    onError: (error: AxiosError) => {
+      toast({
+        variant: "destructive",
+        title:  "Failed to update role",
+      });
+    },
+  });
+
+  const Roles=[
+    {
+      roles:"Admin",
+      desc:"Admin has full control over Labs, Groups, Members, and Invitations but cannot manage Organization settings."
+    },
+    {
+      roles:"Editor",
+      desc:"Editor can modify Labs, Groups, Members, and Invitations, except for billing and organizational settings."
+    },
+    {
+      roles:"Viewer",
+      desc:"Viewer has access only to view content, including Labs, Groups, Members, and Invitations."
+    },
+    {
+      roles:"Member",
+      desc:"Member has basic access without permissions to view or manage Organization content."
+    }
+  ]
+
+
+
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
@@ -134,6 +192,7 @@ console.log('iserror',isError,members)
                     <TableHead className="">Email</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Role</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -155,6 +214,35 @@ console.log('iserror',isError,members)
                             </TableCell>
                             <TableCell>{member.member.first_name} {member.member.last_name}</TableCell>
                             <TableCell>{member.invitation_status}</TableCell>
+                            <TooltipProvider>
+                            <TableCell >
+
+                              <Select value={member.role} onValueChange={(newRole) => updateRoleMutation({ id: member.member.id, role: newRole })}>
+                                <SelectTrigger className="w-[180px] bg-inherit">
+                                  <SelectValue placeholder={`${member?.role}`} />
+                                </SelectTrigger>
+                                <SelectContent className="overflow-visible" >
+                                  <SelectGroup >
+                                    <SelectLabel>Assign Role</SelectLabel>
+                                    {
+                                      Roles.map((role:any)=>(
+                                        <Tooltip >
+                                        <TooltipTrigger asChild>
+                                          <SelectItem value={role.roles}>{role.roles}</SelectItem>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="relative z-50 w-[200px] bg-white text-gray-800 p-2 rounded-lg shadow-md border border-gray-300">
+                                          <p>{role.desc}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                      ))
+                                    }
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                              
+                              </TableCell>
+                            </TooltipProvider>
+
                             <TableCell className="underline font-medium text-right">
                               <DropdownMenu>
                                 <DropdownMenuTrigger>
@@ -169,6 +257,15 @@ console.log('iserror',isError,members)
                                     className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
                                   >
                                     Delete
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setIsOpenDeleteDialog(true);
+                                      setImage(member);
+                                    }}
+                                    className="font-medium cursor-pointer  py-2"
+                                  >
+                                    Assign role
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>

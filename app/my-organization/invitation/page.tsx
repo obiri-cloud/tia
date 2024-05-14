@@ -200,6 +200,7 @@ const Images = () => {
     return response.data;
   };
 
+  
   const BulkInvite = async (file: any) => {
     let formData = new FormData();
     formData.append("file", file);
