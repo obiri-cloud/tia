@@ -100,7 +100,7 @@ export default function UserDashboardLayout({
                           pathname !== "/my-organization/members" &&
                           pathname !== "/my-organization/invitations" &&
                           pathname !== "/my-organization/account"
-                            ? "w-5 h-5  transition duration-75 dark:group-hover:text-white fill-white dark:fill-whiteDark stroke-2"
+                            ? "w-4 h-4  transition duration-75 dark:group-hover:text-white fill-white dark:fill-whiteDark stroke-2"
                             : ""
                         }
                         `}
@@ -142,7 +142,7 @@ export default function UserDashboardLayout({
                         className={` 
                           ${
                             pathname === "/my-organization/members"
-                              ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
+                              ? "w-4 h-4 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
                               : " "
                           }
                           `}

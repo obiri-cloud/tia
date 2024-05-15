@@ -539,6 +539,7 @@ const ReviewDrawer = () => {
   };
 
   const handleOnClickOutside = (e: ContentProps["onPointerDownOutside"]) => {
+    secureLocalStorage.clear();
     router.push("/dashboard");
   };
 
@@ -596,6 +597,8 @@ const ReviewDrawer = () => {
         });
       }
     } finally {
+      secureLocalStorage.clear();
+
       // if (buttonRef.current) {
       //   buttonRef.current.disabled = false;
       // }
