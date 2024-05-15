@@ -12,6 +12,7 @@ const useOrgCheck = () => {
 
   let [hasOrg, sethasOrg] = useState(false);
 
+  
   useEffect(() => {
     const getOrgOwner = async () => {
       try {
