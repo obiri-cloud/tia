@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label"
 import OrgDialog from "./my-organization/org-dialog";
-import file from "../../public/email.csv"
 type BulkInviteModalProps = {
   setfile: (file:any) => void;
   onSend: () => void;
