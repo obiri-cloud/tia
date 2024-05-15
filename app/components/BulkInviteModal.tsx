@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label"
 import OrgDialog from "./my-organization/org-dialog";
-import file from "../../public/email.csv"
+// import file from "../../public/email.csv"
 type BulkInviteModalProps = {
   setfile: (file:any) => void;
   onSend: () => void;
@@ -31,7 +31,7 @@ const BulkInviteModal = (
       description="send bulk invitation through a csv file"
     >
      
-     <a href='/email.csv' download="sample.csv" className="text-blue-500 underline flex justify-center">Download a sample CSV file with teh correct format to send bulk invite</a>
+     <a href='/email.csv' download="sample.csv" className="text-blue-500 underline flex justify-center">Download a sample CSV file with the correct format to send bulk invite</a>
 
     <div className="grid w-full max-w-sm items-center gap-1.5">
       <Input
