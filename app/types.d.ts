@@ -180,4 +180,5 @@ interface GroupMember {
     id: string;
     last_name: string;
   };
+  role:string
 }
