@@ -230,7 +230,7 @@ const Images = () => {
                                         <TooltipTrigger asChild>
                                           <SelectItem value={role.roles}>{role.roles}</SelectItem>
                                         </TooltipTrigger>
-                                        <TooltipContent className="relative z-50 w-[200px] bg-white text-gray-800 p-2 rounded-lg shadow-md border border-gray-300">
+                                        <TooltipContent className="absolute left-10 z-50 w-[200px] bg-white text-gray-800 p-2 rounded-lg shadow-md border border-gray-300">
                                           <p>{role.desc}</p>
                                         </TooltipContent>
                                       </Tooltip>
@@ -257,15 +257,6 @@ const Images = () => {
                                     className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
                                   >
                                     Delete
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => {
-                                      setIsOpenDeleteDialog(true);
-                                      setImage(member);
-                                    }}
-                                    className="font-medium cursor-pointer  py-2"
-                                  >
-                                    Assign role
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>

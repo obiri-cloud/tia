@@ -256,30 +256,31 @@ const Images = () => {
   const { mutate: addBulkInviteMutation } = useMutation(
     (file: any) => BulkInvite(file),
     {
-      onSuccess: () => {
+      onSuccess: (data) => {
         queryClient.invalidateQueries("invites");
         setfile(null);
         toast({
-          variant: "success",
-          title: `Invitation Sent sucessfully`,
+          variant:data.status===200?"success":"destructive",
+          title: `${data.data}`,
         });
         setIsOpenViewDialog3(false);
         (
-          document.getElementById("submit-button") as HTMLButtonElement
+          document.getElementById("submit-btn") as HTMLButtonElement
         ).textContent = "Send Invitation Link";
       },
       onError: (error: any) => {
         const responseData = error.response.data;
+
         toast({
           variant: "destructive",
           title: responseData.data,
         });
         (
-          document.getElementById("submit-button") as HTMLButtonElement
+          document.getElementById("submit-btn") as HTMLButtonElement
         ).textContent = "Send Invitation Link";
 
         (
-          document.getElementById("submit-button") as HTMLButtonElement
+          document.getElementById("submit-btn") as HTMLButtonElement
         ).disabled = false;
       },
     }
