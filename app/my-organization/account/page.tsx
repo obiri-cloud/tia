@@ -25,10 +25,9 @@ import { DropToggle } from "@/app/components/DropToggle";
 import { useRouter } from "next/navigation";
 import useOrgCheck from "@/hooks/orgnization-check";
 
-
 const AccountPage = () => {
-  const { data: session,update } = useSession();
-  const org_id=session?.user!.data?.organization_id
+  const { data: session, update } = useSession();
+  const org_id = session?.user!.data?.organization_id;
   const [userData, setUserData] = useState<any>();
   const [editMode, setEditMode] = useState(false);
   const router = useRouter();
@@ -39,12 +38,12 @@ const AccountPage = () => {
   const deactivateButtonRef = useRef<HTMLButtonElement>(null);
 
   const formSchema = z.object({
-     name: z.string().min(3, {
+    name: z.string().min(3, {
       message: "Name has to be 3 characters or more",
-    })
+    }),
   });
 
-console.log({session})
+  console.log({ session });
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -71,7 +70,6 @@ console.log({session})
       console.error(error);
     }
   }, []);
-
 
   const changeAvatar = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -142,7 +140,7 @@ console.log({session})
         });
         setEditMode(false);
         getUser();
-        router.push('/my-organization/account')
+        router.push("/my-organization/account");
       } else {
         toast({
           variant: "destructive",
@@ -162,9 +160,9 @@ console.log({session})
         );
       }
     } finally {
-    //   if (buttonRef.current) {
-    //     buttonRef.current.disabled = false;
-    //   }
+      //   if (buttonRef.current) {
+      //     buttonRef.current.disabled = false;
+      //   }
     }
   };
 
@@ -183,32 +181,37 @@ console.log({session})
       );
 
       if (response.status === 204) {
-       if(session)
-        // update({...session,user: {...session.user,data: {...session.user.data,organization_id: null}}});
-  
- 
-       if (session) {
-         const updatedUserData = {
-           ...session.user.data,
-           organization_id: null 
-         };
-      
-         const updatedSession = {
-           ...session,
-           user: {
-             ...session.user,
-             data: updatedUserData
-           }
-         };
-      
-         await update(updatedSession); 
-       }
+        if (session)
+          update({
+            ...session,
+            user: {
+              ...session.user,
+              data: { ...session.user.data, organization_id: null },
+            },
+          });
+
+        if (session) {
+          const updatedUserData = {
+            ...session.user.data,
+            organization_id: null,
+          };
+
+          const updatedSession = {
+            ...session,
+            user: {
+              ...session.user,
+              data: updatedUserData,
+            },
+          };
+
+          await update(updatedSession);
+        }
 
         toast({
           title: "Organization Account deleted successfully",
           variant: "success",
         });
-       router.push('/dashboard')
+        router.push("/dashboard");
       } else {
         toast({
           title: "Something went deactivating your organizaton",
@@ -233,100 +236,96 @@ console.log({session})
 
   return (
     <Dialog>
-
-    <div className="sc-hLBbgP sc-fLjoTV jAQqIz jVzpQn">
-      <div className="sc-jEJXZe cyvxRV"></div>
-      <div className="sc-hLBbgP sc-cTUoWY ioYMmf jlBsiO">
-        <div className="sc-hLBbgP cAyNtX">
-          <div className="sc-hLBbgP gUrCBj">
-            <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText text-whiteDark">
-             Organization  Profile
-            </span>
-          </div>
-          <div className="sc-bcXHqe sc-cRIgaW cpMQpB htAZxf">
-            Manage your Organization profile
-          </div>
-        </div>
-        <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
-        <form onSubmit={handleSubmit}>
-          <div className="sc-hLBbgP ePdqdi mb-[24px]">
-            <span className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
-             Organization Name 
-            </span>
-            <div className="sc-hLBbgP sc-svekf hDbocA lhdcYD">
-              <div className="sc-hLBbgP fHykyP">
-                {userData?.owner ? (
-                  <span className="sc-bcXHqe sc-kgMPZw cpMQpB tJsVO">
-                    {userData.name}
-                  </span>
-                ) : (
-                  <Skeleton className="w-[100px] h-[16.5px] rounded-md" />
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="sc-gGfaQS gna-dsN">
-            <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
-              <div className="sc-hLBbgP ioYMmf">
-                <label>
-                  <span className="dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
-                    Organization Name 
-                  </span>
-                </label>
-                <div className="sc-hLBbgP fHykyP">
-                  <input
-                  
-                    placeholder="name"
-                    className="kFBAIE bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder"
-                    defaultValue={userData?.name}
-                    ref={NameRef}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button
-            // ref={buttonRef}
-            id="submit-button"
-            type="submit"
-            className="sc-fbYMXx dxdUZf bg-black"
-            // onClick={handleSubmit}
-          >
-            Update Organization Name
-          </button>
-        </form>
-
+      <div className="sc-hLBbgP sc-fLjoTV jAQqIz jVzpQn">
         <div className="sc-jEJXZe cyvxRV"></div>
-
-        <div className="sc-hLBbgP   flex justify-between mt-10">
-          <div className="">
+        <div className="sc-hLBbgP sc-cTUoWY ioYMmf jlBsiO">
+          <div className="sc-hLBbgP cAyNtX">
             <div className="sc-hLBbgP gUrCBj">
-              <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText whiteDark">
-                Delete Organization
+              <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText text-whiteDark">
+                Organization Profile
               </span>
             </div>
             <div className="sc-bcXHqe sc-cRIgaW cpMQpB htAZxf">
-              Delete Your Organization
+              Manage your Organization profile
             </div>
           </div>
-          <DialogTrigger>
-            <Button variant="destructive">Delete</Button>
-          </DialogTrigger>
-        </div>
-        <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
-      <DeactivateConfirmation
-        text="Do you want to delete your Organization. You will lose all your groups, members and labs attached to this group"
-        noText="No, cancel"
-        confirmText="Yes, delete"
-        confirmFunc={() => deleteOrganization()}
-      />
-      </div>
-    </div>
-    </Dialog>
+          <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
+          <form onSubmit={handleSubmit}>
+            <div className="sc-hLBbgP ePdqdi mb-[24px]">
+              <span className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
+                Organization Name
+              </span>
+              <div className="sc-hLBbgP sc-svekf hDbocA lhdcYD">
+                <div className="sc-hLBbgP fHykyP">
+                  {userData?.owner ? (
+                    <span className="sc-bcXHqe sc-kgMPZw cpMQpB tJsVO">
+                      {userData.name}
+                    </span>
+                  ) : (
+                    <Skeleton className="w-[100px] h-[16.5px] rounded-md" />
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="sc-gGfaQS gna-dsN">
+              <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
+                <div className="sc-hLBbgP ioYMmf">
+                  <label>
+                    <span className="dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
+                      Organization Name
+                    </span>
+                  </label>
+                  <div className="sc-hLBbgP fHykyP">
+                    <input
+                      placeholder="name"
+                      className="kFBAIE bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder"
+                      defaultValue={userData?.name}
+                      ref={NameRef}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
 
+            <button
+              // ref={buttonRef}
+              id="submit-button"
+              type="submit"
+              className="sc-fbYMXx dxdUZf bg-black"
+              // onClick={handleSubmit}
+            >
+              Update Organization Name
+            </button>
+          </form>
+
+          <div className="sc-jEJXZe cyvxRV"></div>
+
+          <div className="sc-hLBbgP   flex justify-between mt-10">
+            <div className="">
+              <div className="sc-hLBbgP gUrCBj">
+                <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText whiteDark">
+                  Delete Organization
+                </span>
+              </div>
+              <div className="sc-bcXHqe sc-cRIgaW cpMQpB htAZxf">
+                Delete Your Organization
+              </div>
+            </div>
+            <DialogTrigger>
+              <Button variant="destructive">Delete</Button>
+            </DialogTrigger>
+          </div>
+          <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
+          <DeactivateConfirmation
+            text="Do you want to delete your Organization. You will lose all your groups, members and labs attached to this group"
+            noText="No, cancel"
+            confirmText="Yes, delete"
+            confirmFunc={() => deleteOrganization()}
+          />
+        </div>
+      </div>
+    </Dialog>
   );
 };
-
 
 export default AccountPage;
