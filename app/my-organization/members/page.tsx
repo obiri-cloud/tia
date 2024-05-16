@@ -46,10 +46,13 @@ const Images = () => {
     useState<boolean>(false);
 
   const token = session?.user!.tokens?.access_token ?? "";
+  const org_id=session?.user!.data?.organization_id
+  
+
   const getMembers = async (): Promise<GroupMember[] | undefined | string> => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/members/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members/`,
         {
           headers: {
             "Content-Type": "application/json",

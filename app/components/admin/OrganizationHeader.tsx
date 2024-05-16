@@ -11,7 +11,7 @@ const OrganizationHeader = () => {
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-
+  const ord_id=session?.user!.data?.organization_id
   const {
     data: details,
     isLoading
@@ -22,7 +22,7 @@ const OrganizationHeader = () => {
   const getOrg = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${ord_id}/retrieve/`,
         {
           headers: {
             "Content-Type": "application/json",

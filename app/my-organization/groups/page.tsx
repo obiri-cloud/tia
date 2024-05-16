@@ -64,7 +64,8 @@ const OrganizationGroup = () => {
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<OrgGroup>();
   const [group, setGroup] = useState<OrgGroup>();
-
+  console.log({session});
+  
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 

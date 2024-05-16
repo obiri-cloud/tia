@@ -9,15 +9,16 @@ const useOrgCheck = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const token = session?.user!.tokens?.access_token;
-
+  const ord_id=session?.user!.data?.organization_id
+  
   let [hasOrg, sethasOrg] = useState(false);
 
-  
+
   useEffect(() => {
     const getOrgOwner = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
+          `${process.env.NEXT_PUBLIC_BE_URL}/organization/${ord_id}/retrieve/`,
           {
             headers: {
               "Content-Type": "application/json",

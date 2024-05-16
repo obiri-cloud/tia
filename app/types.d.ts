@@ -11,6 +11,7 @@ interface IUserProfile {
   is_staff: boolean;
   date_joined: string;
   last_login: string | boolean;
+  organization_id:string | null;
 }
 
 interface ILabImage {
@@ -139,6 +140,7 @@ interface ISession extends Session {
       is_active: boolean;
       date_joined: string;
       last_login: string | null;
+      organization_id:string | null;
     };
   };
 }
