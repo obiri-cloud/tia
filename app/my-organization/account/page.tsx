@@ -26,7 +26,7 @@ import { useRouter } from "next/navigation";
 import useOrgCheck from "@/hooks/orgnization-check";
 
 const AccountPage = () => {
-  const { data: session, update } = useSession();
+  const {data: session, update } = useSession();
   const org_id = session?.user!.data?.organization_id;
   const [userData, setUserData] = useState<any>();
   const [editMode, setEditMode] = useState(false);
@@ -43,7 +43,6 @@ const AccountPage = () => {
     }),
   });
 
-  console.log({ session });
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -181,6 +180,7 @@ const AccountPage = () => {
       );
 
       if (response.status === 204) {
+        
         if (session)
           update({
             ...session,

@@ -34,7 +34,7 @@ export default function UserDashboardLayout({
 
 
   const isOrg = useOrgCheck();
-  if (isOrg) {
+  if (isOrg.value) {
     toast({
       title: "You don't have access to this page.",
       variant: "destructive",

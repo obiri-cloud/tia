@@ -5,10 +5,14 @@ import { useQuery } from "react-query";
 import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import useOrgCheck from "@/hooks/createOrgCheck";
 
 const OrganizationHeader = () => {
   const { data: session } = useSession();
+  const orgCheck = useOrgCheck();
 
+  console.log({fromheader:orgCheck.id});
+  
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
   const ord_id=session?.user!.data?.organization_id
@@ -17,12 +21,10 @@ const OrganizationHeader = () => {
     isLoading
   } = useQuery(["orgName"], () => getOrg());
 
-  
-
   const getOrg = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${ord_id}/retrieve/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${orgCheck.id}/retrieve/`,
         {
           headers: {
             "Content-Type": "application/json",

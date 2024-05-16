@@ -21,6 +21,7 @@ const AltRouteCheck = () => {
   let is_super = session?.user.data.is_superuser;
   let is_admin = session?.user.data.is_admin;
 
+
   const createOrg = async (formData: FormData) => {
     const axiosConfig = {
       method: "POST",
@@ -33,7 +34,7 @@ const AltRouteCheck = () => {
     };
 
     const response = await axios(axiosConfig);
-
+    console.log({data_from_creation1:response.data.data.id});
     if(session) update({...session,user: {...session.user,data: {...session.user.data,organization_id: response.data.data.id}}});
     return response.data;
   };
@@ -101,7 +102,7 @@ const AltRouteCheck = () => {
       return null;
     }
 
-    if (orgCheck) {
+    if (orgCheck.value) {
       return (
         <div className="flex gap-4">
           <Link href="#" onClick={handleCreateOrgClick} className="font-medium text-mint">
