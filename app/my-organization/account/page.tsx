@@ -28,6 +28,7 @@ import useOrgCheck from "@/hooks/orgnization-check";
 
 const AccountPage = () => {
   const { data: session } = useSession();
+  const org_id=session?.user!.data?.organization_id
   const [userData, setUserData] = useState<any>();
   const [editMode, setEditMode] = useState(false);
   const router = useRouter();
@@ -48,7 +49,7 @@ const AccountPage = () => {
 
   const getUser = async () => {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
+      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/retrieve/`,
       {
         headers: {
           "Content-Type": "application/json",

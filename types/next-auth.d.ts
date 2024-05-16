@@ -14,7 +14,8 @@ declare module "next-auth" {
         last_login: string; 
         last_name: string; 
         subscription_plan: string; 
-        username: string; 
+        username: string;
+        organization_id:string | null;
       },
       message: string;
       status: number;
