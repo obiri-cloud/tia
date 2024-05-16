@@ -116,7 +116,7 @@ const Images = () => {
 
   const updateRole = async ({ id, role }: { id: string; role: string }) => {
     const response = await axios.put(
-      `${process.env.NEXT_PUBLIC_BE_URL}/organization/member/${id}/update/role/`,
+      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/member/${id}/update/role/`,
       { role: role },
       {
         headers: {
