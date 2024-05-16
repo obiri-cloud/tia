@@ -27,12 +27,13 @@ import useOrgCheck from "@/hooks/orgnization-check";
 
 
 const AccountPage = () => {
-  const { data: session } = useSession();
+  const { data: session,update } = useSession();
   const org_id=session?.user!.data?.organization_id
   const [userData, setUserData] = useState<any>();
   const [editMode, setEditMode] = useState(false);
   const router = useRouter();
   const form = useForm();
+  // const session = await getSession();
 
   const NameRef = useRef<HTMLInputElement>(null);
   const deactivateButtonRef = useRef<HTMLButtonElement>(null);
@@ -43,6 +44,7 @@ const AccountPage = () => {
     })
   });
 
+console.log({session})
 
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -166,7 +168,7 @@ const AccountPage = () => {
     }
   };
 
-  const deleteAccount = async () => {
+  const deleteOrganization = async () => {
     if (deactivateButtonRef.current) {
       deactivateButtonRef.current.disabled = true;
     }
@@ -181,6 +183,27 @@ const AccountPage = () => {
       );
 
       if (response.status === 204) {
+       if(session)
+        // update({...session,user: {...session.user,data: {...session.user.data,organization_id: null}}});
+  
+ 
+       if (session) {
+         const updatedUserData = {
+           ...session.user.data,
+           organization_id: null 
+         };
+      
+         const updatedSession = {
+           ...session,
+           user: {
+             ...session.user,
+             data: updatedUserData
+           }
+         };
+      
+         await update(updatedSession); 
+       }
+
         toast({
           title: "Organization Account deleted successfully",
           variant: "success",
@@ -296,7 +319,7 @@ const AccountPage = () => {
         text="Do you want to delete your Organization. You will lose all your groups, members and labs attached to this group"
         noText="No, cancel"
         confirmText="Yes, delete"
-        confirmFunc={() => deleteAccount()}
+        confirmFunc={() => deleteOrganization()}
       />
       </div>
     </div>

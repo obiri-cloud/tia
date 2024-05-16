@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 
 const AltRouteCheck = () => {
-  const { data: session } = useSession();
+  const { data: session,update } = useSession();
   const [isOpen, setIsOpen] = useState(false); 
   const router = useRouter()
 
@@ -33,6 +33,8 @@ const AltRouteCheck = () => {
     };
 
     const response = await axios(axiosConfig);
+
+    if(session) update({...session,user: {...session.user,data: {...session.user.data,organization_id: response.data.data.id}}});
     return response.data;
   };
 
@@ -41,9 +43,10 @@ const AltRouteCheck = () => {
     isLoading: updating,
     error: UpdateError,
   } = useMutation((formData: FormData) => createOrg(formData), {
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log({data_from_creation:      data.data.id});
       queryClient.invalidateQueries("orgName");
-
+      // if(session) update({...session,user: {...session.user.data,data: {...session.user.data,organization_id: data.data.id}}});
       router.push('/my-organization');
       
       (document.getElementById("Org-name") as HTMLInputElement).value = "";
