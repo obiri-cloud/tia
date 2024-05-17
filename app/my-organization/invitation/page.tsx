@@ -38,6 +38,7 @@ const Images = () => {
   const [status, setstatus] = useState<boolean>(false);
   const [file, setfile] = useState<any>();
   const [emailInput, setEmailInput] = useState<string>();
+
   const { data: session } = useSession();
   const { reset } = useForm();
 
@@ -52,11 +53,11 @@ const Images = () => {
   const [multiplEmails, setMultipleEmails] = useState<any>([]);
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-
+  const org_id = session?.user!.data?.organization_id;
   const getInvitations = async (): Promise<IinviteData[] | undefined> => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -97,7 +98,7 @@ const Images = () => {
   const SendInvitation = async (formData: FormData) => {
     const axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/create/`,
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/create/`,
       data: formData,
       headers: {
         "Content-Type": "application/json",
@@ -152,7 +153,7 @@ const Images = () => {
 
   const deleteInvite = async (id: number) => {
     const response = await axios.delete(
-      `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/${id}/delete/`,
+      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/${id}/delete/`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -188,7 +189,7 @@ const Images = () => {
   const addInvite = async (formData: any) => {
     const axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/create/`,
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/create/`,
       data: formData,
       headers: {
         "Content-Type": "application/json",
@@ -207,7 +208,7 @@ const Images = () => {
 
     const axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/invitation/create/bulk/`,
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/create/bulk/`,
       data:formData,
       headers: {
         "Content-Type": "multipart/form-data",

@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 
 const AltRouteCheck = () => {
-  const { data: session } = useSession();
+  const { data: session,update } = useSession();
   const [isOpen, setIsOpen] = useState(false); 
   const router = useRouter()
 
@@ -20,6 +20,7 @@ const AltRouteCheck = () => {
   let subscription_plan = session?.user.data.subscription_plan;
   let is_super = session?.user.data.is_superuser;
   let is_admin = session?.user.data.is_admin;
+
 
   const createOrg = async (formData: FormData) => {
     const axiosConfig = {
@@ -33,6 +34,8 @@ const AltRouteCheck = () => {
     };
 
     const response = await axios(axiosConfig);
+    console.log({data_from_creation1:response.data.data.id});
+    // if(session) update({...session,user: {...session.user,data: {...session.user.data,organization_id: response.data.data.id}}});
     return response.data;
   };
 
@@ -41,10 +44,15 @@ const AltRouteCheck = () => {
     isLoading: updating,
     error: UpdateError,
   } = useMutation((formData: FormData) => createOrg(formData), {
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log({data_from_creation:      data.data.id});
       queryClient.invalidateQueries("orgName");
+      if (session){
+        update({organization_id:data.data.id});
+      }
 
       router.push('/my-organization');
+
       
       (document.getElementById("Org-name") as HTMLInputElement).value = "";
       toast({
@@ -98,7 +106,7 @@ const AltRouteCheck = () => {
       return null;
     }
 
-    if (orgCheck) {
+    if (orgCheck.value) {
       return (
         <div className="flex gap-4">
           <Link href="#" onClick={handleCreateOrgClick} className="font-medium text-mint">

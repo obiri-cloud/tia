@@ -65,6 +65,7 @@ import AltRouteCheck from "@/app/components/alt-route-check";
 const OrganizationGroupImagePage = () => {
   const { data: session } = useSession();
   const [image, setImage] = useState<any>();
+  
   // const [imageList, setImagelist] = useState<any>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
@@ -80,6 +81,7 @@ const OrganizationGroupImagePage = () => {
   const [gid, setgid] = useState<number>();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
+  const org_id = session?.user!.data?.organization_id;
   const params = useParams();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
@@ -95,7 +97,7 @@ const OrganizationGroupImagePage = () => {
   const getImagesInGroup =async (): Promise<ILabImage[] | undefined> => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/image/list/?page=1`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${id}/image/list/?page=1`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -122,7 +124,7 @@ const OrganizationGroupImagePage = () => {
   const deleteGroupImage = async (data:number) => {
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/image/delete/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${id}/image/delete/`,
         {
             image_ids: [data]
         },

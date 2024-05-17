@@ -6,19 +6,20 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 const useOrgCheck = () => {
-  const { data: session } = useSession();
+  const { data: session,update } = useSession();
   const router = useRouter();
+  let [orgId,setordId]=useState<any>(null)
   const token = session?.user!.tokens?.access_token;
   const ord_id=session?.user!.data?.organization_id
   
-  let [hasOrg, sethasOrg] = useState(false);
-
+  let [hasOrg, sethasOrg] = useState<any>();
+  
 
   useEffect(() => {
     const getOrgOwner = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BE_URL}/organization/${ord_id}/retrieve/`,
+          `${process.env.NEXT_PUBLIC_BE_URL}/auth/user/`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -28,10 +29,13 @@ const useOrgCheck = () => {
           }
         );
 
-        if (response.data.status === 404) {
-          sethasOrg(true); 
-        } else if (response.data.status === 200) {
+        console.log({response});
+        if (response.data.organization_id === null) {
+          sethasOrg(true);
+        } else if (response.status === 200) {
           sethasOrg(false); 
+          // orgId=response.data.id
+          setordId(response.data.organization_id)
         }
       } catch (error) {
         console.error("Error checking organization owner:", error);
@@ -41,8 +45,8 @@ const useOrgCheck = () => {
     getOrgOwner();
   }, [router, token]);
 
-
-  return hasOrg;
+  
+  return {value:hasOrg,id:orgId};
 };
 
 export default useOrgCheck;
