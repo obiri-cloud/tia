@@ -1,3 +1,5 @@
+
+
 const permissionsArray = [
     ["admin",  [
       "manage-labs",
@@ -12,9 +14,19 @@ const permissionsArray = [
       "edit-groups",
       "edit-members",
       "edit-invitation",
-      "edit-billing"
     ]],
+
+    ["viewer",  [
+        "view-labs",
+        "view-groups",
+        "view-members",
+        "view-invitation"
+      ]],
+
+      ["member",  []  ],
    
   ]
 
 const permission=new Map(permissionsArray)
+
+

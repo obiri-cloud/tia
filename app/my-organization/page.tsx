@@ -78,7 +78,7 @@ const myOrganizationPage = () => {
   const queryClient = useQueryClient();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-
+  const org_id = session?.user!.data?.organization_id;
   
 
 
@@ -86,7 +86,7 @@ const myOrganizationPage = () => {
   const getOrgImages = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/images/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/images/`,
         {
           headers: {
             "Content-Type": "application/json",

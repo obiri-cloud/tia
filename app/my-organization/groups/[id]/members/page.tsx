@@ -73,12 +73,12 @@ const OrganizationGroupMembersPage = () => {
     setPassedData(data);
     setIsOpenViewDialog(true);
   };
-
+  const org_id = session?.user!.data?.organization_id;
   //delete members in the group
   const deleteblink = async (data: any) => {
     try {
       const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/member/${data}/delete/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${id}/member/${data}/delete/`,
         {
           headers: {
             "Content-Type": "application/json",

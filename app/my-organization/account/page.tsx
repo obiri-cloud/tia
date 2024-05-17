@@ -182,13 +182,7 @@ const AccountPage = () => {
       if (response.status === 204) {
         
         if (session)
-          update({
-            ...session,
-            user: {
-              ...session.user,
-              data: { ...session.user.data, organization_id: null },
-            },
-          });
+          update({organization_id:null});
 
         if (session) {
           const updatedUserData = {
@@ -204,7 +198,6 @@ const AccountPage = () => {
             },
           };
 
-          await update(updatedSession);
         }
 
         toast({

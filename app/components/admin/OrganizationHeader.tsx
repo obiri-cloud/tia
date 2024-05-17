@@ -24,7 +24,7 @@ const OrganizationHeader = () => {
   const getOrg = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${orgCheck.id}/retrieve/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${ord_id}/retrieve/`,
         {
           headers: {
             "Content-Type": "application/json",

@@ -68,11 +68,11 @@ const OrganizationGroup = () => {
   
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-
+  const org_id = session?.user!.data?.organization_id;
   const getGroups = async (): Promise<OrgGroup[] | undefined> => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/list/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -92,7 +92,7 @@ const OrganizationGroup = () => {
   const getMembers = async (): Promise<GroupMember[] | undefined> => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/members/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -114,7 +114,7 @@ const OrganizationGroup = () => {
   const getOrgImages = async (): Promise<ILabImage[] | undefined> => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/images/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/images/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -187,7 +187,7 @@ const OrganizationGroup = () => {
     console.log({ formData });
     const axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/create/`,
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/create/`,
       data: formData,
       headers: {
         "Content-Type": "application/json",

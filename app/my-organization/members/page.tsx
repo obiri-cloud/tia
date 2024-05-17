@@ -78,7 +78,7 @@ const Images = () => {
 
   const deleteMember= async (id: number) => {
     const response = await axios.delete(
-      `${process.env.NEXT_PUBLIC_BE_URL}/organization/member/${id}/delete/`,
+      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/member/${id}/delete/`,
       {
         headers: {
           "Content-Type": "application/json",

@@ -79,10 +79,17 @@ const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async jwt({ token, user }) {
-      if (user) {
-        token.user = user;
-      }
+    async jwt({ token, trigger , user ,session}) {
+
+
+      if (user){
+          token.user = user;
+          }
+        if(trigger=="update" && token) {
+          console.log("token",token)
+         //@ts-ignore
+          token.user.data.organization_id =session.organization_id
+        }
       return token;
     },
     async signIn({

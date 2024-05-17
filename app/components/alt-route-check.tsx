@@ -35,7 +35,7 @@ const AltRouteCheck = () => {
 
     const response = await axios(axiosConfig);
     console.log({data_from_creation1:response.data.data.id});
-    if(session) update({...session,user: {...session.user,data: {...session.user.data,organization_id: response.data.data.id}}});
+    // if(session) update({...session,user: {...session.user,data: {...session.user.data,organization_id: response.data.data.id}}});
     return response.data;
   };
 
@@ -47,8 +47,12 @@ const AltRouteCheck = () => {
     onSuccess: (data) => {
       console.log({data_from_creation:      data.data.id});
       queryClient.invalidateQueries("orgName");
-      // if(session) update({...session,user: {...session.user.data,data: {...session.user.data,organization_id: data.data.id}}});
+      if (session){
+        update({organization_id:data.data.id});
+      }
+
       router.push('/my-organization');
+
       
       (document.getElementById("Org-name") as HTMLInputElement).value = "";
       toast({
