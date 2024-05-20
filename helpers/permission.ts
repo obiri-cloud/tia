@@ -23,7 +23,9 @@ const permissionsArray = [
         "view-invitation"
       ]],
 
-      ["member",  []  ],
+      ["member",  [
+          "view-labs"
+      ]  ],
    
   ]
 

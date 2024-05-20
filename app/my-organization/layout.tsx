@@ -21,7 +21,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function UserDashboardLayout({
   children,
-}: {
+}:{
   children: React.ReactNode;
 }) {
   const logout = () => {
@@ -34,6 +34,7 @@ export default function UserDashboardLayout({
 
 
   const isOrg = useOrgCheck();
+
   if (isOrg.value) {
     toast({
       title: "You don't have access to this page.",
@@ -42,6 +43,29 @@ export default function UserDashboardLayout({
     })
     router.push("/dashboard")
   }
+
+  const links=[
+    {
+      label:"Labs",
+      link:"/my-organization",
+      icon:PanelLeft,
+    },
+    {
+      label:"Groups",
+      link:"/my-organization/groups",
+      icon:GalleryVerticalEndIcon,
+    },
+    {
+      label:"Members",
+      link:"/my-organization/members",
+      icon:Users,
+    },
+    {
+      label:"Invitation",
+      link:"/my-organization/invitation",
+      icon:TicketIcon,
+    },
+  ]
 
   return (
     <ReduxProvider>
@@ -77,124 +101,30 @@ export default function UserDashboardLayout({
           >
             <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
               <OrganizationHeader/>
+
               <div className="flex flex-1 flex-col">
                 <ul className="space-y-2 font-medium mt-[50px] flex-1">
-                  <li className="all-images-button">
-                    <a
-                      href="/my-organization"
-                      className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                        pathname.startsWith("/my-organization") &&
-                        pathname !== "/my-organization/groups" &&
-                        pathname !== "/my-organization/members" &&
-                        pathname !== "/my-organization/invitations" &&
-                        pathname !== "/my-organization/account"
-                          ? "bg-menuHovWhite dark:bg-menuHov"
-                          : ""
-                      }`}
-                    >
-                      <PanelLeft
-                        className={`
-                        ${
-                          pathname.startsWith("/my-organization") &&
-                          pathname !== "/my-organization/groups" &&
-                          pathname !== "/my-organization/members" &&
-                          pathname !== "/my-organization/invitations" &&
-                          pathname !== "/my-organization/account"
-                            ? "w-4 h-4  transition duration-75 dark:group-hover:text-white fill-white dark:fill-whiteDark stroke-2"
-                            : ""
-                        }
-                        `}
-                      />
-                      <span className={`ms-3  font-light`}>Labs</span>
-                    </a>
-                  </li>
-                  <li className="active-labs-button">
-                    <a
-                      href="/my-organization/groups"
-                      className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                        pathname === "/my-organization/groups"
-                          ? "bg-menuHovWhite dark:bg-menuHov"
-                          : ""
-                      }`}
-                    >
-                      <GalleryVerticalEndIcon
-                        className={` 
-                          ${
-                            pathname === "/my-organization/groups"
-                              ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
-                              : " "
-                          }
-                          `}
-                      />
-                      <span className={`ms-3  font-light`}>Groups</span>
-                    </a>
-                  </li>
-                  <li className="active-labs-button">
-                    <a
-                      href="/my-organization/members"
-                      className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                        pathname === "/my-organization/members"
-                          ? "bg-menuHovWhite dark:bg-menuHov"
-                          : ""
-                      }`}
-                    >
-                      <Users
-                        className={` 
-                          ${
-                            pathname === "/my-organization/members"
-                              ? "w-4 h-4 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
-                              : " "
-                          }
-                          `}
-                      />
-                      <span
-                        className={`
-                      ms-3 
-                      ${
-                        pathname === "/my-organization/members"
-                          ? "font-semibold"
-                          : "font-light "
-                      }
-                      
-                      `}
-                      >
-                        Members
-                      </span>
-                    </a>
-                  </li>
-                  <li className="active-labs-button">
-                    <a
-                      href="/my-organization/invitation"
-                      className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                        pathname === "/my-organization/invitation"
-                          ? "bg-menuHovWhite dark:bg-menuHov"
-                          : ""
-                      }`}
-                    >
-                      <TicketIcon
-                        className={` 
-                          ${
-                            pathname === "/my-organization/invitation"
-                              ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
-                              : " "
-                          }
-                          `}
-                      />
-                      <span
-                        className={`
-                      ms-3 
-                      ${
-                        pathname === "/my-organization/invitation"
-                          ? "font-semibold"
-                          : "font-light "
-                      }
-                      
-                      `}
-                      >
-                        Invitations
-                      </span>
-                    </a>
-                  </li>
+                  {
+                    links.map((item)=>{
+                      let Icon=item.icon
+                       return(
+                        <li className="all-images-button">
+                        <a
+                          href={item.link}
+                          className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
+                            pathname===item.link 
+                              ? "bg-menuHovWhite dark:bg-menuHov"
+                              : ""
+                          }`}
+                        >
+                          <Icon className="w-4 h-4"/>
+                          <span className={`ms-3  font-light`}>{item.label}</span>
+                        </a>
+                      </li>
+                       )
+                    }
+                    )
+                  }
                 </ul>
                 <div className="">
                   <ul className="space-y-2 font-medium">
