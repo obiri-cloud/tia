@@ -159,6 +159,7 @@ interface InvitationsResponse {
         username: string;
       };
     };
+    role?: string
   }[];
   status: number;
 }
@@ -184,3 +185,24 @@ interface GroupMember {
   };
   role:string
 }
+
+
+
+interface Link {
+  label: string;
+  link: string;
+  icon: ReactNode;
+}
+
+interface RouteLinks {
+  links: Link[];
+}
+
+
+type Permissions =
+  | RouteLinks
+  | RouteLinks
+  | RouteLinks
+  | RouteLinks;
+
+type Role = "Admin" | "Editor" | "Viewer" | "Member";
