@@ -120,7 +120,7 @@ const AltRouteCheck = () => {
     } else if (is_super || subscription_plan === "premium" || subscription_plan === "standard") {
       return (
         <div className="flex gap-4">
-          <Link href="/my-organization" className="font-medium text-mint">
+          <Link href="/my-organization/overview" className="font-medium text-mint">
             Manage organization
           </Link>
           <Link href="/admin" className="font-medium text-mint">

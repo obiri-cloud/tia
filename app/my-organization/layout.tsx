@@ -8,6 +8,7 @@ import {
   GalleryVerticalEndIcon,
   LogOut,
   PanelLeft,
+  PieChart,
   TicketIcon,
   User,
   Users,
@@ -34,8 +35,10 @@ export default function UserDashboardLayout({
 
 
   const isOrg = useOrgCheck();
+  console.log("isOrg", isOrg);
+  
 
-  if (isOrg.value) {
+  if (isOrg.value){
     toast({
       title: "You don't have access to this page.",
       variant: "destructive",
@@ -45,6 +48,11 @@ export default function UserDashboardLayout({
   }
 
   const links=[
+    {
+      label:"Overview",
+      link:"/my-organization/overview",
+      icon:PieChart,
+    },
     {
       label:"Labs",
       link:"/my-organization",
@@ -103,6 +111,7 @@ export default function UserDashboardLayout({
               <OrganizationHeader/>
 
               <div className="flex flex-1 flex-col">
+
                 <ul className="space-y-2 font-medium mt-[50px] flex-1">
                   {
                     links.map((item)=>{

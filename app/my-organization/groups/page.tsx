@@ -69,6 +69,7 @@ const OrganizationGroup = () => {
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
+  
   const getGroups = async (): Promise<OrgGroup[] | undefined> => {
     try {
       const response = await axios.get(
@@ -141,7 +142,7 @@ const OrganizationGroup = () => {
 
   const deleteGroup = async (id: number) => {
     const response = await axios.delete(
-      `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${id}/delete/`,
+      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${id}/delete/`,
 
       {
         headers: {
@@ -264,6 +265,9 @@ const OrganizationGroup = () => {
       updateMemberMutation({ members: members.removed, action: "delete" });
   };
 
+
+
+
   const { mutate: updateMemberMutation } = useMutation(
     (data: { members: Set<string>; action: string }) =>
       updateMemberFn(data.members, data.action),
@@ -305,7 +309,7 @@ const OrganizationGroup = () => {
 
     let axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${group?.id}/member/${action}/`,
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${group?.id}/member/${action}/`,
       data: {
         user_ids: Array.from(members),
       },
@@ -401,7 +405,7 @@ const OrganizationGroup = () => {
   const updateImagesFn = async (images: Set<string>, action: string) => {
     let axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${group?.id}/image/${action}/`,
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${group?.id}/image/${action}/`,
       data: {
         image_ids: Array.from(images),
       },

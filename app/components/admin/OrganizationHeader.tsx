@@ -44,7 +44,7 @@ const OrganizationHeader = () => {
   return (
     <div className="flex items-center justify-center">
                 <Link
-            href={`/my-organization`}
+            href={`/my-organization/overview`}
           >
       {isLoading?<Skeleton className="h-3 w-[200px]" />:<span className=" capitalize">{details?.name} Organization</span>}
           </Link>
