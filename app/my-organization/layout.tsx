@@ -58,9 +58,12 @@ export default function UserDashboardLayout({
   const { isAuthorized, allowedLinks } = useAuthorization();
   console.log("auth", isAuthorized, allowedLinks);
 
-  if (!isAuthorized) {
+  const isOrg = useOrgCheck();
+  const errorMessage = "You don't have access to this page.";
+
+  if (!isAuthorized || isOrg.value) {
     toast({
-      title: "You don't have access to this page.",
+      title: errorMessage,
       variant: "destructive",
       duration: 3000,
     });
