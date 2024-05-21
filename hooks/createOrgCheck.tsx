@@ -1,20 +1,17 @@
-
 import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+ 
 const useOrgCheck = () => {
-  const { data: session,update } = useSession();
-  const router = useRouter();
+  const { data: session } = useSession();
   let [orgId,setordId]=useState<any>(null)
   const token = session?.user!.tokens?.access_token;
-  const ord_id=session?.user!.data?.organization_id
   
   let [hasOrg, sethasOrg] = useState<any>();
   
-
+ 
   useEffect(() => {
     const getOrgOwner = async () => {
       try {
@@ -28,25 +25,24 @@ const useOrgCheck = () => {
             },
           }
         );
-
+ 
         console.log({response});
         if (response.data.organization_id === null) {
           sethasOrg(true);
         } else if (response.status === 200) {
-          sethasOrg(false); 
-          // orgId=response.data.id
+          sethasOrg(false);
           setordId(response.data.organization_id)
         }
       } catch (error) {
         console.error("Error checking organization owner:", error);
       }
     };
-
+ 
     getOrgOwner();
-  }, [router, token]);
-
+  }, []);
+ 
   
   return {value:hasOrg,id:orgId};
 };
-
+ 
 export default useOrgCheck;
