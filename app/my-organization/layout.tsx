@@ -35,6 +35,11 @@ export default function UserDashboardLayout({
 
   const links = [
     {
+      label:"Overview",
+      link:"/my-organization/overview",
+      icon:PieChart,
+    },
+    {
       label: "Labs",
       link: "/my-organization",
       icon: PanelLeft,
