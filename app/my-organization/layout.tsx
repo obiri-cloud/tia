@@ -1,7 +1,7 @@
 "use client";
 import ReduxProvider from "@/redux/ReduxProvider";
 import { Inter } from "next/font/google";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import secureLocalStorage from "react-secure-storage";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -12,7 +12,6 @@ import {
   User,
   Users,
 } from "lucide-react";
-import useOrgCheck from "@/hooks/createOrgCheck";
 import { toast } from "@/components/ui/use-toast";
 import OrganizationHeader from "../components/admin/OrganizationHeader";
 import useAuthorization from "@/hooks/useAuthorization";
@@ -31,37 +30,38 @@ export default function UserDashboardLayout({
 
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session } = useSession();
 
-  // const links = [
-  //   {
-  //     label: "Labs",
-  //     link: "/my-organization",
-  //     icon: PanelLeft,
-  //   },
-  //   {
-  //     label: "Groups",
-  //     link: "/my-organization/groups",
-  //     icon: GalleryVerticalEndIcon,
-  //   },
-  //   {
-  //     label: "Members",
-  //     link: "/my-organization/members",
-  //     icon: Users,
-  //   },
-  //   {
-  //     label: "Invitation",
-  //     link: "/my-organization/invitation",
-  //     icon: TicketIcon,
-  //   },
-  // ];
+  const links = [
+    {
+      label: "Labs",
+      link: "/my-organization",
+      icon: PanelLeft,
+    },
+    {
+      label: "Groups",
+      link: "/my-organization/groups",
+      icon: GalleryVerticalEndIcon,
+    },
+    {
+      label: "Members",
+      link: "/my-organization/members",
+      icon: Users,
+    },
+    {
+      label: "Invitation",
+      link: "/my-organization/invitation",
+      icon: TicketIcon,
+    },
+  ];
 
-  const { isAuthorized, allowedLinks } = useAuthorization();
-  console.log("auth", isAuthorized, allowedLinks);
+  let { isAuthorized, allowedLinks } = useAuthorization();
+  console.log("auth", session?.user.data.organization_id);
+  console.log("isAuthorized", isAuthorized);
 
-  const isOrg = useOrgCheck();
   const errorMessage = "You don't have access to this page.";
 
-  if (!isAuthorized || isOrg.value) {
+  if (!isAuthorized && !session?.user.data.organization_id) {
     toast({
       title: errorMessage,
       variant: "destructive",
@@ -73,6 +73,10 @@ export default function UserDashboardLayout({
     } else {
       router.push("/dashboard");
     }
+  }
+
+  if (session?.user.data.organization_id) {
+    allowedLinks = links;
   }
 
   return (
@@ -125,7 +129,7 @@ export default function UserDashboardLayout({
                                 : ""
                             }`}
                           >
-                            <Icon className="w-4 h-4" />
+                            <Icon className="w-5 h-5" />
                             <span className={`ms-3  font-light`}>
                               {item.label}
                             </span>
@@ -147,9 +151,10 @@ export default function UserDashboardLayout({
                       >
                         <User
                           className={`
+                          w-5 h-5
                           ${
                             pathname === "/my-organization/account"
-                              ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
+                              ? "bg-menuHovWhite dark:bg-menuHov"
                               : " "
                           }
                           `}
