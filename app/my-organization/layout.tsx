@@ -8,6 +8,7 @@ import {
   GalleryVerticalEndIcon,
   LogOut,
   PanelLeft,
+  PieChart,
   TicketIcon,
   User,
   Users,
@@ -115,6 +116,7 @@ export default function UserDashboardLayout({
               <OrganizationHeader />
 
               <div className="flex flex-1 flex-col">
+
                 <ul className="space-y-2 font-medium mt-[50px] flex-1">
                   {allowedLinks &&
                     allowedLinks.map((item) => {
