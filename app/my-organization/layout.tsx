@@ -15,13 +15,13 @@ import {
 import useOrgCheck from "@/hooks/createOrgCheck";
 import { toast } from "@/components/ui/use-toast";
 import OrganizationHeader from "../components/admin/OrganizationHeader";
-
+import useAuthorization from "@/hooks/useAuthorization";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function UserDashboardLayout({
   children,
-}:{
+}: {
   children: React.ReactNode;
 }) {
   const logout = () => {
@@ -30,42 +30,47 @@ export default function UserDashboardLayout({
   };
 
   const pathname = usePathname();
-  const router =useRouter()
+  const router = useRouter();
 
+  // const links = [
+  //   {
+  //     label: "Labs",
+  //     link: "/my-organization",
+  //     icon: PanelLeft,
+  //   },
+  //   {
+  //     label: "Groups",
+  //     link: "/my-organization/groups",
+  //     icon: GalleryVerticalEndIcon,
+  //   },
+  //   {
+  //     label: "Members",
+  //     link: "/my-organization/members",
+  //     icon: Users,
+  //   },
+  //   {
+  //     label: "Invitation",
+  //     link: "/my-organization/invitation",
+  //     icon: TicketIcon,
+  //   },
+  // ];
 
-  const isOrg = useOrgCheck();
+  const { isAuthorized, allowedLinks } = useAuthorization();
+  console.log("auth", isAuthorized, allowedLinks);
 
-  if (isOrg.value) {
+  if (!isAuthorized) {
     toast({
       title: "You don't have access to this page.",
       variant: "destructive",
-      duration: 3000
-    })
-    router.push("/dashboard")
-  }
+      duration: 3000,
+    });
 
-  const links=[
-    {
-      label:"Labs",
-      link:"/my-organization",
-      icon:PanelLeft,
-    },
-    {
-      label:"Groups",
-      link:"/my-organization/groups",
-      icon:GalleryVerticalEndIcon,
-    },
-    {
-      label:"Members",
-      link:"/my-organization/members",
-      icon:Users,
-    },
-    {
-      label:"Invitation",
-      link:"/my-organization/invitation",
-      icon:TicketIcon,
-    },
-  ]
+    if (allowedLinks) {
+      router.push(allowedLinks[0].link);
+    } else {
+      router.push("/dashboard");
+    }
+  }
 
   return (
     <ReduxProvider>
@@ -100,31 +105,31 @@ export default function UserDashboardLayout({
             className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark"
           >
             <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
-              <OrganizationHeader/>
+              <OrganizationHeader />
 
               <div className="flex flex-1 flex-col">
                 <ul className="space-y-2 font-medium mt-[50px] flex-1">
-                  {
-                    links.map((item)=>{
-                      let Icon=item.icon
-                       return(
+                  {allowedLinks &&
+                    allowedLinks.map((item) => {
+                      let Icon = item.icon;
+                      return (
                         <li className="all-images-button">
-                        <a
-                          href={item.link}
-                          className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                            pathname===item.link 
-                              ? "bg-menuHovWhite dark:bg-menuHov"
-                              : ""
-                          }`}
-                        >
-                          <Icon className="w-4 h-4"/>
-                          <span className={`ms-3  font-light`}>{item.label}</span>
-                        </a>
-                      </li>
-                       )
-                    }
-                    )
-                  }
+                          <a
+                            href={item.link}
+                            className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
+                              pathname === item.link
+                                ? "bg-menuHovWhite dark:bg-menuHov"
+                                : ""
+                            }`}
+                          >
+                            <Icon className="w-4 h-4" />
+                            <span className={`ms-3  font-light`}>
+                              {item.label}
+                            </span>
+                          </a>
+                        </li>
+                      );
+                    })}
                 </ul>
                 <div className="">
                   <ul className="space-y-2 font-medium">
@@ -156,7 +161,7 @@ export default function UserDashboardLayout({
                         }
                         `}
                         >
-                         Organization Account
+                          Organization Account
                         </span>
                       </a>
                     </li>
