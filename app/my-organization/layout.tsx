@@ -1,7 +1,7 @@
 "use client";
 import ReduxProvider from "@/redux/ReduxProvider";
 import { Inter } from "next/font/google";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import secureLocalStorage from "react-secure-storage";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -13,16 +13,15 @@ import {
   User,
   Users,
 } from "lucide-react";
-import useOrgCheck from "@/hooks/createOrgCheck";
 import { toast } from "@/components/ui/use-toast";
 import OrganizationHeader from "../components/admin/OrganizationHeader";
-
+import useAuthorization from "@/hooks/useAuthorization";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function UserDashboardLayout({
   children,
-}:{
+}: {
   children: React.ReactNode;
 }) {
   const logout = () => {
@@ -31,48 +30,60 @@ export default function UserDashboardLayout({
   };
 
   const pathname = usePathname();
-  const router =useRouter()
+  const router = useRouter();
+  const { data: session } = useSession();
 
-
-  const isOrg = useOrgCheck();
-  
-
-  if (isOrg.value){
-    toast({
-      title: "You don't have access to this page.",
-      variant: "destructive",
-      duration: 3000
-    })
-    router.push("/dashboard")
-  }
-
-  const links=[
+  const links = [
     {
       label:"Overview",
       link:"/my-organization/overview",
       icon:PieChart,
     },
     {
-      label:"Labs",
-      link:"/my-organization",
-      icon:PanelLeft,
+      label: "Labs",
+      link: "/my-organization",
+      icon: PanelLeft,
     },
     {
-      label:"Groups",
-      link:"/my-organization/groups",
-      icon:GalleryVerticalEndIcon,
+      label: "Groups",
+      link: "/my-organization/groups",
+      icon: GalleryVerticalEndIcon,
     },
     {
-      label:"Members",
-      link:"/my-organization/members",
-      icon:Users,
+      label: "Members",
+      link: "/my-organization/members",
+      icon: Users,
     },
     {
-      label:"Invitation",
-      link:"/my-organization/invitation",
-      icon:TicketIcon,
+      label: "Invitation",
+      link: "/my-organization/invitation",
+      icon: TicketIcon,
     },
-  ]
+  ];
+
+  let { isAuthorized, allowedLinks } = useAuthorization();
+  console.log("auth", session?.user.data.organization_id);
+  console.log("isAuthorized", isAuthorized);
+
+  const errorMessage = "You don't have access to this page.";
+
+  if (!isAuthorized && !session?.user.data.organization_id) {
+    toast({
+      title: errorMessage,
+      variant: "destructive",
+      duration: 3000,
+    });
+
+    if (allowedLinks) {
+      router.push(allowedLinks[0].link);
+    } else {
+      router.push("/dashboard");
+    }
+  }
+
+  if (session?.user.data.organization_id) {
+    allowedLinks = links;
+  }
 
   return (
     <ReduxProvider>
@@ -107,32 +118,32 @@ export default function UserDashboardLayout({
             className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark"
           >
             <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
-              <OrganizationHeader/>
+              <OrganizationHeader />
 
               <div className="flex flex-1 flex-col">
 
                 <ul className="space-y-2 font-medium mt-[50px] flex-1">
-                  {
-                    links.map((item)=>{
-                      let Icon=item.icon
-                       return(
+                  {allowedLinks &&
+                    allowedLinks.map((item) => {
+                      let Icon = item.icon;
+                      return (
                         <li className="all-images-button">
-                        <a
-                          href={item.link}
-                          className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                            pathname===item.link 
-                              ? "bg-menuHovWhite dark:bg-menuHov"
-                              : ""
-                          }`}
-                        >
-                          <Icon className="w-4 h-4"/>
-                          <span className={`ms-3  font-light`}>{item.label}</span>
-                        </a>
-                      </li>
-                       )
-                    }
-                    )
-                  }
+                          <a
+                            href={item.link}
+                            className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
+                              pathname === item.link
+                                ? "bg-menuHovWhite dark:bg-menuHov"
+                                : ""
+                            }`}
+                          >
+                            <Icon className="w-5 h-5" />
+                            <span className={`ms-3  font-light`}>
+                              {item.label}
+                            </span>
+                          </a>
+                        </li>
+                      );
+                    })}
                 </ul>
                 <div className="">
                   <ul className="space-y-2 font-medium">
@@ -147,9 +158,10 @@ export default function UserDashboardLayout({
                       >
                         <User
                           className={`
+                          w-5 h-5
                           ${
                             pathname === "/my-organization/account"
-                              ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
+                              ? "bg-menuHovWhite dark:bg-menuHov"
                               : " "
                           }
                           `}
@@ -164,7 +176,7 @@ export default function UserDashboardLayout({
                         }
                         `}
                         >
-                         Organization Account
+                          Organization Account
                         </span>
                       </a>
                     </li>

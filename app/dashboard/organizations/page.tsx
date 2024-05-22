@@ -3,25 +3,21 @@ import { userCheck } from "@/lib/utils";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
-import React from "react";
+import React, { MouseEvent, useEffect } from "react";
 import { useQuery } from "react-query";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import Link from "next/link";
 import { InvitationsResponse, NoInvitationsResponse } from "@/app/types";
 import AltRouteCheck from "@/app/components/alt-route-check";
 import { Arrow } from "@/public/svgs/Arrow";
 import { Skeleton } from "@/components/ui/skeleton";
+import secureLocalStorage from "react-secure-storage";
+import { useRouter } from "next/navigation";
+import useAuthorization from "@/hooks/useAuthorization";
 
 const OrganizationsPage = () => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
 
+  const router = useRouter();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
@@ -46,9 +42,16 @@ const OrganizationsPage = () => {
     }
   };
 
-  const { data: orgnizations, isLoading } = useQuery(["orgnizations"], () =>
+  const { data: orgnizations, isLoading } = useQuery(["organizations"], () =>
     getInvitations()
   );
+
+  const goToOrg = (e: any, org: any) => {
+    e.preventDefault();
+
+    update({ role: org?.role, organization_id: org.organization.id });
+    router.push("/my-organization");
+  };
 
   return (
     <div className="">
@@ -73,8 +76,14 @@ const OrganizationsPage = () => {
                   <Link
                     href={`/dashboard/organizations/${org.organization.id}/groups?name=${org.organization.name}`}
                     key={i}
-                    className={`lab-card rounded-2xl p-8 w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer`}
+                    className={`lab-card relative rounded-2xl p-8 w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer`}
                   >
+                    <span
+                      onClick={(e) => goToOrg(e, org)}
+                      className="absolute top-6 right-6"
+                    >
+                      {org.role}
+                    </span>
                     <div className="mt-[40px] ">
                       <h6 className="font-semibold  leading-[140%] text-4xl app-text-clip h-[65px] max-h-[65px]">
                         {org.organization.name}
