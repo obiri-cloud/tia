@@ -78,12 +78,14 @@ const OrganizationsPage = () => {
                     key={i}
                     className={`lab-card relative rounded-2xl p-8 w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer`}
                   >
-                    <span
-                      onClick={(e) => goToOrg(e, org)}
-                      className="absolute top-6 right-6"
-                    >
-                      {org.role}
-                    </span>
+                    {org.role !== "Member" && (
+                      <span
+                        onClick={(e) => goToOrg(e, org)}
+                        className="absolute top-6 right-6"
+                      >
+                        {org.role}
+                      </span>
+                    )}
                     <div className="mt-[40px] ">
                       <h6 className="font-semibold  leading-[140%] text-4xl app-text-clip h-[65px] max-h-[65px]">
                         {org.organization.name}

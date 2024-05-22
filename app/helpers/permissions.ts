@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import { Permissions, Role } from "../types";
 
-
 const permissionsArray: [Role, Permissions][] = [
   [
     "Admin",
@@ -92,13 +91,7 @@ const permissionsArray: [Role, Permissions][] = [
   [
     "Member",
     {
-      links: [
-        {
-          label: "Labs",
-          link: "/my-organization",
-          icon: PanelLeft,
-        },
-      ],
+      links: [],
     },
   ],
 ];
