@@ -35,7 +35,6 @@ export default function UserDashboardLayout({
 
 
   const isOrg = useOrgCheck();
-  console.log("isOrg", isOrg);
   
 
   if (isOrg.value){
