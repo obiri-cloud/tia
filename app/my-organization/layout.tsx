@@ -61,6 +61,8 @@ export default function UserDashboardLayout({
     },
   ];
 
+  
+
   let { isAuthorized, allowedLinks } = useAuthorization();
   console.log("auth", session?.user.data.organization_id);
   console.log("isAuthorized", isAuthorized);
