@@ -41,12 +41,14 @@ const AddMembersModal = ({
   const { data: session } = useSession();
   const token = session?.user!.tokens?.access_token;
   const [loadingMembers, setIsLoadingMembers] = useState<boolean>(false);
+  let organization_id = session?.user.data.organization_id;
+
 
   const getMembers = async () => {
     setIsLoadingMembers(true);
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${group?.id}/member/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${organization_id}/group/${group?.id}/member/list/`,
         {
           headers: {
             "Content-Type": "application/json",

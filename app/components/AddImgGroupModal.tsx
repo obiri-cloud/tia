@@ -37,7 +37,7 @@ function AddImgGroupModal({
 }: {
   images: ILabImage[] | undefined;
   group: OrgGroup | undefined;
-  onSubmit: ( s: IImageChanges) => void;
+  onSubmit: (s: IImageChanges) => void;
 }) {
   const form = useForm();
 
@@ -47,12 +47,13 @@ function AddImgGroupModal({
 
   const [loadingImages, setIsLoadingImages] = useState<boolean>(false);
   const [selectedImages, setSelectedImages] = useState(new Set());
+  let organization_id = session?.user.data.organization_id;
 
   const getImages = async () => {
     setIsLoadingImages(true);
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${group?.id}/image/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${organization_id}/group/${group?.id}/image/list/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -69,7 +70,6 @@ function AddImgGroupModal({
       let newData = [];
       let list = data[0].lab_image;
       console.log("list", list);
-      
 
       if (list.length > 0) {
         newData = list ? list.map((d: any) => String(d.id)) : [];
@@ -187,7 +187,7 @@ function AddImgGroupModal({
         </Form>
       </div>
       <Button
-        onClick={() => onSubmit( changes)}
+        onClick={() => onSubmit(changes)}
         disabled={images?.length === 0 || !images ? true : false}
         id="add-image-to-grp-button"
         type="submit"

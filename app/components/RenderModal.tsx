@@ -42,13 +42,14 @@ function AddMembersModal(image: any) {
   const { data: session } = useSession();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
+  let organization_id = session?.user.data.organization_id;
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     let user_ids = { user_ids: data.image };
 
     let axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/${image.gid}/member/add/`,
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization${organization_id}/group/${image.gid}/member/add/`,
       data: user_ids,
       headers: {
         "Content-Type": "application/json",
@@ -160,7 +161,9 @@ function AddMembersModal(image: any) {
                     />
                   ))
                 ) : (
-                  <div className="text-sm text-black-400 dark:text-black-500">No members available</div>
+                  <div className="text-sm text-black-400 dark:text-black-500">
+                    No members available
+                  </div>
                 )}
                 <FormMessage />
               </FormItem>
