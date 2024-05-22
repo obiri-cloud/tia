@@ -48,11 +48,10 @@ const OrganizationsPage = () => {
 
   const goToOrg = (e: any, org: any) => {
     e.preventDefault();
-    update({ role: org?.role });
+
+    update({ role: org?.role, organization_id: org.organization.id });
     router.push("/my-organization");
   };
-
-
 
   return (
     <div className="">
@@ -83,7 +82,7 @@ const OrganizationsPage = () => {
                       onClick={(e) => goToOrg(e, org)}
                       className="absolute top-6 right-6"
                     >
-                      Role
+                      {org.role}
                     </span>
                     <div className="mt-[40px] ">
                       <h6 className="font-semibold  leading-[140%] text-4xl app-text-clip h-[65px] max-h-[65px]">
