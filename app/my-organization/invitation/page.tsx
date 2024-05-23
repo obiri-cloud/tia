@@ -376,6 +376,7 @@ const Images = () => {
               </Button>
             </div>
           </CardHeader>
+          
           <Dialog>
             <CardContent className="pl-2">
               <Table>

@@ -30,10 +30,12 @@ const AttachMemberToGroup = ({
   const token = session?.user!.tokens?.access_token;
   const [data, setData] = useState<string[]>([]);
 
+  let organization_id = session?.user.data.organization_id;
+
   const getGroups = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${organization_id}/group/list/`,
         {
           headers: {
             "Content-Type": "application/json",
