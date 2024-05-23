@@ -90,7 +90,7 @@ const getOverview = async () => {
                 <CardDescription>Number of members in the organization</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center flex-1">
-                <span className="text-4xl font-bold">{overviewData.total_members}</span>
+                <span className="text-4xl font-bold">{overviewData?.total_members}</span>
               </CardContent>
             </Card>
           </div>
@@ -102,7 +102,7 @@ const getOverview = async () => {
                 <CardDescription>Number of groups in the organization</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center flex-1">
-                <span className="text-4xl font-bold">{overviewData.total_groups}</span>
+                <span className="text-4xl font-bold">{overviewData?.total_groups}</span>
               </CardContent>
             </Card>
           </div>
@@ -114,7 +114,7 @@ const getOverview = async () => {
                 <CardDescription>Number of labs the organization</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center flex-1">
-                <span className="text-4xl font-bold">{overviewData.total_labs}</span>
+                <span className="text-4xl font-bold">{overviewData?.total_labs}</span>
               </CardContent>
             </Card>
           </div>
@@ -126,7 +126,7 @@ const getOverview = async () => {
                 <CardDescription>Number of pending invitations</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center flex-1">
-                <span className="text-4xl font-bold">{overviewData.total_pending_invitations}</span>
+                <span className="text-4xl font-bold">{overviewData?.total_pending_invitations}</span>
               </CardContent>
             </Card>
           </div>

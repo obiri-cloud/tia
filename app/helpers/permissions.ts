@@ -48,11 +48,11 @@ const permissionsArray: [Role, Permissions][] = [
           link: "/my-organization/groups",
           icon: GalleryVerticalEndIcon,
         },
-        {
-          label: "Members",
-          link: "/my-organization/members",
-          icon: Users,
-        },
+        // {
+        //   label: "Members",
+        //   link: "/my-organization/members",
+        //   icon: Users,
+        // },
         {
           label: "Invitation",
           link: "/my-organization/invitation",

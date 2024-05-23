@@ -1,5 +1,5 @@
 "use client";
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useCallback, useState } from "react";
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ import { useSession } from "next-auth/react";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { GroupMember } from "@/app/types";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronDownIcon, ChevronRight } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,19 +31,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
-import { DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
+import { DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Input } from "@/components/ui/input";
 
 const Images = () => {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
   const [image, setImage] = useState<any>();
+  const [role,setrole]=useState<string>('')
   const [position, setPosition] = React.useState("bottom")
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
-  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
-    useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
+  const [results,setresults]=useState<any>([])
+  const [searchQuery, setSearchQuery] = useState('');
 
   const token = session?.user!.tokens?.access_token ?? "";
   const org_id=session?.user!.data?.organization_id
@@ -62,7 +65,7 @@ const Images = () => {
           },
         }
       );
-
+      console.log({members:response.data.data})
       return response.data.data;
     } catch (error) {
       console.log(error);
@@ -73,6 +76,17 @@ const Images = () => {
     ["members"],
     () => getMembers()
   );
+
+
+  const debounce = (func:any, delay:any) => {
+    let timeoutId:any;
+    return (...args:any) => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(null, args);
+      }, delay);
+    };
+  };
 
 
 
@@ -147,6 +161,7 @@ const Images = () => {
   });
 
   const Roles=[
+
     {
       roles:"Admin",
       desc:"Admin has full control over Labs, Groups, Members, and Invitations but cannot manage Organization settings."
@@ -163,7 +178,104 @@ const Images = () => {
       roles:"Member",
       desc:"Member has basic access without permissions to view or manage Organization content."
     }
+
   ]
+
+
+
+console.log({role})
+
+// const { mutate: searchMutation } = useMutation(fetchMembers, {
+//   onSuccess: (data) => {
+//     queryClient.setQueryData("members", data);
+//   },
+//   onError: (error: any) => {
+//     console.log(error);
+//   },
+// });
+
+
+
+const fetchMembers = async (query: string) => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members/?q=${query}${role==''?'':`&role=${role}` }`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
+const { mutate: searchMutation } = useMutation(fetchMembers, {
+  onSuccess: (data) => {
+    console.log({data:data})
+    queryClient.setQueryData("members", data);
+  },
+  onError: (error: any) => {
+    console.log(error);
+  },
+});
+
+
+const debouncedFetchMembers = useCallback(debounce((query:string) => searchMutation(query), 400), [searchMutation]);
+
+const handleSearchQueryChange = (query: string) => {
+  setSearchQuery(query);
+  debouncedFetchMembers(query);
+};
+
+//fetch_role
+const fetchRole = async (query: string) => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members/?role=${query}&role=${query}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
+const { mutate: searcRoleMutation } = useMutation(fetchRole, {
+  onSuccess: (data) => {
+    console.log({data:data})
+    queryClient.setQueryData("members", data);
+    setSearchQuery('')
+  },
+  onError: (error: any) => {
+    console.log(error);
+  },
+});
+
+
+const debouncedRoleMembers = useCallback(debounce((query:string) => searcRoleMutation(query), 100), [searcRoleMutation]);
+
+const fetchrole = (query: string) => {
+  console.log({query})
+  if(query=='all'){
+    queryClient.invalidateQueries("members");
+    return
+  }
+   debouncedRoleMembers(query);
+};
+
 
 
 
@@ -187,6 +299,37 @@ const Images = () => {
               <CardTitle>Organization Members</CardTitle>
             </div>
           </CardHeader>
+
+          <div className="flex items-center gap-4 m-5">
+              <Input   
+                        placeholder="Search members"
+                        value={searchQuery}
+                        onChange={(e) => handleSearchQueryChange(e.target.value)}
+              />
+              <Select  onValueChange={(newRole) => fetchrole(newRole)}>
+                                <SelectTrigger className="w-[180px] bg-inherit">
+                                  <SelectValue placeholder='Filter by role'/>
+                                </SelectTrigger>
+
+                                <SelectContent className="overflow-visible" >
+                                  <SelectGroup >
+                                    <SelectLabel>filter Role</SelectLabel>
+                                    <SelectItem value="all">All</SelectItem>
+                                    {
+
+                                      Roles.map((role:any)=>(
+                                        <>
+                                          <SelectItem value={role.roles}>{role.roles}</SelectItem>
+                                        </>
+
+                                      ))
+                                    }
+                                  </SelectGroup>
+                                </SelectContent>
+                </Select>
+            </div>
+
+
           <Dialog>
             <CardContent className="pl-2">
               <Table>
@@ -205,7 +348,7 @@ const Images = () => {
                     Loading members in your organization...
                   </TableCaption>
                 ) : null}
-                {!loadingMembers && ( (members && members.length === 0) || members==='No members in the organization') ? (
+                {!loadingMembers && ( (members && members.length === 0) || members==='No members in the organization' || members==='No members found for the specified search criteria') ? (
                   <TableCaption> No members in your organization...</TableCaption>
                 ) : null}
                 <TableBody>
