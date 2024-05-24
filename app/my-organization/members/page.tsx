@@ -51,7 +51,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 
-export const ROLES = [
+ const ROLES = [
   {
     role: "Admin",
     desc: "Admin has full control over Labs, Groups, Members, and Invitations but cannot manage Organization settings.",
