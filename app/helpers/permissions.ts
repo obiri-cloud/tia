@@ -2,6 +2,7 @@ import {
   GalleryVerticalEndIcon,
   PanelLeft,
   TicketIcon,
+  User,
   Users,
 } from "lucide-react";
 import { Permissions, Role } from "../types";
@@ -30,6 +31,13 @@ const permissionsArray: [Role, Permissions][] = [
           label: "Invitation",
           link: "/my-organization/invitation",
           icon: TicketIcon,
+        },
+        {
+          label: "Organization Account",
+          link: "/my-organization/account",
+          icon: User,
+          position: "bottom"
+
         },
       ],
     },
