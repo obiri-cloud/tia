@@ -51,7 +51,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 
-export const ROLES = [
+ const ROLES = [
   {
     role: "Admin",
     desc: "Admin has full control over Labs, Groups, Members, and Invitations but cannot manage Organization settings.",
@@ -74,7 +74,6 @@ const Images = () => {
   const queryClient = useQueryClient();
   const [image, setImage] = useState<any>();
   const [role, setrole] = useState<string>("");
-  const [position, setPosition] = React.useState("bottom");
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);

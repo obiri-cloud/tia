@@ -19,7 +19,25 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ROLES } from "@/app/my-organization/members/page";
+
+const ROLES = [
+  {
+    role: "Admin",
+    desc: "Admin has full control over Labs, Groups, Members, and Invitations but cannot manage Organization settings.",
+  },
+  {
+    role: "Editor",
+    desc: "Editor can modify Labs, Groups, Members, and Invitations, except for billing and organizational settings.",
+  },
+  {
+    role: "Viewer",
+    desc: "Viewer has access only to view content, including Labs, Groups, Members, and Invitations.",
+  },
+  {
+    role: "Member",
+    desc: "Member has basic access without permissions to view or manage Organization content.",
+  },
+];
 
 const OrganizationsPage = () => {
   const { data: session, update } = useSession();
