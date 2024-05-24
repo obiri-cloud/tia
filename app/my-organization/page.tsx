@@ -50,18 +50,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Form, useForm } from "react-hook-form";
 import * as z from "zod";
 import { Input } from "@/components/ui/input";
-import CreateOrgModal from "@/app/components/CreateOrgModal"
+import CreateOrgModal from "@/app/components/CreateOrgModal";
 import useOrgCheck from "@/hooks/orgnization-check";
 import hasOrgCheck from "@/hooks/createOrgCheck";
 
 const myOrganizationPage = () => {
   const name = useSelector((state: RootState) => state);
-  
-  let OrgExist=hasOrgCheck()
+
+  let OrgExist = hasOrgCheck();
   console.log({ name });
 
   // const [orgImageList, setorgImagelist] = useState<ILabImage[]>();
@@ -72,16 +78,15 @@ const myOrganizationPage = () => {
 
   const [image, setImage] = useState<ILabImage>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
-  const [isOpenViewDialogOpen2, setIsOpenViewDialog2] = useState<boolean>(false);
-  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] = useState<boolean>(false);
+  const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
+    useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
+    useState<boolean>(false);
 
   const queryClient = useQueryClient();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
-  
-
-
 
   const getOrgImages = async () => {
     try {
@@ -101,8 +106,6 @@ const myOrganizationPage = () => {
       console.log(error);
     }
   };
-
-
 
   const createOrg = async (formData: FormData) => {
     const axiosConfig = {
@@ -126,7 +129,7 @@ const myOrganizationPage = () => {
   } = useMutation((formData: FormData) => createOrg(formData), {
     onSuccess: () => {
       queryClient.invalidateQueries("orgName");
-      router.push('/my-organization')
+      router.push("/my-organization");
       setIsOpenViewDialog2(false);
       (document.getElementById("Org-name") as HTMLInputElement).value = "";
       toast({
@@ -134,7 +137,7 @@ const myOrganizationPage = () => {
         title: "Orgnaization created successfully",
         description: "",
       });
-     
+
       (
         document.getElementById("submit-button") as HTMLButtonElement
       ).textContent = "Creating Organization";
@@ -169,28 +172,29 @@ const myOrganizationPage = () => {
     createOrganizationMutation(formData);
   };
 
-
-
-  const {
-    data: orgImageList,
-  } = useQuery(["orgImages"], () => getOrgImages());
-
-
+  const { data: orgImageList } = useQuery(["orgImages"], () => getOrgImages());
 
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
-          <span className="p-2 ">Organzation</span>
+          <Link
+            href={
+              session?.user.data.role
+                ? `/dashboard/organizations`
+                : "my-organization"
+            }
+            className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+          >
+            Organizations
+          </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/dashboard" className="font-medium text-mint">
-              Go to dashboard
-            </Link>
-          ) : null
-        }
+        {session?.user && session?.user.data.is_admin ? (
+          <Link href="/dashboard" className="font-medium text-mint">
+            Go to dashboard
+          </Link>
+        ) : null}
       </div>
       <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">
@@ -222,7 +226,7 @@ const myOrganizationPage = () => {
                 <TableBody>
                   {orgImageList
                     ? orgImageList.length > 0
-                      ? orgImageList.map((image:ILabImage, i:number) => (
+                      ? orgImageList.map((image: ILabImage, i: number) => (
                           <TableRow key={i}>
                             <TableCell className="font-medium">
                               {image.name}
