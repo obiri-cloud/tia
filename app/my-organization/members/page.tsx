@@ -51,6 +51,24 @@ import {
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 
+export const ROLES = [
+  {
+    role: "Admin",
+    desc: "Admin has full control over Labs, Groups, Members, and Invitations but cannot manage Organization settings.",
+  },
+  {
+    role: "Editor",
+    desc: "Editor can modify Labs, Groups, Members, and Invitations, except for billing and organizational settings.",
+  },
+  {
+    role: "Viewer",
+    desc: "Viewer has access only to view content, including Labs, Groups, Members, and Invitations.",
+  },
+  {
+    role: "Member",
+    desc: "Member has basic access without permissions to view or manage Organization content.",
+  },
+];
 const Images = () => {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
@@ -169,25 +187,6 @@ const Images = () => {
     },
   });
 
-  const ROLES = [
-    {
-      roles: "Admin",
-      desc: "Admin has full control over Labs, Groups, Members, and Invitations but cannot manage Organization settings.",
-    },
-    {
-      roles: "Editor",
-      desc: "Editor can modify Labs, Groups, Members, and Invitations, except for billing and organizational settings.",
-    },
-    {
-      roles: "Viewer",
-      desc: "Viewer has access only to view content, including Labs, Groups, Members, and Invitations.",
-    },
-    {
-      roles: "Member",
-      desc: "Member has basic access without permissions to view or manage Organization content.",
-    },
-  ];
-
   const fetchMembers = async (query: string) => {
     try {
       const response = await axios.get(
@@ -278,7 +277,16 @@ const Images = () => {
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
-          <span className="p-2 ">Organization</span>
+          <Link
+            href={
+              session?.user.data.role
+                ? `/dashboard/organizations`
+                : "my-organization"
+            }
+            className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+          >
+            Organizations
+          </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
         {session?.user && session?.user.data.is_admin ? (
@@ -311,7 +319,7 @@ const Images = () => {
                   <SelectItem value="all">All</SelectItem>
                   {ROLES.map((role) => (
                     <>
-                      <SelectItem value={role.roles}>{role.roles}</SelectItem>
+                      <SelectItem value={role.role}>{role.role}</SelectItem>
                     </>
                   ))}
                 </SelectGroup>
@@ -384,8 +392,8 @@ const Images = () => {
                                     {ROLES.map((role: any) => (
                                       <Tooltip>
                                         <TooltipTrigger asChild>
-                                          <SelectItem value={role.roles}>
-                                            {role.roles}
+                                          <SelectItem value={role.role}>
+                                            {role.role}
                                           </SelectItem>
                                         </TooltipTrigger>
                                         <TooltipContent className="absolute left-10 z-50 w-[200px] bg-white text-gray-800 p-2 rounded-lg shadow-md border border-gray-300">
