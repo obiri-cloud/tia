@@ -192,6 +192,7 @@ interface Link {
   label: string;
   link: string;
   icon: ReactNode;
+  position?: string
 }
 
 interface RouteLinks {
