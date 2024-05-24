@@ -12,6 +12,8 @@ import {
   Dialog,
 } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import AddImgGroupModal from "@/app/components/AddImgGroupModal";
+import { useCallback, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -41,6 +43,8 @@ import {
 import { MoreVerticalIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import AltRouteCheck from "@/app/components/alt-route-check";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const OrganizationGroupImagePage = () => {
   const { data: session } = useSession();
@@ -62,6 +66,8 @@ const OrganizationGroupImagePage = () => {
 
 
 
+
+  // get groups
   const getImagesInGroup =async (): Promise<ILabImage[] | undefined> => {
     try {
       const response = await axios.get(
@@ -141,7 +147,6 @@ const OrganizationGroupImagePage = () => {
 
 
 
-
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
@@ -192,6 +197,7 @@ const OrganizationGroupImagePage = () => {
             </Dialog>
           </CardHeader>
           <Dialog>
+
             <CardContent className="pl-2">
               <Table>
                 <TableHeader>

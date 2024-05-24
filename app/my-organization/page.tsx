@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, FormEvent, useEffect, useRef, useState } from "react";
+import React, { FC, FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -63,6 +63,7 @@ import { Input } from "@/components/ui/input";
 import CreateOrgModal from "@/app/components/CreateOrgModal";
 import useOrgCheck from "@/hooks/orgnization-check";
 import hasOrgCheck from "@/hooks/createOrgCheck";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const myOrganizationPage = () => {
   const name = useSelector((state: RootState) => state);
@@ -78,15 +79,26 @@ const myOrganizationPage = () => {
 
   const [image, setImage] = useState<ILabImage>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
-  const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
-    useState<boolean>(false);
-  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
-    useState<boolean>(false);
-
+  const [isOpenViewDialogOpen2, setIsOpenViewDialog2] = useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] = useState<boolean>(false);
+  const [level,setlevel]=useState('')
+  const [searchQuery, setSearchQuery] = useState('');
+  const [emptyQuery,setemptyQuery]=useState(false)
   const queryClient = useQueryClient();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
+  
+
+  const debounce = (func:any, delay:any) => {
+    let timeoutId:any;
+    return (...args:any) => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(null, args);
+      }, delay);
+    };
+  };
 
   const getOrgImages = async () => {
     try {
@@ -174,6 +186,113 @@ const myOrganizationPage = () => {
 
   const { data: orgImageList } = useQuery(["orgImages"], () => getOrgImages());
 
+  const fetchlabs = async (query: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/images/?q=${query}${level==''?'':`&difficulty_level=${level}` }`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        if(response.data.data==="No Lab(s) found for the specified search criteria")setemptyQuery(true)
+        return response.data.data;
+      } else {
+        throw new Error(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+//fetch_role
+const fetchRole = async (query: string) => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/images/?difficulty_level=${query}&difficulty_level=${query}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
+
+
+const { mutate: searcRoleMutation } = useMutation(fetchRole, {
+  onSuccess: (data) => {
+    console.log({data:data})
+    queryClient.setQueryData("orgImages", data);
+    setSearchQuery('')
+  },
+  onError: (error: any) => {
+    console.log(error);
+  },
+});
+
+const fetchrole = (query: string) => {
+  if(query=='all'){
+    queryClient.invalidateQueries("orgImages");
+    return
+  }
+   debouncedRoleMembers(query);
+};
+
+const debouncedRoleMembers = useCallback(debounce((query:string) => searcRoleMutation(query), 100), [searcRoleMutation]);
+
+
+  
+  
+  const { mutate: searchMutation } = useMutation(fetchlabs, {
+    onSuccess: (data) => {
+      if (Array.isArray(data)) {
+        queryClient.setQueryData("orgImages", data);
+        setemptyQuery(false)
+      } else {
+        queryClient.setQueryData("orgImages", { status: data.status, message: data.message });
+      }
+    },
+    onError: (error: any) => {
+      console.log(error);
+    },
+  });
+  
+
+
+  
+  const debouncedfetchlabs = useCallback(debounce((query:string) => searchMutation(query), 400), [searchMutation]);
+  
+  const handleSearchQueryChange = (query: string) => {
+    setSearchQuery(query);
+    debouncedfetchlabs(query);
+  };
+  
+  const difficulty_level=[
+    {
+      stage:"beginner",
+    },
+    {
+      stage:"intermediate",
+    },
+    {
+      stage:"hard",
+    },
+  ]
+
+
+
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
@@ -196,7 +315,8 @@ const myOrganizationPage = () => {
           </Link>
         ) : null}
       </div>
-      <div className="grid gap-4 md:grid-cols-2 p-4">
+
+      <div className="grid gap-4 md:grid-cols-2 m-4 ">
         <Card className="col-span-4">
           <CardHeader className="flex flex-row justify-between items-center w-full">
             <div>
@@ -210,6 +330,35 @@ const myOrganizationPage = () => {
             </Dialog>
           </CardHeader>
           <Dialog>
+
+          <div className="flex items-center gap-4 m-5">
+              <Input   
+                        placeholder="Search labs"
+                        value={searchQuery}
+                        onChange={(e) => handleSearchQueryChange(e.target.value)}
+              />
+              <Select onValueChange={(newRole) => fetchrole(newRole)}>
+                                <SelectTrigger className="w-[180px] bg-inherit">
+                                  <SelectValue placeholder='Filter by role'/>
+                                </SelectTrigger>
+
+                                <SelectContent className="overflow-visible" >
+                                  <SelectGroup >
+                                    <SelectLabel>filter Role</SelectLabel>
+                                    <SelectItem value="all">All</SelectItem>
+                                    {
+
+                                      difficulty_level.map((role:any)=>(
+                                        <>
+                                          <SelectItem value={role.stage}>{role.stage}</SelectItem>
+                                        </>
+
+                                      ))
+                                    }
+                                  </SelectGroup>
+                                </SelectContent>
+                </Select>
+            </div>
             <CardContent className="pl-2">
               <Table>
                 <TableHeader>
@@ -223,10 +372,13 @@ const myOrganizationPage = () => {
                 {orgImageList?.length === 0 && (
                   <TableCaption>No images found...</TableCaption>
                 )}
+              {emptyQuery&&(
+                <TableCaption>No Lab(s) found for the specified search criteria</TableCaption>
+              )}
                 <TableBody>
                   {orgImageList
-                    ? orgImageList.length > 0
-                      ? orgImageList.map((image: ILabImage, i: number) => (
+                    && orgImageList.length > 0
+                        && Array.isArray(orgImageList) && orgImageList.map((image:ILabImage, i:number) => (
                           <TableRow key={i}>
                             <TableCell className="font-medium">
                               {image.name}
@@ -238,8 +390,8 @@ const myOrganizationPage = () => {
                             </TableCell>
                           </TableRow>
                         ))
-                      : null
-                    : null}
+                    
+                    }
                 </TableBody>
               </Table>
             </CardContent>
