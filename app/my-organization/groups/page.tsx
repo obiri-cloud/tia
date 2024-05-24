@@ -64,12 +64,12 @@ const OrganizationGroup = () => {
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<OrgGroup>();
   const [group, setGroup] = useState<OrgGroup>();
-  console.log({session});
-  
+  console.log({ session });
+
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
-  
+
   const getGroups = async (): Promise<OrgGroup[] | undefined> => {
     try {
       const response = await axios.get(
@@ -265,9 +265,6 @@ const OrganizationGroup = () => {
       updateMemberMutation({ members: members.removed, action: "delete" });
   };
 
-
-
-
   const { mutate: updateMemberMutation } = useMutation(
     (data: { members: Set<string>; action: string }) =>
       updateMemberFn(data.members, data.action),
@@ -424,7 +421,16 @@ const OrganizationGroup = () => {
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
-          <span className="p-2 ">Organzation</span>
+          <Link
+            href={
+              session?.user.data.role
+                ? `/dashboard/organizations`
+                : "my-organization"
+            }
+            className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+          >
+            Organizations
+          </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
 
