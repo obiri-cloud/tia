@@ -29,10 +29,15 @@ export const OrganizationSlice = createSlice({
     setOrgData: (state, action: PayloadAction<OrgState>) => {
       console.log("action.payload",action.payload);
       state = action.payload;
-    }
+    },
+    setOrgName: (state, action: PayloadAction<string>) => {
+      console.log("action.payload", action.payload);
+      
+      state.name = action.payload;
+    },
   },
 });
 
-export const { setOrgData } = OrganizationSlice.actions;
+export const { setOrgData, setOrgName } = OrganizationSlice.actions;
 
 export default OrganizationSlice.reducer;
