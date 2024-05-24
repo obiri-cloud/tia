@@ -28,6 +28,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -44,38 +45,49 @@ export default function UserDashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
+  const [selectedInfo, setSelectedInfo] = useState({
+    label: "",
+    description: "",
+  });
 
   const links = [
     {
       label: "Overview",
       link: "/my-organization/overview",
       icon: PieChart,
+      description: "This page shows all the labs in your organizations.",
     },
     {
       label: "Labs",
       link: "/my-organization",
       icon: PanelLeft,
+      description: "This page shows all the labs in your organizations.",
     },
     {
       label: "Groups",
       link: "/my-organization/groups",
       icon: GalleryVerticalEndIcon,
+      description: "This page shows all the groups in your organizations.",
     },
     {
       label: "Members",
       link: "/my-organization/members",
       icon: Users,
+      description: "This page shows all the members in your organizations.",
     },
     {
       label: "Invitation",
       link: "/my-organization/invitation",
       icon: TicketIcon,
+      description: "This page shows all the invitations in your organizations.",
     },
     {
       label: "Organization Account",
       link: "/my-organization/account",
       icon: User,
       position: "bottom",
+      description:
+        "This page shows the organization account in your organizations.",
     },
   ];
 
@@ -146,28 +158,36 @@ export default function UserDashboardLayout({
                           let Icon = item.icon;
                           return (
                             <li className="all-images-button">
-                              <Link
-                                href={item.link}
-                                className={`flex items-center justify-between p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
+                              <div
+                                className={`flex items-center justify-between p-2 rounded-lg group   dark:hover:bg-menuHov hover:bg-menuHovWhite ${
                                   pathname === item.link
                                     ? "bg-menuHovWhite dark:bg-menuHov"
                                     : ""
                                 }`}
                               >
-                              <div className="flex items-center">
-                              <Icon className="w-5 h-5" />
-                                <span className={`ms-3  font-light`}>
-                                  {item.label}
-                                </span>
+                                <Link
+                                  href={item.link}
+                                  className={`flex items-center justify-between rounded-lg dark:text-white`}
+                                >
+                                  <Icon className="w-5 h-5" />
+                                  <span className={`ms-3 font-light`}>
+                                    {item.label}
+                                  </span>
+                                </Link>
+                                <SheetTrigger
+                                  onClick={() =>
+                                    setSelectedInfo({
+                                      label: item.label,
+                                      description: item.description,
+                                    })
+                                  }
+                                  asChild
+                                >
+                                  <button className="text-blue-700 text-xs">
+                                    info
+                                  </button>
+                                </SheetTrigger>
                               </div>
-                              <SheetTrigger onClick={(e)=>{
-                                e.stopPropagation()
-                              }} asChild>
-                                <button className=" text-blue-700 text-xs ">
-                                  info
-                                </button>
-                              </SheetTrigger>
-                              </Link>
                             </li>
                           );
                         })}
@@ -213,6 +233,13 @@ export default function UserDashboardLayout({
             </aside>
           ) : null}
 
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>{selectedInfo.label}</SheetTitle>
+              <SheetDescription>{selectedInfo.description}</SheetDescription>
+            </SheetHeader>
+          </SheetContent>
+
           <div
             className={`${
               !pathname.startsWith("/dashboard/labs") ? "sm:ml-[220px]" : ""
@@ -220,7 +247,6 @@ export default function UserDashboardLayout({
           >
             {children}
           </div>
-
         </div>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" />
