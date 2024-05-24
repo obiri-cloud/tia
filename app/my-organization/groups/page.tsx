@@ -1,5 +1,5 @@
 "use client";
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useCallback, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,7 @@ import OrgDialog from "@/app/components/my-organization/org-dialog";
 import { z } from "zod";
 import useOrgCheck from "@/hooks/orgnization-check";
 import { Sheet } from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
 
 export interface OrgGroup {
   id: string;
@@ -52,7 +53,7 @@ export interface OrgGroup {
 
 const OrganizationGroup = () => {
   const { data: session } = useSession();
-
+  const [searchQuery, setSearchQuery] = useState('');
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
     useState<boolean>(false);
@@ -64,7 +65,7 @@ const OrganizationGroup = () => {
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<OrgGroup>();
   const [group, setGroup] = useState<OrgGroup>();
-  console.log({session});
+  const [emptyQuery,setemptyQuery]=useState(false)
   
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -420,6 +421,67 @@ const OrganizationGroup = () => {
     } catch (error: any) {}
   };
 
+
+
+
+
+  const fetchSearchGroups = async (query: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/list/?q=${query}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        if(response.data.data==="No Group(s) found for the specified search criteria"){setemptyQuery(true)}
+        return response.data.data;
+      } else {
+        throw new Error(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const { mutate: searchMutation } = useMutation(fetchSearchGroups, {
+    onSuccess: (data) => {
+      if (Array.isArray(data)) {
+        queryClient.setQueryData("groups", data);
+        setemptyQuery(false)
+      } else {
+        queryClient.setQueryData("groups", { status: data.status, message: data.message });
+      }
+    },
+    onError: (error: any) => {
+      console.log(error);
+    },
+  });
+
+  const debounce = (func:any, delay:any) => {
+    let timeoutId:any;
+    return (...args:any) => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(null, args);
+      }, delay);
+    };
+  };
+
+
+  const debouncedfetchSearchGroups = useCallback(debounce((query:string) => searchMutation(query), 400), [searchMutation]);
+
+
+  const handleSearchQueryChange = (query: string) => {
+    setSearchQuery(query);
+    debouncedfetchSearchGroups(query);
+  };
+
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
@@ -443,6 +505,14 @@ const OrganizationGroup = () => {
               Create group
             </Button>
           </CardHeader>
+
+          <div className="flex items-center gap-4 m-5">
+              <Input   
+                        placeholder="Search Groups"
+                        value={searchQuery}
+                        onChange={(e) => handleSearchQueryChange(e.target.value)}
+              />
+            </div>
           <Dialog>
             <CardContent className="pl-2">
               <Table>
@@ -463,9 +533,13 @@ const OrganizationGroup = () => {
                     Loading groups in your organization...
                   </TableCaption>
                 ) : null}
+
+              {emptyQuery&&(
+                <TableCaption>No Group(s) found for the specified search criteria</TableCaption>
+              )}
                 <TableBody>
                   {!loadingGroups
-                    ? groups && groups.length > 0
+                    ?  Array.isArray(groups) && groups.length > 0
                       ? groups.map((group: OrgGroup, i: number) => (
                           <TableRow key={i}>
                             <TableCell className="font-medium  underline">

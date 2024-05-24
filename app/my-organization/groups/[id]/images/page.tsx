@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import AddImgGroupModal from "@/app/components/AddImgGroupModal";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -61,6 +61,8 @@ import { MoreVerticalIcon } from "lucide-react";
 import AddMembersModal from "@/app/components/AddMembersModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import AltRouteCheck from "@/app/components/alt-route-check";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const OrganizationGroupImagePage = () => {
   const { data: session } = useSession();
@@ -90,6 +92,7 @@ const OrganizationGroupImagePage = () => {
   const gids = params.gid;
   const name = searchParams.get("name");
   const group = searchParams.get("group_name");
+
 
 
 
@@ -183,7 +186,6 @@ const OrganizationGroupImagePage = () => {
 
 
 
-
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
@@ -230,6 +232,7 @@ const OrganizationGroupImagePage = () => {
             </Dialog>
           </CardHeader>
           <Dialog>
+
             <CardContent className="pl-2">
               <Table>
                 <TableHeader>

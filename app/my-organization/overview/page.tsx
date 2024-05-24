@@ -7,6 +7,7 @@ import { ResponsiveLine } from "@nivo/line";
 import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 import { useQuery } from "react-query";
+import { Dialog } from "@/components/ui/dialog";
 
  const  OverView=()=> {
     const { data: session } = useSession();
@@ -14,8 +15,6 @@ import { useQuery } from "react-query";
     const org_id = session?.user!.data?.organization_id;
 
 console.log(typeof org_id);
-
-
 
 const getOverview = async () => {
     try {
@@ -36,118 +35,85 @@ const getOverview = async () => {
     }
   };
 
-
-
-  const{
+  const {
     isLoading,
     data: overviewData,
   } = useQuery(["orgOverview"], () => getOverview());
 
-  
-
-
-
   return (
- <div className="">
-    <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
-    <div className="flex items-center ml-2">
-      <span className="p-2 ">Organzation</span>
-      <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
-      Overview
-    </div>
+    <div className="">
+      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+        <div className="flex items-center ml-2">
+          <span className="p-2 ">Organization</span>
+          <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+          Overview
+        </div>
 
-    {session?.user && session?.user.data.is_admin ? (
-      <Link href="/dashboard" className="font-medium text-mint mr-9">
-        Go to dashboard
-      </Link>
-    ) : null}
+        {session?.user && session?.user.data.is_admin ? (
+          <Link href="/dashboard" className="font-medium text-mint mr-9">
+            Go to dashboard
+          </Link>
+        ) : null}
 
-   </div>
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-4 p-4">
+      </div>
+      <div className="flex flex-wrap gap-4 p-5">
         {
-            isLoading?
-            (<>
-             <Skeleton
-              className="rounded-lg p-8 lg:w-[375px] w-full  h-[150px]"
-              />
-              <Skeleton
-              className="rounded-lg p-8 lg:w-[375px] w-full  h-[150px]"
-              />
-              <Skeleton
-              className="rounded-lg p-8 lg:w-[375px] w-full  h-[150px]"
-              />
-              <Skeleton
-              className="rounded-lg p-8 lg:w-[375px] w-full  h-[150px]"
-              />
-            </>)
+          isLoading ?
+          (
+            <>
+              <Skeleton className="rounded-lg p-8 lg:w-[375px] w-full h-[150px]" />
+              <Skeleton className="rounded-lg p-8 lg:w-[375px] w-full h-[150px]" />
+              <Skeleton className="rounded-lg p-8 lg:w-[375px] w-full h-[150px]" />
+              <Skeleton className="rounded-lg p-8 lg:w-[375px] w-full h-[150px]" />
+            </>
+          ) :
+          (
+            <>
+              <div className="lab-card rounded-2xl p-8 lg:w-[375px] w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="text-[30px] font-extrabold">Total Members</CardTitle>
+                  <CardDescription>Number of members in the organization</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col items-center justify-center flex-1">
+                  <span className="text-4xl font-bold">{overviewData?.total_members}</span>
+                </CardContent>
+              </div>
 
-          :(
-         <>
-            <div className="rounded-lg border border-gray-200 dark:border-gray-800">
-            <Card className="flex flex-col">
-              <CardHeader>
-                <CardTitle>Total Members</CardTitle>
-                <CardDescription>Number of members in the organization</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col items-center justify-center flex-1">
-                <span className="text-4xl font-bold">{overviewData?.total_members}</span>
-              </CardContent>
-            </Card>
-          </div>
-    
-          <div className="rounded-lg border border-gray-200 dark:border-gray-800">
-            <Card className="flex flex-col">
-              <CardHeader>
-                <CardTitle>Total Groups</CardTitle>
-                <CardDescription>Number of groups in the organization</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col items-center justify-center flex-1">
-                <span className="text-4xl font-bold">{overviewData?.total_groups}</span>
-              </CardContent>
-            </Card>
-          </div>
-    
-          <div className="rounded-lg border border-gray-200 dark:border-gray-800">
-            <Card className="flex flex-col">
-              <CardHeader>
-                <CardTitle>Total Labs</CardTitle>
-                <CardDescription>Number of labs the organization</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col items-center justify-center flex-1">
-                <span className="text-4xl font-bold">{overviewData?.total_labs}</span>
-              </CardContent>
-            </Card>
-          </div>
-    
-          <div className="rounded-lg border border-gray-200 dark:border-gray-800 mr-4">
-            <Card className="flex flex-col">
-              <CardHeader>
-                <CardTitle>Pending Invitations</CardTitle>
-                <CardDescription>Number of pending invitations</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col items-center justify-center flex-1">
-                <span className="text-4xl font-bold">{overviewData?.total_pending_invitations}</span>
-              </CardContent>
-            </Card>
-          </div>
-        </>
+              <div className="lab-card rounded-2xl p-8 lg:w-[375px] w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="text-[30px] font-extrabold">Total Groups</CardTitle>
+                  <CardDescription>Number of groups in the organization</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col items-center justify-center flex-1">
+                  <span className="text-4xl font-bold">{overviewData?.total_groups}</span>
+                </CardContent>
+              </div>
+
+              <div className="lab-card rounded-2xl p-8 lg:w-[375px] w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="text-[30px] font-extrabold">Total Labs</CardTitle>
+                  <CardDescription>Number of labs in the organization</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col items-center justify-center flex-1">
+                  <span className="text-4xl font-bold">{overviewData?.total_labs}</span>
+                </CardContent>
+              </div>
+
+              <div className="lab-card rounded-2xl p-8 lg:w-[375px] w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="text-[25px] font-extrabold">Pending Invitations</CardTitle>
+                  <CardDescription>Number of pending invitations</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col items-center justify-center flex-1">
+                  <span className="text-4xl font-bold">{overviewData?.total_pending_invitations}</span>
+                </CardContent>
+              </div>
+            </>
           )
         }
-
-
+      </div>
     </div>
-</div>
-
   )
 }
 
 export default OverView
-
-
-function LineChart(props:any) {
-    return (
-      <div {...props}>
-
-      </div>
-    )
-  }

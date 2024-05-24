@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -32,15 +32,19 @@ import InviteModal from "@/app/components/InviteModal";
 
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import BulkInviteModal from "@/app/components/BulkInviteModal";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectTrigger, SelectValue } from "@radix-ui/react-select";
+import { SelectGroup, SelectItem, SelectLabel } from "@/components/ui/select";
 
 const Images = () => {
   const [imageList, setimagelist] = useState<IinviteData[]>();
   const [status, setstatus] = useState<boolean>(false);
   const [file, setfile] = useState<any>();
   const [emailInput, setEmailInput] = useState<string>();
-
+  const [searchQuery, setSearchQuery] = useState('');
   const { data: session } = useSession();
   const { reset } = useForm();
+  const [emptyQuery,setemptyQuery]=useState(false)
 
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
@@ -54,6 +58,8 @@ const Images = () => {
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
+
+
   const getInvitations = async (): Promise<IinviteData[] | undefined> => {
     try {
       const response = await axios.get(
@@ -337,6 +343,73 @@ const Images = () => {
     );
   };
 
+
+  const fetchsearchInvites = async (query: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/?q=${query}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        if(response.data.data==="No Invitation(s) found for the specified search criteria")setemptyQuery(true)
+        return response.data.data;
+      } else {
+        throw new Error(response.data);
+      }
+    } catch (error) {
+      console.log({error});
+      
+      if (axios.isAxiosError(error) && error.response) {
+        return {
+          status: error.response.status,
+          message: error.response.data,
+        };
+      } else {
+        console.error(error);
+      }
+    }
+  };
+
+  const { mutate: searchMutation } = useMutation(fetchsearchInvites, {
+    onSuccess: (data) => {
+      if (Array.isArray(data)) {
+        queryClient.setQueryData("invites", data);
+        setemptyQuery(false)
+      } else {
+        queryClient.setQueryData("invites", { status: data.status, message: data.message });
+      }
+    },
+    onError: (error: any) => {
+      console.log(error);
+    },
+  });
+
+  const debounce = (func:any, delay:any) => {
+    let timeoutId:any;
+    return (...args:any) => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(null, args);
+      }, delay);
+    };
+  };
+
+
+  const debouncedfetchsearchInvites = useCallback(debounce((query:string) => searchMutation(query), 400), [searchMutation]);
+
+
+  const handleSearchQueryChange = (query: string) => {
+    setSearchQuery(query);
+    debouncedfetchsearchInvites(query);
+  };
+  
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
@@ -376,7 +449,13 @@ const Images = () => {
               </Button>
             </div>
           </CardHeader>
-          
+          <div className="flex items-center gap-4 m-5">
+              <Input   
+                        placeholder="Search for users"
+                        value={searchQuery}
+                        onChange={(e) => handleSearchQueryChange(e.target.value)}
+              />
+            </div>
           <Dialog>
             <CardContent className="pl-2">
               <Table>
@@ -398,23 +477,25 @@ const Images = () => {
                   <TableCaption>
                     Loading invitations in your organization...
                   </TableCaption>
-                ) : null}
+                ) :null}
+              {emptyQuery &&(
+                <TableCaption>No Invitation(s) found for the specified search criteria</TableCaption>
+              )}
 
-                <TableBody>
-                  {!loadingInvitation
-                    ? invites && invites.length > 0
-                      ? invites.map((invite: IinviteData, i: number) => (
+             <TableBody>
+                  {!loadingInvitation && Array.isArray(invites) && invites.length > 0
+                      ? invites.map((invite: any, i: any) => (
                           <TableRow key={i}>
                             <TableCell className="font-medium">
-                              {invite.recipient_email}
+                              {invite?.recipient_email}
                             </TableCell>
-                            <TableCell>{invite.invitation_status}</TableCell>
+                            <TableCell>{invite?.invitation_status}</TableCell>
                             <TableCell>
-                              {formatDate(invite.created_at)}
+                              {formatDate(invite?.created_at)}
                             </TableCell>
                             <TableCell>
                               {invite.expires
-                                ? formatExpiration(invite.expires)
+                                ? formatExpiration(invite?.expires)
                                 : "Expires soon"}
                             </TableCell>
                             <TableCell className="underline font-medium text-right">
@@ -434,8 +515,7 @@ const Images = () => {
                             </TableCell>
                           </TableRow>
                         ))
-                      : null
-                    : null}
+                      : null}
                 </TableBody>
               </Table>
             </CardContent>

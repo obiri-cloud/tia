@@ -47,7 +47,7 @@ const Images = () => {
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
   const [results,setresults]=useState<any>([])
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [emptyQuery,setemptyQuery]=useState(false)
   const token = session?.user!.tokens?.access_token ?? "";
   const org_id=session?.user!.data?.organization_id
   
@@ -153,9 +153,12 @@ const Images = () => {
       });
     },
     onError: (error: AxiosError) => {
+      console.log({error});
+      
       toast({
         variant: "destructive",
-        title:  "Failed to update role",
+        //@ts-ignore
+        title:  error?.response.data.detail,
       });
     },
   });
@@ -208,7 +211,15 @@ const fetchMembers = async (query: string) => {
         },
       }
     );
-    return response.data.data;
+    if (response.status === 200) {
+      console.log('stats==>',response.status)
+      console.log('error==>',response.data.data)
+
+      if(response.data.data=="No member(s) found for the specified search criteria"){setemptyQuery(true)}
+      return response.data.data;
+    } else {
+      throw new Error(response.data);
+    }
   } catch (error) {
     console.error(error);
   }
@@ -217,8 +228,12 @@ const fetchMembers = async (query: string) => {
 
 const { mutate: searchMutation } = useMutation(fetchMembers, {
   onSuccess: (data) => {
-    console.log({data:data})
-    queryClient.setQueryData("members", data);
+    if (Array.isArray(data)) {
+      queryClient.setQueryData("members", data);
+      setemptyQuery(false)
+    } else {
+      queryClient.setQueryData("members", { status: data.status, message: data.message });
+    }
   },
   onError: (error: any) => {
     console.log(error);
@@ -246,7 +261,13 @@ const fetchRole = async (query: string) => {
         },
       }
     );
-    return response.data.data;
+    if (response.status === 200) {
+      console.log('stats==>',response.status)
+      if(response.data.data=="No member(s) found for this Organization"){setemptyQuery(true)}
+      return response.data.data;
+    } else {
+      throw new Error(response.data);
+    }
   } catch (error) {
     console.error(error);
   }
@@ -255,9 +276,12 @@ const fetchRole = async (query: string) => {
 
 const { mutate: searcRoleMutation } = useMutation(fetchRole, {
   onSuccess: (data) => {
-    console.log({data:data})
-    queryClient.setQueryData("members", data);
-    setSearchQuery('')
+    if (Array.isArray(data)) {
+      queryClient.setQueryData("members", data);
+      setemptyQuery(false)
+    } else {
+      queryClient.setQueryData("members", { status: data.status, message: data.message });
+    }
   },
   onError: (error: any) => {
     console.log(error);
@@ -268,9 +292,9 @@ const { mutate: searcRoleMutation } = useMutation(fetchRole, {
 const debouncedRoleMembers = useCallback(debounce((query:string) => searcRoleMutation(query), 100), [searcRoleMutation]);
 
 const fetchrole = (query: string) => {
-  console.log({query})
   if(query=='all'){
     queryClient.invalidateQueries("members");
+    setemptyQuery(false)
     return
   }
    debouncedRoleMembers(query);
@@ -348,9 +372,14 @@ const fetchrole = (query: string) => {
                     Loading members in your organization...
                   </TableCaption>
                 ) : null}
-                {!loadingMembers && ( (members && members.length === 0) || members==='No members in the organization' || members==='No members found for the specified search criteria') ? (
+                {!loadingMembers && ( (members && members.length === 0) || members==='No members in the organization') ? (
                   <TableCaption> No members in your organization...</TableCaption>
                 ) : null}
+
+               {emptyQuery &&(
+                <TableCaption>No members found for the specified search criteria</TableCaption>
+              )}
+
                 <TableBody>
                   {!loadingMembers && Array.isArray(members) && members.length > 0
                       ? members.map((member: GroupMember) =>(
