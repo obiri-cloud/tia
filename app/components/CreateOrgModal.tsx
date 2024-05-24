@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, FormEvent, useEffect, useRef, useState } from "react";
+import React, {  FormEvent } from "react";
 import {
   Form,
   FormControl,
@@ -11,42 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { DialogContent } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import * as z from "zod";
-import axios from "axios";
-import { toast } from "@/components/ui/use-toast";
-// import { getImageListX } from "./overview";
-import {
-  setCurrentImage,
-  setImageCount,
-  setImageList,
-} from "@/redux/reducers/adminSlice";
-import { useDispatch, useSelector } from "react-redux";
-import trash from "@/public/svgs/trash.svg";
-import Image from "next/image";
-import { RootState } from "@/redux/store";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { ContentProps, ILabImage } from "@/app/types";
-import { Trash } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Dialog } from "@radix-ui/react-dialog";
+
 import { useSession } from "next-auth/react";
-import { setOrgData } from "@/redux/reducers/OrganzationSlice";
 import OrgDialog from "./my-organization/org-dialog";
 
-// interface NewImageFormProps {
-//     OrgExist: boolean;
-//     setOrgExist: (value: boolean) => void;
-//   }
+
 
 const CreateOrgModal= ({ onSubmit }: { onSubmit: (e: FormEvent<HTMLFormElement>) => void }) => {
   const form = useForm();
