@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 import React, { useEffect } from "react";
 import { getImageListX, getLabListX,getOrgList } from "./overview";
 import { useDispatch } from "react-redux";
-import { setOrgData } from "@/redux/reducers/OrganzationSlice";
+import { setOrgData } from "@/redux/reducers/OrganizationSlice";
 
 
 
