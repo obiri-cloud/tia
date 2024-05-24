@@ -48,8 +48,7 @@ const Images = () => {
   const [isOpenViewDialogOpen3, setIsOpenViewDialog3] =
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<IinviteData>();
-  const [_, setIsOpenDeleteDialog] =
-    useState<boolean>(false);
+  const [_, setIsOpenDeleteDialog] = useState<boolean>(false);
   const [multiplEmails, setMultipleEmails] = useState<any>([]);
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -67,17 +66,17 @@ const Images = () => {
           },
         }
       );
-   
+
       return response.data.data;
     } catch (error) {
       console.log(error);
     }
   };
 
-  const {
-    isLoading: loadingInvitation,
-    data: invites,
-  } = useQuery(["invites"], () => getInvitations());
+  const { isLoading: loadingInvitation, data: invites } = useQuery(
+    ["invites"],
+    () => getInvitations()
+  );
 
   const deletebtn = (data: IinviteData) => {
     setPassedData(data);
@@ -201,7 +200,6 @@ const Images = () => {
     return response.data;
   };
 
-  
   const BulkInvite = async (file: any) => {
     let formData = new FormData();
     formData.append("file", file);
@@ -209,7 +207,7 @@ const Images = () => {
     const axiosConfig = {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/create/bulk/`,
-      data:formData,
+      data: formData,
       headers: {
         "Content-Type": "multipart/form-data",
         Accept: "application/json",
@@ -261,7 +259,7 @@ const Images = () => {
         queryClient.invalidateQueries("invites");
         setfile(null);
         toast({
-          variant:data.status===200?"success":"destructive",
+          variant: data.status === 200 ? "success" : "destructive",
           title: `${data.data}`,
         });
         setIsOpenViewDialog3(false);
@@ -280,9 +278,8 @@ const Images = () => {
           document.getElementById("submit-btn") as HTMLButtonElement
         ).textContent = "Send Invitation Link";
 
-        (
-          document.getElementById("submit-btn") as HTMLButtonElement
-        ).disabled = false;
+        (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
+          false;
       },
     }
   );
@@ -295,9 +292,8 @@ const Images = () => {
     (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
       "Sending Invitation Link...";
 
-      addBulkInviteMutation(file);
+    addBulkInviteMutation(file);
   };
-
 
   const sendEmails = () => {
     (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
@@ -308,16 +304,15 @@ const Images = () => {
       "Sending Invitation Link...";
 
     const emailData = {
-      emails: Array.from(new Set(multiplEmails.map((item: any) => item.email.trim()))),
+      emails: Array.from(
+        new Set(multiplEmails.map((item: any) => item.email.trim()))
+      ),
     };
-
 
     addInviteMutation(emailData);
   };
 
-
   const addGroup = () => {
-
     if (emailInput) {
       setMultipleEmails((prevEmails: any) => [
         ...prevEmails,
@@ -341,7 +336,16 @@ const Images = () => {
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
-          <span className="p-2 ">Organzation</span>
+          <Link
+            href={
+              session?.user.data.role
+                ? `/dashboard/organizations`
+                : "my-organization"
+            }
+            className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+          >
+            Organizations
+          </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
         {session?.user && session?.user.data.is_admin ? (
@@ -356,9 +360,8 @@ const Images = () => {
             <div>
               <CardTitle>Invitation List</CardTitle>
             </div>
-            <div    className="flex space-x-4">
-            <Button
-             
+            <div className="flex space-x-4">
+              <Button
                 onClick={() => {
                   setIsOpenViewDialog3(true);
                 }}
@@ -376,7 +379,7 @@ const Images = () => {
               </Button>
             </div>
           </CardHeader>
-          
+
           <Dialog>
             <CardContent className="pl-2">
               <Table>
@@ -480,7 +483,6 @@ const Images = () => {
         }
       >
         <BulkInviteModal setfile={setfile} onSend={BulkEmails} />
-
       </Dialog>
     </div>
   );
