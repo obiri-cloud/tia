@@ -139,17 +139,14 @@ const OrganizationGroupImagePage = () => {
           },
         }
       );
-      // if (response.data.status === 204) {
-      //   setIsOpenViewDialog(false);
-      //   toast({
-      //     variant: "success",
-      //     title: "Image Deleted Sucessfully",
-      //     description: response.data.data,
-      //   });
-      // }
+       console.log({response})
       return response;
     } catch (error) {
-      console.log(error);
+      toast({
+        variant: "destructive",
+        //@ts-ignore
+        title: error.response.data.detail,
+      });
     }
   };
 
@@ -172,6 +169,7 @@ const OrganizationGroupImagePage = () => {
       },
       onError: (error: any) => {
         const responseData = error.response.data;
+        console.log({responseData})
         toast({
           variant: "destructive",
           title: responseData.data,

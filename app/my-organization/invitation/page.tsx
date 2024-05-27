@@ -33,12 +33,9 @@ import InviteModal from "@/app/components/InviteModal";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import BulkInviteModal from "@/app/components/BulkInviteModal";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectTrigger, SelectValue } from "@radix-ui/react-select";
-import { SelectGroup, SelectItem, SelectLabel } from "@/components/ui/select";
+
 
 const Images = () => {
-  const [imageList, setimagelist] = useState<IinviteData[]>();
-  const [status, setstatus] = useState<boolean>(false);
   const [file, setfile] = useState<any>();
   const [emailInput, setEmailInput] = useState<string>();
   const [searchQuery, setSearchQuery] = useState('');
@@ -116,11 +113,6 @@ const Images = () => {
     return response.data;
   };
 
-  const addMultiple = () => {
-    let emails = [];
-    emails.push();
-  };
-
   const {
     mutate: SendInviteMutation,
     isLoading: updatingGroups,
@@ -183,7 +175,7 @@ const Images = () => {
         const responseData = error.response.data;
         toast({
           variant: "destructive",
-          title: responseData.data,
+          title: responseData.data || responseData.detail ,
         });
         setIsOpenViewDialog(false);
       },
@@ -247,7 +239,7 @@ const Images = () => {
         const responseData = error.response.data;
         toast({
           variant: "destructive",
-          title: responseData.data,
+          title: responseData.data || responseData.detail ,
         });
         (
           document.getElementById("submit-button") as HTMLButtonElement
@@ -266,6 +258,8 @@ const Images = () => {
       onSuccess: (data) => {
         queryClient.invalidateQueries("invites");
         setfile(null);
+        console.log({i_think_is_an_error:data});
+        
         toast({
           variant:data.status===200?"success":"destructive",
           title: `${data.data}`,
@@ -277,10 +271,12 @@ const Images = () => {
       },
       onError: (error: any) => {
         const responseData = error.response.data;
+        console.log({responseData});
+        
 
         toast({
           variant: "destructive",
-          title: responseData.data,
+          title: responseData.detail,
         });
         (
           document.getElementById("submit-btn") as HTMLButtonElement
@@ -292,7 +288,7 @@ const Images = () => {
       },
     }
   );
-
+ console.log('invitation')
   const BulkEmails = () => {
     (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
       true;
@@ -306,12 +302,9 @@ const Images = () => {
 
 
   const sendEmails = () => {
-    (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
-      true;
-    (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
-      "Sending Invitation Link...";
-    (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
-      "Sending Invitation Link...";
+    (document.getElementById("submit-btn") as HTMLButtonElement).disabled =true;
+    (document.getElementById("submit-btn") as HTMLButtonElement).textContent ="Sending Invitation Link...";
+    (document.getElementById("submit-btn") as HTMLButtonElement).textContent ="Sending Invitation Link...";
 
     const emailData = {
       emails: Array.from(new Set(multiplEmails.map((item: any) => item.email.trim()))),

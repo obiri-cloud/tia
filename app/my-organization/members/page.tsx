@@ -31,8 +31,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
-import { DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
@@ -42,7 +40,6 @@ const Images = () => {
   const queryClient = useQueryClient();
   const [image, setImage] = useState<any>();
   const [role,setrole]=useState<string>('')
-  const [position, setPosition] = React.useState("bottom")
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
   const [results,setresults]=useState<any>([])
@@ -120,7 +117,7 @@ const Images = () => {
         const responseData = error.response.data;
         toast({
           variant: "destructive",
-          title: responseData.data,
+          title: responseData.data || responseData.detail,
         });
         setIsOpenViewDialog(false);
 
