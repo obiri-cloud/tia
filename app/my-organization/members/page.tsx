@@ -13,12 +13,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useSession } from "next-auth/react";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { GroupMember } from "@/app/types";
 import Link from "next/link";
-import { ChevronDownIcon, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,14 +26,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
-import {
-  DropdownMenuCheckboxItem,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-} from "@radix-ui/react-dropdown-menu";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -74,11 +66,9 @@ const Images = () => {
   const queryClient = useQueryClient();
   const [image, setImage] = useState<any>();
   const [role, setrole] = useState<string>("");
-  const [position, setPosition] = React.useState("bottom");
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);
-  const [results, setresults] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const token = session?.user!.tokens?.access_token ?? "";
