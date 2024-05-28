@@ -71,10 +71,10 @@ const OrganizationsPage = () => {
     getInvitations()
   );
 
-  const goToOrg = (e: any, org: any) => {
+  const goToOrg = async (e: any, org: any) => {
     e.preventDefault();
 
-    update({ role: org?.role, organization_id: org.organization.id });
+    await update({ role: org?.role, organization_id: org.organization.id });
     router.push("/my-organization");
   };
 
