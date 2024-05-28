@@ -299,6 +299,7 @@ const MainLabPage = ({
             ) : null}
             <div className="h-full playground">
               <iframe
+                allow="clipboard-write; clipboard-read"
                 src={(labInfo && labInfo.url) || ""}
                 width="100%"
                 height="100%"
