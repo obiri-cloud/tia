@@ -1,5 +1,5 @@
 "use client";
-import React, { FormEvent, useCallback, useState } from "react";
+import React, {  useCallback, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -431,10 +431,9 @@ const Images = () => {
         }
       >
         <DeleteConfirmation
-          // image={image}
           text={`Do you want to delete ${image?.member.first_name} from your organization`}
           noText="No"
-          confirmText="Yes, Delete "
+          confirmText="Yes, Delete"
           confirmFunc={() => deleteMemberMutation(image?.member.id)}
         />
       </Dialog>
