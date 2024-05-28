@@ -1,5 +1,4 @@
 "use client";
-import { userCheck } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import {
   Card,
@@ -12,8 +11,6 @@ import {
   Dialog,
 } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import AddImgGroupModal from "@/app/components/AddImgGroupModal";
-import { useCallback, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -30,7 +27,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 
 import DeleteConfirmation from "@/app/components/delete-confirmation";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { ILabImage,  IOrgGroupData } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
@@ -43,8 +40,6 @@ import {
 import { MoreVerticalIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import AltRouteCheck from "@/app/components/alt-route-check";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const OrganizationGroupImagePage = () => {
   const { data: session } = useSession();
@@ -110,7 +105,11 @@ const OrganizationGroupImagePage = () => {
       );
       return response;
     } catch (error) {
-      console.log(error);
+      toast({
+        variant: "destructive",
+        //@ts-ignore
+        title: error.response.data.detail,
+      });
     }
   };
 
@@ -133,6 +132,7 @@ const OrganizationGroupImagePage = () => {
       },
       onError: (error: any) => {
         const responseData = error.response.data;
+        console.log({responseData})
         toast({
           variant: "destructive",
           title: responseData.data,

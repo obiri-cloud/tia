@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 
@@ -20,10 +20,7 @@ import { userCheck } from "@/lib/utils";
 
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import DeactivateConfirmation from "@/app/components/deactivate-confirmation";
-import { IUserProfile } from "@/app/types";
-import { DropToggle } from "@/app/components/DropToggle";
 import { useRouter } from "next/navigation";
-import useOrgCheck from "@/hooks/orgnization-check";
 
 const AccountPage = () => {
   const {data: session, update } = useSession();
@@ -31,8 +28,6 @@ const AccountPage = () => {
   const [userData, setUserData] = useState<any>();
   const [editMode, setEditMode] = useState(false);
   const router = useRouter();
-  const form = useForm();
-  // const session = await getSession();
 
   const NameRef = useRef<HTMLInputElement>(null);
   const deactivateButtonRef = useRef<HTMLButtonElement>(null);
@@ -198,8 +193,9 @@ const AccountPage = () => {
             },
           };
 
-        }
 
+        }
+       console.log({response})
         toast({
           title: "Organization Account deleted successfully",
           variant: "success",

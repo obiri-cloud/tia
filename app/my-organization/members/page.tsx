@@ -139,7 +139,7 @@ const Images = () => {
         const responseData = error.response.data;
         toast({
           variant: "destructive",
-          title: responseData.data,
+          title: responseData.data || responseData.detail,
         });
         setIsOpenViewDialog(false);
       },

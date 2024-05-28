@@ -23,7 +23,6 @@ import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
-import { useRouter } from "next/navigation";
 import { ILabImage, GroupMember } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
@@ -37,9 +36,6 @@ import { MoreVerticalIcon } from "lucide-react";
 import AddMembersModal, {
   IMemberChanges,
 } from "@/app/components/AddMembersModal";
-import OrgDialog from "@/app/components/my-organization/org-dialog";
-import { z } from "zod";
-import useOrgCheck from "@/hooks/orgnization-check";
 import { Sheet } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 
@@ -173,7 +169,7 @@ const OrganizationGroup = () => {
         const responseData = error.response.data;
         toast({
           variant: "destructive",
-          title: responseData.data,
+          title:responseData.data || responseData.detail,
         });
         setIsOpenViewDialog(false);
       },
@@ -221,7 +217,7 @@ const OrganizationGroup = () => {
         const responseData = error.response.data;
         toast({
           variant: "destructive",
-          title: responseData.data,
+          title:responseData.data || responseData.detail,
         });
         (
           document.getElementById("submit-button") as HTMLButtonElement
@@ -289,7 +285,7 @@ const OrganizationGroup = () => {
         const responseData = error.response.data;
         toast({
           variant: "destructive",
-          title: responseData.data,
+          title: responseData.data || responseData.detail,
           duration: 2000,
         });
         (
@@ -329,22 +325,23 @@ const OrganizationGroup = () => {
         toast({
           variant: "destructive",
           title: "Group update  error",
-          description: response.data,
+          description: response.data.data || response.data.detail,
           duration: 2000,
         });
       }
     } catch (error: any) {
-      console.error("error", error);
+      console.error("error", error.response.data.detail);
       const responseData = error.response.data;
+      console.error("error", error.response.data.detail,responseData );
       if (error.response) {
         toast({
           variant: "destructive",
-          title: responseData.data,
+          title: responseData.data || error.response.data.detail,
         });
       } else {
         toast({
           variant: "destructive",
-          title: responseData.data,
+          title: responseData.data?responseData.data:responseData.detail,
         });
       }
     } finally {
@@ -369,7 +366,8 @@ const OrganizationGroup = () => {
     (data: { images: Set<string>; action: string }) =>
       updateImagesFn(data.images, data.action),
     {
-      onSuccess: () => {
+      onSuccess: (data) => {
+        console.log({data});
         queryClient.invalidateQueries("members");
         toast({
           variant: "success",
@@ -386,9 +384,11 @@ const OrganizationGroup = () => {
       },
       onError: (error: any) => {
         const responseData = error.response.data;
+        console.log({responseData});
+        
         toast({
           variant: "destructive",
-          title: responseData.data,
+          title: responseData.data || responseData.detail,
           duration: 2000,
         });
         (

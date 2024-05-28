@@ -3,18 +3,15 @@ import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/com
 import { ChevronRight} from "lucide-react"
 import { useSession } from "next-auth/react";
 import Link from "next/link"
-import { ResponsiveLine } from "@nivo/line";
 import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { Dialog } from "@/components/ui/dialog";
 
  const  OverView=()=> {
     const { data: session } = useSession();
     const token = session?.user!.tokens?.access_token;
     const org_id = session?.user!.data?.organization_id;
 
-console.log(typeof org_id);
 
 const getOverview = async () => {
     try {

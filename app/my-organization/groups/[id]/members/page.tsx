@@ -8,32 +8,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { TabsContent } from "@/components/ui/tabs";
 import { useQuery } from "react-query";
-import AddImgGroupModal from "@/app/components/AddImgGroupModal";
-import { useEffect } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import NewImageForm from "@/app/components/admin/new-image-form";
-import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
-
-import { getImageListX } from "@/app/components/admin/overview";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
 import DeleteConfirmation from "@/app/components/delete-confirmation";
-import { useRouter, useSearchParams } from "next/navigation";
-import { GroupMember, ILabImage, IOrgGroupData } from "@/app/types";
+import {  useSearchParams } from "next/navigation";
+import { GroupMember,IOrgGroupData } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import {
@@ -43,7 +34,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
-import AddMembersModal from "@/app/components/AddMembersModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import AltRouteCheck from "@/app/components/alt-route-check";
 import { OrgGroup } from "../../page";
@@ -52,12 +42,8 @@ import AttachMemberToGroup from "@/app/components/AttachMemberToGroup";
 const OrganizationGroupMembersPage = () => {
   const [imageList, setImagelist] = useState<any>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
-  const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
-    useState<boolean>(false);
 
   const [isOpenViewDialogOpen3, setIsOpenViewDialog3] =
-    useState<boolean>(false);
-  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<any>();
 
@@ -93,7 +79,7 @@ const OrganizationGroupMembersPage = () => {
         toast({
           variant: "success",
           title: "member Deleted Sucessfully",
-          description: response.data.data,
+          description: response.data.data || response.data.detail,
         });
       }
 
@@ -261,7 +247,7 @@ const OrganizationGroupMembersPage = () => {
       <Dialog
         open={isOpenViewDialogOpen}
         onOpenChange={
-          isOpenViewDialogOpen ? setIsOpenViewDialog : setIsOpenDeleteDialog
+          isOpenViewDialogOpen ? setIsOpenViewDialog : setIsOpenViewDialog
         }
       >
         <DeleteConfirmation
@@ -275,7 +261,7 @@ const OrganizationGroupMembersPage = () => {
       <Dialog
         open={isOpenViewDialogOpen3}
         onOpenChange={
-          isOpenViewDialogOpen3 ? setIsOpenViewDialog3 : setIsOpenDeleteDialog
+          isOpenViewDialogOpen3 ? setIsOpenViewDialog3 : setIsOpenViewDialog
         }
       >
         <AttachMemberToGroup groups={groups} onSubmit={() => {}} />

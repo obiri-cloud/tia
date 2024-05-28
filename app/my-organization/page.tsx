@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback,useState } from "react";
 import {
   Card,
   CardContent,
@@ -7,9 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { TabsContent } from "@/components/ui/tabs";
+import { Dialog } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import {
@@ -21,63 +19,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-// import NewImageForm from "./new-image-form";
 import NewImageForm from "@/app/components/admin/new-image-form";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import { toast } from "@/components/ui/use-toast";
-// import { getImageListX } from "./overview";
-
-import { getImageListX } from "@/app/components/admin/overview";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import {
-  setCurrentImage,
-  setImageCount,
-  setImageList,
-} from "@/redux/reducers/adminSlice";
-// import DeleteConfirmation from "../delete-confirmation";
-import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { useRouter } from "next/navigation";
 import { ILabImage } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreVerticalIcon } from "lucide-react";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Form, useForm } from "react-hook-form";
-import * as z from "zod";
+
 import { Input } from "@/components/ui/input";
-import CreateOrgModal from "@/app/components/CreateOrgModal";
-import useOrgCheck from "@/hooks/orgnization-check";
-import hasOrgCheck from "@/hooks/createOrgCheck";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const myOrganizationPage = () => {
-  const name = useSelector((state: RootState) => state);
 
-  let OrgExist = hasOrgCheck();
-  console.log({ name });
-
-  // const [orgImageList, setorgImagelist] = useState<ILabImage[]>();
-
+ 
   const { data: session } = useSession();
-  const dispatch = useDispatch();
   const router = useRouter();
 
-  const [image, setImage] = useState<ILabImage>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] = useState<boolean>(false);
@@ -136,8 +95,6 @@ const myOrganizationPage = () => {
 
   const {
     mutate: createOrganizationMutation,
-    isLoading: updating,
-    error: UpdateError,
   } = useMutation((formData: FormData) => createOrg(formData), {
     onSuccess: () => {
       queryClient.invalidateQueries("orgName");
@@ -166,7 +123,7 @@ const myOrganizationPage = () => {
     },
   });
 
-  const createOrganization = (event: FormEvent<HTMLFormElement>) => {
+  const createOrganization = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     (document.getElementById("submit-button") as HTMLButtonElement).disabled =
       true;
@@ -185,6 +142,7 @@ const myOrganizationPage = () => {
   };
 
   const { data: orgImageList } = useQuery(["orgImages"], () => getOrgImages());
+
 
   const fetchlabs = async (query: string) => {
     try {
