@@ -31,6 +31,7 @@ const DeleteConfirmation: FC<IDeleteConfirmation> = ({
   confirmFunc,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
+
   const closeDialog = () => {
     document.getElementById("closeDialog")?.click();
   };
@@ -41,6 +42,7 @@ const DeleteConfirmation: FC<IDeleteConfirmation> = ({
       confirmFunc();
     }
   };
+
   return (
     <DialogContent>
       <DialogHeader>
@@ -49,6 +51,7 @@ const DeleteConfirmation: FC<IDeleteConfirmation> = ({
       </DialogHeader>
       <div className="grid grid-cols-2 gap-4">
         <Button
+         id="closeDialog"
           onClick={closeDialog}
           className=" mt-6 disabled:bg-black-900/10 w-full bg-black text-white  glassBorder"
           variant="black"

@@ -1,0 +1,172 @@
+"use client";
+import { ColumnDef } from "@tanstack/react-table";
+import { DataTableColumnHeader } from "./data-table-column-header";
+import { IinviteData } from "@/app/types";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { useMutation, useQueryClient } from "react-query";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "@/components/ui/use-toast";
+import { useSession } from "next-auth/react";
+import { setdialogState } from "@/redux/reducers/dialogSlice";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
+import { MoreVerticalIcon } from "lucide-react";
+import { Dialog } from "@/components/ui/dialog";
+import { useState } from "react";
+import DeleteConfirmation from "./delete-confirmation";
+
+dayjs.extend(relativeTime);
+
+export const columns: ColumnDef<IinviteData>[] = [
+  {
+    accessorKey: "recipient_email",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Recipient Email" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex space-x-2">
+          <span className="max-w-[500px] truncate font-medium">
+            {row.original.recipient_email}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "invitation_status",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Status" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex space-x-2">
+          <span className="max-w-[500px] truncate font-medium">
+            {row.original.invitation_status}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "created_at",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Created At" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex space-x-2">
+          <span className="max-w-[500px] truncate font-medium">
+            {dayjs(row.original.created_at).fromNow()}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "expires_at",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Expires" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex space-x-2">
+          <span className="max-w-[500px] truncate font-medium">
+            {dayjs(row.original.expires).fromNow()}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "action",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Action" />
+    ),
+    cell: ({ row }) => {
+      const [diag, setdiag] = useState<boolean>();
+      const [_, setIsOpenDeleteDialog] = useState<boolean>(false);
+      //    const dispatch=useDispatch()
+
+      const deletebtn = (data: IinviteData) => {
+        setPassedData(data);
+        setdiag(true);
+      };
+
+      const { data: session } = useSession();
+
+      const token = session?.user!.tokens?.access_token;
+      const org_id = session?.user!.data?.organization_id;
+      const [passedData, setPassedData] = useState<IinviteData>();
+      const queryClient = useQueryClient();
+
+      const deleteInvite = async (id: number) => {
+        const response = await axios.delete(
+          `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/${id}/delete/`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              // @ts-ignore
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        return response.data.data;
+      };
+
+      const { mutate: deleteInviteMutation } = useMutation(
+        (id: number) => deleteInvite(id),
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries("invites");
+            setdiag(false);
+          },
+          onError: (error: any) => {
+            const responseData = error.response.data;
+            toast({
+              variant: "destructive",
+              title: responseData.data || responseData.detail,
+            });
+            setdiag(false);
+          },
+        }
+      );
+
+      return (
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <MoreVerticalIcon className="w-4 h-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="left-[-20px_!important]">
+              <DropdownMenuItem
+                onClick={() => deletebtn(row.original)}
+                className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Dialog
+            open={diag}
+            onOpenChange={diag ? setdiag : setIsOpenDeleteDialog}
+          >
+            <DeleteConfirmation
+              text={`Do you want to delete ${passedData?.recipient_email} invitation`} // ${passedData?.recipient_email}
+              noText="No"
+              confirmText="Yes, Delete!"
+              confirmFunc={() => deleteInviteMutation(passedData?.id ?? 0)}
+            />
+          </Dialog>
+        </>
+      );
+    },
+  },
+];

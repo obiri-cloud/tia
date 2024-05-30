@@ -52,7 +52,7 @@ const Images = () => {
   const getMembers = async (): Promise<GroupMember[] | undefined | string> => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -180,20 +180,6 @@ const Images = () => {
     }
 
   ]
-
-
-
-console.log({role})
-
-// const { mutate: searchMutation } = useMutation(fetchMembers, {
-//   onSuccess: (data) => {
-//     queryClient.setQueryData("members", data);
-//   },
-//   onError: (error: any) => {
-//     console.log(error);
-//   },
-// });
-
 
 
 const fetchMembers = async (query: string) => {

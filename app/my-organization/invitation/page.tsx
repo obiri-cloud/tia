@@ -3,45 +3,58 @@ import React, { useCallback, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import { toast } from "@/components/ui/use-toast";
 import { formatDistanceToNow, format } from "date-fns";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { IinviteData } from "@/app/types";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ChevronRight, MoreVerticalIcon } from "lucide-react";
+
 import { useForm } from "react-hook-form";
-import { MoreVerticalIcon } from "lucide-react";
 import InviteModal from "@/app/components/InviteModal";
 
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import BulkInviteModal from "@/app/components/BulkInviteModal";
 import { Input } from "@/components/ui/input";
+import { DataTable } from "@/app/components/DataTable";
+import { columns } from "@/app/components/columns";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { setTableData } from "@/redux/reducers/tableSlice";
+import { setdialogState } from "@/redux/reducers/dialogSlice";
+import { setnextState } from "@/redux/reducers/nextPaginationSlice";
+import { TableBody, TableHeader, TableRow,
+
+  TableHead,
+  TableCaption,
+  TableCell,
+  Table
+
+ } from "@/components/ui/table";
+import { DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem
+
+} from "@/components/ui/dropdown-menu";
+import {  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationEllipsis,
+  PaginationNext, 
+  PaginationLink} from "@/components/ui/pagination";
 
 
 const Images = () => {
   const [file, setfile] = useState<any>();
   const [emailInput, setEmailInput] = useState<string>();
-  const [searchQuery, setSearchQuery] = useState('');
-  const { data: session } = useSession();
-  const { reset } = useForm();
-  const [emptyQuery,setemptyQuery]=useState(false)
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [emptyQuery, setemptyQuery] = useState(false);
 
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
@@ -49,18 +62,35 @@ const Images = () => {
   const [isOpenViewDialogOpen3, setIsOpenViewDialog3] =
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<IinviteData>();
-  const [_, setIsOpenDeleteDialog] =
-    useState<boolean>(false);
+  const [_, setIsOpenDeleteDialog] = useState<boolean>(false);
   const [multiplEmails, setMultipleEmails] = useState<any>([]);
-  // @ts-ignore
+
+  const [pages, setPages] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(0);
+
+  const { data: session } = useSession();
+  const { reset } = useForm();
+
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
 
+  const { data:dataDiag } = useSelector((state: RootState) => state.dialogBtn);
+  const { data:nextbtn } = useSelector((state: RootState) => state.table);
+  // const { data } = useSelector((state: RootState) => state.dialogBtn);
+  const { data } = useSelector((state: RootState) => state.table);
+  const dispatch = useDispatch()
+
+
+
+  // console.log("tableData", tableData);
+  console.log("nxtbtn", nextbtn);
+  console.log("tabledata", nextbtn);
+  
 
   const getInvitations = async (): Promise<IinviteData[] | undefined> => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/?page=${pages}&page_size=5`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -70,21 +100,24 @@ const Images = () => {
           },
         }
       );
-   
+      console.log('--here-->',response.data.next);
+
+      if(response.data.next){
+        dispatch(setnextState(true))
+        }
+
+      dispatch(setTableData(response.data.data))
       return response.data.data;
     } catch (error) {
       console.log(error);
     }
   };
 
-  const {
-    isLoading: loadingInvitation,
-    data: invites,
-  } = useQuery(["invites"], () => getInvitations());
+  const { data: invites, isLoading: loadingInvitation } = useQuery(["invites"], () => getInvitations());
 
   const deletebtn = (data: IinviteData) => {
     setPassedData(data);
-    setIsOpenViewDialog(true);
+    dispatch(setdialogState(true))
   };
 
   const formatExpiration = (expires: string) => {
@@ -175,7 +208,7 @@ const Images = () => {
         const responseData = error.response.data;
         toast({
           variant: "destructive",
-          title: responseData.data || responseData.detail ,
+          title: responseData.data || responseData.detail,
         });
         setIsOpenViewDialog(false);
       },
@@ -194,12 +227,10 @@ const Images = () => {
         Authorization: `Bearer ${token}`,
       },
     };
-
     const response = await axios(axiosConfig);
     return response.data;
   };
 
-  
   const BulkInvite = async (file: any) => {
     let formData = new FormData();
     formData.append("file", file);
@@ -207,7 +238,7 @@ const Images = () => {
     const axiosConfig = {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/create/bulk/`,
-      data:formData,
+      data: formData,
       headers: {
         "Content-Type": "multipart/form-data",
         Accept: "application/json",
@@ -239,7 +270,7 @@ const Images = () => {
         const responseData = error.response.data;
         toast({
           variant: "destructive",
-          title: responseData.data || responseData.detail ,
+          title: responseData.data || responseData.detail,
         });
         (
           document.getElementById("submit-button") as HTMLButtonElement
@@ -258,10 +289,10 @@ const Images = () => {
       onSuccess: (data) => {
         queryClient.invalidateQueries("invites");
         setfile(null);
-        console.log({i_think_is_an_error:data});
-        
+        console.log({ i_think_is_an_error: data });
+
         toast({
-          variant:data.status===200?"success":"destructive",
+          variant: data.status === 200 ? "success" : "destructive",
           title: `${data.data}`,
         });
         setIsOpenViewDialog3(false);
@@ -271,8 +302,7 @@ const Images = () => {
       },
       onError: (error: any) => {
         const responseData = error.response.data;
-        console.log({responseData});
-        
+        console.log({ responseData });
 
         toast({
           variant: "destructive",
@@ -282,13 +312,14 @@ const Images = () => {
           document.getElementById("submit-btn") as HTMLButtonElement
         ).textContent = "Send Invitation Link";
 
-        (
-          document.getElementById("submit-btn") as HTMLButtonElement
-        ).disabled = false;
+        (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
+          false;
       },
     }
   );
- console.log('invitation')
+
+  console.log(totalPages);
+
   const BulkEmails = () => {
     (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
       true;
@@ -297,26 +328,27 @@ const Images = () => {
     (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
       "Sending Invitation Link...";
 
-      addBulkInviteMutation(file);
+    addBulkInviteMutation(file);
   };
 
-
   const sendEmails = () => {
-    (document.getElementById("submit-btn") as HTMLButtonElement).disabled =true;
-    (document.getElementById("submit-btn") as HTMLButtonElement).textContent ="Sending Invitation Link...";
-    (document.getElementById("submit-btn") as HTMLButtonElement).textContent ="Sending Invitation Link...";
+    (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
+      true;
+    (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
+      "Sending Invitation Link...";
+    (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
+      "Sending Invitation Link...";
 
     const emailData = {
-      emails: Array.from(new Set(multiplEmails.map((item: any) => item.email.trim()))),
+      emails: Array.from(
+        new Set(multiplEmails.map((item: any) => item.email.trim()))
+      ),
     };
-
 
     addInviteMutation(emailData);
   };
 
-
   const addGroup = () => {
-
     if (emailInput) {
       setMultipleEmails((prevEmails: any) => [
         ...prevEmails,
@@ -336,7 +368,6 @@ const Images = () => {
     );
   };
 
-
   const fetchsearchInvites = async (query: string) => {
     try {
       const response = await axios.get(
@@ -349,16 +380,20 @@ const Images = () => {
           },
         }
       );
-  
+
       if (response.status === 200) {
-        if(response.data.data==="No Invitation(s) found for the specified search criteria")setemptyQuery(true)
+        if (
+          response.data.data ===
+          "No Invitation(s) found for the specified search criteria"
+        )
+          setemptyQuery(true);
         return response.data.data;
       } else {
         throw new Error(response.data);
       }
     } catch (error) {
-      console.log({error});
-      
+      console.log({ error });
+
       if (axios.isAxiosError(error) && error.response) {
         return {
           status: error.response.status,
@@ -374,9 +409,12 @@ const Images = () => {
     onSuccess: (data) => {
       if (Array.isArray(data)) {
         queryClient.setQueryData("invites", data);
-        setemptyQuery(false)
+        setemptyQuery(false);
       } else {
-        queryClient.setQueryData("invites", { status: data.status, message: data.message });
+        queryClient.setQueryData("invites", {
+          status: data.status,
+          message: data.message,
+        });
       }
     },
     onError: (error: any) => {
@@ -384,9 +422,9 @@ const Images = () => {
     },
   });
 
-  const debounce = (func:any, delay:any) => {
-    let timeoutId:any;
-    return (...args:any) => {
+  const debounce = (func: any, delay: any) => {
+    let timeoutId: any;
+    return (...args: any) => {
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         func.apply(null, args);
@@ -394,15 +432,49 @@ const Images = () => {
     };
   };
 
-
-  const debouncedfetchsearchInvites = useCallback(debounce((query:string) => searchMutation(query), 400), [searchMutation]);
-
+  const debouncedfetchsearchInvites = useCallback(
+    debounce((query: string) => searchMutation(query), 400),
+    [searchMutation]
+  );
 
   const handleSearchQueryChange = (query: string) => {
     setSearchQuery(query);
     debouncedfetchsearchInvites(query);
   };
-  
+
+  const handlePreviousPage = () => {
+    if (pages > 1) {
+      setPages((prev) => prev - 1);
+      getInvitations();
+    }
+  };
+
+  const handleNextPage = () => {
+    setPages((prev) => prev + 1);
+    getInvitations();
+  };
+
+  console.log(pages);
+
+  const { mutate: updatePage } = useMutation(getInvitations, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("invites");
+      toast({
+        variant: "success",
+        title: "Member Role Updated Successfully",
+      });
+    },
+    onError: (error: AxiosError) => {
+      console.log({ error });
+
+      toast({
+        variant: "destructive",
+        //@ts-ignore
+        title: error?.response.data.detail,
+      });
+    },
+  });
+
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
@@ -422,9 +494,8 @@ const Images = () => {
             <div>
               <CardTitle>Invitation List</CardTitle>
             </div>
-            <div    className="flex space-x-4">
-            <Button
-             
+            <div className="flex space-x-4">
+              <Button
                 onClick={() => {
                   setIsOpenViewDialog3(true);
                 }}
@@ -443,14 +514,14 @@ const Images = () => {
             </div>
           </CardHeader>
           <div className="flex items-center gap-4 m-5">
-              <Input   
-                        placeholder="Search for users"
-                        value={searchQuery}
-                        onChange={(e) => handleSearchQueryChange(e.target.value)}
-              />
-            </div>
+            <Input
+              placeholder="Search for users"
+              value={searchQuery}
+              onChange={(e) => handleSearchQueryChange(e.target.value)}
+            />
+          </div>
           <Dialog>
-            <CardContent className="pl-2">
+            {/* <CardContent className="pl-2">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -470,46 +541,96 @@ const Images = () => {
                   <TableCaption>
                     Loading invitations in your organization...
                   </TableCaption>
-                ) :null}
-              {emptyQuery &&(
-                <TableCaption>No Invitation(s) found for the specified search criteria</TableCaption>
-              )}
+                ) : null}
+                {emptyQuery && (
+                  <TableCaption>
+                    No Invitation(s) found for the specified search criteria
+                  </TableCaption>
+                )}
 
-             <TableBody>
-                  {!loadingInvitation && Array.isArray(invites) && invites.length > 0
-                      ? invites.map((invite: any, i: any) => (
-                          <TableRow key={i}>
-                            <TableCell className="font-medium">
-                              {invite?.recipient_email}
-                            </TableCell>
-                            <TableCell>{invite?.invitation_status}</TableCell>
-                            <TableCell>
-                              {formatDate(invite?.created_at)}
-                            </TableCell>
-                            <TableCell>
-                              {invite.expires
-                                ? formatExpiration(invite?.expires)
-                                : "Expires soon"}
-                            </TableCell>
-                            <TableCell className="underline font-medium text-right">
-                              <DropdownMenu>
-                                <DropdownMenuTrigger>
-                                  <MoreVerticalIcon className="w-4 h-4" />
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="left-[-20px_!important]">
-                                  <DropdownMenuItem
-                                    onClick={() => deletebtn(invite)}
-                                    className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
-                                  >
-                                    Delete
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      : null}
+                <TableBody>
+                  {!loadingInvitation &&
+                  Array.isArray(invites) &&
+                  invites.length > 0
+                    ? invites.map((invite: any, i: any) => (
+                        <TableRow key={i}>
+                          <TableCell className="font-medium">
+                            {invite?.recipient_email}
+                          </TableCell>
+                          <TableCell>{invite?.invitation_status}</TableCell>
+                          <TableCell>
+                            {formatDate(invite?.created_at)}
+                          </TableCell>
+                          <TableCell>
+                            {invite.expires
+                              ? formatExpiration(invite?.expires)
+                              : "Expires soon"}
+                          </TableCell>
+                          <TableCell className="underline font-medium text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger>
+                                <MoreVerticalIcon className="w-4 h-4" />
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent className="left-[-20px_!important]">
+                                <DropdownMenuItem
+                                  onClick={() => deletebtn(invite)}
+                                  className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
+                                >
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : null}
                 </TableBody>
+              </Table>
+              <PaginationContent>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious href="#" onClick={handlePreviousPage} />
+                  </PaginationItem>
+
+                  <PaginationItem>
+                    <PaginationLink href="#">{pages}</PaginationLink>
+                  </PaginationItem>
+
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+
+                  <PaginationItem>
+                    <PaginationNext href="#" onClick={handleNextPage} />
+                  </PaginationItem>
+                </PaginationContent>
+              </PaginationContent>
+            </CardContent> */}
+            {invites && (
+              <DataTable
+                data={
+                     invites as IinviteData[]
+                }
+                columns={columns}
+              />
+            )}
+
+           <CardContent className="pl-2">
+              <Table>
+                {!loadingInvitation &&
+                ((invites && invites.length === 0) || !invites) ? (
+                  <TableCaption>No pending invites found...</TableCaption>
+                ) : null}
+                {loadingInvitation ? (
+                  <TableCaption>
+                    Loading invitations in your organization...
+                  </TableCaption>
+                ) : null}
+                {emptyQuery && (
+                  <TableCaption>
+                    No Invitation(s) found for the specified search criteria
+                  </TableCaption>
+                )}
               </Table>
             </CardContent>
           </Dialog>
@@ -517,13 +638,13 @@ const Images = () => {
       </div>
 
       <Dialog
-        open={isOpenViewDialogOpen}
+        open={dataDiag}
         onOpenChange={
-          isOpenViewDialogOpen ? setIsOpenViewDialog : setIsOpenDeleteDialog
+          dataDiag ? setdialogState : setIsOpenDeleteDialog
         }
       >
         <DeleteConfirmation
-          text={`Do you want to delete ${passedData?.recipient_email} invitation`}
+          text={`Do you want to delete ${passedData?.recipient_email} invitation`}// ${passedData?.recipient_email}
           noText="No"
           confirmText="Yes, Delete!"
           confirmFunc={() => deleteInviteMutation(passedData?.id ?? 0)}
@@ -553,7 +674,6 @@ const Images = () => {
         }
       >
         <BulkInviteModal setfile={setfile} onSend={BulkEmails} />
-
       </Dialog>
     </div>
   );
