@@ -61,6 +61,8 @@ export function DataTable<IinviteData, TValue>({data,columns,}: DataTableProps<I
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
+console.log('table',table);
+console.log('data',data)
 
 
   return (

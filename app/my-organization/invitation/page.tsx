@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -73,22 +73,18 @@ const Images = () => {
 
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
-
+  const [loadingInvitation,setloadingInvitation]=useState<boolean>(false) 
   const { data:dataDiag } = useSelector((state: RootState) => state.dialogBtn);
-  const { data:nextbtn } = useSelector((state: RootState) => state.table);
+  const { data:tableData } = useSelector((state: RootState) => state.table);
   // const { data } = useSelector((state: RootState) => state.dialogBtn);
   const { data } = useSelector((state: RootState) => state.table);
   const dispatch = useDispatch()
 
-
-
-  // console.log("tableData", tableData);
-  console.log("nxtbtn", nextbtn);
-  console.log("tabledata", nextbtn);
   
 
   const getInvitations = async (): Promise<IinviteData[] | undefined> => {
     try {
+      setloadingInvitation(true)
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/?page=${pages}&page_size=5`,
         {
@@ -107,18 +103,23 @@ const Images = () => {
         }
 
       dispatch(setTableData(response.data.data))
+      setloadingInvitation(false)
       return response.data.data;
     } catch (error) {
       console.log(error);
     }
   };
 
-  const { data: invites, isLoading: loadingInvitation } = useQuery(["invites"], () => getInvitations());
+  // const { data: invites, isLoading: loadingInvitation } = useQuery(["invites"], () => getInvitations());
 
   const deletebtn = (data: IinviteData) => {
     setPassedData(data);
     dispatch(setdialogState(true))
   };
+
+  useEffect(()=>{
+   getInvitations()
+  },[])
 
   const formatExpiration = (expires: string) => {
     const expirationDate = new Date(expires);
@@ -606,10 +607,10 @@ const Images = () => {
                 </PaginationContent>
               </PaginationContent>
             </CardContent> */}
-            {invites && (
+            {tableData && (
               <DataTable
                 data={
-                     invites as IinviteData[]
+                     tableData as IinviteData[]
                 }
                 columns={columns}
               />
@@ -618,7 +619,7 @@ const Images = () => {
            <CardContent className="pl-2">
               <Table>
                 {!loadingInvitation &&
-                ((invites && invites.length === 0) || !invites) ? (
+                ((tableData && tableData.length === 0) || !tableData) ? (
                   <TableCaption>No pending invites found...</TableCaption>
                 ) : null}
                 {loadingInvitation ? (

@@ -45,7 +45,7 @@ export function DataTablePagination<IinviteData>({
   ): Promise<IinviteData[] | undefined> => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/?page=${page}&page_size=${2}`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/?page=${page}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -57,31 +57,32 @@ export function DataTablePagination<IinviteData>({
 
       console.log("response.data.data", response.data.data);
       let data = response.data.data
-      dispatch(setTableData([...tableData, data]))
+
+      dispatch(setTableData([...tableData, ...data]))
       return response.data.data;
     } catch (error) {
       console.log(error);
     }
   }; 
   
-  const { mutate: nextMutation } = useMutation(
-    (page: any) => getInvitations(page),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("invites");
-      },
-      onError: (error: any) => {
-        const responseData = error.response.data;
-      },
-    }
-  );
+  // const { mutate: nextMutation } = useMutation(
+  //   (page: any) => getInvitations(page),
+  //   {
+  //     onSuccess: () => {
+  //       queryClient.invalidateQueries("invites");
+  //     },
+  //     onError: (error: any) => {
+  //       const responseData = error.response.data;
+  //     },
+  //   }
+  // );
 
 
 
   const handleNext = async () => {
     table.nextPage();
     let nextPage = table.getState().pagination.pageIndex + 1;
-    nextMutation(nextPage)
+    getInvitations(nextPage)
   };
 
   return (
@@ -94,8 +95,8 @@ export function DataTablePagination<IinviteData>({
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Rows per page</p>
           <Select
-            // value={"3"}
-            value={`${table.getState().pagination.pageSize}`}
+            value={"3"}
+            // value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
               table.setPageSize(Number(value));
             }}
