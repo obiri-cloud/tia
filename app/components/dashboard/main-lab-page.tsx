@@ -299,6 +299,7 @@ const MainLabPage = ({
             ) : null}
             <div className="h-full playground">
               <iframe
+                allow="clipboard-write; clipboard-read"
                 src={(labInfo && labInfo.url) || ""}
                 width="100%"
                 height="100%"
@@ -639,8 +640,8 @@ const ReviewDrawer = ({ redirectUrl }: { redirectUrl: string }) => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={open}
-                  className=" mt-1 justify-between dark:bg-comboBg bg-white theme-selector w-full
-                  glassBorder  bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder  fbdyXp  focus-visible:ring-ring focus-visible:ring-offset-0 p-[12px_16px] resize-none
+                  className=" mt-1 justify-between bg-white theme-selector w-full
+                  glassBorde dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder  fbdyXp  focus-visible:ring-ring focus-visible:ring-offset-0 p-[12px_16px] resize-none
                   
                   "
                 >

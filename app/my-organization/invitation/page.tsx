@@ -104,6 +104,7 @@ const Images = () => {
 
       dispatch(setTableData(response.data.data))
       setloadingInvitation(false)
+
       return response.data.data;
     } catch (error) {
       console.log(error);
@@ -111,6 +112,10 @@ const Images = () => {
   };
 
   // const { data: invites, isLoading: loadingInvitation } = useQuery(["invites"], () => getInvitations());
+  // const { isLoading: loadingInvitation, data: invites } = useQuery(
+  //   ["invites"],
+  //   () => getInvitations()
+  // );
 
   const deletebtn = (data: IinviteData) => {
     setPassedData(data);
@@ -480,7 +485,16 @@ const Images = () => {
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
-          <span className="p-2 ">Organzation</span>
+          <Link
+            href={
+              session?.user.data.role
+                ? `/dashboard/organizations`
+                : "my-organization"
+            }
+            className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+          >
+            Organizations
+          </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
         {session?.user && session?.user.data.is_admin ? (

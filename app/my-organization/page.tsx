@@ -27,14 +27,16 @@ import { useRouter } from "next/navigation";
 import { ILabImage } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const myOrganizationPage = () => {
+
+ 
   const { data: session } = useSession();
   const router = useRouter();
 
-  const [image, setImage] = useState<ILabImage>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] = useState<boolean>(false);
@@ -76,8 +78,6 @@ const myOrganizationPage = () => {
     }
   };
 
-
-
   const createOrg = async (formData: FormData) => {
     const axiosConfig = {
       method: "POST",
@@ -95,12 +95,10 @@ const myOrganizationPage = () => {
 
   const {
     mutate: createOrganizationMutation,
-    isLoading: updating,
-    error: UpdateError,
   } = useMutation((formData: FormData) => createOrg(formData), {
     onSuccess: () => {
       queryClient.invalidateQueries("orgName");
-      router.push('/my-organization')
+      router.push("/my-organization");
       setIsOpenViewDialog2(false);
       (document.getElementById("Org-name") as HTMLInputElement).value = "";
       toast({
@@ -108,7 +106,7 @@ const myOrganizationPage = () => {
         title: "Orgnaization created successfully",
         description: "",
       });
-     
+
       (
         document.getElementById("submit-button") as HTMLButtonElement
       ).textContent = "Creating Organization";
@@ -125,12 +123,25 @@ const myOrganizationPage = () => {
     },
   });
 
+  const createOrganization = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    (document.getElementById("submit-button") as HTMLButtonElement).disabled =
+      true;
+    (
+      document.getElementById("submit-button") as HTMLButtonElement
+    ).textContent = "Creating Orgnaization";
+    (
+      document.getElementById("submit-button") as HTMLButtonElement
+    ).textContent = "Creating Organization...";
+    const name = (document.getElementById("Org-name") as HTMLInputElement)
+      ?.value;
 
+    const formData = new FormData();
+    formData.append("name", name || "");
+    createOrganizationMutation(formData);
+  };
 
-  const {
-    data: orgImageList,
-  } = useQuery(["orgImages"], () => getOrgImages());
-
+  const { data: orgImageList } = useQuery(["orgImages"], () => getOrgImages());
 
 
   const fetchlabs = async (query: string) => {
@@ -244,16 +255,23 @@ const debouncedRoleMembers = useCallback(debounce((query:string) => searcRoleMut
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
-          <span className="p-2 ">Organzation</span>
+          <Link
+            href={
+              session?.user.data.role
+                ? `/dashboard/organizations`
+                : "my-organization"
+            }
+            className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+          >
+            Organizations
+          </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/dashboard" className="font-medium text-mint">
-              Go to dashboard
-            </Link>
-          ) : null
-        }
+        {session?.user && session?.user.data.is_admin ? (
+          <Link href="/dashboard" className="font-medium text-mint">
+            Go to dashboard
+          </Link>
+        ) : null}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 m-4 ">

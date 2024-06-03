@@ -22,8 +22,6 @@ const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
-        console.log("credentials", credentials);
-
         try {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_BE_URL}/auth/login/`,

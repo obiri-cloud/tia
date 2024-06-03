@@ -66,7 +66,7 @@ const OrganizationGroup = () => {
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
-  
+
   const getGroups = async (): Promise<OrgGroup[] | undefined> => {
     try {
       const response = await axios.get(
@@ -262,9 +262,6 @@ const OrganizationGroup = () => {
       updateMemberMutation({ members: members.removed, action: "delete" });
   };
 
-
-
-
   const { mutate: updateMemberMutation } = useMutation(
     (data: { members: Set<string>; action: string }) =>
       updateMemberFn(data.members, data.action),
@@ -370,11 +367,11 @@ const OrganizationGroup = () => {
       updateImagesFn(data.images, data.action),
     {
       onSuccess: (data) => {
-        console.log({data});
+        console.log('data',data);
         queryClient.invalidateQueries("members");
         toast({
-          variant: "success",
-          title: "Image updated successfully",
+          variant: data.data?.message?"success":"destructive",
+          title: data.data?.message || data.response.data.detail && data.response.data.detail,
           description: "",
           duration: 2000,
         });
@@ -415,10 +412,13 @@ const OrganizationGroup = () => {
         Authorization: `Bearer ${token}`,
       },
     };
-
+     
     try {
-      await axios(axiosConfig);
-    } catch (error: any) {}
+    let response=  await axios(axiosConfig);
+    return response
+    } catch (error: any) {
+      return error
+    }
   };
 
 
@@ -486,7 +486,16 @@ const OrganizationGroup = () => {
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
-          <span className="p-2 ">Organzation</span>
+          <Link
+            href={
+              session?.user.data.role
+                ? `/dashboard/organizations`
+                : "my-organization"
+            }
+            className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+          >
+            Organizations
+          </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
 

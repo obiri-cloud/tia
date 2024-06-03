@@ -1,5 +1,4 @@
 "use client";
-import { userCheck } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import {
   Card,
@@ -10,45 +9,26 @@ import {
 } from "@/components/ui/card";
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { TabsContent } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import AddImgGroupModal from "@/app/components/AddImgGroupModal";
-import { useCallback, useEffect } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import CreateGroupModal from "@/app/components/CreateGroupModal";
-// import NewImageForm from "./new-image-form";
 import NewImageForm from "@/app/components/admin/new-image-form";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
-// import { getImageListX } from "./overview";
 
-import { getImageListX } from "@/app/components/admin/overview";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useSession } from "next-auth/react";
-import {
-  setCurrentImage,
-  setImageCount,
-  setImageList,
-} from "@/redux/reducers/adminSlice";
-// import DeleteConfirmation from "../delete-confirmation";
+
 import DeleteConfirmation from "@/app/components/delete-confirmation";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ILabImage, IinviteData, IOrgGroupData } from "@/app/types";
+import { useSearchParams } from "next/navigation";
+import { ILabImage,  IOrgGroupData } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import {
@@ -58,38 +38,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
-import AddMembersModal from "@/app/components/AddMembersModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import AltRouteCheck from "@/app/components/alt-route-check";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const OrganizationGroupImagePage = () => {
   const { data: session } = useSession();
-  const [image, setImage] = useState<any>();
   
-  // const [imageList, setImagelist] = useState<any>();
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
-  const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
-    useState<boolean>(false);
-  const [isOpenViewDialogOpen1, setIsOpenViewDialog1] =
-    useState<boolean>(false);
-  const [isOpenViewDialogOpen3, setIsOpenViewDialog3] =
-    useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);
-  const [members, setallMembers] = useState<any>([]);
   const [passedData, setPassedData] = useState<any>();
-  const [gid, setgid] = useState<number>();
-  // @ts-ignore
+
+
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
   const params = useParams();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
-  const router = useRouter();
   const id = params.id;
-  const gids = params.gid;
   const name = searchParams.get("name");
   const group = searchParams.get("group_name");
 
@@ -105,7 +71,6 @@ const OrganizationGroupImagePage = () => {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            // @ts-ignore
             Authorization: `Bearer ${token}`,
           },
         })
@@ -123,7 +88,6 @@ const OrganizationGroupImagePage = () => {
     setIsOpenViewDialog(true);
   };
 
-  //delete images in the group
   const deleteGroupImage = async (data:number) => {
     try {
       const response = await axios.post(
@@ -139,7 +103,6 @@ const OrganizationGroupImagePage = () => {
           },
         }
       );
-       console.log({response})
       return response;
     } catch (error) {
       toast({
@@ -150,7 +113,7 @@ const OrganizationGroupImagePage = () => {
     }
   };
 
-  const { data: imageList, isLoading: loadingMembers } = useQuery(
+  const { data: imageList } = useQuery(
     ["ImagesInGroup"],
     () => getImagesInGroup()
   );
@@ -188,8 +151,12 @@ const OrganizationGroupImagePage = () => {
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
-          <Link
-            href={`/dashboard/organizations`}
+        <Link
+            href={
+              session?.user.data.role
+                ? `/dashboard/organizations`
+                : "my-organization"
+            }
             className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
           >
             Organizations
@@ -258,29 +225,13 @@ const OrganizationGroupImagePage = () => {
                               <MoreVerticalIcon className="w-4 h-4" />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="left-[-20px_!important]">
-                              {/* <DropdownMenuItem
-                                onClick={()=>{setgid(image.id),setIsOpenViewDialog3(true)}}
-                                className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
-                                >
-                                add members
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                className="font-medium cursor-pointer hover:text-white-500 text-white-500 py-2"
-                                >
-                                View
-                                </DropdownMenuItem> */}
+                     
                               <DropdownMenuItem
                                 onClick={() => deletebtn(image)}
                                 className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
                               >
                                 Delete
                               </DropdownMenuItem>
-                              {/* <DropdownMenuItem
-                                onClick={()=>{setgid(image.id),setIsOpenViewDialog1(true)}}
-                                className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
-                                >
-                                add image
-                                </DropdownMenuItem> */}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>

@@ -113,11 +113,7 @@ const OrganizationGroupMembersPage = () => {
     }
   };
 
-  const {
-    isLoading: loadingGroups,
-    error: errorGroups,
-    data: groups,
-  } = useQuery(["groups"], () => getGroups());
+  const { data: groups } = useQuery(["groups"], () => getGroups());
 
   const getMembers = async (): Promise<GroupMember[] | undefined> => {
     try {
@@ -139,17 +135,16 @@ const OrganizationGroupMembersPage = () => {
     }
   };
 
-  const { data: members, isLoading: loadingMembers } = useQuery(
-    ["members"],
-    () => getMembers()
-  );
-
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
           <Link
-            href={`/dashboard/organizations`}
+            href={
+              session?.user.data.role
+                ? `/dashboard/organizations`
+                : "my-organization"
+            }
             className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
           >
             Organizations

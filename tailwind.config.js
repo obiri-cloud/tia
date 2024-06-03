@@ -82,7 +82,19 @@ module.exports = {
         formTextLight: "rgb(180, 188, 208)",
         danger: "rgb(235, 87, 87)",
         mint: "#4fb05c",
-        info: "#899090"
+        info: "#899090",
+        cardHoverBg: "#F5F6F8",
+        heroBg: "#F6F7F9",
+        appBlack: "#121212",
+        appSecondaryBg: "#001D3D",
+        appBlue: "#1D68CE",
+        appSecondaryText: "#414141",
+        appGreen: "#2FBF71",
+        appGray: "#F6F7F9",
+        appGold: "#FCBF49",
+        appBlue: "#1D68CE",
+        appBorder: "#D0D0D0",
+        appTertiary: "#00142B",
       },
 
       backgroundImage: {

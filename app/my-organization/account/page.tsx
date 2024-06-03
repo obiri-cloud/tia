@@ -206,13 +206,14 @@ const AccountPage = () => {
 
 
         }
-       console.log({response})
+
         toast({
           title: "Organization Account deleted successfully",
           variant: "success",
         });
         router.push("/dashboard");
       } else {
+        console.log({response})
         toast({
           title: "Something went deactivating your organizaton",
           variant: "destructive",
@@ -224,7 +225,8 @@ const AccountPage = () => {
       console.error("error", error);
 
       toast({
-        title: "Something went deactivating your account.",
+        //@ts-ignore
+        title: error.response.data.detail ||  "Something went deactivating your account"  ,
         variant: "destructive",
       });
     } finally {
