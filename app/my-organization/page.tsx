@@ -297,7 +297,7 @@ const debouncedRoleMembers = useCallback(debounce((query:string) => searcRoleMut
               />
               <Select onValueChange={(newRole) => fetchrole(newRole)}>
                                 <SelectTrigger className="w-[180px] bg-inherit">
-                                  <SelectValue placeholder='Filter by role'/>
+                                  <SelectValue placeholder='Filter by level'/>
                                 </SelectTrigger>
 
                                 <SelectContent className="overflow-visible" >

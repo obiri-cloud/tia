@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 
 const AltRouteCheck = () => {
-  const { data: session,update } = useSession();
+  const { data: session, update } = useSession();
   const [isOpen, setIsOpen] = useState(false); 
   const router = useRouter()
 
@@ -20,6 +20,9 @@ const AltRouteCheck = () => {
   let subscription_plan = session?.user.data.subscription_plan;
   let is_super = session?.user.data.is_superuser;
   let is_admin = session?.user.data.is_admin;
+  let role = session?.user.data.role;
+  let  org_id= session?.user.data.organization_id;
+
 
 
   const createOrg = async (formData: FormData) => {
@@ -100,6 +103,12 @@ const AltRouteCheck = () => {
     setIsOpen(true);
   };
 
+
+  const manageOrganization=async()=>{
+    await update({ role: role, organization_id: org_id });
+     router.push('/my-organization/overview');
+  }
+
   function renderAltRoute() {
     
     if (subscription_plan === "basic") {
@@ -120,9 +129,9 @@ const AltRouteCheck = () => {
     } else if (is_super || subscription_plan === "premium" || subscription_plan === "standard") {
       return (
         <div className="flex gap-4">
-          <Link href="/my-organization/overview" className="font-medium text-mint">
+          <p className="font-medium text-mint hover:cursor-pointer" onClick={manageOrganization} >
             Manage organization
-          </Link>
+          </p>
           <Link href="/admin" className="font-medium text-mint">
             Go to Admin
           </Link>
