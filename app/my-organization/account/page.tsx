@@ -127,7 +127,9 @@ const AccountPage = () => {
           },
         }
       );
+
       if (response.status === 200) {
+        console.log(response)
         toast({
           variant: "success",
           title: "Profile Updated Successfully",
@@ -141,9 +143,18 @@ const AccountPage = () => {
           title: "Profile Update Error",
         });
       }
+
+
     } catch (error) {
       userCheck(error as AxiosError);
-
+      //@ts-ignore
+      console.log('hjhj---->',error.response.data.detail)
+      toast({
+        variant: "destructive",
+        //@ts-ignore
+        title: error.response.data.detail,
+        // description: err.message,
+      })
       if (error instanceof z.ZodError) {
         error.issues.map((err) =>
           toast({

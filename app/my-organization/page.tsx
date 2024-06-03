@@ -284,7 +284,7 @@ const debouncedRoleMembers = useCallback(debounce((query:string) => searcRoleMut
 
                                 <SelectContent className="overflow-visible" >
                                   <SelectGroup >
-                                    <SelectLabel>filter Role</SelectLabel>
+                                    <SelectLabel>filter by level</SelectLabel>
                                     <SelectItem value="all">All</SelectItem>
                                     {
 
