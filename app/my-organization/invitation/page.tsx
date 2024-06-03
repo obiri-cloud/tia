@@ -86,7 +86,7 @@ const Images = () => {
     try {
       setloadingInvitation(true)
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/?page=${pages}&page_size=5`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -111,11 +111,6 @@ const Images = () => {
     }
   };
 
-  // const { data: invites, isLoading: loadingInvitation } = useQuery(["invites"], () => getInvitations());
-  // const { isLoading: loadingInvitation, data: invites } = useQuery(
-  //   ["invites"],
-  //   () => getInvitations()
-  // );
 
   const deletebtn = (data: IinviteData) => {
     setPassedData(data);
@@ -621,6 +616,7 @@ const Images = () => {
                 </PaginationContent>
               </PaginationContent>
             </CardContent> */}
+            
             {tableData && (
               <DataTable
                 data={

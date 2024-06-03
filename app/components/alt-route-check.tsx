@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Dialog } from "@radix-ui/react-dialog";
 import CreateOrgModal from "./CreateOrgModal";
 import useOrgCheck from "@/hooks/createOrgCheck";
-import { useMutation, useQueryClient } from "react-query";
+
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 
@@ -21,10 +22,10 @@ const AltRouteCheck = () => {
   let is_super = session?.user.data.is_superuser;
   let is_admin = session?.user.data.is_admin;
   let role = session?.user.data.role;
-  let  org_id= session?.user.data.organization_id;
+  let org_id= session?.user.data.organization_id;
 
 
-
+  console.log({orgCheck:orgCheck.id})
   const createOrg = async (formData: FormData) => {
     const axiosConfig = {
       method: "POST",
@@ -55,7 +56,6 @@ const AltRouteCheck = () => {
       }
 
       router.push('/my-organization');
-
       
       (document.getElementById("Org-name") as HTMLInputElement).value = "";
       toast({
@@ -104,11 +104,47 @@ const AltRouteCheck = () => {
   };
 
 
-  const manageOrganization=async()=>{
-    await update({ role: role, organization_id: org_id });
+  const getOrg = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${orgCheck.id}/retrieve/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data.data;
+    } catch (error) {
+      
+    }
+  };
+
+
+  const { mutate: updateOrgNameMutation } = useMutation(getOrg, {
+    onSuccess: () => {
+      console.log('did it !')
+      queryClient.invalidateQueries("orgName");
+    },
+    onError: () => {
+    },
+  });
+
+
+  const manageOrganization=async(e:any)=>{
+    e.preventDefault()
+    updateOrgNameMutation()
+    await update({ role: role, organization_id: orgCheck.id });
+
      router.push('/my-organization/overview');
+
   }
 
+
+
+  
   function renderAltRoute() {
     
     if (subscription_plan === "basic") {
@@ -129,7 +165,7 @@ const AltRouteCheck = () => {
     } else if (is_super || subscription_plan === "premium" || subscription_plan === "standard") {
       return (
         <div className="flex gap-4">
-          <p className="font-medium text-mint hover:cursor-pointer" onClick={manageOrganization} >
+          <p className="font-medium text-mint hover:cursor-pointer" onClick={(e)=>manageOrganization(e)} >
             Manage organization
           </p>
           <Link href="/admin" className="font-medium text-mint">

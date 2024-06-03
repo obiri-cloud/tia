@@ -2,18 +2,23 @@
 import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/components/ui/card"
 import { ChevronRight} from "lucide-react"
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 import { useQuery } from "react-query";
+import { useEffect } from "react";
 
  const  OverView=()=> {
     const { data: session } = useSession();
     const token = session?.user!.tokens?.access_token;
     const org_id = session?.user!.data?.organization_id;
+    const [overviewData,setoverViewData]=useState([])
+    const [isLoading,setisloading]=useState(false)
 
 
 const getOverview = async () => {
+  setisloading(true)
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/statistics/`,
@@ -26,16 +31,21 @@ const getOverview = async () => {
         }
       );
       console.log({statistics:response.data})
-      return response.data;
+      setisloading(false)
+      setoverViewData(response.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const {
-    isLoading,
-    data: overviewData,
-  } = useQuery(["orgOverview"], () => getOverview());
+  // const {
+  //   isLoading,
+  //   data: overviewData,
+  // } = useQuery(["orgOverview"], () => getOverview());
+
+  useEffect(()=>{
+    getOverview()
+  },[])
 
   return (
     <div className="">
