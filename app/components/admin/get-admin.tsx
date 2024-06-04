@@ -44,7 +44,7 @@ const GetAdmin = () => {
     try {
       getImageListX(token).then((response) => {
         dispatch(setImageCount(response.data.count));
-        dispatch(setImageList(response.data.results));
+        dispatch(setImageList(response.data.data));
       });
     } catch (error) {}
   };
