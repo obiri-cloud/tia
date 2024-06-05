@@ -94,7 +94,7 @@ export async function getOrgList(token: string | undefined) {
 
 export async function getImageListX(token: string | undefined) {
   return await axios.get(
-    `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/list/`,
+    `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/list?page_size=1000`,
     {
       headers: {
         "Content-Type": "application/json",
