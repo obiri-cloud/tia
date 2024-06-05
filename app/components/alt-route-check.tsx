@@ -12,8 +12,8 @@ import { toast } from "@/components/ui/use-toast";
 
 const AltRouteCheck = () => {
   const { data: session, update } = useSession();
-  const [isOpen, setIsOpen] = useState(false); 
-  const router = useRouter()
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const token = session?.user?.tokens?.access_token;
   const queryClient = useQueryClient();
@@ -22,10 +22,9 @@ const AltRouteCheck = () => {
   let is_super = session?.user.data.is_superuser;
   let is_admin = session?.user.data.is_admin;
   let role = session?.user.data.role;
-  let org_id= session?.user.data.organization_id;
+  let org_id = session?.user.data.organization_id;
 
-
-  console.log({orgCheck:orgCheck.id})
+  console.log({ orgCheck: orgCheck.id });
   const createOrg = async (formData: FormData) => {
     const axiosConfig = {
       method: "POST",
@@ -38,7 +37,7 @@ const AltRouteCheck = () => {
     };
 
     const response = await axios(axiosConfig);
-    console.log({data_from_creation1:response.data.data.id});
+    console.log({ data_from_creation1: response.data.data.id });
     // if(session) update({...session,user: {...session.user,data: {...session.user.data,organization_id: response.data.data.id}}});
     return response.data;
   };
@@ -49,21 +48,20 @@ const AltRouteCheck = () => {
     error: UpdateError,
   } = useMutation((formData: FormData) => createOrg(formData), {
     onSuccess: (data) => {
-      console.log({data_from_creation:      data.data.id});
+      console.log({ data_from_creation: data.data.id });
       queryClient.invalidateQueries("orgName");
-      if (session){
-        update({organization_id:data.data.id});
+      if (session) {
+        update({ organization_id: data.data.id });
+        router.push("/my-organization");
       }
 
-      router.push('/my-organization');
-      
       (document.getElementById("Org-name") as HTMLInputElement).value = "";
       toast({
         variant: "success",
         title: "Orgnaization created successfully",
         description: "",
       });
-     
+
       (
         document.getElementById("submit-button") as HTMLButtonElement
       ).textContent = "Creating Organization";
@@ -98,11 +96,9 @@ const AltRouteCheck = () => {
     createOrganizationMutation(formData);
   };
 
-
   const handleCreateOrgClick = () => {
     setIsOpen(true);
   };
-
 
   const getOrg = async () => {
     try {
@@ -117,36 +113,26 @@ const AltRouteCheck = () => {
         }
       );
       return response.data.data;
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   };
-
 
   const { mutate: updateOrgNameMutation } = useMutation(getOrg, {
     onSuccess: () => {
-      console.log('did it !')
+      console.log("did it !");
       queryClient.invalidateQueries("orgName");
     },
-    onError: () => {
-    },
+    onError: () => {},
   });
 
-
-  const manageOrganization=async(e:any)=>{
-    e.preventDefault()
-    updateOrgNameMutation()
+  const manageOrganization = async (e: any) => {
+    e.preventDefault();
+    updateOrgNameMutation();
     await update({ role: role, organization_id: orgCheck.id });
 
-     router.push('/my-organization/overview');
+    router.push("/my-organization/overview");
+  };
 
-  }
-
-
-
-  
   function renderAltRoute() {
-    
     if (subscription_plan === "basic") {
       return null;
     }
@@ -154,7 +140,11 @@ const AltRouteCheck = () => {
     if (orgCheck.value) {
       return (
         <div className="flex gap-4">
-          <Link href="#" onClick={handleCreateOrgClick} className="font-medium text-mint">
+          <Link
+            href="#"
+            onClick={handleCreateOrgClick}
+            className="font-medium text-mint"
+          >
             Create organization
           </Link>
           <Link href="/admin" className="font-medium text-mint">
@@ -162,10 +152,17 @@ const AltRouteCheck = () => {
           </Link>
         </div>
       );
-    } else if (is_super || subscription_plan === "premium" || subscription_plan === "standard") {
+    } else if (
+      is_super ||
+      subscription_plan === "premium" ||
+      subscription_plan === "standard"
+    ) {
       return (
         <div className="flex gap-4">
-          <p className="font-medium text-mint hover:cursor-pointer" onClick={(e)=>manageOrganization(e)} >
+          <p
+            className="font-medium text-mint hover:cursor-pointer"
+            onClick={(e) => manageOrganization(e)}
+          >
             Manage organization
           </p>
           <Link href="/admin" className="font-medium text-mint">
