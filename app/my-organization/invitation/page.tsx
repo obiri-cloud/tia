@@ -23,31 +23,37 @@ import { DataTable } from "@/app/components/DataTable";
 import { columns } from "@/app/components/columns";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { setOriginalPageSize, setPageSize, setTableData } from "@/redux/reducers/tableSlice";
+import {
+  setOriginalPageSize,
+  setPageSize,
+  setTableData,
+} from "@/redux/reducers/tableSlice";
 import { setdialogState } from "@/redux/reducers/dialogSlice";
 import { setnextState } from "@/redux/reducers/nextPaginationSlice";
-import { TableBody, TableHeader, TableRow,
-
+import {
+  TableBody,
+  TableHeader,
+  TableRow,
   TableHead,
   TableCaption,
   TableCell,
-  Table
-
- } from "@/components/ui/table";
-import { DropdownMenu,
+  Table,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem
-
+  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import {  Pagination,
+import {
+  Pagination,
   PaginationContent,
   PaginationItem,
   PaginationPrevious,
   PaginationEllipsis,
-  PaginationNext, 
-  PaginationLink} from "@/components/ui/pagination";
-
+  PaginationNext,
+  PaginationLink,
+} from "@/components/ui/pagination";
 
 const Images = () => {
   const [file, setfile] = useState<any>();
@@ -73,18 +79,16 @@ const Images = () => {
 
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
-  const [loadingInvitation,setloadingInvitation]=useState<boolean>(false) 
-  const { data:dataDiag } = useSelector((state: RootState) => state.dialogBtn);
-  const { data:tableData } = useSelector((state: RootState) => state.table);
+  const [loadingInvitation, setloadingInvitation] = useState<boolean>(false);
+  const { data: dataDiag } = useSelector((state: RootState) => state.dialogBtn);
+  const { data: tableData } = useSelector((state: RootState) => state.table);
   // const { data } = useSelector((state: RootState) => state.dialogBtn);
   const { data } = useSelector((state: RootState) => state.table);
-  const dispatch = useDispatch()
-
-  
+  const dispatch = useDispatch();
 
   const getInvitations = async (): Promise<IinviteData[] | undefined> => {
     try {
-      setloadingInvitation(true)
+      setloadingInvitation(true);
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/`,
         {
@@ -96,18 +100,18 @@ const Images = () => {
           },
         }
       );
-      console.log('--here-->',response.data.next);
+      console.log("--here-->", response.data.next);
 
-      if(response.data.next){
-        dispatch(setnextState(true))
-        }
+      if (response.data.next) {
+        dispatch(setnextState(true));
+      }
 
-        console.log("response.data.data", response.data);
-        
-      dispatch(setTableData(response.data.data))
-      dispatch(setPageSize(Math.ceil(response.data.count/2)))
-      dispatch(setOriginalPageSize(response.data.count))
-      setloadingInvitation(false)
+      console.log("response.data.data", response.data);
+
+      dispatch(setTableData(response.data.data));
+      dispatch(setPageSize(Math.ceil(response.data.count / 2)));
+      dispatch(setOriginalPageSize(response.data.count));
+      setloadingInvitation(false);
 
       return response.data.data;
     } catch (error) {
@@ -115,15 +119,14 @@ const Images = () => {
     }
   };
 
-
   const deletebtn = (data: IinviteData) => {
     setPassedData(data);
-    dispatch(setdialogState(true))
+    dispatch(setdialogState(true));
   };
 
-  useEffect(()=>{
-   getInvitations()
-  },[])
+  useEffect(() => {
+    getInvitations();
+  }, []);
 
   const formatExpiration = (expires: string) => {
     const expirationDate = new Date(expires);
@@ -148,7 +151,7 @@ const Images = () => {
     };
 
     const response = await axios(axiosConfig);
-    getInvitations()
+    getInvitations();
     return response.data;
   };
 
@@ -263,7 +266,7 @@ const Images = () => {
         queryClient.invalidateQueries("invites");
         setEmailInput("");
         setMultipleEmails([]);
-        getInvitations()
+        getInvitations();
         toast({
           variant: "success",
           title: `Invitation Sent sucessfully`,
@@ -296,7 +299,7 @@ const Images = () => {
       onSuccess: (data) => {
         queryClient.invalidateQueries("invites");
         setfile(null);
-        getInvitations()
+        getInvitations();
         console.log({ i_think_is_an_error: data });
 
         toast({
@@ -416,8 +419,9 @@ const Images = () => {
   const { mutate: searchMutation } = useMutation(fetchsearchInvites, {
     onSuccess: (data) => {
       if (Array.isArray(data)) {
+        console.log({ data: data });
         queryClient.setQueryData("invites", data);
-        dispatch(setTableData(data))
+        dispatch(setTableData(data));
         setemptyQuery(false);
       } else {
         queryClient.setQueryData("invites", {
@@ -467,14 +471,12 @@ const Images = () => {
 
   const { mutate: updatePage } = useMutation(getInvitations, {
     onSuccess: () => {
-
       queryClient.invalidateQueries("invites");
 
       toast({
         variant: "success",
         title: "Member Role Updated Successfully",
       });
-
     },
     onError: (error: AxiosError) => {
       console.log({ error });
@@ -542,16 +544,11 @@ const Images = () => {
             />
           </div>
           <Dialog>
-            {tableData && (
-              <DataTable
-                data={
-                     tableData as IinviteData[]
-                }
-                columns={columns}
-              />
+            {tableData && !emptyQuery && (
+              <DataTable data={tableData as IinviteData[]} columns={columns} />
             )}
 
-           <CardContent className="pl-2">
+            <CardContent className="pl-2">
               <Table>
                 {!loadingInvitation &&
                 ((tableData && tableData.length === 0) || !tableData) ? (
@@ -575,12 +572,10 @@ const Images = () => {
 
       <Dialog
         open={dataDiag}
-        onOpenChange={
-          dataDiag ? setdialogState : setIsOpenDeleteDialog
-        }
+        onOpenChange={dataDiag ? setdialogState : setIsOpenDeleteDialog}
       >
         <DeleteConfirmation
-          text={`Do you want to delete ${passedData?.recipient_email} invitation`}// ${passedData?.recipient_email}
+          text={`Do you want to delete ${passedData?.recipient_email} invitation`} // ${passedData?.recipient_email}
           noText="No"
           confirmText="Yes, Delete!"
           confirmFunc={() => deleteInviteMutation(passedData?.id ?? 0)}
