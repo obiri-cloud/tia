@@ -153,6 +153,8 @@ const OrganizationGroup = () => {
     return response.data.data;
   };
 
+  console.log({groups})
+
   const { mutate: deleteGroupMutation } = useMutation(
     (id: number) => deleteGroup(id),
     {

@@ -86,7 +86,7 @@ const Images = () => {
     try {
       setloadingInvitation(true)
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -148,6 +148,7 @@ const Images = () => {
     };
 
     const response = await axios(axiosConfig);
+    getInvitations()
     return response.data;
   };
 
@@ -262,6 +263,7 @@ const Images = () => {
         queryClient.invalidateQueries("invites");
         setEmailInput("");
         setMultipleEmails([]);
+        getInvitations()
         toast({
           variant: "success",
           title: `Invitation Sent sucessfully`,
@@ -294,6 +296,7 @@ const Images = () => {
       onSuccess: (data) => {
         queryClient.invalidateQueries("invites");
         setfile(null);
+        getInvitations()
         console.log({ i_think_is_an_error: data });
 
         toast({
@@ -414,6 +417,7 @@ const Images = () => {
     onSuccess: (data) => {
       if (Array.isArray(data)) {
         queryClient.setQueryData("invites", data);
+        dispatch(setTableData(data))
         setemptyQuery(false);
       } else {
         queryClient.setQueryData("invites", {
@@ -463,11 +467,14 @@ const Images = () => {
 
   const { mutate: updatePage } = useMutation(getInvitations, {
     onSuccess: () => {
+
       queryClient.invalidateQueries("invites");
+
       toast({
         variant: "success",
         title: "Member Role Updated Successfully",
       });
+
     },
     onError: (error: AxiosError) => {
       console.log({ error });
