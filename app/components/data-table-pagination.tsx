@@ -104,7 +104,7 @@ export function DataTablePagination<IinviteData>({
           >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder={table.getState().pagination.pageSize} />
-            </SelectTrigger>
+              </SelectTrigger>
             <SelectContent side="top">
               {[1, 2, 20].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
@@ -118,7 +118,7 @@ export function DataTablePagination<IinviteData>({
           Page {currentPage} of {totalPages}
         </div>
         <div className="flex items-center space-x-2">
-          <Button
+          <Button   
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
             onClick={() => handlePageChange(1)}
