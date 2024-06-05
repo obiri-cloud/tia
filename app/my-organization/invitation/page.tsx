@@ -23,7 +23,7 @@ import { DataTable } from "@/app/components/DataTable";
 import { columns } from "@/app/components/columns";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { setTableData } from "@/redux/reducers/tableSlice";
+import { setOriginalPageSize, setPageSize, setTableData } from "@/redux/reducers/tableSlice";
 import { setdialogState } from "@/redux/reducers/dialogSlice";
 import { setnextState } from "@/redux/reducers/nextPaginationSlice";
 import { TableBody, TableHeader, TableRow,
@@ -102,7 +102,11 @@ const Images = () => {
         dispatch(setnextState(true))
         }
 
+        console.log("response.data.data", response.data);
+        
       dispatch(setTableData(response.data.data))
+      dispatch(setPageSize(Math.ceil(response.data.count/2)))
+      dispatch(setOriginalPageSize(response.data.count))
       setloadingInvitation(false)
 
       return response.data.data;
@@ -531,92 +535,6 @@ const Images = () => {
             />
           </div>
           <Dialog>
-            {/* <CardContent className="pl-2">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="">Recipient Email</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created At</TableHead>
-                    <TableHead>Expires</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-
-                {!loadingInvitation &&
-                ((invites && invites.length === 0) || !invites) ? (
-                  <TableCaption>No pending invites found...</TableCaption>
-                ) : null}
-                {loadingInvitation ? (
-                  <TableCaption>
-                    Loading invitations in your organization...
-                  </TableCaption>
-                ) : null}
-                {emptyQuery && (
-                  <TableCaption>
-                    No Invitation(s) found for the specified search criteria
-                  </TableCaption>
-                )}
-
-                <TableBody>
-                  {!loadingInvitation &&
-                  Array.isArray(invites) &&
-                  invites.length > 0
-                    ? invites.map((invite: any, i: any) => (
-                        <TableRow key={i}>
-                          <TableCell className="font-medium">
-                            {invite?.recipient_email}
-                          </TableCell>
-                          <TableCell>{invite?.invitation_status}</TableCell>
-                          <TableCell>
-                            {formatDate(invite?.created_at)}
-                          </TableCell>
-                          <TableCell>
-                            {invite.expires
-                              ? formatExpiration(invite?.expires)
-                              : "Expires soon"}
-                          </TableCell>
-                          <TableCell className="underline font-medium text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger>
-                                <MoreVerticalIcon className="w-4 h-4" />
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent className="left-[-20px_!important]">
-                                <DropdownMenuItem
-                                  onClick={() => deletebtn(invite)}
-                                  className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
-                                >
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    : null}
-                </TableBody>
-              </Table>
-              <PaginationContent>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious href="#" onClick={handlePreviousPage} />
-                  </PaginationItem>
-
-                  <PaginationItem>
-                    <PaginationLink href="#">{pages}</PaginationLink>
-                  </PaginationItem>
-
-                  <PaginationItem>
-                    <PaginationEllipsis />
-                  </PaginationItem>
-
-                  <PaginationItem>
-                    <PaginationNext href="#" onClick={handleNextPage} />
-                  </PaginationItem>
-                </PaginationContent>
-              </PaginationContent>
-            </CardContent> */}
-            
             {tableData && (
               <DataTable
                 data={
