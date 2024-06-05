@@ -9,7 +9,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
-import { setdialogState } from "@/redux/reducers/dialogSlice";
+import { setTableData } from "@/redux/reducers/tableSlice"; 
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +20,7 @@ import { MoreVerticalIcon } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import { useState } from "react";
 import DeleteConfirmation from "./delete-confirmation";
+import { RootState } from "@/redux/store";
 
 dayjs.extend(relativeTime);
 
@@ -33,7 +34,7 @@ export const columns: ColumnDef<IinviteData>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {row.original.recipient_email}
+            {row?.original?.recipient_email}
           </span>
         </div>
       );
@@ -48,7 +49,7 @@ export const columns: ColumnDef<IinviteData>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {row.original.invitation_status}
+            {row?.original?.invitation_status}
           </span>
         </div>
       );
@@ -63,7 +64,7 @@ export const columns: ColumnDef<IinviteData>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {dayjs(row.original.created_at).fromNow()}
+            {dayjs(row?.original?.created_at).fromNow()}
           </span>
         </div>
       );
@@ -78,7 +79,7 @@ export const columns: ColumnDef<IinviteData>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {dayjs(row.original.expires).fromNow()}
+            {dayjs(row?.original?.expires).fromNow()}
           </span>
         </div>
       );
@@ -90,21 +91,35 @@ export const columns: ColumnDef<IinviteData>[] = [
       <DataTableColumnHeader column={column} title="Action" />
     ),
     cell: ({ row }) => {
+
+        const getInvitations = async (): Promise<IinviteData[] | undefined> => {
+            try {
+              const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/`,
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    // @ts-ignore
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              return response.data.data;
+            } catch (error) {
+              console.log(error);
+            }
+          };
+
       const [diag, setdiag] = useState<boolean>();
+      const { data:tableData,total } = useSelector((state: RootState) => state.table );
       const [_, setIsOpenDeleteDialog] = useState<boolean>(false);
-      //    const dispatch=useDispatch()
-
-      const deletebtn = (data: IinviteData) => {
-        setPassedData(data);
-        setdiag(true);
-      };
-
       const { data: session } = useSession();
-
+      const dispatch = useDispatch();
+      console.log(tableData)
       const token = session?.user!.tokens?.access_token;
       const org_id = session?.user!.data?.organization_id;
       const [passedData, setPassedData] = useState<IinviteData>();
-      const queryClient = useQueryClient();
 
       const deleteInvite = async (id: number) => {
         const response = await axios.delete(
@@ -113,31 +128,58 @@ export const columns: ColumnDef<IinviteData>[] = [
             headers: {
               "Content-Type": "application/json",
               Accept: "application/json",
-              // @ts-ignore
               Authorization: `Bearer ${token}`,
             },
           }
         );
+
+        const newData=tableData.filter((item:any) => item.id !== id)
+
+        dispatch(
+            setTableData(newData)
+        );
+
         return response.data.data;
       };
 
-      const { mutate: deleteInviteMutation } = useMutation(
-        (id: number) => deleteInvite(id),
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries("invites");
-            setdiag(false);
-          },
-          onError: (error: any) => {
-            const responseData = error.response.data;
+    //   const { mutate: deleteInviteMutation } = useMutation(
+    //     (id: number) => deleteInvite(id),
+    //     {
+    //       onSuccess: (data, id) => {
+    //         queryClient.invalidateQueries("invites");
+
+    //         setdiag(false);
+    //         toast({
+    //           variant: "destructive",
+    //           title: data.message || "Invitation deleted successfully",
+    //         });
+    //       },
+    //       onError: (error: any) => {
+    //         const responseData = error.response.data;
+    //         toast({
+    //           variant: "destructive",
+    //           title: responseData.message || "Failed to delete invitation",
+    //         });
+    //         setdiag(false);
+    //       },
+    //     }
+    //   );
+
+      const deletebtn = (data: IinviteData) => {
+        setPassedData(data);
+        setdiag(true);
+
+      };
+
+      const deleteInviteMutation=async(data:any)=>{
+        console.log('data',data)
+        setdiag(false);
             toast({
               variant: "destructive",
-              title: responseData.data || responseData.detail,
+              title: data.message || "Invitation deleted successfully",
             });
-            setdiag(false);
-          },
-        }
-      );
+        await deleteInvite(data)
+      }
 
       return (
         <>
@@ -159,7 +201,7 @@ export const columns: ColumnDef<IinviteData>[] = [
             onOpenChange={diag ? setdiag : setIsOpenDeleteDialog}
           >
             <DeleteConfirmation
-              text={`Do you want to delete ${passedData?.recipient_email} invitation`} // ${passedData?.recipient_email}
+              text={`Do you want to delete ${passedData?.recipient_email} invitation`}
               noText="No"
               confirmText="Yes, Delete!"
               confirmFunc={() => deleteInviteMutation(passedData?.id ?? 0)}

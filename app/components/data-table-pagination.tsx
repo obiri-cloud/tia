@@ -34,7 +34,7 @@ export function DataTablePagination<IinviteData>({
   const { data: tableData } = useSelector((state: RootState) => state.table);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [totalData, setTotalData] = useState(0);
   const [pageSize,setpageSize]=useState(2)
 

@@ -28,6 +28,8 @@ import {
 } from "@/components/ui/table";
 import { DataTablePagination } from "./data-table-pagination";
 import { IinviteData } from "@/app/types";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<IinviteData, TValue>[];
   data: IinviteData[];
@@ -61,8 +63,6 @@ export function DataTable<IinviteData, TValue>({data,columns,}: DataTableProps<I
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
-console.log('table',table);
-console.log('data',data)
 
 
   return (
