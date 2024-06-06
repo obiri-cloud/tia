@@ -14,7 +14,7 @@ import {
 } from "@radix-ui/react-icons";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import {  useQueryClient } from "react-query";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setTableData } from "@/redux/reducers/tableSlice";
@@ -108,7 +108,7 @@ export function DataTablePagination<IinviteData>({
             <SelectContent side="top">
               {[1, 2, 20].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize}
+                  {pageSize.toString()}
                 </SelectItem>
               ))}
             </SelectContent>
