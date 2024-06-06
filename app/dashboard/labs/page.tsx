@@ -381,7 +381,6 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
 
   return (
     <div className="">
-      gghjujjkj
       {instructions ? (
         <div className="p-2 overflow-x-auto text-black overflow-y-scroll  mb-[100px]">
           <h1 className="font-bold text-3xl mb-3">

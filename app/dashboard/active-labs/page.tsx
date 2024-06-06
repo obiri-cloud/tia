@@ -47,7 +47,7 @@ const ActiveLabsPage = () => {
         }
       );
 
-      setLabs(response.data.results);
+      setLabs(response.data.data);
     } catch (error) {
       userCheck(error as AxiosError);
     }
@@ -85,7 +85,7 @@ const ActiveLabsPage = () => {
           </TableHeader>
           {labs?.length === 0 && (
             <TableCaption>
-              You have no active lab...,{" "}
+              You have no active lab...{" "}
               <Link
                 href="/dashboard"
                 className="underline font-semibold dark:text-white text-black"

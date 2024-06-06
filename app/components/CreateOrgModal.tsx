@@ -1,5 +1,5 @@
 "use client";
-import React, {  FormEvent } from "react";
+import React, { FormEvent } from "react";
 import {
   Form,
   FormControl,
@@ -15,9 +15,11 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import OrgDialog from "./my-organization/org-dialog";
 
-
-
-const CreateOrgModal= ({ onSubmit }: { onSubmit: (e: FormEvent<HTMLFormElement>) => void }) => {
+const CreateOrgModal = ({
+  onSubmit,
+}: {
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+}) => {
   const form = useForm();
 
   // const OrganizationName = useRef<HTMLInputElement>(null);
@@ -26,10 +28,7 @@ const CreateOrgModal= ({ onSubmit }: { onSubmit: (e: FormEvent<HTMLFormElement>)
   const token = session?.user!.tokens?.access_token;
 
   return (
-    <OrgDialog
-      title="Create Organization"
-      description=""
-    >
+    <OrgDialog title="Create Organization" description="">
       <Form {...form}>
         <form
           onSubmit={onSubmit}
@@ -50,7 +49,7 @@ const CreateOrgModal= ({ onSubmit }: { onSubmit: (e: FormEvent<HTMLFormElement>)
                     type="text"
                     {...field}
                     className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
-                    defaultValue=''
+                    defaultValue=""
                   />
                 </FormControl>
                 <FormMessage />
@@ -63,12 +62,12 @@ const CreateOrgModal= ({ onSubmit }: { onSubmit: (e: FormEvent<HTMLFormElement>)
             className="w-full disabled:bg-black-900/10 mt-6 dark:bg-white dark:text-black bg-black text-white "
             variant="black"
           >
-            {"create organization"}
+            Create Organization
           </Button>
         </form>
       </Form>
-      </OrgDialog>
+    </OrgDialog>
   );
 };
 
-export default CreateOrgModal ;
+export default CreateOrgModal;

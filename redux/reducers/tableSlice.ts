@@ -3,12 +3,14 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface TableState {
   data: any;
-  total:number
+  pageSize: number;
+  originalPageSize: number;
 }
 
 const initialState: TableState = {
   data: null,
-  total:0,
+  pageSize: 0,
+  originalPageSize: 0,
 };
 
 export const tableSlice = createSlice({
@@ -18,12 +20,15 @@ export const tableSlice = createSlice({
     setTableData: (state, action: PayloadAction<any>) => {
       state.data = action.payload;
     },
-    setTableTotal: (state, action: PayloadAction<any>) => {
-      state.total = action.payload;
+    setPageSize: (state, action: PayloadAction<number>) => {
+      state.pageSize = action.payload;
+    },
+    setOriginalPageSize: (state, action: PayloadAction<number>) => {
+      state.originalPageSize = action.payload;
     },
   },
 });
 
-export const { setTableData } = tableSlice.actions;
+export const { setTableData, setPageSize, setOriginalPageSize } = tableSlice.actions;
 
 export default tableSlice.reducer;

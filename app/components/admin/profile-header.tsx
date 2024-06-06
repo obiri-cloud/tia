@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 const ProfileHeader = () => {
   const { data: session } = useSession();
 
-  // @ts-ignore
   const user = session?.user!.data;
 
   return (

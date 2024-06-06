@@ -13,7 +13,7 @@ import { useEffect } from "react";
     const { data: session } = useSession();
     const token = session?.user!.tokens?.access_token;
     const org_id = session?.user!.data?.organization_id;
-    const [overviewData,setoverViewData]=useState([])
+    const [overviewData,setoverViewData]=useState<any>([])
     const [isLoading,setisloading]=useState(false)
 
 
@@ -56,11 +56,9 @@ const getOverview = async () => {
           Overview
         </div>
 
-        {session?.user && session?.user.data.is_admin ? (
           <Link href="/dashboard" className="font-medium text-mint mr-9">
             Go to dashboard
           </Link>
-        ) : null}
 
       </div>
       <div className="flex flex-wrap gap-4 p-5">
