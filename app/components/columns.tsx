@@ -9,7 +9,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
-import { setTableData } from "@/redux/reducers/tableSlice"; 
+import { setTableData } from "@/redux/reducers/tableSlice";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -91,32 +91,33 @@ export const columns: ColumnDef<IinviteData>[] = [
       <DataTableColumnHeader column={column} title="Action" />
     ),
     cell: ({ row }) => {
-
-        const getInvitations = async (): Promise<IinviteData[] | undefined> => {
-            try {
-              const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/`,
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                    // @ts-ignore
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              );
-              return response.data.data;
-            } catch (error) {
-              console.log(error);
+      const getInvitations = async (): Promise<IinviteData[] | undefined> => {
+        try {
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                // @ts-ignore
+                Authorization: `Bearer ${token}`,
+              },
             }
-          };
+          );
+          return response.data.data;
+        } catch (error) {
+          console.log(error);
+        }
+      };
 
       const [diag, setdiag] = useState<boolean>();
-      const { data:tableData,total } = useSelector((state: RootState) => state.table );
+      const { data: tableData } = useSelector(
+        (state: RootState) => state.table
+      );
       const [_, setIsOpenDeleteDialog] = useState<boolean>(false);
       const { data: session } = useSession();
       const dispatch = useDispatch();
-      console.log(tableData)
+      console.log(tableData);
       const token = session?.user!.tokens?.access_token;
       const org_id = session?.user!.data?.organization_id;
       const [passedData, setPassedData] = useState<IinviteData>();
@@ -133,53 +134,50 @@ export const columns: ColumnDef<IinviteData>[] = [
           }
         );
 
-        const newData=tableData.filter((item:any) => item.id !== id)
+        const newData = tableData.filter((item: any) => item.id !== id);
 
-        dispatch(
-            setTableData(newData)
-        );
+        dispatch(setTableData(newData));
 
         return response.data.data;
       };
 
-    //   const { mutate: deleteInviteMutation } = useMutation(
-    //     (id: number) => deleteInvite(id),
-    //     {
-    //       onSuccess: (data, id) => {
-    //         queryClient.invalidateQueries("invites");
+      //   const { mutate: deleteInviteMutation } = useMutation(
+      //     (id: number) => deleteInvite(id),
+      //     {
+      //       onSuccess: (data, id) => {
+      //         queryClient.invalidateQueries("invites");
 
-    //         setdiag(false);
-    //         toast({
-    //           variant: "destructive",
-    //           title: data.message || "Invitation deleted successfully",
-    //         });
-    //       },
-    //       onError: (error: any) => {
-    //         const responseData = error.response.data;
-    //         toast({
-    //           variant: "destructive",
-    //           title: responseData.message || "Failed to delete invitation",
-    //         });
-    //         setdiag(false);
-    //       },
-    //     }
-    //   );
+      //         setdiag(false);
+      //         toast({
+      //           variant: "destructive",
+      //           title: data.message || "Invitation deleted successfully",
+      //         });
+      //       },
+      //       onError: (error: any) => {
+      //         const responseData = error.response.data;
+      //         toast({
+      //           variant: "destructive",
+      //           title: responseData.message || "Failed to delete invitation",
+      //         });
+      //         setdiag(false);
+      //       },
+      //     }
+      //   );
 
       const deletebtn = (data: IinviteData) => {
         setPassedData(data);
         setdiag(true);
-
       };
 
-      const deleteInviteMutation=async(data:any)=>{
-        console.log('data',data)
+      const deleteInviteMutation = async (data: any) => {
+        console.log("data", data);
         setdiag(false);
-            toast({
-              variant: "destructive",
-              title: data.message || "Invitation deleted successfully",
-            });
-        await deleteInvite(data)
-      }
+        toast({
+          variant: "destructive",
+          title: data.message || "Invitation deleted successfully",
+        });
+        await deleteInvite(data);
+      };
 
       return (
         <>
