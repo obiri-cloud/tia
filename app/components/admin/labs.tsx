@@ -69,7 +69,6 @@ const Labs = () => {
           },
         }
       );
-      console.log("response", response);
 
       if (response.status === 204) {
         toast({
