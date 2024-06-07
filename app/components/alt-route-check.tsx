@@ -9,6 +9,7 @@ import useOrgCheck from "@/hooks/createOrgCheck";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
+import OrgdropDown from "./OrgDropDown";
 
 const AltRouteCheck = () => {
   const { data: session, update } = useSession();
@@ -165,6 +166,7 @@ const AltRouteCheck = () => {
           >
             Manage organization
           </p>
+
           <Link href="/admin" className="font-medium text-mint">
             Go to Admin
           </Link>
@@ -183,7 +185,8 @@ const AltRouteCheck = () => {
 
   return (
     <div>
-      {renderAltRoute()}
+      {/* {renderAltRoute()} */}
+      <OrgdropDown/>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <CreateOrgModal onSubmit={createOrganization} />
       </Dialog>

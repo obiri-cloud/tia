@@ -178,6 +178,7 @@ export const columns: ColumnDef<IinviteData>[] = [
         });
         await deleteInvite(data);
       };
+      
 
       return (
         <>
