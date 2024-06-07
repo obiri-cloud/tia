@@ -1,17 +1,13 @@
 "use client";
-import React, {  useCallback, useState } from "react";
+import React, {  useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
   Table,
-  TableBody,
   TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from "@/components/ui/table";
+import { MemberColumns } from "@/app/components/MemberColumns";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -20,28 +16,23 @@ import { GroupMember } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreVerticalIcon } from "lucide-react";
-import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
+import { MemberDataTable } from "@/app/components/MemberDataTable";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import {
+  setOriginalPageSize,
+  setPageSize,
+  setTableData,
+} from "@/redux/reducers/tableSlice";
+import { setnextState } from "@/redux/reducers/nextPaginationSlice";
 
  const ROLES = [
   {
@@ -67,18 +58,21 @@ const Images = () => {
   const [image, setImage] = useState<any>();
   const [role, setrole] = useState<string>("");
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
-  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
-    useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
+  const [loadingMembers,setisloadingMembers]=useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState("");
-
+  const dispatch = useDispatch();
+  const [emptyData,setemptyData]=useState<boolean>(false)
+  const { data: tableData } = useSelector((state: RootState) => state.table);
   const token = session?.user!.tokens?.access_token ?? "";
   const org_id = session?.user!.data?.organization_id;
 
+
   const getMembers = async (): Promise<GroupMember[] | undefined | string> => {
     try {
+      setisloadingMembers(true);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members`,
-        {
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members`,        {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -87,17 +81,32 @@ const Images = () => {
           },
         }
       );
-      console.log({ members: response.data.data });
+
+      if (response.data.next) {
+        dispatch(setnextState(true));
+      }
+
+      if(response.data.data){
+
+      }
+
+      console.log("response.data.data", response.data);
+
+      dispatch(setTableData(response.data.data));
+      dispatch(setPageSize(Math.ceil(response.data.count / 2)));
+      dispatch(setOriginalPageSize(response.data.count));
+      setisloadingMembers(false);
+
       return response.data.data;
     } catch (error) {
       console.log(error);
     }
   };
 
-  const { data: members, isLoading: loadingMembers } = useQuery(
-    ["members"],
-    () => getMembers()
-  );
+useEffect(()=>{
+  getMembers()
+},[])
+
 
   const debounce = (func: (e: string) => void, delay: number) => {
     let timeoutId: any;
@@ -203,6 +212,7 @@ const Images = () => {
     onSuccess: (data) => {
       console.log({ data: data });
       queryClient.setQueryData("members", data);
+      dispatch(setTableData(data))
     },
     onError: (error: any) => {
       console.log(error);
@@ -242,6 +252,7 @@ const Images = () => {
     onSuccess: (data) => {
       console.log({ data: data });
       queryClient.setQueryData("members", data);
+;      dispatch(setTableData(data))
       setSearchQuery("");
     },
     onError: (error: any) => {
@@ -320,105 +331,24 @@ const Images = () => {
           <Dialog>
             <CardContent className="pl-2">
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="">Email</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-
                 {loadingMembers ? (
                   <TableCaption>
                     Loading members in your organization...
                   </TableCaption>
                 ) : null}
                 {!loadingMembers &&
-                ((members && members.length === 0) ||
-                  members === "No members in the organization" ||
-                  members ===
+                ((tableData && tableData.length === 0) ||
+                tableData === "No member(s) found for this Organization" ||
+                tableData ===
                     "No members found for the specified search criteria") ? (
                   <TableCaption>
                     {" "}
-                    No members in your organization...
+                    No member(s) found for this Organization...
                   </TableCaption>
                 ) : null}
-                <TableBody>
-                  {!loadingMembers &&
-                  Array.isArray(members) &&
-                  members.length > 0
-                    ? members.map((member: GroupMember) => (
-                        <TableRow key={member.member.id}>
-                          <TableCell className="font-medium">
-                            {member.member.email}
-                          </TableCell>
-                          <TableCell>
-                            {member.member.first_name} {member.member.last_name}
-                          </TableCell>
-                          <TableCell className="capitalize">
-                            {member.invitation_status}
-                          </TableCell>
-                          <TooltipProvider>
-                            <TableCell>
-                              <Select
-                                value={member.role}
-                                onValueChange={(newRole) =>
-                                  updateRoleMutation({
-                                    id: member.member.id,
-                                    role: newRole,
-                                  })
-                                }
-                              >
-                                <SelectTrigger className="w-[180px] bg-inherit">
-                                  <SelectValue
-                                    placeholder={`${member?.role}`}
-                                  />
-                                </SelectTrigger>
-                                <SelectContent className="overflow-visible">
-                                  <SelectGroup>
-                                    <SelectLabel>Assign Role</SelectLabel>
-                                    {ROLES.map((role: any) => (
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <SelectItem value={role.role}>
-                                            {role.role}
-                                          </SelectItem>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="absolute left-10 z-50 w-[200px] bg-white text-gray-800 p-2 rounded-lg shadow-md border border-gray-300">
-                                          <p>{role.desc}</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                          </TooltipProvider>
-
-                          <TableCell className="underline font-medium text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger>
-                                <MoreVerticalIcon className="w-4 h-4" />
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent className="left-[-20px_!important]">
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setIsOpenDeleteDialog(true);
-                                    setImage(member);
-                                  }}
-                                  className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
-                                >
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    : null}
-                </TableBody>
+              {tableData &&(
+                <MemberDataTable data={tableData as any} columns={MemberColumns} />
+               )}
               </Table>
             </CardContent>
           </Dialog>

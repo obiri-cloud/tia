@@ -455,20 +455,6 @@ const Images = () => {
     debouncedfetchsearchInvites(query);
   };
 
-  const handlePreviousPage = () => {
-    if (pages > 1) {
-      setPages((prev) => prev - 1);
-      getInvitations();
-    }
-  };
-
-  const handleNextPage = () => {
-    setPages((prev) => prev + 1);
-    getInvitations();
-  };
-
-  console.log(pages);
-
   const { mutate: updatePage } = useMutation(getInvitations, {
     onSuccess: () => {
       queryClient.invalidateQueries("invites");
