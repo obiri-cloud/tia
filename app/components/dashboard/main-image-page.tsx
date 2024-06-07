@@ -348,7 +348,7 @@ const MainImagePage = ({
         }
       );
       if (response.status === 200) {
-        return response.data.results.find(
+        return response.data.data.find(
           (res: IActiveLab) => String(res.image) === id
         );
       } else {

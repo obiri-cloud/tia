@@ -69,9 +69,8 @@ const Labs = () => {
           },
         }
       );
-      console.log("response", response);
-      
-      if (response.status === 204 ) {
+
+      if (response.status === 204) {
         toast({
           title: "Lab Deleted Successfully...",
           variant: "success",
@@ -79,7 +78,7 @@ const Labs = () => {
 
         getLabListX(token).then((response) => {
           dispatch(setLabCount(response.data.count));
-          dispatch(setLabList(response.data.results));
+          dispatch(setLabList(response.data.data));
           document.getElementById("closeDialog")?.click();
         });
       } else {
@@ -176,7 +175,6 @@ const Labs = () => {
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
-                           
                           </TableCell>
                         </TableRow>
                       ))

@@ -37,7 +37,7 @@ const LabList = () => {
           },
         }
       );
-      setLabs(response.data.results);
+      setLabs(response.data.data);
     } catch (error) {
       userCheck(error as AxiosError)
       console.error("error", error);

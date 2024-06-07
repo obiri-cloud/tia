@@ -30,9 +30,7 @@ const ReviewsPage = () => {
         }
       );
 
-      console.log("response.data.results", response.data.results);
-
-      setReviews(response.data.results);
+      setReviews(response.data.data);
     } catch (error) {}
   };
 
@@ -46,13 +44,11 @@ const ReviewsPage = () => {
           <span className="p-2 ">All Reviews</span>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/dashboard" className="font-medium text-mint">
-              Go to labs
-            </Link>
-          ) : null
-        }
+        {session?.user && session?.user.data.is_admin ? (
+          <Link href="/dashboard" className="font-medium text-mint">
+            Go to labs
+          </Link>
+        ) : null}
       </div>
       <div className="p-4">
         <div className="reviews">

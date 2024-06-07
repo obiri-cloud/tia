@@ -162,7 +162,7 @@ const NewImageForm = () => {
       command: commandRef.current?.value,
       arguments: argumentsRef.current?.value,
       description: descriptionRef.current?.value,
-      sidecar: sideCar
+      sidecar: sideCar,
     };
 
     let df: any = {
@@ -174,8 +174,7 @@ const NewImageForm = () => {
       description: descriptionRef.current?.value || "",
       command: commandRef.current?.value || "",
       arguments: argumentsRef.current?.value || "",
-      sidecar: sideCar
-
+      sidecar: sideCar,
     };
 
     const formData = new FormData();
@@ -189,8 +188,6 @@ const NewImageForm = () => {
     formData.append("description", descriptionRef.current?.value || "");
     formData.append("command", commandRef.current?.value || "");
     formData.append("arguments", argumentsRef.current?.value || "");
-
-   
 
     // if (imageDetails) {
     if (!readinessProbeInitialDelaySeconds) {
@@ -329,7 +326,7 @@ const NewImageForm = () => {
         });
         getImageListX(token).then((response) => {
           dispatch(setImageCount(response.data.count));
-          dispatch(setImageList(response.data.results));
+          dispatch(setImageList(response.data.data));
           document.getElementById("closeDialog")?.click();
         });
       } else {
@@ -410,7 +407,7 @@ const NewImageForm = () => {
     setLivenessProbeFailureThreshold(
       imageDetails?.liveness_probe_failure_threshold ?? null
     );
-    setSideCar(imageDetails?.sidecar)
+    setSideCar(imageDetails?.sidecar);
   }, [imageDetails]);
 
   const renderProbeSettings = (imageDetails: ILabImage | null) => (
@@ -815,11 +812,7 @@ const NewImageForm = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {levels.map((dl, i) => (
-                        <SelectItem
-                          className="capitalize"
-                          key={i}
-                          value={dl}
-                        >
+                        <SelectItem className="capitalize" key={i} value={dl}>
                           {dl}
                         </SelectItem>
                       ))}
@@ -850,8 +843,7 @@ const NewImageForm = () => {
                           variant={"destructive"}
                           onClick={() => setUpdateImage(true)}
                         >
-                          <Trash  className="w-[25px]"/>
-
+                          <Trash className="w-[25px]" />
                         </Button>
                       </div>
                     ) : (
