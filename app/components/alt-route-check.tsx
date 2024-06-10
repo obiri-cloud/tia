@@ -22,9 +22,7 @@ const AltRouteCheck = () => {
   let is_super = session?.user.data.is_superuser;
   let is_admin = session?.user.data.is_admin;
   let role = session?.user.data.role;
-  let org_id = session?.user.data.organization_id;
 
-  console.log({ orgCheck: orgCheck.id });
   const createOrg = async (formData: FormData) => {
     const axiosConfig = {
       method: "POST",
