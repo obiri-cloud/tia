@@ -26,7 +26,7 @@ interface DataTablePaginationProps<IinviteData> {
   table: Table<IinviteData>;
 }
 
-export function DataTablePagination<IinviteData>({
+export function MemberDataTablePagination({
   table,
 }: DataTablePaginationProps<any>) {
   const { data: session } = useSession();
@@ -44,10 +44,10 @@ export function DataTablePagination<IinviteData>({
   const fetchInvitations = async (
     page: number,
     pageSize: number
-  ): Promise<IinviteData[] | undefined> => {
+  ): Promise<any | undefined> => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/?page_size=${pageSize}`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members/?page_size=${pageSize}`,
         {
           params: { page },
           headers: {

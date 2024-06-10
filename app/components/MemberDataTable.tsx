@@ -28,12 +28,13 @@ import {
 } from "@/components/ui/table";
 import { DataTablePagination } from "./data-table-pagination";
 import { IinviteData } from "@/app/types";
+import { MemberDataTablePagination } from "./MemberDataTablePagination";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<any, TValue>[];
   data:  any //IinviteData[];
 }
 
-export function DataTable<IinviteData, TValue>({data,columns,}: DataTableProps<any |undefined, TValue>)
+export function MemberDataTable<IinviteData, TValue>({data,columns,}: DataTableProps<any |undefined, TValue>)
  {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =React.useState<VisibilityState>({});
@@ -115,7 +116,7 @@ export function DataTable<IinviteData, TValue>({data,columns,}: DataTableProps<a
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <MemberDataTablePagination table={table} />
     </div>
   );
 }
