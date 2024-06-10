@@ -5,15 +5,19 @@ import { usePathname } from "next/navigation";
 
 const useAuthorization = () => {
   const { data: session } = useSession();
+  console.log("session", session);
   const pathname = usePathname();
 
   const checkAuthorization = () => {
     const userRole = session?.user?.data.role as Role;
     const role = permissions.get(userRole);
+    console.log("role", role);
 
     const currentRouterAllowed = role?.links?.find(
       (link) => link.link === pathname
-    )? true: false
+    )
+      ? true
+      : false;
 
     return {
       isAuthorized: currentRouterAllowed,
