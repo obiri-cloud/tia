@@ -12,12 +12,11 @@ const useOrgCheck = () => {
 
   let [hasOrg, sethasOrg] = useState<any>();
 
-
   useEffect(() => {
     const getOrgOwner = async () => {
       try {
         const response = await axios.get(
-         `http://tialabs-backend.tiacourses.svc.cluster.local:80/api/v1/auth/user/`,
+          `${process.env.NEXT_PUBLIC_BE_URL}/auth/user/`,
           {
             headers: {
               "Content-Type": "application/json",
