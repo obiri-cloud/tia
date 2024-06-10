@@ -56,6 +56,7 @@ const Labs = () => {
   const endLab = async (id: number | undefined) => {
     toast({
       title: "Hold on we are cleaning your lab environment.",
+      duration: 2000,
     });
     try {
       const response = await axios.delete(
