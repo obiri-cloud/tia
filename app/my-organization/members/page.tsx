@@ -1,12 +1,9 @@
 "use client";
-import React, {  useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import {
-  Table,
-  TableCaption,
-} from "@/components/ui/table";
+import { Table, TableCaption } from "@/components/ui/table";
 import { MemberColumns } from "@/app/components/MemberColumns";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
@@ -28,13 +25,13 @@ import { MemberDataTable } from "@/app/components/MemberDataTable";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import {
-  setOriginalPageSize,
-  setPageSize,
-  setTableData,
-} from "@/redux/reducers/tableSlice";
+  setMemberOriginalPageSize,
+  setMemberPageSize,
+  setMemberTableData,
+} from "@/redux/reducers/MemberTableSlice";
 import { setnextState } from "@/redux/reducers/nextPaginationSlice";
 
- const ROLES = [
+const ROLES = [
   {
     role: "Admin",
     desc: "Admin has full control over Labs, Groups, Members, and Invitations but cannot manage Organization settings.",
@@ -52,61 +49,62 @@ import { setnextState } from "@/redux/reducers/nextPaginationSlice";
     desc: "Member has basic access without permissions to view or manage Organization content.",
   },
 ];
+
 const Images = () => {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
   const [image, setImage] = useState<any>();
-  const [role, setrole] = useState<string>("");
+  const [role, setRole] = useState<string>("");
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
-  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
-  const [loadingMembers,setisloadingMembers]=useState<boolean>(false)
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
+    useState<boolean>(false);
+  const [loadingMembers, setIsLoadingMembers] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState<string | null | boolean >(null);
   const dispatch = useDispatch();
-  const [emptyData,setemptyData]=useState<boolean>(false)
-  const { data: tableData } = useSelector((state: RootState) => state.table);
+  const { Memberdata: tableData } = useSelector(
+    (state: RootState) => state.memberTable
+  );
   const token = session?.user!.tokens?.access_token ?? "";
   const org_id = session?.user!.data?.organization_id;
 
-
-  const getMembers = async (): Promise<GroupMember[] | undefined | string> => {
+  const getMembers = async (): Promise<GroupMember[] | undefined> => {
     try {
-      setisloadingMembers(true);
+      setIsLoadingMembers(true);
+      setError(null);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members`,        {
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members`,
+        {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            // @ts-ignore
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      if (response.data.next) {
-        dispatch(setnextState(true));
+      if (response.data.status === 404) {
+        setIsLoadingMembers(false);
+        setError("No members found for this organization.");
+        return;
       }
 
-      if(response.data.data){
-
-      }
-
-      console.log("response.data.data", response.data);
-
-      dispatch(setTableData(response.data.data));
-      dispatch(setPageSize(Math.ceil(response.data.count / 2)));
-      dispatch(setOriginalPageSize(response.data.count));
-      setisloadingMembers(false);
-
+      dispatch(setMemberTableData(response.data.data));
+      dispatch(setMemberPageSize(Math.ceil(response.data.count / 2)));
+      dispatch(setMemberOriginalPageSize(response.data.count));
+      setIsLoadingMembers(false);
+      setError(null);
       return response.data.data;
     } catch (error) {
-      console.log(error);
+      setError("Failed to load members. Please try again.");
+      setIsLoadingMembers(false);
+      console.error(error);
     }
   };
 
-useEffect(()=>{
-  getMembers()
-},[])
-
+  useEffect(() => {
+    getMembers();
+  }, []);
 
   const debounce = (func: (e: string) => void, delay: number) => {
     let timeoutId: any;
@@ -125,7 +123,6 @@ useEffect(()=>{
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          // @ts-ignore
           Authorization: `Bearer ${token}`,
         },
       }
@@ -141,7 +138,7 @@ useEffect(()=>{
         setIsOpenDeleteDialog(false);
         toast({
           variant: "success",
-          title: "Member deleted Sucessfully",
+          title: "Member deleted successfully",
         });
       },
       onError: (error: any) => {
@@ -175,7 +172,7 @@ useEffect(()=>{
       queryClient.invalidateQueries("members");
       toast({
         variant: "success",
-        title: "Member Role Updated Successfully",
+        title: "Member role updated successfully",
       });
     },
     onError: () => {
@@ -202,20 +199,28 @@ useEffect(()=>{
           },
         }
       );
+
+      if (response.data.status === 404) {
+        setIsLoadingMembers(false);
+        setError("No member(s) found for the specified search criteria. ");
+        return;
+      }
+      // setError('search wrong')
+      setError(null);
       return response.data.data;
     } catch (error) {
+      setError("Failed to load members. Please try again.");
       console.error(error);
     }
   };
 
   const { mutate: searchMutation } = useMutation(fetchMembers, {
     onSuccess: (data) => {
-      console.log({ data: data });
       queryClient.setQueryData("members", data);
-      dispatch(setTableData(data))
+      dispatch(setMemberTableData(data));
     },
     onError: (error: any) => {
-      console.log(error);
+      console.error(error);
     },
   });
 
@@ -229,7 +234,6 @@ useEffect(()=>{
     debouncedFetchMembers(query);
   };
 
-  //fetch_role
   const fetchRole = async (query: string) => {
     try {
       const response = await axios.get(
@@ -242,33 +246,41 @@ useEffect(()=>{
           },
         }
       );
+      
+      if (response.data.status === 404) {
+        setIsLoadingMembers(false);
+        setError("No member(s) found for the specified search criteria. ");
+        return;
+      }
+
+      setError(null);
       return response.data.data;
     } catch (error) {
+      setError("Failed to load members by role. Please try again.");
       console.error(error);
     }
   };
 
-  const { mutate: searcRoleMutation } = useMutation(fetchRole, {
+  const { mutate: searchRoleMutation } = useMutation(fetchRole, {
     onSuccess: (data) => {
-      console.log({ data: data });
+      console.log({error:data})
       queryClient.setQueryData("members", data);
-;      dispatch(setTableData(data))
+      dispatch(setMemberTableData(data));
       setSearchQuery("");
     },
     onError: (error: any) => {
-      console.log(error);
+      console.error(error);
     },
   });
 
   const debouncedRoleMembers = useCallback(
-    debounce((query: string) => searcRoleMutation(query), 100),
-    [searcRoleMutation]
+    debounce((query: string) => searchRoleMutation(query), 100),
+    [searchRoleMutation]
   );
 
-  const fetchrole = (query: string) => {
-    console.log({ query });
+  const fetchrole = async(query: string) => {
     if (query == "all") {
-      queryClient.invalidateQueries("members");
+      getMembers()
       return;
     }
     debouncedRoleMembers(query);
@@ -319,9 +331,9 @@ useEffect(()=>{
                 <SelectGroup>
                   <SelectItem value="all">All</SelectItem>
                   {ROLES.map((role) => (
-                    <>
-                      <SelectItem value={role.role}>{role.role}</SelectItem>
-                    </>
+                    <SelectItem key={role.role} value={role.role}>
+                      {role.role}
+                    </SelectItem>
                   ))}
                 </SelectGroup>
               </SelectContent>
@@ -331,24 +343,27 @@ useEffect(()=>{
           <Dialog>
             <CardContent className="pl-2">
               <Table>
-                {loadingMembers ? (
+                {loadingMembers && (
                   <TableCaption>
                     Loading members in your organization...
                   </TableCaption>
-                ) : null}
-                {!loadingMembers &&
-                ((tableData && tableData.length === 0) ||
-                tableData === "No member(s) found for this Organization" ||
-                tableData ===
-                    "No members found for the specified search criteria") ? (
+                )}
+                {error && (
+                  <TableCaption className="text-red-500">
+                    {error}
+                  </TableCaption>
+                )}
+                {!loadingMembers && !error && tableData && tableData.length === 0 && (
                   <TableCaption>
-                    {" "}
                     No member(s) found for this Organization...
                   </TableCaption>
-                ) : null}
-              {tableData &&(
-                <MemberDataTable data={tableData as any} columns={MemberColumns} />
-               )}
+                )}
+                {tableData && (
+                  <MemberDataTable
+                    data={tableData as any}
+                    columns={MemberColumns}
+                  />
+                )}
               </Table>
             </CardContent>
           </Dialog>

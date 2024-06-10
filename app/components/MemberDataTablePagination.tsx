@@ -17,7 +17,7 @@ import { useSession } from "next-auth/react";
 import {  useQueryClient } from "react-query";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPageSize, setTableData } from "@/redux/reducers/tableSlice";
+import { setMemberPageSize, setMemberTableData } from "@/redux/reducers/MemberTableSlice";
 import { RootState } from "@/redux/store";
 import { Table } from "@/components/ui/table";
 
@@ -31,8 +31,8 @@ export function MemberDataTablePagination({
 }: DataTablePaginationProps<any>) {
   const { data: session } = useSession();
   const dispatch = useDispatch();
-  const { pageSize: totalPageSize, originalPageSize } = useSelector(
-    (state: RootState) => state.table
+  const { MemberPageSize: MemberTotalPageSize, MemberOriginalPageSize } = useSelector(
+    (state: RootState) => state.memberTable
   );
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,7 +58,7 @@ export function MemberDataTablePagination({
         }
       );
 
-      dispatch(setTableData(response.data.data));
+      dispatch(setMemberTableData(response.data.data));
       return;
     } catch (error) {
       console.log(error);
@@ -74,7 +74,7 @@ export function MemberDataTablePagination({
     {
       setCurrentPage(1);
       setCurrentPageSize(+value);
-      dispatch(setPageSize(Math.ceil(originalPageSize / +value)));
+      dispatch(setMemberPageSize(Math.ceil(MemberOriginalPageSize / +value)));
       await fetchInvitations(1, +value);
     }
   };
@@ -102,7 +102,7 @@ export function MemberDataTablePagination({
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {currentPage} of {totalPageSize}
+          Page {currentPage} of {MemberTotalPageSize}
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -128,7 +128,7 @@ export function MemberDataTablePagination({
             variant="outline"
             className="h-8 w-8 p-0"
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPageSize}
+            disabled={currentPage === MemberTotalPageSize}
           >
             <span className="sr-only">Go to next page</span>
             <ChevronRightIcon className="h-4 w-4" />
@@ -136,8 +136,8 @@ export function MemberDataTablePagination({
           <Button
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => handlePageChange(totalPageSize)}
-            disabled={currentPage === totalPageSize}
+            onClick={() => handlePageChange(MemberTotalPageSize)}
+            disabled={currentPage === MemberTotalPageSize}
           >
             <span className="sr-only">Go to last page</span>
             <DoubleArrowRightIcon className="h-4 w-4" />

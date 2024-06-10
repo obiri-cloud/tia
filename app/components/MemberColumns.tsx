@@ -24,6 +24,7 @@ import { RootState } from "@/redux/store";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TableCell } from "@/components/ui/table";
+import { setMemberOriginalPageSize, setMemberPageSize, setMemberTableData } from "@/redux/reducers/MemberTableSlice";
 
 dayjs.extend(relativeTime);
 
@@ -84,7 +85,9 @@ export const MemberColumns: ColumnDef<any>[] = [
         const { data: session } = useSession()
         const token = session?.user!.tokens?.access_token ?? "";
         const org_id = session?.user!.data?.organization_id;
+        const { Memberdata: tableData } = useSelector((state: RootState) => state.memberTable);
         const queryClient = useQueryClient();
+        const dispatch=useDispatch()
 
 
         const ROLES = [
@@ -119,13 +122,21 @@ export const MemberColumns: ColumnDef<any>[] = [
                 },
             }
             );
+
+            const updatedData = tableData.map((member:any) =>
+                member.member.id === id ? { ...member, role: role } : member
+            )
+    
+              dispatch(setMemberTableData(updatedData));
+    
             return response.data;
         };
 
 
+
         const { mutate: updateRoleMutation } = useMutation(updateRole, {
             onSuccess: () => {
-              queryClient.invalidateQueries("members");
+        
               toast({
                 variant: "success",
                 title: "Member Role Updated Successfully",
@@ -219,7 +230,7 @@ export const MemberColumns: ColumnDef<any>[] = [
         );
 
         const newData = tableData.filter((item: any) => item.member.id !== id);
-        dispatch(setTableData(newData));
+        dispatch(setMemberTableData(newData));
 
         return response.data.data;
       };
