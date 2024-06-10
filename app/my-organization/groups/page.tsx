@@ -38,6 +38,7 @@ import AddMembersModal, {
 } from "@/app/components/AddMembersModal";
 import { Sheet } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
+import UpdateGroupNameModal from "@/app/components/UpdateGroupNameModal";
 
 export interface OrgGroup {
   id: string;
@@ -53,6 +54,8 @@ const OrganizationGroup = () => {
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
     useState<boolean>(false);
+    const [isOpenViewDialogOpen4, setIsOpenViewDialog4] =
+    useState<boolean>(false);
   const [isOpenViewDialogOpen1, setIsOpenViewDialog1] =
     useState<boolean>(false);
   const [isOpenViewDialogOpen3, setIsOpenViewDialog3] =
@@ -62,6 +65,7 @@ const OrganizationGroup = () => {
   const [passedData, setPassedData] = useState<OrgGroup>();
   const [group, setGroup] = useState<OrgGroup>();
   const [emptyQuery,setemptyQuery]=useState(false)
+  const [updateData,setUpdateData]=useState<any>(null)
   
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
@@ -199,6 +203,23 @@ const OrganizationGroup = () => {
     return response.data;
   };
 
+
+  const updateGroupName = async (formData: FormData) => {
+    console.log({ formData });
+    const axiosConfig = {
+      method: "PUT",
+      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${updateData.id}/update/`,
+      data: formData,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await axios(axiosConfig);
+    return response.data;
+  };
+
   const { mutate: createGroupMutation } = useMutation(
     (formData: FormData) => createGroup(formData),
     {
@@ -210,7 +231,7 @@ const OrganizationGroup = () => {
           title: "Group created successfully",
           duration: 2000,
         });
-        setIsOpenViewDialog2(false);
+        setIsOpenViewDialog4(false);
         (
           document.getElementById("submit-button") as HTMLButtonElement
         ).textContent = "Create Group";
@@ -224,6 +245,36 @@ const OrganizationGroup = () => {
         (
           document.getElementById("submit-button") as HTMLButtonElement
         ).textContent = "Create Group";
+      },
+    }
+  );
+
+
+  const { mutate: updateGroupNameMutation } = useMutation(
+    (formData: FormData) => updateGroupName(formData),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("groups");
+        (document.getElementById("group-name") as HTMLInputElement).value = "";
+        toast({
+          variant: "success",
+          title: "Group created successfully",
+          duration: 2000,
+        });
+        setIsOpenViewDialog4(false);
+        (
+          document.getElementById("submit-button") as HTMLButtonElement
+        ).textContent = "update name";
+      },
+      onError: (error: any) => {
+        const responseData = error.response.data;
+        toast({
+          variant: "destructive",
+          title:responseData.data || responseData.detail,
+        });
+        (
+          document.getElementById("submit-button") as HTMLButtonElement
+        ).textContent = "update name";
       },
     }
   );
@@ -242,6 +293,23 @@ const OrganizationGroup = () => {
     const formData = new FormData();
     formData.append("name", name || "");
     createGroupMutation(formData);
+  };
+
+
+  const UpdateGroupName = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    (
+      document.getElementById("create-group-submit-button") as HTMLButtonElement
+    ).disabled = true;
+    (
+      document.getElementById("create-group-submit-button") as HTMLButtonElement
+    ).textContent = "updating Group Name...";
+    const name = (document.getElementById("group-name") as HTMLInputElement)
+      ?.value;
+
+    const formData = new FormData();
+    formData.append("name", name || "");
+    updateGroupNameMutation(formData);
   };
 
   const updateMember = (members: IMemberChanges) => {
@@ -578,12 +646,6 @@ const OrganizationGroup = () => {
                                     Update Members
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
-                                    onClick={() => prepareDelete(group)}
-                                    className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
-                                  >
-                                    Delete
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
                                     onClick={() => {
                                       setGroup(group),
                                         setIsOpenViewDialog1(true);
@@ -591,6 +653,18 @@ const OrganizationGroup = () => {
                                     className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
                                   >
                                     Add Labs
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => {setIsOpenViewDialog4(true),setUpdateData(group)}}
+                                    className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
+                                  >
+                                    Update Group Name
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => prepareDelete(group)}
+                                    className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
+                                  >
+                                    Delete
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -627,6 +701,15 @@ const OrganizationGroup = () => {
         }
       >
         <CreateGroupModal onSubmit={createNewGroup} />
+      </Dialog>
+
+      <Dialog
+        open={isOpenViewDialogOpen4}
+        onOpenChange={
+          isOpenViewDialogOpen4 ? setIsOpenViewDialog4 : setIsOpenDeleteDialog
+        }
+      >
+        <UpdateGroupNameModal onSubmit={UpdateGroupName} updateData={updateData} />
       </Dialog>
 
       <Sheet

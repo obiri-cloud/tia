@@ -16,7 +16,7 @@ const useOrgCheck = () => {
     const getOrgOwner = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BE_URL}/auth/user/`,
+         `${process.env.NEXT_PUBLIC_BE_URL}/auth/user/`,
           {
             headers: {
               "Content-Type": "application/json",

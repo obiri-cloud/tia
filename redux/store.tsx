@@ -5,6 +5,7 @@ import userReducer from "./reducers/userSlice";
 import tableReducer from './reducers/tableSlice'
 import dialogStateReducer from './reducers/dialogSlice'
 import nextStateSlice from './reducers/nextPaginationSlice'
+import MemberTableReducer from "./reducers/MemberTableSlice";
 
 
 import organizationReducer from './reducers/OrganizationSlice' 
@@ -15,7 +16,8 @@ export const store = configureStore({
     orgOwner:organizationReducer,
     table: tableReducer,
     dialogBtn: dialogStateReducer,
-    nextbtn: nextStateSlice
+    nextbtn: nextStateSlice,
+    memberTable:MemberTableReducer
   },
 });
 
