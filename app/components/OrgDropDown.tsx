@@ -195,6 +195,14 @@ export default function Component() {
         <div className="max-h-[200px] overflow-y-auto">
           {renderDropdownItems()}
         </div>
+        <DropdownMenuItem>
+          <Link href="/dashboard">
+            <div className="flex items-center gap-2">
+              <AdminIcon className="h-4 w-4" />
+              Go to labs
+            </div>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="font-medium">Other Organizations</DropdownMenuLabel>
         <DropdownMenuSeparator />
