@@ -9,7 +9,11 @@ import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getImageListX } from "./overview";
-import { setCurrentImage, setImageCount, setImageList } from "@/redux/reducers/adminSlice";
+import {
+  setCurrentImage,
+  setImageCount,
+  setImageList,
+} from "@/redux/reducers/adminSlice";
 import { useDispatch } from "react-redux";
 import { ILabImage } from "@/app/types";
 
@@ -17,7 +21,6 @@ interface IImageTableTable {
   imageList: ILabImage[] | null;
 }
 const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
-  
   const dialogRef = useRef<HTMLDialogElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dispatch = useDispatch();
@@ -30,7 +33,6 @@ const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
   const token = session?.user!.tokens?.access_token;
 
   useEffect(() => {
-
     setLocalImageList(imageList);
   }, [imageList]);
 
@@ -58,7 +60,7 @@ const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
         // setLocalImageList((prev) => prev?.filter((image) => image.id !== id));
         getImageListX(token).then((response) => {
           dispatch(setImageCount(response.data.count));
-          dispatch(setImageList(response.data.results));
+          dispatch(setImageList(response.data.data));
           document.getElementById("closeDialog")?.click();
         });
       } else {
@@ -140,8 +142,7 @@ const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
           </>
         )}
       </div>
-      <NewImageForm
-      />
+      <NewImageForm />
     </Dialog>
   );
 };

@@ -3,6 +3,7 @@ import axios, { AxiosError } from "axios";
 import React, {
   ChangeEvent,
   FormEvent,
+  SVGProps,
   useEffect,
   useRef,
   useState,
@@ -36,6 +37,7 @@ import {
 } from "@/components/ui/command";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { CheckIcon } from "lucide-react";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 const AccountPage = () => {
   const { data: session } = useSession();
@@ -57,7 +59,9 @@ const AccountPage = () => {
   });
 
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<string | undefined>();
+  const [value, setValue] = useState<string | undefined>(
+    session?.user.data.subscription_plan
+  );
 
   const token = session?.user!.tokens?.access_token;
   const getUser = async () => {
@@ -81,6 +85,10 @@ const AccountPage = () => {
       console.error(error);
     }
   }, []);
+
+  useEffect(() => {
+    setValue(session?.user.data.subscription_plan);
+  }, [session]);
 
   const changeAvatar = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -267,6 +275,12 @@ const AccountPage = () => {
 
   return (
     <Dialog>
+      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+        <div className="flex">
+          <span className="p-2 ">Account</span>
+        </div>
+        <AltRouteCheck />
+      </div>
       <div className="sc-hLBbgP sc-fLjoTV jAQqIz jVzpQn">
         <div className="sc-jEJXZe cyvxRV"></div>
         <div className="sc-hLBbgP sc-cTUoWY ioYMmf jlBsiO">
@@ -315,45 +329,45 @@ const AccountPage = () => {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-5">
-            <div className="sc-gGfaQS gna-dsN">
-              <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
-                <div className="sc-hLBbgP ioYMmf">
-                  <label>
-                    <span className="dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
-                      First name
-                    </span>
-                  </label>
-                  <div className="sc-hLBbgP fHykyP">
-                    <input
-                      placeholder="First name"
-                      className="kFBAIE bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder"
-                      defaultValue={userData?.first_name}
-                      ref={firstNameRef}
-                    />
+              <div className="sc-gGfaQS gna-dsN">
+                <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
+                  <div className="sc-hLBbgP ioYMmf">
+                    <label>
+                      <span className="dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
+                        First name
+                      </span>
+                    </label>
+                    <div className="sc-hLBbgP fHykyP">
+                      <input
+                        placeholder="First name"
+                        className="kFBAIE bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder"
+                        defaultValue={userData?.first_name}
+                        ref={firstNameRef}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="sc-gGfaQS gna-dsN">
-              <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
-                <div className="sc-hLBbgP ioYMmf">
-                  <label>
-                    <span className="dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
-                      Last name
-                    </span>
-                  </label>
-                  <div className="sc-hLBbgP fHykyP">
-                    <input
-                      placeholder="Last name"
-                      className="kFBAIE bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder"
-                      defaultValue={userData?.last_name}
-                      ref={lastNameRef}
-                    />
+              <div className="sc-gGfaQS gna-dsN">
+                <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
+                  <div className="sc-hLBbgP ioYMmf">
+                    <label>
+                      <span className="dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
+                        Last name
+                      </span>
+                    </label>
+                    <div className="sc-hLBbgP fHykyP">
+                      <input
+                        placeholder="Last name"
+                        className="kFBAIE bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder"
+                        defaultValue={userData?.last_name}
+                        ref={lastNameRef}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
             </div>
 
             <button
@@ -368,10 +382,10 @@ const AccountPage = () => {
           <div className="sc-hLBbgP gUrCBj mt-8">
             <div className="sc-hLBbgP sc-eAeVAz dIPdRh hOuTWu">
               <label className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
-                Interface theme
+                Upgrade plan
               </label>
               <span className="sc-bcXHqe sc-iuxOeI wRSCb jhSxJJ">
-                Select or customize your interface color scheme.
+                Upgrade plan your subscription plan
               </span>
             </div>
             <Popover open={open} onOpenChange={setOpen}>
@@ -382,13 +396,15 @@ const AccountPage = () => {
                   aria-expanded={open}
                   className="w-[200px] justify-between dark:bg-comboBg bg-white theme-selector"
                 >
-                  Upgrade plan...
+                  {value
+                    ? plans.find((plan) => plan.value === value)?.label
+                    : "Upgrade plan..."}
                   <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-0">
                 <Command>
-                  <CommandEmpty>No themes found.</CommandEmpty>
+                  <CommandEmpty>No plans found.</CommandEmpty>
                   <CommandGroup className="dark:bg-comboBg bg-white">
                     {plans.map((plan) => (
                       <CommandItem

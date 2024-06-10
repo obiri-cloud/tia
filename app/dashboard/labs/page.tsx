@@ -157,6 +157,7 @@ const LabsPage = () => {
     let formData = JSON.stringify({ image: labInfo!.id });
     toast({
       title: "Hold on we are cleaning your lab environment.",
+      duration: 2000,
     });
     try {
       const response = await axios.post(
@@ -216,7 +217,7 @@ const LabsPage = () => {
 
   const pollStatus = async (
     key: string | null,
-    delay: number = 8000,
+    delay: number = 5000,
     maxRetries: number = 10
   ) => {
     try {
@@ -545,6 +546,11 @@ const ReviewDrawer = () => {
 
   const submitReview = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (value == "" && comment == "") {
+      router.push("/dashboard");
+      return;
+    }
     if (value === "") {
       toast({
         variant: "destructive",

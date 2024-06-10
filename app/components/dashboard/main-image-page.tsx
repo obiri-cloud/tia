@@ -266,7 +266,7 @@ const MainImagePage = ({
   const pollForLab = async (
     key: string | null,
     lab_status_key: string | null,
-    delay: number = 8000,
+    delay: number = 10_000,
     maxRetries: number = 10
   ) => {
     try {
@@ -348,7 +348,7 @@ const MainImagePage = ({
         }
       );
       if (response.status === 200) {
-        return response.data.results.find(
+        return response.data.data.find(
           (res: IActiveLab) => String(res.image) === id
         );
       } else {
