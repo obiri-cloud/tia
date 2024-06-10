@@ -382,10 +382,10 @@ const AccountPage = () => {
           <div className="sc-hLBbgP gUrCBj mt-8">
             <div className="sc-hLBbgP sc-eAeVAz dIPdRh hOuTWu">
               <label className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
-                Upgrage plan
+                Upgrade plan
               </label>
               <span className="sc-bcXHqe sc-iuxOeI wRSCb jhSxJJ">
-                Upgrage plan your subscription plan
+                Upgrade plan your subscription plan
               </span>
             </div>
             <Popover open={open} onOpenChange={setOpen}>
