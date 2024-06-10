@@ -1,7 +1,4 @@
-import ResendOTP from "@/components/Signup/ResendOTP";
 import SConfirmationForm from "@/components/Signup/SConfirmationForm";
-import SignupConfirmationForm from "@/components/Signup/SignupConfirmationForm";
-import axios from "axios";
 import React from "react";
 
 const SignUpConfirmation = () => {

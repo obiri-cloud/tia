@@ -1,6 +1,6 @@
 "use client";
-import axios from "axios";
-import { useSearchParams } from "next/navigation";
+import axios, { AxiosError } from "axios";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "../ui/toast";
@@ -9,6 +9,7 @@ const ResendOTP = () => {
   const searchParams = useSearchParams();
 
   const email = searchParams.get("email");
+  const router = useRouter();
 
   let formData = {
     email,
@@ -36,6 +37,8 @@ const ResendOTP = () => {
           duration: 2000,
         });
       } else {
+        console.log("response.data", response.data);
+
         toast({
           title: "Uh oh! Something went wrong.",
           description: "There was a problem with your request.",
@@ -44,12 +47,18 @@ const ResendOTP = () => {
         });
       }
     } catch (error) {
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
-        variant: "destructive",
-        duration: 2000,
-      });
+      if (error instanceof AxiosError) {
+        toast({
+          //@ts-ignore
+          title: error.response.data.message,
+          variant: "info",
+          duration: 2000,
+        });
+        //@ts-ignore
+        if (error.response.data.message.includes("already verified")) {
+          router.push(`/login?email=${email}`);
+        }
+      }
     }
   };
   return (

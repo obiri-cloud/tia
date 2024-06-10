@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { toast } from "@/components/ui/use-toast";
 import axios, { AxiosError } from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useRef } from "react";
 import { EyeIcon, EyeOff } from "lucide-react";
 import { LabelInputContainer } from "../ui/label-input-container";
@@ -20,6 +20,7 @@ export function SignupFormDemo() {
   const form = useForm();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const { theme } = useTheme();
 
@@ -45,6 +46,8 @@ export function SignupFormDemo() {
       password2: z.string().min(6, {
         message: "Password has to be longer than 6 characaters",
       }),
+      orgid: z.string().optional()
+
     })
     .superRefine(({ password1, password2 }, ctx) => {
       if (password1 !== password2) {
@@ -67,6 +70,8 @@ export function SignupFormDemo() {
       email: emailRef.current?.value,
       password1: passwordRef.current?.value,
       password2: confirmPasswordRef.current?.value,
+      orgid: searchParams.get("orgid") ?? "",
+
     };
 
     try {

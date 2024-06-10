@@ -7,7 +7,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
 import { userCheck } from "@/lib/utils";
 import axios, { AxiosError } from "axios";
+import { ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -102,7 +104,6 @@ const InstructionPage = () => {
           let temp = instructions.filter((ins) => ins.id !== siq);
           setInstructions(temp);
           document.getElementById("closeDialog")?.click();
-
         }
       }
     } catch (error) {}
@@ -110,6 +111,23 @@ const InstructionPage = () => {
 
   return (
     <Dialog>
+      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+        <div className="flex items-center">
+          {currentImage?.name ? (
+            <span className="p-2 rounded-md">{currentImage?.name}</span>
+          ) : (
+            <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
+          )}
+          <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+        </div>
+        {
+          session?.user && session?.user.data.is_admin ? (
+            <Link href="/dashboard" className="font-medium text-mint">
+              Go to labs
+            </Link>
+          ) : null
+        }
+      </div>
       <div className="p-4">
         {currentImage?.name ? (
           <div className="flex justify-between">
@@ -153,14 +171,14 @@ const InstructionPage = () => {
                     >
                       Edit
                     </Button>
-                  <DialogTrigger>
-                  <Button
-                      onClick={() => setCurrentInstruction(ins)}
-                      variant="destructive"
-                    >
-                      Delete
-                    </Button>
-                  </DialogTrigger>
+                    <DialogTrigger>
+                      <Button
+                        onClick={() => setCurrentInstruction(ins)}
+                        variant="destructive"
+                      >
+                        Delete
+                      </Button>
+                    </DialogTrigger>
                   </div>
                 </div>
               ))}

@@ -1,3 +1,7 @@
+*{
+  /* border: 1px solid red !important; */
+}
+
 .dec-text {
   background-image: linear-gradient(to right, #ffc300 0%, #ffc300 100%);
   background-size: 100% 0.4em;
@@ -1210,4 +1214,12 @@ code {
 
 .all-initial *:not(code) {
   all: revert;
+}
+
+
+
+.scroller {
+  height: 100px;
+  overflow-y: scroll;
+  scrollbar-color: #808080 #242425;
 }

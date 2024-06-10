@@ -9,7 +9,7 @@ interface ILabTable {
   labList: ILabList[] | null;
 }
 const LabTable: FC<ILabTable> = ({ labList }) => {
-  const [currentLab, setCurrentLab] = useState<ILabList | null>(null);
+  const [currentLab, setCurrentLab] = useState<ILabList | undefined>(undefined);
 
   return (
     <Dialog>

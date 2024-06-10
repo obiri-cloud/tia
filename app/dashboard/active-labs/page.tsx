@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import secureLocalStorage from "react-secure-storage";
 import { IActiveLab } from "@/app/types";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 const ActiveLabsPage = () => {
   const [labs, setLabs] = useState([]);
@@ -46,13 +47,13 @@ const ActiveLabsPage = () => {
         }
       );
 
-      setLabs(response.data.results);
+      setLabs(response.data.data);
     } catch (error) {
       userCheck(error as AxiosError);
     }
   };
 
-  const viewLab = (image: IActiveLab) => {    
+  const viewLab = (image: IActiveLab) => {
     secureLocalStorage.setItem(
       "tialab_info",
       JSON.stringify({
@@ -60,17 +61,20 @@ const ActiveLabsPage = () => {
         url: image.ingress_url,
         creation_date: image.creation_date,
         duration: image.image.duration,
-
       })
     );
     router.push(`/dashboard/labs?lab=${image.id}&image=${image.image.id}`);
   };
   return (
     <div className="">
-      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge  flex gap-2 p-2">
-        <span className="p-2 ">Active Labs</span>
-        <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+        <div className="flex">
+          <span className="p-2 ">Active Labs</span>
+          <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+        </div>
+        <AltRouteCheck />
       </div>
+
       <div className="p-4">
         <Table>
           <TableHeader>
@@ -80,7 +84,15 @@ const ActiveLabsPage = () => {
             </TableRow>
           </TableHeader>
           {labs?.length === 0 && (
-            <TableCaption>You have no active lab..., <Link href='/dashboard' className="underline font-semibold dark:text-white text-black">click here to start one</Link></TableCaption>
+            <TableCaption>
+              You have no active lab...{" "}
+              <Link
+                href="/dashboard"
+                className="underline font-semibold dark:text-white text-black"
+              >
+                click here to start one
+              </Link>
+            </TableCaption>
           )}
           <TableBody>
             {labs

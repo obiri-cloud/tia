@@ -7,7 +7,6 @@ import { useQuery } from "react-query";
 import StarRatings from "react-star-ratings";
 
 const Reviews = ({ id, token }: { id: string | null; token: string }) => {
-
   const getReviews = async (
     id: string | null,
     token: string
@@ -57,7 +56,8 @@ const Reviews = ({ id, token }: { id: string | null; token: string }) => {
                   </time>
                   <h3 className="text-base font-semibold text-black dark:text-white flex gap-3">
                     <div>
-                      {review.user.first_name} {review.user.last_name}{" "}
+                      {review.user?.first_name ?? "John"}{" "}
+                      {review.user?.last_name ?? "Doe"}{" "}
                     </div>{" "}
                     <div className="">
                       <StarRatings

@@ -21,7 +21,7 @@ import { getImageListX } from "./overview";
 import { ILabList } from "@/app/types";
 
 interface INewLabForm {
-  labDetails: ILabList | null;
+  labDetails: ILabList | undefined;
 }
 const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
   const form = useForm();

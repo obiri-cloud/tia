@@ -71,7 +71,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
           response.data.lab_id &&
           response.data.image_id
         ) {
-    toggleNoClose(false)
+          toggleNoClose(false);
 
           setSecondaryAction(
             "A lab of this instance already exists, you can delete the lab and create a new one or jump back into it."
@@ -144,6 +144,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     let formData = JSON.stringify({ image: id });
     toast({
       title: "Hold on we are deleting your lab.",
+      duration: 2000,
     });
     try {
       const response = await axios.post(
@@ -217,22 +218,10 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     }
   };
 
-  const cancelLab = () => {
+  const deleteActiveLab = () => {
+    deleteLab(labInfo!.image_id);
     document.getElementById("closeDialog")?.click();
-
-    toast({
-      variant: "destructive",
-      title: `Lab creation stopped`,
-    });
-    //@ts-ignore
-    deleteLab(lab?.id);
   };
-
-  const deleteActiveLab = ()=>{
-    deleteLab(labInfo!.image_id)
-    document.getElementById("closeDialog")?.click();
-
-  }
   return (
     <div>
       {lab ? (

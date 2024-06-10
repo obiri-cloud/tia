@@ -7,7 +7,12 @@ import axios, { AxiosError } from "axios";
 import { ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "@/components/ui/use-toast";
@@ -23,11 +28,32 @@ import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { IActiveLab } from "@/app/types";
-const MainImagePage = ({ token }: { token: string }) => {
+import AltRouteCheck from "../alt-route-check";
+
+const MainImagePage = ({
+  token,
+  labCreationUrl,
+  redirectUrl,
+}: {
+  token: string;
+  labCreationUrl: string;
+  redirectUrl: string;
+}) => {
   const searchParams = useSearchParams();
+  const params = useParams();
   const router = useRouter();
   const id = searchParams.get("image");
+
+  const paramId = params.id;
+  const gid = params.gid;
+  const name = searchParams.get("name") ?? "";
+  const group = searchParams.get("group_name");
+
+  const pathname = usePathname();
+
   const { data: session } = useSession();
+
+  console.log({ labCreationUrl, redirectUrl });
 
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -115,7 +141,7 @@ const MainImagePage = ({ token }: { token: string }) => {
     });
   }
 
-  const checkTimeBeforeStart = async (id: string | undefined) => {
+  const checkTimeBeforeStart = async () => {
     setCreatingStarted(true);
     if (buttonRef.current) {
       buttonRef.current.disabled = true;
@@ -142,7 +168,7 @@ const MainImagePage = ({ token }: { token: string }) => {
     });
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/create/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}${labCreationUrl}`,
         formData,
         {
           headers: {
@@ -179,7 +205,7 @@ const MainImagePage = ({ token }: { token: string }) => {
             buttonRef.current.disabled = false;
           }
           router.push(
-            `/dashboard/labs?lab=${data.lab_id}&image=${data.image_id}`
+            `${redirectUrl}/labs?lab=${data.lab_id}&image=${data.image_id}`
           );
         } else {
           setCreatingStarted(false);
@@ -240,7 +266,7 @@ const MainImagePage = ({ token }: { token: string }) => {
   const pollForLab = async (
     key: string | null,
     lab_status_key: string | null,
-    delay: number = 8000,
+    delay: number = 10_000,
     maxRetries: number = 10
   ) => {
     try {
@@ -282,7 +308,7 @@ const MainImagePage = ({ token }: { token: string }) => {
           });
           setCreatingStarted(false);
           router.push(
-            `/dashboard/labs?lab=${data.data.lab_id}&image=${data.data.image_id}`
+            `${redirectUrl}/labs?lab=${data.data.lab_id}&image=${data.data.image_id}`
           );
         }
         if (!resolved) {
@@ -322,7 +348,7 @@ const MainImagePage = ({ token }: { token: string }) => {
         }
       );
       if (response.status === 200) {
-        return response.data.results.find(
+        return response.data.data.find(
           (res: IActiveLab) => String(res.image) === id
         );
       } else {
@@ -335,19 +361,63 @@ const MainImagePage = ({ token }: { token: string }) => {
 
   return (
     <div className="">
-      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge  flex gap-2 p-2 items-center">
-        <Link
-          href="/dashboard"
-          className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
-        >
-          All Images
-        </Link>
-        <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
-        {currentImage?.name ? (
-          <span className="p-2 rounded-md">{currentImage?.name}</span>
+      {" "}
+      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+        {pathname.includes("organizations") ? (
+          <div className="flex items-center">
+            <Link
+              href={`/dashboard/organizations`}
+              className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+            >
+              Organizations
+            </Link>
+            <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+            {name ? (
+              <Link
+                className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+                href={`/dashboard/organizations/${paramId}/groups?name=${name}`}
+              >
+                {name}
+              </Link>
+            ) : (
+              <Skeleton className="w-[200px] h-[16.5px] rounded-md" />
+            )}
+            <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+            {group ? (
+              <Link
+                className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+                href={`/dashboard/organizations/${paramId}/groups/${gid}?name=${name}&group_name=${group}`}
+              >
+                {group}
+              </Link>
+            ) : (
+              <Skeleton className="w-[200px] h-[16.5px] rounded-md" />
+            )}
+            <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+            {currentImage?.name ? (
+              <span className="p-2 rounded-md">{currentImage?.name}</span>
+            ) : (
+              <Skeleton className="w-[200px] h-[16.5px] rounded-md" />
+            )}
+          </div>
         ) : (
-          <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
+          <div className="flex items-center">
+            <Link
+              href="/dashboard"
+              className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
+            >
+              All Images
+            </Link>
+            <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
+            {currentImage?.name ? (
+              <span className="p-2 rounded-md">{currentImage?.name}</span>
+            ) : (
+              <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
+            )}
+          </div>
         )}
+
+        <AltRouteCheck />
       </div>
       <div className="w-full py-12 lg:py-24 xl:py-16">
         <div className="container grid gap-6 px-4 md:px-6 lg:grid-cols-12 xl:gap-12">
@@ -383,21 +453,11 @@ const MainImagePage = ({ token }: { token: string }) => {
                 )}
               </p>
             </div>
-            {/* <div className="grid gap-1.5 sm:grid-cols-2">
-        <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-          <Clock className="w-4 h-4 flex-shrink-0" />
-          <span>1-2 weeks</span>
-        </div>
-        <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-          <UsersIcon className="w-4 h-4 flex-shrink-0" />
-          <span>10,000+ learners</span>
-        </div>
-      </div> */}
             <div className="flex gap-2">
               {isActive ? (
                 <Button
                   ref={buttonRef}
-                  onClick={() => checkTimeBeforeStart(currentImage?.id)}
+                  onClick={() => checkTimeBeforeStart()}
                   className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
                 >
                   {creatingStarted ? (
@@ -409,19 +469,30 @@ const MainImagePage = ({ token }: { token: string }) => {
                   )}
                 </Button>
               ) : (
-                <Button
-                  ref={buttonRef}
-                  onClick={() => checkTimeBeforeStart(currentImage?.id)}
-                  className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                >
+                <div className="flex justify-center items-center gap-2">
                   {creatingStarted ? (
-                    <span className="px-7">
-                      <InfinityLoader />{" "}
-                    </span>
+                    <Button
+                      ref={buttonRef}
+                      onClick={() => checkTimeBeforeStart()}
+                      className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                    >
+                      <div className="px-7 flex justify-center items-center gap-2">
+                        <span className="">
+                          <InfinityLoader />
+                        </span>
+                      </div>
+                    </Button>
                   ) : (
-                    "Start Learning"
+                    <Button
+                      ref={buttonRef}
+                      onClick={() => checkTimeBeforeStart()}
+                      className="inline-flex items-center gap-2 h-10 text-sm font-medium rounded-md bg-gray-900 px-4 shadow text-gray-50 transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                    >
+                      Start Learning
+                    </Button>
                   )}
-                </Button>
+                  {creatingStarted && <p>Lab Loading In Progress</p>}
+                </div>
               )}
 
               {isActive ? (

@@ -9,7 +9,9 @@ export async function GET(request: NextRequest) {
 }
 
 const poll = async (key: string | null, token: string | null) => {
-  const url = `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/callback/?key=${key}`;
+  const timestamp = new Date().getTime();
+  
+  const url = `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/callback/?key=${key}&timestamp=${timestamp}`;
 
   const res = await fetch(url, {
     method: "GET",

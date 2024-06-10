@@ -7,7 +7,7 @@ import secureLocalStorage from "react-secure-storage";
 import ProfileHeader from "../components/admin/profile-header";
 import { usePathname } from "next/navigation";
 import { DropToggle } from "../components/DropToggle";
-import { LogOut, Play, ShapesIcon, User } from "lucide-react";
+import { LogOut, Play, ShapesIcon, User, Users } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -143,10 +143,38 @@ ${
                 </ul>
                 <div className="">
                   <ul className="space-y-2 font-medium">
-                    <li className="py-1">
-                      <span className="font-light">Theme:</span>
-
-                      <DropToggle />
+                    <li className="account-button">
+                      <a
+                        href="/dashboard/organizations"
+                        className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
+                          pathname === "/dashboard/organisations"
+                            ? "bg-menuHovWhite dark:bg-menuHov"
+                            : ""
+                        }`}
+                      >
+                        <Users
+                          className={`
+                          
+                          ${
+                            pathname === "/dashboard/organizations"
+                              ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
+                              : " "
+                          }
+                          `}
+                        />
+                        <span
+                          className={`
+                        ms-3 
+                        ${
+                          pathname === "/dashboard/organizations"
+                            ? "font-semibold"
+                            : "font-light "
+                        }
+                        `}
+                        >
+                          Organizations
+                        </span>
+                      </a>
                     </li>
                     <li className="account-button">
                       <a

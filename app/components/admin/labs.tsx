@@ -40,7 +40,7 @@ import { MoreVerticalIcon } from "lucide-react";
 const Labs = () => {
   const { labCount, labList } = useSelector((state: RootState) => state.admin);
 
-  const [currentLab, setCurrentLab] = useState<ILabList | null>(null);
+  const [currentLab, setCurrentLab] = useState<ILabList | undefined>(undefined);
 
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
@@ -56,6 +56,7 @@ const Labs = () => {
   const endLab = async (id: number | undefined) => {
     toast({
       title: "Hold on we are cleaning your lab environment.",
+      duration: 2000,
     });
     try {
       const response = await axios.delete(
@@ -69,9 +70,8 @@ const Labs = () => {
           },
         }
       );
-      console.log("response", response);
-      
-      if (response.status === 204 ) {
+
+      if (response.status === 204) {
         toast({
           title: "Lab Deleted Successfully...",
           variant: "success",
@@ -79,7 +79,7 @@ const Labs = () => {
 
         getLabListX(token).then((response) => {
           dispatch(setLabCount(response.data.count));
-          dispatch(setLabList(response.data.results));
+          dispatch(setLabList(response.data.data));
           document.getElementById("closeDialog")?.click();
         });
       } else {
@@ -176,7 +176,6 @@ const Labs = () => {
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
-                           
                           </TableCell>
                         </TableRow>
                       ))
@@ -203,7 +202,6 @@ const Labs = () => {
         }
       >
         <DeleteConfirmation
-          //@ts-ignore
           lab={currentLab}
           text="Do you want to delete this image"
           noText="No"

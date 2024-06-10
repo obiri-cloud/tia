@@ -1,18 +1,6 @@
 "use client";
 
 import React, { useRef, FormEvent, useState } from "react";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import * as z from "zod";
 import { toast } from "@/components/ui/use-toast";
 import axios, { AxiosError } from "axios";
@@ -44,7 +32,7 @@ const SConfirmationForm = () => {
     code: z
       .string()
       .min(5, {
-        message: "Code has to be 5 characters or more",
+        message: "Code has to be 5 characters",
       })
       .max(6, {
         message: "Code can't to be more than 5 characters ",

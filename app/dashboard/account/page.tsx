@@ -3,6 +3,7 @@ import axios, { AxiosError } from "axios";
 import React, {
   ChangeEvent,
   FormEvent,
+  SVGProps,
   useEffect,
   useRef,
   useState,
@@ -16,19 +17,32 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import * as z from "zod";
-import { userCheck } from "@/lib/utils";
+import { cn, userCheck } from "@/lib/utils";
 
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import DeactivateConfirmation from "@/app/components/deactivate-confirmation";
 import { IUserProfile } from "@/app/types";
-
+import { DropToggle } from "@/app/components/DropToggle";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import { CaretSortIcon } from "@radix-ui/react-icons";
+import { CheckIcon } from "lucide-react";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 const AccountPage = () => {
   const { data: session } = useSession();
   const [userData, setUserData] = useState<IUserProfile>();
   const [editMode, setEditMode] = useState(false);
-
-  const form = useForm();
 
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
@@ -44,7 +58,11 @@ const AccountPage = () => {
     }),
   });
 
-  // @ts-ignore
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState<string | undefined>(
+    session?.user.data.subscription_plan
+  );
+
   const token = session?.user!.tokens?.access_token;
   const getUser = async () => {
     const response = await axios.get(
@@ -67,6 +85,10 @@ const AccountPage = () => {
       console.error(error);
     }
   }, []);
+
+  useEffect(() => {
+    setValue(session?.user.data.subscription_plan);
+  }, [session]);
 
   const changeAvatar = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -209,169 +231,236 @@ const AccountPage = () => {
     }
   };
 
+  const plans = [
+    {
+      value: "basic",
+      label: (
+        <span>
+          <div className="sc-hLBbgP jouEsA">
+            <div className="sc-gMHJKX GATXs">
+              <span className="sc-bcXHqe sc-csNZvx cvSnkm jlBvVU">Aa</span>
+            </div>
+            <span className="sc-bcXHqe sc-cxiiTX clfcKZ dvLDyp">Basic</span>
+          </div>
+        </span>
+      ),
+    },
+    {
+      value: "standard",
+      label: (
+        <span>
+          <div className="sc-hLBbgP jouEsA">
+            <div className="sc-gMHJKX GATXs">
+              <span className="sc-bcXHqe sc-csNZvx cvSnkm dnrtPT">Aa</span>
+            </div>
+            <span className="sc-bcXHqe sc-cxiiTX chGwny dvLDyp">Standard</span>
+          </div>
+        </span>
+      ),
+    },
+    {
+      value: "premium",
+      label: (
+        <span>
+          <div className="sc-hLBbgP jouEsA">
+            <div className="sc-gMHJKX GATXs">
+              <span className="sc-bcXHqe sc-csNZvx cvSnkm dnrtPT">Aa</span>
+            </div>
+            <span className="sc-bcXHqe sc-cxiiTX chGwny dvLDyp">Premium</span>
+          </div>
+        </span>
+      ),
+    },
+  ];
+
   return (
     <Dialog>
-
-    <div className="sc-hLBbgP sc-fLjoTV jAQqIz jVzpQn">
-      <div className="sc-jEJXZe cyvxRV"></div>
-      <div className="sc-hLBbgP sc-cTUoWY ioYMmf jlBsiO">
-        <div className="sc-hLBbgP cAyNtX">
-          <div className="sc-hLBbgP gUrCBj">
-            <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText text-whiteDark">
-              Profile
-            </span>
-          </div>
-          <div className="sc-bcXHqe sc-cRIgaW cpMQpB htAZxf">
-            Manage your Tialabs profile
-          </div>
+      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+        <div className="flex">
+          <span className="p-2 ">Account</span>
         </div>
-        <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
-        <form onSubmit={handleSubmit}>
-          {/* <div className="sc-gGfaQS gna-dsN">
-            <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
-              <div className="sc-hLBbgP ioYMmf">
-                <label>
-                  <span className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium">
-                    Profile picture
-                  </span>
-                </label>
+        <AltRouteCheck />
+      </div>
+      <div className="sc-hLBbgP sc-fLjoTV jAQqIz jVzpQn">
+        <div className="sc-jEJXZe cyvxRV"></div>
+        <div className="sc-hLBbgP sc-cTUoWY ioYMmf jlBsiO">
+          <div className="sc-hLBbgP cAyNtX">
+            <div className="sc-hLBbgP gUrCBj">
+              <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText text-whiteDark">
+                Profile
+              </span>
+            </div>
+            <div className="sc-bcXHqe sc-cRIgaW cpMQpB htAZxf">
+              Manage your Tialabs profile
+            </div>
+          </div>
+          <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
+          <form onSubmit={handleSubmit}>
+            <div className="sc-hLBbgP ePdqdi mb-[24px]">
+              <span className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
+                Email
+              </span>
+              <div className="sc-hLBbgP sc-svekf hDbocA lhdcYD">
                 <div className="sc-hLBbgP fHykyP">
-                  <div
-                    role="button"
-                    className="sc-hLBbgP sc-igtUOe jKWMTP Vihrj sc-lgpvUy dHFqIb"
-                  >
-                    <input
-                      className="hidden"
-                      accept="image/png, image/jpeg"
-                      type="file"
-                      id="avatarUrl"
-                    />
-                    <div className="sc-gJqSRm bPFOEz sc-hRXZVh iZhvmM">
-                      <div
-                        aria-label="Avatar with initials SA"
-                        className="sc-fHSyak bhauWF"
-                      >
-                        <span className=" uppercase">
-                          {userData?.first_name.slice(0, 2)}
-                        </span>
-                      </div>
+                  {userData?.email ? (
+                    <span className="sc-bcXHqe sc-kgMPZw cpMQpB tJsVO">
+                      {userData.email}
+                    </span>
+                  ) : (
+                    <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="sc-hLBbgP ePdqdi mb-[24px]">
+              <span className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
+                Username
+              </span>
+              <div className="sc-hLBbgP sc-svekf hDbocA lhdcYD">
+                <div className="sc-hLBbgP fHykyP">
+                  {userData?.username ? (
+                    <span className="sc-bcXHqe sc-kgMPZw cpMQpB tJsVO">
+                      {userData.username}
+                    </span>
+                  ) : (
+                    <Skeleton className="w-[100px] h-[16.5px] rounded-md" />
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-5">
+              <div className="sc-gGfaQS gna-dsN">
+                <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
+                  <div className="sc-hLBbgP ioYMmf">
+                    <label>
+                      <span className="dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
+                        First name
+                      </span>
+                    </label>
+                    <div className="sc-hLBbgP fHykyP">
+                      <input
+                        placeholder="First name"
+                        className="kFBAIE bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder"
+                        defaultValue={userData?.first_name}
+                        ref={firstNameRef}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="sc-gGfaQS gna-dsN">
+                <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
+                  <div className="sc-hLBbgP ioYMmf">
+                    <label>
+                      <span className="dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
+                        Last name
+                      </span>
+                    </label>
+                    <div className="sc-hLBbgP fHykyP">
+                      <input
+                        placeholder="Last name"
+                        className="kFBAIE bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder"
+                        defaultValue={userData?.last_name}
+                        ref={lastNameRef}
+                      />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div> */}
-          <div className="sc-hLBbgP ePdqdi mb-[24px]">
-            <span className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
-              Email
-            </span>
-            <div className="sc-hLBbgP sc-svekf hDbocA lhdcYD">
-              <div className="sc-hLBbgP fHykyP">
-                {userData?.email ? (
-                  <span className="sc-bcXHqe sc-kgMPZw cpMQpB tJsVO">
-                    {userData.email}
-                  </span>
-                ) : (
-                  <Skeleton className="w-[300px] h-[16.5px] rounded-md" />
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="sc-hLBbgP ePdqdi mb-[24px]">
-            <span className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
-              Username
-            </span>
-            <div className="sc-hLBbgP sc-svekf hDbocA lhdcYD">
-              <div className="sc-hLBbgP fHykyP">
-                {userData?.username ? (
-                  <span className="sc-bcXHqe sc-kgMPZw cpMQpB tJsVO">
-                    {userData.username}
-                  </span>
-                ) : (
-                  <Skeleton className="w-[100px] h-[16.5px] rounded-md" />
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="sc-gGfaQS gna-dsN">
-            <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
-              <div className="sc-hLBbgP ioYMmf">
-                <label>
-                  <span className="dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
-                    First name
-                  </span>
-                </label>
-                <div className="sc-hLBbgP fHykyP">
-                  <input
-                    placeholder="First name"
-                    className="kFBAIE bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder"
-                    defaultValue={userData?.first_name}
-                    ref={firstNameRef}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div className="sc-gGfaQS gna-dsN">
-            <div className="sc-hLBbgP sc-lcKFhQ ePdqdi gvNIOZ">
-              <div className="sc-hLBbgP ioYMmf">
-                <label>
-                  <span className="dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
-                    Last name
-                  </span>
-                </label>
-                <div className="sc-hLBbgP fHykyP">
-                  <input
-                    placeholder="Last name"
-                    className="kFBAIE bg-white dark:bg-dashboardDarkInput dark:border-dashboardDarkInputBorder border-dashboardLightInputBorder border text-whiteDark dark:text-dashboardLightInputBorder"
-                    defaultValue={userData?.last_name}
-                    ref={lastNameRef}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+            <button
+              ref={buttonRef}
+              type="submit"
+              className="sc-fbYMXx dxdUZf bg-black"
+            >
+              Update
+            </button>
+          </form>
 
-          <button
-            ref={buttonRef}
-            type="submit"
-            className="sc-fbYMXx dxdUZf bg-black"
-          >
-            Update
-          </button>
-        </form>
-
-        <div className="sc-jEJXZe cyvxRV"></div>
-
-        <div className="sc-hLBbgP   flex justify-between">
-          <div className="">
-            <div className="sc-hLBbgP gUrCBj">
-              <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText whiteDark">
-                Deactivate
+          <div className="sc-hLBbgP gUrCBj mt-8">
+            <div className="sc-hLBbgP sc-eAeVAz dIPdRh hOuTWu">
+              <label className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
+                Upgrade plan
+              </label>
+              <span className="sc-bcXHqe sc-iuxOeI wRSCb jhSxJJ">
+                Upgrade plan your subscription plan
               </span>
             </div>
-            <div className="sc-bcXHqe sc-cRIgaW cpMQpB htAZxf">
-              Deactivate your account
-            </div>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="w-[200px] justify-between dark:bg-comboBg bg-white theme-selector"
+                >
+                  {value
+                    ? plans.find((plan) => plan.value === value)?.label
+                    : "Upgrade plan..."}
+                  <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandEmpty>No plans found.</CommandEmpty>
+                  <CommandGroup className="dark:bg-comboBg bg-white">
+                    {plans.map((plan) => (
+                      <CommandItem
+                        key={plan.value}
+                        value={plan.value}
+                        onSelect={(currentValue) => {
+                          setValue(currentValue === value ? "" : currentValue);
+                          setOpen(false);
+                        }}
+                        className="capitalize"
+                      >
+                        {plan.label}
+                        <CheckIcon
+                          className={cn(
+                            "ml-auto h-4 w-4",
+                            value === plan.value ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
-          <DialogTrigger>
-            <Button variant="destructive" >Deactivate</Button>
-          </DialogTrigger>
-        </div>
-        <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
-      <DeactivateConfirmation
-        text="Do you want to deactivate your account?"
-        noText="No, cancel"
-        confirmText="Yes, deactivate"
-        confirmFunc={() => deactivateAccount()}
-      />
-      </div>
-    </div>
-    </Dialog>
 
+          <DropToggle />
+
+          <div className="sc-jEJXZe cyvxRV"></div>
+
+          <div className="sc-hLBbgP   flex justify-between mt-10">
+            <div className="">
+              <div className="sc-hLBbgP gUrCBj">
+                <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText whiteDark">
+                  Deactivate
+                </span>
+              </div>
+              <div className="sc-bcXHqe sc-cRIgaW cpMQpB htAZxf">
+                Deactivate your account
+              </div>
+            </div>
+            <DialogTrigger>
+              <Button variant="destructive">Deactivate</Button>
+            </DialogTrigger>
+          </div>
+          <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
+          <DeactivateConfirmation
+            text="Do you want to deactivate your account?"
+            noText="No, cancel"
+            confirmText="Yes, deactivate"
+            confirmFunc={() => deactivateAccount()}
+          />
+        </div>
+      </div>
+    </Dialog>
   );
 };
-
 
 export default AccountPage;
