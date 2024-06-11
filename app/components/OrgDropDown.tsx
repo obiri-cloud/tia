@@ -6,6 +6,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
@@ -13,10 +17,29 @@ import Link from "next/link";
 import { Dialog } from "@radix-ui/react-dialog";
 import CreateOrgModal from "./CreateOrgModal";
 import useOrgCheck from "@/hooks/createOrgCheck";
-import { useMutation, useQueryClient } from "react-query";
-import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import axios, { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { userCheck } from "@/lib/utils";
+import { InvitationsResponse, NoInvitationsResponse } from "@/app/types";
+import {
+  Mail,
+  MessageSquare,
+  PlusCircle,
+  PlusCircleIcon,
+  Shield,
+  UserPlus,
+  Users2,
+} from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import OrganizationHeader from "./admin/OrganizationHeader";
+import ProfileHeader from "./admin/profile-header";
 
 export default function Component() {
   const { data: session, update } = useSession();
@@ -28,8 +51,6 @@ export default function Component() {
   let subscription_plan = session?.user.data.subscription_plan;
   let is_super = session?.user.data.is_superuser;
   let is_admin = session?.user.data.is_admin;
-  let role = session?.user.data.role;
-  let org_id = session?.user.data.organization_id;
 
   const createOrg = async (formData: FormData) => {
     const axiosConfig = {
@@ -46,31 +67,32 @@ export default function Component() {
     return response.data;
   };
 
-  const {
-    mutate: createOrganizationMutation,
-    isLoading: updating,
-    error: UpdateError,
-  } = useMutation((formData: FormData) => createOrg(formData), {
-    onSuccess: (data) => {
-      queryClient.invalidateQueries("orgName");
-      if (session) {
-        update({ organization_id: data.data.id });
-        router.push("/my-organization");
-      }
+  const { mutate: createOrganizationMutation } = useMutation(
+    (formData: FormData) => createOrg(formData),
+    {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries("orgName");
+        if (session) {
+          update({ organization_id: data.data.id });
+          router.push("/my-organization");
+        }
 
-      toast({
-        variant: "success",
-        title: "Organization created successfully",
-      });
-    },
-    onError: (error: any) => {
-      const responseData = error.response.data;
-      toast({
-        variant: "destructive",
-        title: responseData.data,
-      });
-    },
-  });
+        toast({
+          variant: "success",
+          title: "Organization created successfully",
+        });
+      },
+      onError: (error: any) => {
+        console.log("error", error);
+        const responseData = error.response.data;
+        toast({
+          variant: "destructive",
+          title: responseData.detail,
+          duration: 2000,
+        });
+      },
+    }
+  );
 
   const createOrganization = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -86,10 +108,12 @@ export default function Component() {
     setIsOpen(true);
   };
 
-  const getOrg = async () => {
+  const getOrg = async (id: string) => {
+    console.log("here");
+
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${orgCheck.id}/retrieve/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${id}/retrieve/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -98,107 +122,147 @@ export default function Component() {
           },
         }
       );
+      console.log("response.data.data", response.data.data);
+
       return response.data.data;
-    } catch (error) {}
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
-  const { mutate: updateOrgNameMutation } = useMutation(getOrg, {
-    onSuccess: () => {
-      queryClient.invalidateQueries("orgName");
-    },
-    onError: () => {},
-  });
+  const { data: organization } = useQuery(
+    ["organization-details", orgCheck.id],
+    () => getOrg(orgCheck.id)
+  );
 
-  const manageOrganization = async (e: any) => {
+  const getInvitations = async (): Promise<
+    NoInvitationsResponse | InvitationsResponse | undefined
+  > => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/user/org/list/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      userCheck(error as AxiosError);
+    }
+  };
+
+  const { data: otherOrganizations, isLoading } = useQuery(
+    ["other-organizations"],
+    () => getInvitations()
+  );
+
+  const goToOrg = async (e: any, org: any) => {
     e.preventDefault();
-    updateOrgNameMutation();
-    await update({ role: role, organization_id: orgCheck.id });
 
-    router.push("/my-organization/overview");
-  };
-
-  const renderDropdownItems = () => {
-    if (subscription_plan === "basic") {
-      return null;
-    }
-
-    if (orgCheck.value) {
-      return (
-        <>
-          <DropdownMenuItem onClick={handleCreateOrgClick}>
-            <div className="flex items-center gap-2">
-              <BuildingIcon className="h-4 w-4" />
-              Create organization
-            </div>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href="/admin">
-              <div className="flex items-center gap-2">
-                <AdminIcon className="h-4 w-4" />
-                Go to Admin
-              </div>
-            </Link>
-          </DropdownMenuItem>
-        </>
-      );
-    } else if (
-      is_super ||
-      subscription_plan === "premium" ||
-      subscription_plan === "standard"
-    ) {
-      return (
-        <>
-          <DropdownMenuItem onClick={manageOrganization}>
-            <div className="flex items-center gap-2">
-              <ManageIcon className="h-4 w-4" />
-              Manage organization
-            </div>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href="/admin">
-              <div className="flex items-center gap-2">
-                <AdminIcon className="h-4 w-4" />
-                Go to Admin
-              </div>
-            </Link>
-          </DropdownMenuItem>
-        </>
-      );
-    } else if (is_admin) {
-      return (
-        <DropdownMenuItem>
-          <Link href="/admin">
-            <div className="flex items-center gap-2">
-              <AdminIcon className="h-4 w-4" />
-              Go to Admin
-            </div>
-          </Link>
-        </DropdownMenuItem>
-      );
-    }
+    await update({ role: org?.role, organization_id: org.organization.id });
+    router.push("/my-organization");
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-full justify-between">
-          <div className="flex items-center gap-2">
-            <BuildingIcon className="h-4 w-4" />
-            <span>My Organization</span>
-          </div>
+        <div className="flex items-center  gap-2 w-full justify-between cursor-pointer">
+          <ProfileHeader />
           <ChevronDownIcon className="h-4 w-4" />
-        </Button>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-80">
-        <DropdownMenuLabel className="font-medium">My Organization</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-sm font-medium">
+          My Organization
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <div className="max-h-[200px] overflow-y-auto">
-          {renderDropdownItems()}
+          {organization ? (
+            <DropdownMenuItem>
+              <Link href="/my-organization/overview" className="flex">
+                <Users2 className="h-4 w-4 mr-2" />
+                <span>{organization.name}</span>
+              </Link>
+            </DropdownMenuItem>
+          ) : subscription_plan !== "basic" ? (
+            <DropdownMenuItem>
+              <Link
+                href="#"
+                onClick={handleCreateOrgClick}
+                className="text-gray-400 text-sm"
+              >
+                Create organization
+              </Link>
+              <PlusCircleIcon className="h-4 w-4 text-gray-400 ml-2" />
+            </DropdownMenuItem>
+          ) : (
+            <p className="dark:text-white text-gray-400 w-full text-center text-sm py-1.5">
+              You are on the free plan. Upgrade to the premium or standard plan
+              to create an organization.
+            </p>
+          )}
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuLabel className="font-medium">Other Organizations</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-sm font-medium">
+          Other Organizations
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
-
+        {!isLoading && otherOrganizations ? (
+          isNoInvitationsResponse(otherOrganizations) ? (
+            <p className="dark:text-white text-gray-400 w-full text-center text-sm py-1.5">
+              {otherOrganizations.message}...
+            </p>
+          ) : (
+            <div>
+              {otherOrganizations &&
+                otherOrganizations.data.length >= -1 &&
+                otherOrganizations.data.map((org: any, i) => (
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <Users2 className="h-4 w-4 mr-2" />
+                      {org.organization.name}
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem
+                          onClick={(e: any) => goToOrg(e, org)}
+                          disabled={org.role === "Member"}
+                        >
+                          <Link href="/my-organization/overview">
+                            <span>Manage organization</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link href="/my-organization/labs">
+                            <span>Go to labs</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                ))}
+            </div>
+          )
+        ) : null}
+        {is_admin && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Link
+                href="/my-organization/overview"
+                className="flex items-center"
+              >
+                <Shield className="h-4 w-4 mr-2" />
+                <span>Go to admin</span>
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <CreateOrgModal onSubmit={createOrganization} />
@@ -294,5 +358,14 @@ function ManageIcon(props: any) {
       <path d="M4 15v-2h16v2H4z" />
       <path d="M6 19v-2h12v2H6z" />
     </svg>
+  );
+}
+
+function isNoInvitationsResponse(
+  orgnizations: NoInvitationsResponse | InvitationsResponse
+): orgnizations is NoInvitationsResponse {
+  return (
+    (orgnizations as NoInvitationsResponse).message !== undefined &&
+    (orgnizations as NoInvitationsResponse).status === 404
   );
 }
