@@ -339,7 +339,6 @@ const Images = () => {
               </SelectContent>
             </Select>
           </div>
-
           <Dialog>
             <CardContent className="pl-2">
               <Table>

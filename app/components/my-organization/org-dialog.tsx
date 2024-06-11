@@ -18,7 +18,7 @@ const OrgDialog = ({
         <h3 className="text-black dark:text-white mb-1 font-semibold text-lg">
           {title}
         </h3>
-        <div className="text-sm text-black dark:text-white ">{description}</div>
+         <div className="text-sm text-black dark:text-white ">{description}</div>
       </div>
       {children}
     </SheetContent>
