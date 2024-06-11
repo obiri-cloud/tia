@@ -5,7 +5,7 @@ on:
     branches:
 
       - main
-      - ashesi
+      - demo
       - dev
 
 jobs:
@@ -17,10 +17,10 @@ jobs:
 
     env:
       MANIFESTS_DIRECTORY_DEV: ./k8s_deploy/dev
-      MANIFESTS_DIRECTORY_ASHESI: ./k8s_deploy/ashesi
+      MANIFESTS_DIRECTORY_DEMO: ./k8s_deploy/demo
 
       IMAGE_NAME_DEV: tialabs-frontend
-      IMAGE_NAME_ASHESI: ashesi-tialabs-frontend
+      IMAGE_NAME_DEMO: demo-tialabs-frontend
 
       CLUSTER_NAME_DEV: argocd-dev-eus-rg
       CLUSTER_NAME_PROD: tialabs-prod-eus-aks-admin
@@ -58,11 +58,11 @@ jobs:
           docker push $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG
           echo "::set-output name=image::$ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG"
 
-      - name: Build and push Docker Ashesi image
-        id: build-ashesi-image
-        if: ${{ github.ref == 'refs/heads/feat/ashesi' }}
+      - name: Build and push Docker Demo image
+        id: build-demo-image
+        if: ${{ github.ref == 'refs/heads/demo' }}
         env:
-          IMAGE_NAME: ${{ env.IMAGE_NAME_ASHESI }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME_DEMO }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
           TIMESTAMP_TAG: ${{ steps.current-date.outputs.date }}
           ACR_SERVER_NAME: ${{ secrets.ACR_SERVER_PROD }}
@@ -70,10 +70,10 @@ jobs:
           az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID_PROD }} -p ${{ secrets.AZURE_CLIENT_SECRET_PROD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
           az acr login --name ${{ env.ACR_SERVER_NAME }}
           docker build -f Dockerfile \
-          --build-arg NEXT_PUBLIC_BE_URL=${{ secrets.NEXT_PUBLIC_BE_URL_ASHESI }} \
+          --build-arg NEXT_PUBLIC_BE_URL=${{ secrets.NEXT_PUBLIC_BE_URL_DEMO }} \
           --build-arg NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
-          --build-arg NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL_ASHESI }} \
-          --build-arg NEXT_PUBLIC_TINY_MCE_URL=${{ secrets.NEXT_PUBLIC_TINY_MCE_URL }} \
+          --build-arg NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL_DEMO }} \
+          --build-arg NEXT_PUBLIC_TINY_MCE_URL=${{ secrets.NEXT_PUBLIC_TINY_MCE_URL_UAT }} \
           -t $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG .
           docker push $ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG
           echo "::set-output name=image::$ACR_SERVER_NAME/$IMAGE_NAME:$TIMESTAMP_TAG"
@@ -87,10 +87,10 @@ jobs:
           kubeconfig: ${{ secrets.K8S_CLUSTER_KUBECONFIG }}
           context: argocd-dev-eus-aks  #If left unspecified, current-context from kubeconfig is used as default
 
-      - name: Set Ashesi kubeconfig context
+      - name: Set Demo kubeconfig context
         uses: azure/k8s-set-context@v1
-        id: setup-ashesi-kubeconfig
-        if: ${{ github.ref == 'refs/heads/feat/ashesi' }}
+        id: setup-demo-kubeconfig
+        if: ${{ github.ref == 'refs/heads/demo' }}
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.K8S_CLUSTER_KUBECONFIG_PROD }}
@@ -121,19 +121,19 @@ jobs:
           kubectl get services -o wide -n $NAMESPACE
           kubectl get ingress -n $NAMESPACE
 
-      - name: Deploy Ashesi Frontend
-        id: deploy-ashesi-k8s-yaml
-        if: ${{ github.ref == 'refs/heads/feat/ashesi' }}
+      - name: Deploy Demo Frontend
+        id: deploy-demo-k8s-yaml
+        if: ${{ github.ref == 'refs/heads/demo' }}
         env:
-          IMAGE_NAME: ${{ steps.build-ashesi-image.outputs.image }}
+          IMAGE_NAME: ${{ steps.build-demo-image.outputs.image }}
           NAMESPACE: tiacourses
         run: |
-          cd $MANIFESTS_DIRECTORY_ASHESI
+          cd $MANIFESTS_DIRECTORY_DEMO
           curl -s -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
           chmod u+x ./kustomize
-          ./kustomize edit set image ashesi-tialabs-frontend=$IMAGE_NAME
+          ./kustomize edit set image demo-tialabs-frontend=$IMAGE_NAME
           ./kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment/ashesi-tialabs-frontend -n $NAMESPACE
+          kubectl rollout status deployment/demo-tialabs-frontend -n $NAMESPACE
           kubectl get services -o wide -n $NAMESPACE
           kubectl get ingress -n $NAMESPACE
 

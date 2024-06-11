@@ -13,20 +13,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ashesi-tialabs-frontend
+  name: demo-tialabs-frontend
   namespace: "tiacourses"
 spec:
   selector:
     matchLabels:
-      app: ashesi-tialabs-frontend
+      app: demo-tialabs-frontend
   template:
     metadata:
       labels:
-        app: ashesi-tialabs-frontend
+        app: demo-tialabs-frontend
     spec:
       containers:
-      - name: ashesi-tialabs-frontend
-        image: ashesi-tialabs-frontend
+      - name: demo-tialabs-frontend
+        image: demo-tialabs-frontend
         ports:
         - containerPort: 3000
         # envFrom:
@@ -39,16 +39,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ashesi-tialabs-frontend
+  name: demo-tialabs-frontend
   namespace: tiacourses 
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: ashesi.tialabs-ashesi.tiacloud.dev
+    external-dns.alpha.kubernetes.io/hostname: demo.tialabs-demo.tiacloud.dev
 spec:
   ports:
     - port: 3000
       targetPort: 3000
   selector:
-    app: ashesi-tialabs-frontend
+    app: demo-tialabs-frontend
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -56,22 +56,22 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: kong
   labels:
-    app: ashesi-tialabs-frontend
-  name: ashesi-tialabs-frontend
+    app: demo-tialabs-frontend
+  name: demo-tialabs-frontend
   namespace: tiacourses
 spec:
   rules:
-  - host: ashesi.tialabs-ashesi.tiacloud.dev
+  - host: demo.tialabs-demo.tiacloud.dev
     http:
       paths:
       - backend:
           service:
-            name: ashesi-tialabs-frontend
+            name: demo-tialabs-frontend
             port:
               number: 3000
         path: /
         pathType: Prefix
   tls:
   - hosts:
-    - ashesi.tialabs-ashesi.tiacloud.dev
-    secretName: tialabs.prod.tls.wildcard.tiapod.tiacloud.dev
+    - demo.tialabs-demo.tiacloud.dev
+    secretName: tialabs.demo.tls.wildcard.tiapod.tiacloud.dev

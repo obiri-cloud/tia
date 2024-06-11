@@ -207,6 +207,14 @@ export default function Component() {
             </p>
           )}
         </div>
+        <DropdownMenuItem>
+          <Link href="/dashboard">
+            <div className="flex items-center gap-2">
+              <AdminIcon className="h-4 w-4" />
+              Go to labs
+            </div>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-sm font-medium">
           Other Organizations
