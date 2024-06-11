@@ -49,8 +49,6 @@ const LabsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
 
-  // @ts-ignore
-
   const token = session?.user!.tokens?.access_token;
   const { systemTheme, theme, setTheme } = useTheme();
 
@@ -61,10 +59,14 @@ const LabsPage = () => {
   const [term, setTerm] = useState<string>("");
   const drawerButton = useRef<HTMLButtonElement>(null);
   const reviewDrawerButton = useRef<HTMLButtonElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(
+    !!document.fullscreenElement
+  );
 
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
   let intervalId: string | number | NodeJS.Timeout | undefined;
+  const router = useRouter();
 
   //choose the screen size
   const handleResize = () => {
@@ -245,6 +247,31 @@ const LabsPage = () => {
     }
   };
 
+  const handleFullScreenToggle = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error(
+          `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
+        );
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
   return (
     <Dialog>
       <Toaster position="bottom-right" />
@@ -253,6 +280,13 @@ const LabsPage = () => {
           <ResizablePanel defaultSize={40} minSize={30} className="">
             <div className="">
               <div className="flex justify-between p-3 border-b border-b-gray-200">
+                <Button
+                  onClick={() => router.push("/dashboard")}
+                  variant="outline"
+                  className=" bg-white shadow-2xl	  text-black font-normal"
+                >
+                  Home
+                </Button>
                 <div className="countdown">
                   <CountdownClock
                     startTime={labInfo?.creation_date || ""}
@@ -353,6 +387,16 @@ const LabsPage = () => {
           </button>
         ) : null}
       </div>
+      <button
+        onClick={handleFullScreenToggle}
+        className="bg-black p-3 rounded-lg absolute bottom-5 right-5"
+      >
+        {isFullscreen ? (
+          <Minimize2 className="w-5 h-5 text-white" />
+        ) : (
+          <Expand className="w-5 h-5 text-white" />
+        )}
+      </button>
       <DeleteConfirmation
         lab={labInfo}
         text="Do you want to delete this lab"
@@ -498,6 +542,8 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import CustomIframe from "@/app/components/custom-iframe";
+import Link from "next/link";
+import { Expand, Minimize2 } from "lucide-react";
 
 const ReviewDrawer = () => {
   const ratings = [

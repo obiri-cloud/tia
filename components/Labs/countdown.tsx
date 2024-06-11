@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import moment, { Moment, Duration } from "moment";
+import { Button } from "../ui/button";
 
 interface CountdownProps {
   startTime: string;
@@ -12,7 +13,6 @@ export const CountdownClock: React.FC<CountdownProps> = ({
   time,
   endLab,
 }) => {
-  
   const [timeRemaining, setTimeRemaining] = useState<Duration | null>(null);
   const [fiveMinLeft, setFiveMinLeft] = useState(false);
   const [tenSecLeft, setTenSecLeft] = useState(false);
@@ -63,10 +63,14 @@ export const CountdownClock: React.FC<CountdownProps> = ({
 
   return (
     <div
-      id="countdown"
-      className={`px-3 shadow-md p-2 rounded-lg ${
+      id="link"
+      className={`px-3 shadow-md p-2 rounded-lg font-medium h-10 ${
         tenSecLeft ? "shake-card" : ""
-      } ${fiveMinLeft ? "text-red-900 bg-danger" : "text-white bg-mint "}`}
+      } ${
+        !fiveMinLeft
+          ? "text-white bg-danger"
+          : "text-white bg-black  font-medium "
+      }`}
     >
       <p>{formatTime(timeRemaining)}</p>
     </div>

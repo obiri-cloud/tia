@@ -406,7 +406,7 @@ const MainImagePage = ({
               href="/dashboard"
               className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
             >
-              All Images
+              All Labs
             </Link>
             <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
             {currentImage?.name ? (
