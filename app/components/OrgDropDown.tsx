@@ -41,7 +41,7 @@ import {
 import OrganizationHeader from "./admin/OrganizationHeader";
 import ProfileHeader from "./admin/profile-header";
 
-export default function Component() {
+export default function OrgDropDown() {
   const { data: session, update } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -207,14 +207,14 @@ export default function Component() {
             </p>
           )}
         </div>
-        <DropdownMenuItem>
+        {/* <DropdownMenuItem>
           <Link href="/dashboard">
             <div className="flex items-center gap-2">
               <AdminIcon className="h-4 w-4" />
               Go to labs
             </div>
           </Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-sm font-medium">
           Other Organizations
