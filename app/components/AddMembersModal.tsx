@@ -1,26 +1,22 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
-  FormDescription,
   FormField,
   FormItem,
 } from "@/components/ui/form";
-import { FormEvent, useEffect, useState } from "react";
-
+import { useCallback, useEffect, useState } from "react";
 import { GroupMember } from "../types";
 import axios from "axios";
-import { useQuery } from "react-query";
 import { useSession } from "next-auth/react";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import OrgDialog from "./my-organization/org-dialog";
 import { OrgGroup } from "../my-organization/groups/page";
+import { useMutation, useQueryClient} from "react-query";
 
 export interface IMemberChanges {
   added: Set<string>;
@@ -33,7 +29,6 @@ const AddMembersModal = ({
   group,
 }: {
   members: GroupMember[] | undefined;
-
   onSubmit: (s: IMemberChanges) => void;
   group: OrgGroup | undefined;
 }) => {
@@ -41,7 +36,41 @@ const AddMembersModal = ({
   const { data: session } = useSession();
   const token = session?.user!.tokens?.access_token;
   const [loadingMembers, setIsLoadingMembers] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(10); // Items per page
+  const queryClient = useQueryClient();
+  const [searchQuery, setSearchQuery] = useState("");
   let organization_id = session?.user.data.organization_id;
+
+
+
+  const getSearchedMembers = async (query): Promise<GroupMember[] | undefined> => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${organization_id}/members/?q=${query}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // if (response.data.status === 404) {
+      //   alert("No members found for this organization.");
+      //   return;
+      // }
+
+      setSelectedMembers(new Set(response.data.data));
+      return response.data.data;
+    } catch (error) {
+      // setError("Failed to load members. Please try again.");
+      setIsLoadingMembers(false);
+      console.error(error);
+    }
+  };
 
 
   const getMembers = async () => {
@@ -53,7 +82,6 @@ const AddMembersModal = ({
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            // @ts-ignore
             Authorization: `Bearer ${token}`,
           },
         }
@@ -63,12 +91,12 @@ const AddMembersModal = ({
       let newData = [];
       let list = data[0].member;
 
+      
       if (list.length > 0) {
         newData = list ? list.map((d: any) => d.id) : [];
       }
 
       setSelectedMembers(new Set(newData));
-
       setIsLoadingMembers(false);
     } catch (error) {
       console.log(error);
@@ -78,13 +106,44 @@ const AddMembersModal = ({
 
   useEffect(() => {
     getMembers();
-
     return () => {
       setSelectedMembers(new Set());
     };
   }, [group]);
 
+
+
+
   const [selectedMembers, setSelectedMembers] = useState(new Set());
+
+  const debounce = (func: (e: string) => void, delay: number) => {
+    let timeoutId: any;
+    return (...args: any) => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(null, args);
+      }, delay);
+    };
+  };
+
+
+
+  const { mutate: searchMutation } = useMutation(getSearchedMembers, {
+    onSuccess: (data) => {
+      queryClient.setQueryData("members", data);
+      setSelectedMembers(new Set(data));
+    },
+    onError: (error: any) => {
+      console.error(error);
+    },
+  });
+
+  const debouncedFetchMembers = useCallback(
+     debounce((query: string) => searchMutation(query), 400),
+    [searchMutation]
+  );
+
+
 
   // State to track the changes - additions and deletions
   const [changes, setChanges] = useState<IMemberChanges>({
@@ -98,19 +157,14 @@ const AddMembersModal = ({
 
     if (checked) {
       updatedSet.add(memberId);
-
-      // Track addition
       updatedChanges.added.add(memberId);
-      // If this was previously removed, we should untrack the removal
       if (updatedChanges.removed.has(memberId)) {
         updatedChanges.removed.delete(memberId);
       }
     } else {
       updatedSet.delete(memberId);
 
-      // Track removal
       updatedChanges.removed.add(memberId);
-      // If this was previously added, we should untrack the addition
       if (updatedChanges.added.has(memberId)) {
         updatedChanges.added.delete(memberId);
       }
@@ -120,6 +174,32 @@ const AddMembersModal = ({
     setChanges(updatedChanges);
   };
 
+  // Handle search input change
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault()
+    setSearchQuery(event.target.value);
+    debouncedFetchMembers(event.target.value);
+  };
+
+
+  const handleSearchQueryChange = (query: string) => {
+
+  };
+
+  // Pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentMembers = members
+    ?.filter((member) =>
+      `${member.member.first_name} ${member.member.last_name}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      member.member.email.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil((members?.length || 0) / itemsPerPage);
+
   return (
     <OrgDialog
       title={`${group?.name} Members`}
@@ -128,6 +208,14 @@ const AddMembersModal = ({
       <div className=" overflow-scroll flex flex-col flex-1 ">
         <Form {...form}>
           <form className="space-y-8 flex-1 overflow-scroll">
+            <input
+              type="text"
+              placeholder="Search members"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              // onChange={(e) => handleSearchQueryChange(e.target.value)}
+              className="w-full p-2 mb-4 border border-gray-300 rounded"
+            />
             <FormField
               name="image"
               render={() => (
@@ -137,11 +225,11 @@ const AddMembersModal = ({
                       Loading members...
                     </p>
                   ) : !Array.isArray(members) || members.length === 0 ? (
-                    <p className="ftext-center text-black dark:text-white">
+                    <p className="text-center text-black dark:text-white">
                       No members in the group.
                     </p>
                   ) : (
-                    members.map((member: GroupMember) => (
+                    members?.map((member: GroupMember) => (
                       <FormItem
                         key={member.member.id}
                         className="flex flex-row items-start space-x-3 space-y-0"
@@ -175,10 +263,27 @@ const AddMembersModal = ({
           </form>
         </Form>
       </div>
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <span className="text-black dark:text-white">
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+      </div>
       <Button
         onClick={() => onSubmit(changes)}
         disabled={Array.isArray(members) && members.length > 0 ? false : true}
-        className="w-full"
+        className="w-full mt-4"
         id="update-member-submit-button"
       >
         Update Member List

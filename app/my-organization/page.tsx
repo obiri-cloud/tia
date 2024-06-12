@@ -208,6 +208,7 @@ const fetchRole = async (query: string) => {
 const { mutate: searcRoleMutation } = useMutation(fetchRole, {
   onSuccess: (data) => {
     console.log({data:data})
+    dispatch(setMemberTableData(data));
     queryClient.setQueryData("orgImages", data);
     setSearchQuery('')
   },
@@ -322,7 +323,7 @@ const debouncedRoleMembers = useCallback(debounce((query:string) => searcRoleMut
                                     <SelectItem value="all">All</SelectItem>
                                     {
 
-                                      difficulty_level.map((role:any)=>(
+                                         difficulty_level.map((role:any)=>(
                                         <>
                                           <SelectItem value={role.stage}>{role.stage}</SelectItem>
                                         </>
