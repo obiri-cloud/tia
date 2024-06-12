@@ -298,7 +298,10 @@ const MainLabPage = ({
                 <MagicSpinner size={100} color="#686769" loading={isLoading} />
               </div>
             ) : null}
-            <div className="h-full playground">
+            <div className="h-full playground relative">
+              <div className="absolute top-10 left-10 bg-white rounded-full p-2">
+                <ArrowLeftFromLineIcon className="w-5 h-5 text-black" />
+              </div>
               <iframe
                 allow="clipboard-write; clipboard-read"
                 src={(labInfo && labInfo.url) || ""}
@@ -504,6 +507,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import CustomIframe from "@/app/components/custom-iframe";
+import { ArrowLeftFromLineIcon } from "lucide-react";
 
 const ReviewDrawer = ({ redirectUrl }: { redirectUrl: string }) => {
   const ratings = [

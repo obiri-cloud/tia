@@ -62,6 +62,7 @@ const LabsPage = () => {
   const [isFullscreen, setIsFullscreen] = useState(
     !!document.fullscreenElement
   );
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
@@ -276,57 +277,70 @@ const LabsPage = () => {
     <Dialog>
       <Toaster position="bottom-right" />
       <div className="h-full flex flex-col">
-        <ResizablePanelGroup direction="horizontal" className="flex-1">
-          <ResizablePanel defaultSize={40} minSize={30} className="">
-            <div className="">
-              <div className="flex justify-between p-3 border-b border-b-gray-200">
-                <Button
-                  onClick={() => router.push("/dashboard")}
-                  variant="outline"
-                  className=" bg-white shadow-2xl	  text-black font-normal"
-                >
-                  Home
-                </Button>
-                <div className="countdown">
-                  <CountdownClock
-                    startTime={labInfo?.creation_date || ""}
-                    time={labInfo?.duration || 0}
-                    endLab={endLab}
-                  />
-                </div>
-                <DialogTrigger className=" text-left">
-                  <Button
-                    disabled={deleting}
-                    variant="destructive"
-                    className=" disabled:bg-red-900/90 font-normal"
-                  >
-                    {deleting ? "Ending Lab..." : "End Lab"}
-                  </Button>
-                </DialogTrigger>
+        <div className="flex flex-1">
+          <div
+            className={`flex-1 ${isExpanded ? "hidden" : "block"}`}
+            style={{ flexBasis: isExpanded ? "0%" : "30%" }}
+          >
+            <div className="flex justify-between p-3 border-b border-b-gray-200">
+              <Button
+                onClick={() => router.push("/dashboard")}
+                variant="outline"
+                className="bg-white shadow-2xl text-black font-normal"
+              >
+                Home
+              </Button>
+              <div className="countdown">
+                <CountdownClock
+                  startTime={labInfo?.creation_date || ""}
+                  time={labInfo?.duration || 0}
+                  endLab={endLab}
+                />
               </div>
+              <DialogTrigger className="text-left">
+                <Button
+                  disabled={deleting}
+                  variant="destructive"
+                  className="disabled:bg-red-900/90 font-normal"
+                >
+                  {deleting ? "Ending Lab..." : "End Lab"}
+                </Button>
+              </DialogTrigger>
+            </div>
 
-              <div className="h-full playground">
-                <CustomIframe>
-                  <Instructions instructions={instructions} />
-                </CustomIframe>
-                {/* <iframe
+            <div className="h-full playground">
+              <CustomIframe>
+                <Instructions instructions={instructions} />
+              </CustomIframe>
+              {/* <iframe
                 width="100%"
                 height="100%"
               >
                 <Instructions instructions={instructions} />
 
               </iframe> */}
-              </div>
             </div>
-          </ResizablePanel>
-          <ResizableHandle withHandle={true} />
-          <ResizablePanel defaultSize={60} minSize={50}>
+          </div>
+          <div
+            className={`flex-1 ${isExpanded ? "w-full" : ""}`}
+            style={{ flexBasis: isExpanded ? "100%" : "70%" }}
+          >
             {isLoading ? (
               <div className="h-full flex justify-center items-center instructions">
                 <MagicSpinner size={100} color="#686769" loading={isLoading} />
               </div>
             ) : null}
-            <div className="h-full playground">
+            <div className="h-full playground relative">
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="absolute top-1/2 left-0 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-input"
+              >
+                {isExpanded ? (
+                  <ArrowRightFromLineIcon className="w-5 h-5 text-black" />
+                ) : (
+                  <ArrowLeftFromLineIcon className="w-5 h-5 text-black" />
+                )}
+              </button>
               <iframe
                 allow="clipboard-write; clipboard-read"
                 src={(labInfo && labInfo.url) || ""}
@@ -335,8 +349,8 @@ const LabsPage = () => {
                 onLoad={handleLoad}
               ></iframe>
             </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
+          </div>
+        </div>
 
         {isNotDesktop ? (
           <button
@@ -543,7 +557,12 @@ import {
 } from "@/components/ui/resizable";
 import CustomIframe from "@/app/components/custom-iframe";
 import Link from "next/link";
-import { Expand, Minimize2 } from "lucide-react";
+import {
+  ArrowLeftFromLineIcon,
+  ArrowRightFromLineIcon,
+  Expand,
+  Minimize2,
+} from "lucide-react";
 
 const ReviewDrawer = () => {
   const ratings = [
