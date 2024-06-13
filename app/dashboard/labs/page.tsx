@@ -418,7 +418,7 @@ const LabsPage = () => {
       </div>
       <button
         onClick={handleFullScreenToggle}
-        className="bg-black p-3 rounded-lg absolute bottom-5 right-5"
+        className="bg-[#21C481] p-3 rounded-[5px] absolute bottom-5 right-5"
       >
         {isFullscreen ? (
           <Minimize2 className="w-5 h-5 text-white" />

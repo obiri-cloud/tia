@@ -1338,7 +1338,7 @@ code {
 
 .timer {
   font-size: 1.2rem;
-  color: #00ffff !important; /* Light cyan color */
+  color: #d7d6d4 !important; /* Light cyan color */
   padding: 10px 20px;
   background-color: #252526;
   border-radius: 8px;

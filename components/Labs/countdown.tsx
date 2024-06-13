@@ -64,7 +64,7 @@ export const CountdownClock: React.FC<CountdownProps> = ({
   return (
     <div
       id="link"
-      className="timer text-[#d4d4d4] flex items-center"
+      className="timer text-[#d7d6d4] flex items-center"
       // className={`px-3 shadow-md p-2 rounded-lg font-medium h-10 ${
       //   tenSecLeft ? "shake-card" : ""
       // } ${
