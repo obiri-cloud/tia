@@ -1247,7 +1247,7 @@ code {
 }
 
 .button-container button {
-  background-color: #007acc;
+  background-color: #007acb;
   color: white;
   border: none;
   padding: 10px;
@@ -1280,7 +1280,7 @@ code {
   top: 50%;
   left: 0;
   transform: translate(-50%, -50%);
-  background-color: #007acc;
+  background-color: #007acb;
   border: none;
   padding: 10px;
   border-radius: 5px;
@@ -1295,7 +1295,7 @@ code {
   position: absolute;
   bottom: 20px;
   right: 20px;
-  background-color: #007acc;
+  background-color: #007acb;
   border: none;
   padding: 10px;
   border-radius: 50%;
@@ -1326,7 +1326,7 @@ code {
 }
 .button {
   padding: 12px 24px;
-  background-color: #007acc;
+  background-color: #007acb;
   color: #ffffff;
   border: none;
   border-radius: 8px;

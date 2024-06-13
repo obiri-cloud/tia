@@ -290,7 +290,7 @@ const LabsPage = () => {
             <div className="button-container">
               <div className="flex gap-4 items-center">
                 <button
-                  className="button bg-[#007acc_!important]"
+                  className="button bg-[#007acb_!important]"
                   onClick={() => router.push("/dashboard")}
                   // variant="outline"
                   // className="bg-white shadow-2xl text-black font-normal"
