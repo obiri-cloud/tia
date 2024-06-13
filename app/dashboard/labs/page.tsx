@@ -279,36 +279,49 @@ const LabsPage = () => {
       <div className="h-full flex flex-col">
         <div className="flex flex-1">
           <div
-            className={`flex-1 ${isExpanded ? "hidden" : "block"}`}
-            style={{ flexBasis: isExpanded ? "0%" : "30%" }}
+            className={`iframe-container bg-[#333]  items-center ${
+              isExpanded ? "hidden" : "block"
+            }`}
+            style={{
+              flexBasis: isExpanded ? "0%" : "30%",
+              border: "2px dotted #444",
+            }}
           >
-            <div className="flex justify-between p-3 border-b border-b-gray-200">
-              <Button
-                onClick={() => router.push("/dashboard")}
-                variant="outline"
-                className="bg-white shadow-2xl text-black font-normal"
-              >
-                Home
-              </Button>
-              <div className="countdown">
-                <CountdownClock
-                  startTime={labInfo?.creation_date || ""}
-                  time={labInfo?.duration || 0}
-                  endLab={endLab}
-                />
+            <div className="button-container">
+              <div className="flex gap-4 items-center">
+                <button
+                  className="button bg-[#007acc_!important]"
+                  onClick={() => router.push("/dashboard")}
+                  // variant="outline"
+                  // className="bg-white shadow-2xl text-black font-normal"
+                >
+                  Home
+                </button>
+                <div id="dots">
+                  <div className="dot"></div>
+                  <div className="pulse44"></div>
+                </div>
               </div>
-              <DialogTrigger className="text-left">
-                <Button
-                  disabled={deleting}
-                  variant="destructive"
-                  className="disabled:bg-red-900/90 font-normal"
+
+              {/* <div className="countdown"> */}
+              <CountdownClock
+                startTime={labInfo?.creation_date || ""}
+                time={labInfo?.duration || 0}
+                endLab={endLab}
+              />
+              {/* </div> */}
+              <DialogTrigger className="text-left endlab-button">
+                <span
+                // disabled={deleting}
+                // variant="destructive"
+                // className="button"
                 >
                   {deleting ? "Ending Lab..." : "End Lab"}
-                </Button>
+                </span>
               </DialogTrigger>
             </div>
 
-            <div className="h-full playground">
+            <div className="h-full playground iframe-wrapper">
               <CustomIframe>
                 <Instructions instructions={instructions} />
               </CustomIframe>
@@ -322,7 +335,9 @@ const LabsPage = () => {
             </div>
           </div>
           <div
-            className={`flex-1 ${isExpanded ? "w-full" : ""}`}
+            className={`iframe-container full-height ${
+              isExpanded ? "w-full" : ""
+            }`}
             style={{ flexBasis: isExpanded ? "100%" : "70%" }}
           >
             {isLoading ? (
@@ -330,10 +345,10 @@ const LabsPage = () => {
                 <MagicSpinner size={100} color="#686769" loading={isLoading} />
               </div>
             ) : null}
-            <div className="h-full playground relative">
+            <div className="iframe-wrapper">
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="absolute top-1/2 left-0 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-input"
+                className="svg-button"
               >
                 {isExpanded ? (
                   <ArrowRightFromLineIcon className="w-5 h-5 text-black" />
@@ -470,7 +485,15 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
           </div>
           {Array.isArray(instructions) ? (
             instructions.length === 0 ? (
-              <p>No instructions found for this lab...</p>
+              <p
+                style={{
+                  color: "white",
+                  fontFamily: "Montserrat",
+                }}
+                className="text-white ft-mt"
+              >
+                No instructions found for this lab...
+              </p>
             ) : (
               <PrismComponent
                 content={

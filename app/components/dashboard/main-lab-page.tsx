@@ -421,7 +421,9 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
           </div>
           {Array.isArray(instructions) ? (
             instructions.length === 0 ? (
-              <p>No instructions found for this lab...</p>
+              <p className="text-white ft-mt">
+                No instructions found for this lab...
+              </p>
             ) : (
               <PrismComponent
                 content={

@@ -12,7 +12,7 @@ const CustomIframe: React.FC<CustomIframeProps> = ({ children, ...props }) => {
   const mountNode = contentRef?.contentWindow?.document?.body;
 
   if (mountNode) {
-    mountNode.style.fontFamily = 'Inter';
+    mountNode.style.fontFamily = "Inter";
   }
 
   return (
