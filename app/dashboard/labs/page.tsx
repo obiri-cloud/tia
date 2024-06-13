@@ -351,9 +351,9 @@ const LabsPage = () => {
                 className="svg-button"
               >
                 {isExpanded ? (
-                  <ArrowRightFromLineIcon className="w-5 h-5 text-black" />
+                  <ArrowRightFromLineIcon className="w-5 h-5 text-black stroke-[3px]" />
                 ) : (
-                  <ArrowLeftFromLineIcon className="w-5 h-5 text-black" />
+                  <ArrowLeftFromLineIcon className="w-5 h-5 text-black stroke-[3px]" />
                 )}
               </button>
               <iframe

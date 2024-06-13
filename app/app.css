@@ -1280,15 +1280,15 @@ code {
   top: 50%;
   left: 0;
   transform: translate(-50%, -50%);
-  background-color: #333;
+  background-color: #007acc;
   border: none;
   padding: 10px;
-  border-radius: 50%;
+  border-radius: 5px;
   cursor: pointer;
 }
 
 .svg-button svg {
-  stroke: #007acc;
+  stroke: #fff;
 }
 
 .float-button {
@@ -1344,6 +1344,7 @@ code {
   border-radius: 8px;
   box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
   font-family: "Montserrat", sans-serif; /* Ensure the font is consistent */
+  font-weight: bold;
 }
 
 /* animation */
@@ -1516,7 +1517,7 @@ code {
 }
 
 .endlab-button:hover {
-  background: linear-gradient(145deg, #333333, #2a2a2a);
+  background: linear-gradient(352deg, #f32626, #ffc4c4);
   transform: translateY(-2px);
 }
 
