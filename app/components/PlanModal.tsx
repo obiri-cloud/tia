@@ -7,12 +7,13 @@ import { userCheck } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-const PlanModalContent = ({ plan, currentPlan }) => {
+const PlanModalContent = ({ plan, currentPlan }:{plan:any,currentPlan:any}) => {
   const { data: session } = useSession();
   const token = session?.user?.tokens?.access_token;
   const router = useRouter();
 
   const subscribe = async () => {
+   //@ts-ignore
     document.getElementById("btn").textContent = "Processing";
     try {
       const response = await axios.post(
@@ -28,8 +29,10 @@ const PlanModalContent = ({ plan, currentPlan }) => {
           },
         }
       );
+            //@ts-ignore
       (document.getElementById("btn").textContent = "Processing")
       if (response.status === 200) {
+        //@ts-ignore
         document.getElementById("btn").textContent = "Processing";
         window.location.href = response.data.authorization_url;
         toast({
@@ -53,6 +56,7 @@ const PlanModalContent = ({ plan, currentPlan }) => {
   };
 
   const upgradeSubscription = async () => {
+    //@ts-ignore
     document.getElementById("btn").textContent = "Updating";
     try {
       const response = await axios.post(
@@ -83,6 +87,7 @@ const PlanModalContent = ({ plan, currentPlan }) => {
     } catch (error) {
       userCheck(error as AxiosError);
       console.error("error", error);
+    //@ts-ignore
       document.getElementById("btn").textContent = `Subscribe to ${plan.value}`;
       toast({
         title: "Something went wrong!",
@@ -97,7 +102,7 @@ const PlanModalContent = ({ plan, currentPlan }) => {
         {plan.label} Plan
       </h2>
       <ul className="space-y-2 mb-6">
-        {plan.features.map((feature, index) => (
+        {plan.features.map((feature:any, index:any) => (
           <li key={index} className="flex items-center">
             <CheckIcon className="w-5 h-5 mr-2 text-green-500" />
             <span className="text-gray-800 dark:text-gray-200">{feature}</span>

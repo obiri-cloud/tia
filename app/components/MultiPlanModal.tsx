@@ -30,11 +30,12 @@ const plans = [
   },
 ];
 
-export default function MultiPlanModal({ currentPlan, currentImage }) {
+export default function MultiPlanModal({ currentPlan, currentImage }:{ currentPlan:any, currentImage:any }) {
   const { data: session } = useSession();
   const token = session?.user?.tokens?.access_token;
 
-  const subscribe = async (plan) => {
+  const subscribe = async (plan:any) => {
+    //@ts-ignore
     document.getElementById("btn").textContent = "Processing";
     try {
       const response = await axios.post(
@@ -50,6 +51,7 @@ export default function MultiPlanModal({ currentPlan, currentImage }) {
           },
         }
       );
+      //@ts-ignore
       document.getElementById("btn").textContent = "Processing";
       if (response.status === 200) {
         window.location.href = response.data.authorization_url;
@@ -73,7 +75,8 @@ export default function MultiPlanModal({ currentPlan, currentImage }) {
     }
   };
 
-  const upgradeSubscription = async (plan) => {
+  const upgradeSubscription = async (plan:any) => {
+    //@ts-ignore
     document.getElementById("btn").textContent = "Updating";
     try {
       const response = await axios.post(
@@ -104,6 +107,7 @@ export default function MultiPlanModal({ currentPlan, currentImage }) {
     } catch (error) {
       userCheck(error as AxiosError);
       console.error("error", error);
+      //@ts-ignore
       document.getElementById("btn").textContent = `Subscribe to ${plan.value}`;
       toast({
         title: "Something went wrong!",

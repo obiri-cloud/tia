@@ -45,7 +45,7 @@ const AddMembersModal = ({
 
 
 
-  const getSearchedMembers = async (query): Promise<GroupMember[] | undefined> => {
+  const getSearchedMembers = async (query:any): Promise<GroupMember[] | undefined> => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BE_URL}/organization/${organization_id}/members/?q=${query}`,

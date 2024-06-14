@@ -30,7 +30,7 @@ import { TrashIcon } from "@radix-ui/react-icons";
 import { IActiveLab } from "@/app/types";
 import AltRouteCheck from "../alt-route-check";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
-import MultiPlanModal from "../multiPlanModal";
+import MultiPlanModal from "../MultiPlanModal";
 
 const MainImagePage = ({
   token,
