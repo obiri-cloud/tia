@@ -73,7 +73,6 @@ const OrganizationsPage = () => {
 
   const goToOrg = async (e: any, org: any) => {
     e.preventDefault();
-
     await update({ role: org?.role, organization_id: org.organization.id });
     router.push("/my-organization");
   };

@@ -263,7 +263,6 @@ const Images = () => {
 
   const { mutate: searchRoleMutation } = useMutation(fetchRole, {
     onSuccess: (data) => {
-      console.log({error:data})
       queryClient.setQueryData("members", data);
       dispatch(setMemberTableData(data));
       setSearchQuery("");
@@ -272,6 +271,8 @@ const Images = () => {
       console.error(error);
     },
   });
+
+  
 
   const debouncedRoleMembers = useCallback(
     debounce((query: string) => searchRoleMutation(query), 100),
@@ -339,7 +340,6 @@ const Images = () => {
               </SelectContent>
             </Select>
           </div>
-
           <Dialog>
             <CardContent className="pl-2">
               <Table>

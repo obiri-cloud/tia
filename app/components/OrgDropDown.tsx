@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   DropdownMenu,
@@ -119,7 +120,7 @@ export default function OrgDropDown() {
             "Content-Type": "application/json",
             Accept: "application/json",
             Authorization: `Bearer ${token}`,
-          },
+          }
         }
       );
       console.log("response.data.data", response.data.data);
@@ -163,10 +164,55 @@ export default function OrgDropDown() {
 
   const goToOrg = async (e: any, org: any) => {
     e.preventDefault();
-
-    await update({ role: org?.role, organization_id: org.organization.id });
-    router.push("/my-organization");
+    await update({ role: org?.role, organization_id: org });
+    router.push("/my-organization/overview");
   };
+
+//   const renderOrganizations = () => {
+//     if (isLoading) {
+//       return (
+//         <>
+//           {new Array(6).fill(1).map((_, i) => (
+//             <Skeleton
+//               key={i}
+//               className="lab-card rounded-2xl p-8 lg:w-[375px] w-full h-[200px]"
+//             />
+//           ))}
+//         </>
+//       );
+//     }
+
+//     if (organizations && Array.isArray(organizations.data) && organizations.data.length > 0) {
+//       return organizations.data.map((org:any, index:any) => (
+//         <TooltipProvider key={index}>
+//           <DropdownMenuItem>
+//             <Link
+//               href={`/dashboard/organizations/${org.organization.id}/groups?name=${org.organization.name}`}
+//               className="flex justify-between w-full items-center gap-2"
+//             >
+//               <span>{org.organization.name}</span>
+//               {org.role !== "Member" && (
+//                 <Tooltip>
+//                   <TooltipTrigger asChild>
+//                     <span className="text-sm font-medium underline" onClick={(e)=>goToOrg(e,org)}>
+//                       {org.role}
+//                     </span>
+//                   </TooltipTrigger>
+//                   <TooltipContent className=" z-10 w-[200px] bg-white text-gray-800 p-2 rounded-lg shadow-md border border-gray-300">
+//                     <p>
+//                       {ROLES.find((role) => role.role === org.role)?.desc}
+//                     </p>
+//                   </TooltipContent>
+//                 </Tooltip>
+//               )}
+//             </Link>
+//           </DropdownMenuItem>
+//         </TooltipProvider>
+//       ));
+//     }
+
+//     return <p>No organizations found</p>;
+//   };
 
   return (
     <DropdownMenu>
@@ -186,7 +232,7 @@ export default function OrgDropDown() {
             <DropdownMenuItem>
               <Link href="/my-organization/overview" className="flex">
                 <Users2 className="h-4 w-4 mr-2" />
-                <span>{organization.name}</span>
+                <span  onClick={(e: any) => goToOrg(e, organization.id)}>{organization.name}</span>
               </Link>
             </DropdownMenuItem>
           ) : subscription_plan !== "basic" ? (
@@ -211,7 +257,7 @@ export default function OrgDropDown() {
           <Link href="/dashboard">
             <div className="flex items-center gap-2">
               <AdminIcon className="h-4 w-4" />
-              Go to labs
+              Go to Labs
             </div>
           </Link>
         </DropdownMenuItem> */}
@@ -238,7 +284,7 @@ export default function OrgDropDown() {
                     <DropdownMenuPortal>
                       <DropdownMenuSubContent>
                         <DropdownMenuItem
-                          onClick={(e: any) => goToOrg(e, org)}
+                          onClick={(e: any) => goToOrg(e, org.organization.id)}
                           disabled={org.role === "Member"}
                         >
                           <Link href="/my-organization/overview">
@@ -246,7 +292,7 @@ export default function OrgDropDown() {
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                          <Link href="/my-organization/labs">
+                          <Link href={`/dashboard/organizations/${org.organization.id}/groups`}>
                             <span>Go to labs</span>
                           </Link>
                         </DropdownMenuItem>
@@ -262,7 +308,7 @@ export default function OrgDropDown() {
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link
-                href="/my-organization/overview"
+                href="/admin"
                 className="flex items-center"
               >
                 <Shield className="h-4 w-4 mr-2" />
@@ -307,6 +353,7 @@ function BuildingIcon(props: any) {
     </svg>
   );
 }
+
 
 function ChevronDownIcon(props: any) {
   return (

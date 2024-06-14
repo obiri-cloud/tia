@@ -29,6 +29,8 @@ import { userCheck } from "@/lib/utils";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { IActiveLab } from "@/app/types";
 import AltRouteCheck from "../alt-route-check";
+import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
+import MultiPlanModal from "../multiPlanModal";
 
 const MainImagePage = ({
   token,
@@ -44,6 +46,7 @@ const MainImagePage = ({
   const router = useRouter();
   const id = searchParams.get("image");
 
+
   const paramId = params.id;
   const gid = params.gid;
   const name = searchParams.get("name") ?? "";
@@ -52,11 +55,11 @@ const MainImagePage = ({
   const pathname = usePathname();
 
   const { data: session } = useSession();
-
+  const currentPlan = session?.user?.data?.subscription_plan;
   console.log({ labCreationUrl, redirectUrl });
 
   const buttonRef = useRef<HTMLButtonElement>(null);
-
+  const [openModal,setOpenModal]=useState(false)
   const [creatingStarted, setCreatingStarted] = useState(false);
   const [jokes, setJokes] = useState<string[]>([]);
 
@@ -91,6 +94,8 @@ const MainImagePage = ({
   const { isLoading, data: currentImage } = useQuery(["image", id], () =>
     getCurrentImage(id, token)
   );
+
+  console.log({currentImage})
 
   const { data: isActive } = useQuery(["active-labs", id], () =>
     getActiveLabs()
@@ -243,7 +248,8 @@ const MainImagePage = ({
         pollForLab(key, lab_status_key);
       }
     } catch (error) {
-      console.error("error", error);
+      console.error("error this one", error);
+      setOpenModal(true)
       if (error instanceof AxiosError) {
         userCheck(error as AxiosError);
       }
@@ -534,6 +540,19 @@ const MainImagePage = ({
               </Carousel>
             ) : null}
           </div>
+          <Dialog open={openModal} onOpenChange={setOpenModal}>
+        <DialogContent>
+          <MultiPlanModal currentPlan={currentPlan} currentImage={currentImage}/>
+          <DialogClose asChild>
+            <button
+              aria-label="Close"
+              className="absolute top-2.5 right-2.5 inline-flex h-8 w-8 appearance-none items-center justify-center rounded-full focus:outline-none"
+            >
+              <span className="sr-only">Close</span>
+            </button>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>  
         </div>
       </div>
     </div>

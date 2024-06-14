@@ -30,6 +30,11 @@ import { ChevronRight } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { setMemberOriginalPageSize, setMemberPageSize, setMemberTableData } from "@/redux/reducers/MemberTableSlice";
+import { LabsDataTable } from "../components/LabsDataTable";
+import { labsColumns } from "../components/LabsColumns";
 
 const myOrganizationPage = () => {
 
@@ -44,6 +49,12 @@ const myOrganizationPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [emptyQuery,setemptyQuery]=useState(false)
   const queryClient = useQueryClient();
+
+  const dispatch = useDispatch();
+  const { Memberdata: tableData } = useSelector(
+    (state: RootState) => state.memberTable
+  );
+
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
@@ -72,6 +83,11 @@ const myOrganizationPage = () => {
           },
         }
       );
+      console.log({logs:response.data})
+      dispatch(setMemberTableData(response.data.data));
+      dispatch(setMemberPageSize(Math.ceil(response.data.count / 2)));
+      dispatch(setMemberOriginalPageSize(response.data.count));
+      // setIsLoadingMembers(false);
       return response.data.data;
     } catch (error) {
       console.log(error);
@@ -192,6 +208,7 @@ const fetchRole = async (query: string) => {
 const { mutate: searcRoleMutation } = useMutation(fetchRole, {
   onSuccess: (data) => {
     console.log({data:data})
+    dispatch(setMemberTableData(data));
     queryClient.setQueryData("orgImages", data);
     setSearchQuery('')
   },
@@ -306,7 +323,7 @@ const debouncedRoleMembers = useCallback(debounce((query:string) => searcRoleMut
                                     <SelectItem value="all">All</SelectItem>
                                     {
 
-                                      difficulty_level.map((role:any)=>(
+                                         difficulty_level.map((role:any)=>(
                                         <>
                                           <SelectItem value={role.stage}>{role.stage}</SelectItem>
                                         </>
@@ -319,24 +336,16 @@ const debouncedRoleMembers = useCallback(debounce((query:string) => searcRoleMut
             </div>
             <CardContent className="pl-2">
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="">Name</TableHead>
-                    <TableHead>Difficulty Level</TableHead>
-                    <TableHead>Duration</TableHead>
-                    <TableHead className="text-right">Port Number</TableHead>
-                  </TableRow>
-                </TableHeader>
-                {orgImageList?.length === 0 && (
+                {tableData?.length === 0 && (
                   <TableCaption>No images found...</TableCaption>
                 )}
               {emptyQuery&&(
                 <TableCaption>No Lab(s) found for the specified search criteria</TableCaption>
               )}
-                <TableBody>
-                  {orgImageList
-                    && orgImageList.length > 0
-                        && Array.isArray(orgImageList) && orgImageList.map((image:ILabImage, i:number) => (
+                {/* <TableBody>
+                  {tableData
+                    && tableData.length > 0
+                        && Array.isArray(tableData) && tableData.map((image:ILabImage, i:number) => (
                           <TableRow key={i}>
                             <TableCell className="font-medium">
                               {image.name}
@@ -348,9 +357,14 @@ const debouncedRoleMembers = useCallback(debounce((query:string) => searcRoleMut
                             </TableCell>
                           </TableRow>
                         ))
-                    
                     }
-                </TableBody>
+                </TableBody> */}
+                {tableData && (
+                  <LabsDataTable
+                    data={tableData as any}
+                    columns={labsColumns}
+                  />
+                )}
               </Table>
             </CardContent>
           </Dialog>

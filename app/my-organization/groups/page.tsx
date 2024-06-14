@@ -51,6 +51,7 @@ export interface OrgGroup {
 const OrganizationGroup = () => {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState('');
+  
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
     useState<boolean>(false);
@@ -104,7 +105,7 @@ const OrganizationGroup = () => {
           },
         }
       );
-
+      console.log('res',response);
       return response.data.data;
     } catch (error) {
       console.log(error);
