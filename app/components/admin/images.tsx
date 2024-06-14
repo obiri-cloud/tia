@@ -43,7 +43,9 @@ import {
 import { MoreVerticalIcon } from "lucide-react";
 
 const Images = () => {
-  const { imageCount, imageList } = useSelector((state: RootState) => state.admin );
+  const { imageCount, imageList } = useSelector(
+    (state: RootState) => state.admin
+  );
 
   const { data: session } = useSession();
   const dispatch = useDispatch();
@@ -81,7 +83,7 @@ const Images = () => {
         // setLocalImageList((prev) => prev?.filter((image) => image.id !== id));
         getImageListX(token).then((response) => {
           dispatch(setImageCount(response.data.count));
-          dispatch(setImageList(response.data.results));
+          dispatch(setImageList(response.data.data));
           document.getElementById("closeDialog")?.click();
         });
       } else {
@@ -191,7 +193,6 @@ const Images = () => {
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
-                             
                             </TableCell>
                           </TableRow>
                         ))
@@ -216,7 +217,7 @@ const Images = () => {
       <Dialog
         open={isOpenDeleteDialogOpen}
         onOpenChange={
-          isOpenDeleteDialogOpen ? setIsOpenDeleteDialog  : setIsOpenViewDialog
+          isOpenDeleteDialogOpen ? setIsOpenDeleteDialog : setIsOpenViewDialog
         }
       >
         <DeleteConfirmation

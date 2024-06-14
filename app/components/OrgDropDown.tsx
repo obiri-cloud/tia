@@ -7,6 +7,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
@@ -18,36 +22,27 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios, { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { userCheck } from "@/lib/utils";
+import { InvitationsResponse, NoInvitationsResponse } from "@/app/types";
+import {
+  Mail,
+  MessageSquare,
+  PlusCircle,
+  PlusCircleIcon,
+  Shield,
+  UserPlus,
+  Users2,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronRight, ArrowUp, ChevronDown } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { userCheck } from "@/lib/utils";
+import OrganizationHeader from "./admin/OrganizationHeader";
+import ProfileHeader from "./admin/profile-header";
 
-const ROLES = [
-  {
-    role: "Admin",
-    desc: "Admin has full control over Labs, Groups, Members, and Invitations but cannot manage Organization settings.",
-  },
-  {
-    role: "Editor",
-    desc: "Editor can modify Labs, Groups, Members, and Invitations, except for billing and organizational settings.",
-  },
-  {
-    role: "Viewer",
-    desc: "Viewer has access only to view content, including Labs, Groups, Members, and Invitations.",
-  },
-  {
-    role: "Member",
-    desc: "Member has basic access without permissions to view or manage Organization content.",
-  },
-];
-
-export default function Component() {
+export default function OrgDropDown() {
   const { data: session, update } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -57,8 +52,6 @@ export default function Component() {
   let subscription_plan = session?.user.data.subscription_plan;
   let is_super = session?.user.data.is_superuser;
   let is_admin = session?.user.data.is_admin;
-  let role = session?.user.data.role;
-  let org_id = session?.user.data.organization_id;
 
   const createOrg = async (formData: FormData) => {
     const axiosConfig = {
@@ -75,31 +68,32 @@ export default function Component() {
     return response.data;
   };
 
-  const {
-    mutate: createOrganizationMutation,
-    isLoading: updating,
-    error: UpdateError,
-  } = useMutation((formData: FormData) => createOrg(formData), {
-    onSuccess: (data) => {
-      queryClient.invalidateQueries("orgName");
-      if (session) {
-        update({ organization_id: data.data.id });
-        router.push("/my-organization");
-      }
+  const { mutate: createOrganizationMutation } = useMutation(
+    (formData: FormData) => createOrg(formData),
+    {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries("orgName");
+        if (session) {
+          update({ organization_id: data.data.id });
+          router.push("/my-organization");
+        }
 
-      toast({
-        variant: "success",
-        title: "Organization created successfully",
-      });
-    },
-    onError: (error: any) => {
-      const responseData = error.response.data;
-      toast({
-        variant: "destructive",
-        title: responseData.data,
-      });
-    },
-  });
+        toast({
+          variant: "success",
+          title: "Organization created successfully",
+        });
+      },
+      onError: (error: any) => {
+        console.log("error", error);
+        const responseData = error.response.data;
+        toast({
+          variant: "destructive",
+          title: responseData.detail,
+          duration: 2000,
+        });
+      },
+    }
+  );
 
   const createOrganization = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -115,10 +109,12 @@ export default function Component() {
     setIsOpen(true);
   };
 
-  const getInvitations = async () => {
+  const getOrg = async (id: string) => {
+    console.log("here");
+
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/org/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${id}/retrieve/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -127,165 +123,200 @@ export default function Component() {
           }
         }
       );
+      console.log("response.data.data", response.data.data);
+
+      return response.data.data;
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const { data: organization } = useQuery(
+    ["organization-details", orgCheck.id],
+    () => getOrg(orgCheck.id)
+  );
+
+  const getInvitations = async (): Promise<
+    NoInvitationsResponse | InvitationsResponse | undefined
+  > => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/user/org/list/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       userCheck(error as AxiosError);
     }
   };
 
-  const { data: organizations, isLoading } = useQuery(["organizations"], getInvitations);
+  const { data: otherOrganizations, isLoading } = useQuery(
+    ["other-organizations"],
+    () => getInvitations()
+  );
 
   const goToOrg = async (e: any, org: any) => {
     e.preventDefault();
-
-    await update({ role: org?.role, organization_id: org.organization.id });
-    router.push("/my-organization");
-  };
-
-  const manageOrganization = async (e: any) => {
-    e.preventDefault();
-    await update({ role, organization_id: orgCheck.id });
+    await update({ role: org?.role, organization_id: org });
     router.push("/my-organization/overview");
   };
 
-  const renderDropdownItems = () => {
-    if (subscription_plan === "basic") {
-      return null;
-    }
+//   const renderOrganizations = () => {
+//     if (isLoading) {
+//       return (
+//         <>
+//           {new Array(6).fill(1).map((_, i) => (
+//             <Skeleton
+//               key={i}
+//               className="lab-card rounded-2xl p-8 lg:w-[375px] w-full h-[200px]"
+//             />
+//           ))}
+//         </>
+//       );
+//     }
 
-    if (orgCheck.value) {
-      return (
-        <>
-          <DropdownMenuItem onClick={handleCreateOrgClick}>
-            <div className="flex items-center gap-2">
-              <BuildingIcon className="h-4 w-4" />
-              Create organization
-            </div>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href="/admin">
-              <div className="flex items-center gap-2">
-                <AdminIcon className="h-4 w-4" />
-                Go to Admin
-              </div>
-            </Link>
-          </DropdownMenuItem>
-        </>
-      );
-    } else if (
-      is_super ||
-      subscription_plan === "premium" ||
-      subscription_plan === "standard"
-    ) {
-      return (
-        <>
-          <DropdownMenuItem onClick={manageOrganization}>
-            <div className="flex items-center gap-2 cursor-pointer">
-              <ManageIcon className="h-4 w-4" />
-              Manage organization
-            </div>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href="/admin">
-              <div className="flex items-center gap-2">
-                <AdminIcon className="h-4 w-4" />
-                Go to Admin
-              </div>
-            </Link>
-          </DropdownMenuItem>
-        </>
-      );
-    } else if (is_admin) {
-      return (
-        <DropdownMenuItem>
-          <Link href="/admin">
-            <div className="flex items-center gap-2">
-              <AdminIcon className="h-4 w-4" />
-              Go to Admin
-            </div>
-          </Link>
-        </DropdownMenuItem>
-      );
-    }
-  };
+//     if (organizations && Array.isArray(organizations.data) && organizations.data.length > 0) {
+//       return organizations.data.map((org:any, index:any) => (
+//         <TooltipProvider key={index}>
+//           <DropdownMenuItem>
+//             <Link
+//               href={`/dashboard/organizations/${org.organization.id}/groups?name=${org.organization.name}`}
+//               className="flex justify-between w-full items-center gap-2"
+//             >
+//               <span>{org.organization.name}</span>
+//               {org.role !== "Member" && (
+//                 <Tooltip>
+//                   <TooltipTrigger asChild>
+//                     <span className="text-sm font-medium underline" onClick={(e)=>goToOrg(e,org)}>
+//                       {org.role}
+//                     </span>
+//                   </TooltipTrigger>
+//                   <TooltipContent className=" z-10 w-[200px] bg-white text-gray-800 p-2 rounded-lg shadow-md border border-gray-300">
+//                     <p>
+//                       {ROLES.find((role) => role.role === org.role)?.desc}
+//                     </p>
+//                   </TooltipContent>
+//                 </Tooltip>
+//               )}
+//             </Link>
+//           </DropdownMenuItem>
+//         </TooltipProvider>
+//       ));
+//     }
 
-  const renderOrganizations = () => {
-    if (isLoading) {
-      return (
-        <>
-          {new Array(6).fill(1).map((_, i) => (
-            <Skeleton
-              key={i}
-              className="lab-card rounded-2xl p-8 lg:w-[375px] w-full h-[200px]"
-            />
-          ))}
-        </>
-      );
-    }
-
-    if (organizations && Array.isArray(organizations.data) && organizations.data.length > 0) {
-      return organizations.data.map((org:any, index:any) => (
-        <TooltipProvider key={index}>
-          <DropdownMenuItem>
-            <Link
-              href={`/dashboard/organizations/${org.organization.id}/groups?name=${org.organization.name}`}
-              className="flex justify-between w-full items-center gap-2"
-            >
-              <span>{org.organization.name}</span>
-              {org.role !== "Member" && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="text-sm font-medium underline" onClick={(e)=>goToOrg(e,org)}>
-                      {org.role}
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent className=" z-10 w-[200px] bg-white text-gray-800 p-2 rounded-lg shadow-md border border-gray-300">
-                    <p>
-                      {ROLES.find((role) => role.role === org.role)?.desc}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-            </Link>
-          </DropdownMenuItem>
-        </TooltipProvider>
-      ));
-    }
-
-    return <p>No organizations found</p>;
-  };
+//     return <p>No organizations found</p>;
+//   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-full justify-between">
-          <div className="flex items-center gap-2">
-            <BuildingIcon className="h-4 w-4" />
-            <span>My Organization</span>
-          </div>
-          <ChevronDown className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center  gap-2 w-full justify-between cursor-pointer">
+          <ProfileHeader />
+          <ChevronDownIcon className="h-4 w-4" />
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-80">
-        <DropdownMenuLabel className="font-medium">My Organization</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-sm font-medium">
+          My Organization
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <div className="max-h-[200px] overflow-y-auto">
-          {renderDropdownItems()}
+          {organization ? (
+            <DropdownMenuItem>
+              <Link href="/my-organization/overview" className="flex">
+                <Users2 className="h-4 w-4 mr-2" />
+                <span  onClick={(e: any) => goToOrg(e, organization.id)}>{organization.name}</span>
+              </Link>
+            </DropdownMenuItem>
+          ) : subscription_plan !== "basic" ? (
+            <DropdownMenuItem>
+              <Link
+                href="#"
+                onClick={handleCreateOrgClick}
+                className="text-gray-400 text-sm"
+              >
+                Create organization
+              </Link>
+              <PlusCircleIcon className="h-4 w-4 text-gray-400 ml-2" />
+            </DropdownMenuItem>
+          ) : (
+            <p className="dark:text-white text-gray-400 w-full text-center text-sm py-1.5">
+              You are on the free plan. Upgrade to the premium or standard plan
+              to create an organization.
+            </p>
+          )}
         </div>
-        <DropdownMenuItem>
+        {/* <DropdownMenuItem>
           <Link href="/dashboard">
             <div className="flex items-center gap-2">
               <AdminIcon className="h-4 w-4" />
               Go to Labs
             </div>
           </Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuSeparator />
-        <DropdownMenuLabel className="font-medium">Other Organizations</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-sm font-medium">
+          Other Organizations
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <div className="max-h-[200px] overflow-y-auto">
-          {renderOrganizations()}
-        </div>
+        {!isLoading && otherOrganizations ? (
+          isNoInvitationsResponse(otherOrganizations) ? (
+            <p className="dark:text-white text-gray-400 w-full text-center text-sm py-1.5">
+              {otherOrganizations.message}...
+            </p>
+          ) : (
+            <div>
+              {otherOrganizations &&
+                otherOrganizations.data.length >= -1 &&
+                otherOrganizations.data.map((org: any, i) => (
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <Users2 className="h-4 w-4 mr-2" />
+                      {org.organization.name}
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem
+                          onClick={(e: any) => goToOrg(e, org.organization.id)}
+                          disabled={org.role === "Member"}
+                        >
+                          <Link href="/my-organization/overview">
+                            <span>Manage organization</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link href={`/dashboard/organizations/${org.organization.id}/groups`}>
+                            <span>Go to labs</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                ))}
+            </div>
+          )
+        ) : null}
+        {is_admin && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Link
+                href="/admin"
+                className="flex items-center"
+              >
+                <Shield className="h-4 w-4 mr-2" />
+                <span>Go to admin</span>
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <CreateOrgModal onSubmit={createOrganization} />
@@ -325,62 +356,71 @@ function BuildingIcon(props: any) {
 
 
 function ChevronDownIcon(props: any) {
-    return (
-      <svg
-        {...props}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="m6 9 6 6 6-6" />
-      </svg>
-    );
-  }
-  
-  function AdminIcon(props: any) {
-    return (
-      <svg
-        {...props}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M12 2L2 7v6c0 5.2 3.8 9.4 9 10 5.2-.6 9-4.8 9-10V7L12 2z" />
-        <circle cx="12" cy="12" r="4" />
-      </svg>
-    );
-  }
-  
-  function ManageIcon(props: any) {
-    return (
-      <svg
-        {...props}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M10 9V4h4v5l-2 2-2-2z" />
-        <path d="M2 11V9h20v2H2z" />
-        <path d="M4 15v-2h16v2H4z" />
-        <path d="M6 19v-2h12v2H6z" />
-      </svg>
-    );
-  }
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+function AdminIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 2L2 7v6c0 5.2 3.8 9.4 9 10 5.2-.6 9-4.8 9-10V7L12 2z" />
+      <circle cx="12" cy="12" r="4" />
+    </svg>
+  );
+}
+
+function ManageIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M10 9V4h4v5l-2 2-2-2z" />
+      <path d="M2 11V9h20v2H2z" />
+      <path d="M4 15v-2h16v2H4z" />
+      <path d="M6 19v-2h12v2H6z" />
+    </svg>
+  );
+}
+
+function isNoInvitationsResponse(
+  orgnizations: NoInvitationsResponse | InvitationsResponse
+): orgnizations is NoInvitationsResponse {
+  return (
+    (orgnizations as NoInvitationsResponse).message !== undefined &&
+    (orgnizations as NoInvitationsResponse).status === 404
+  );
+}

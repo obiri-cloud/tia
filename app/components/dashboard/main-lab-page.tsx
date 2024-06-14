@@ -163,6 +163,7 @@ const MainLabPage = ({
     let formData = JSON.stringify({ image: labInfo!.id });
     toast({
       title: "Hold on we are cleaning your lab environment.",
+      duration: 2000,
     });
     try {
       const response = await axios.post(

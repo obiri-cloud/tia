@@ -24,6 +24,20 @@ spec:
       labels:
         app: tialabs-frontend
     spec:
+      tolerations:
+        - effect: NoSchedule
+          key: kubernetes.azure.com/scalesetpriority
+          operator: Equal
+          value: spot
+      affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: kubernetes.azure.com/scalesetpriority
+                  operator: In
+                  values:
+                  - spot
       containers:
       - name: tialabs-frontend
         image: tialabs-frontend

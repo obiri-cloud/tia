@@ -7,7 +7,18 @@ import secureLocalStorage from "react-secure-storage";
 import ProfileHeader from "../components/admin/profile-header";
 import { usePathname } from "next/navigation";
 import { DropToggle } from "../components/DropToggle";
-import { LogOut, Play, ShapesIcon, User, Users } from "lucide-react";
+import {
+  LayoutDashboard,
+  ListVideo,
+  LogOut,
+  Play,
+  ShapesIcon,
+  User,
+  UserIcon,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +33,37 @@ export default function UserDashboardLayout({
   };
   const pathname = usePathname();
 
+  const topMenu = [
+    {
+      name: "Labs",
+      Icon: LayoutDashboard,
+      href: "/dashboard",
+      isExact: true,
+    },
+    {
+      name: "Active Labs",
+      Icon: ListVideo,
+      href: "/dashboard/active-labs",
+      isExact: true,
+    },
+  ];
+
+  const bottomMenu = [
+    {
+      name: "Account",
+      Icon: UserIcon,
+      href: "/dashboard/account",
+      isExact: true,
+      onClick: () => {},
+    },
+    {
+      name: "Logout",
+      Icon: LogOut,
+      href: "#",
+      isExact: true,
+      onClick: logout,
+    },
+  ];
   return (
     <ReduxProvider>
       <div
@@ -55,174 +97,49 @@ export default function UserDashboardLayout({
             className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark"
           >
             <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
-              <ProfileHeader />
+              <h1 className="pl-2 text-lg font-medium tracking-tighter text-center">
+                Tialabs
+              </h1>
               <div className="flex flex-1 flex-col">
                 <ul className="space-y-2 font-medium mt-[50px] flex-1">
-                  <li className="all-images-button">
-                    <a
-                      href="/dashboard"
-                      className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                        pathname.startsWith("/dashboard") &&
-                        pathname !== "/dashboard/active-labs" &&
-                        pathname !== "/dashboard/account"
-                          ? "bg-menuHovWhite dark:bg-menuHov"
-                          : ""
-                      }`}
+                  {topMenu.map((menu) => (
+                    <Link
+                      href={menu.href}
+                      key={menu.name}
+                      className={cn(
+                        isActive(menu.href, pathname, menu.isExact)
+                          ? "bg-gray-200 text-gray-800 active:bg-gray-400 dark:bg-gray-800 dark:text-gray-100 dark:active:bg-gray-700"
+                          : "text-gray-500 hover:bg-gray-200 active:bg-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100 dark:active:bg-gray-700",
+                        "flex w-full items-center space-x-2 rounded-lg p-2 text-sm font-medium"
+                      )}
                     >
-                      <ShapesIcon
-                        className={`
-
-
-${
-  pathname.startsWith("/dashboard") &&
-  pathname !== "/dashboard/active-labs" &&
-  pathname !== "/dashboard/account"
-    ? "w-5 h-5  transition duration-75 dark:group-hover:text-white fill-white dark:fill-whiteDark stroke-2"
-    : ""
-}
-
-
-`}
-                      />
-                      <span
-                        className={`ms-3 
-                      
-                      ${
-                        pathname.startsWith("/dashboard") &&
-                        pathname !== "/dashboard/active-labs" &&
-                        pathname !== "/dashboard/account"
-                          ? "bg-menuHovWhite dark:bg-menuHov font-semibold"
-                          : "font-light"
-                      }
-
-
-                      
-                      `}
-                      >
-                        Labs
-                      </span>
-                    </a>
-                  </li>
-                  <li className="active-labs-button">
-                    <a
-                      href="/dashboard/active-labs"
-                      className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                        pathname === "/dashboard/active-labs"
-                          ? "bg-menuHovWhite dark:bg-menuHov"
-                          : ""
-                      }`}
-                    >
-                      <Play
-                        className={`
-                        
-                        ${
-                          pathname === "/dashboard/active-labs"
-                            ? " w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white stroke-2"
-                            : ""
-                        }
-                        
-                  
-                        
-                        `}
-                      />
-                      <span
-                        className={`
-                      ms-3 
-                      ${
-                        pathname === "/dashboard/active-labs"
-                          ? "font-semibold"
-                          : "font-light "
-                      }
-                      
-                      `}
-                      >
-                        Active Labs
-                      </span>
-                    </a>
-                  </li>
+                      {menu.Icon && (
+                        <menu.Icon className="w-4 h-4 mr-2 shrink-0" />
+                      )}
+                      {menu.name}
+                    </Link>
+                  ))}
                 </ul>
                 <div className="">
                   <ul className="space-y-2 font-medium">
-                    <li className="account-button">
-                      <a
-                        href="/dashboard/organizations"
-                        className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                          pathname === "/dashboard/organisations"
-                            ? "bg-menuHovWhite dark:bg-menuHov"
-                            : ""
-                        }`}
+                    {bottomMenu.map((menu) => (
+                      <Link
+                        href={menu.href}
+                        key={menu.name}
+                        className={cn(
+                          isActive(menu.href, pathname, menu.isExact)
+                            ? "bg-gray-200 text-gray-800 active:bg-gray-400 dark:bg-gray-800 dark:text-gray-100 dark:active:bg-gray-700"
+                            : "text-gray-500 hover:bg-gray-200 active:bg-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100 dark:active:bg-gray-700",
+                          "flex w-full items-center space-x-2 rounded-lg p-2 text-sm font-medium"
+                        )}
+                        onClick={menu.onClick}
                       >
-                        <Users
-                          className={`
-                          
-                          ${
-                            pathname === "/dashboard/organizations"
-                              ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
-                              : " "
-                          }
-                          `}
-                        />
-                        <span
-                          className={`
-                        ms-3 
-                        ${
-                          pathname === "/dashboard/organizations"
-                            ? "font-semibold"
-                            : "font-light "
-                        }
-                        `}
-                        >
-                          Organizations
-                        </span>
-                      </a>
-                    </li>
-                    <li className="account-button">
-                      <a
-                        href="/dashboard/account"
-                        className={`flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group ${
-                          pathname === "/dashboard/account"
-                            ? "bg-menuHovWhite dark:bg-menuHov"
-                            : ""
-                        }`}
-                      >
-                        <User
-                          className={`
-                          
-                          
-                          
-                          ${
-                            pathname === "/dashboard/account"
-                              ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white dark:fill-white stroke-2"
-                              : " "
-                          }
-
-
-
-                          `}
-                        />
-                        <span
-                          className={`
-                        ms-3 
-                        ${
-                          pathname === "/dashboard/account"
-                            ? "font-semibold"
-                            : "font-light "
-                        }
-                        `}
-                        >
-                          Account
-                        </span>
-                      </a>
-                    </li>
-                    <li className="logout-button">
-                      <span
-                        onClick={logout}
-                        className="flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group cursor-pointer"
-                      >
-                        <LogOut className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-white dark:fill-whiteDark" />
-                        <span className="ms-3 font-light">Logout</span>
-                      </span>
-                    </li>
+                        {menu.Icon && (
+                          <menu.Icon className="w-4 h-4 mr-2 shrink-0" />
+                        )}
+                        {menu.name}
+                      </Link>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -244,12 +161,15 @@ ${
         href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet"
       ></link>
-      <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"
-      />
       <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     </ReduxProvider>
   );
+}
+
+function isActive(path: string, currentPath: string, isExact?: boolean) {
+  if (isExact) {
+    return currentPath === path;
+  }
+
+  return currentPath.startsWith(path);
 }
