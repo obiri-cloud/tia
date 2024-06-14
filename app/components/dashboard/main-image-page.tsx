@@ -30,7 +30,7 @@ import { TrashIcon } from "@radix-ui/react-icons";
 import { IActiveLab } from "@/app/types";
 import AltRouteCheck from "../alt-route-check";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
-import MultiPlanModal from "../multiPlanModal";
+import MultiPlanModal from "../MultiPlanModal";
 
 const MainImagePage = ({
   token,
@@ -46,7 +46,6 @@ const MainImagePage = ({
   const router = useRouter();
   const id = searchParams.get("image");
 
-
   const paramId = params.id;
   const gid = params.gid;
   const name = searchParams.get("name") ?? "";
@@ -59,7 +58,7 @@ const MainImagePage = ({
   console.log({ labCreationUrl, redirectUrl });
 
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [openModal,setOpenModal]=useState(false)
+  const [openModal, setOpenModal] = useState(false);
   const [creatingStarted, setCreatingStarted] = useState(false);
   const [jokes, setJokes] = useState<string[]>([]);
 
@@ -95,7 +94,7 @@ const MainImagePage = ({
     getCurrentImage(id, token)
   );
 
-  console.log({currentImage})
+  console.log({ currentImage });
 
   const { data: isActive } = useQuery(["active-labs", id], () =>
     getActiveLabs()
@@ -249,7 +248,7 @@ const MainImagePage = ({
       }
     } catch (error) {
       console.error("error this one", error);
-      setOpenModal(true)
+      setOpenModal(true);
       if (error instanceof AxiosError) {
         userCheck(error as AxiosError);
       }
@@ -541,18 +540,21 @@ const MainImagePage = ({
             ) : null}
           </div>
           <Dialog open={openModal} onOpenChange={setOpenModal}>
-        <DialogContent>
-          <MultiPlanModal currentPlan={currentPlan} currentImage={currentImage}/>
-          <DialogClose asChild>
-            <button
-              aria-label="Close"
-              className="absolute top-2.5 right-2.5 inline-flex h-8 w-8 appearance-none items-center justify-center rounded-full focus:outline-none"
-            >
-              <span className="sr-only">Close</span>
-            </button>
-          </DialogClose>
-        </DialogContent>
-      </Dialog>  
+            <DialogContent>
+              <MultiPlanModal
+                currentPlan={currentPlan}
+                currentImage={currentImage}
+              />
+              <DialogClose asChild>
+                <button
+                  aria-label="Close"
+                  className="absolute top-2.5 right-2.5 inline-flex h-8 w-8 appearance-none items-center justify-center rounded-full focus:outline-none"
+                >
+                  <span className="sr-only">Close</span>
+                </button>
+              </DialogClose>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>

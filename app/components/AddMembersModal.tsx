@@ -4,11 +4,7 @@ import { useForm } from "react-hook-form";
 import { DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Form,
-  FormField,
-  FormItem,
-} from "@/components/ui/form";
+import { Form, FormField, FormItem } from "@/components/ui/form";
 import { useCallback, useEffect, useState } from "react";
 import { GroupMember } from "../types";
 import axios from "axios";
@@ -16,7 +12,7 @@ import { useSession } from "next-auth/react";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import OrgDialog from "./my-organization/org-dialog";
 import { OrgGroup } from "../my-organization/groups/page";
-import { useMutation, useQueryClient} from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 
 export interface IMemberChanges {
   added: Set<string>;
@@ -43,9 +39,9 @@ const AddMembersModal = ({
   const [searchQuery, setSearchQuery] = useState("");
   let organization_id = session?.user.data.organization_id;
 
-
-
-  const getSearchedMembers = async (query): Promise<GroupMember[] | undefined> => {
+  const getSearchedMembers = async (
+    query: string
+  ): Promise<GroupMember[] | undefined> => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BE_URL}/organization/${organization_id}/members/?q=${query}`,
@@ -72,7 +68,6 @@ const AddMembersModal = ({
     }
   };
 
-
   const getMembers = async () => {
     setIsLoadingMembers(true);
     try {
@@ -91,7 +86,6 @@ const AddMembersModal = ({
       let newData = [];
       let list = data[0].member;
 
-      
       if (list.length > 0) {
         newData = list ? list.map((d: any) => d.id) : [];
       }
@@ -111,9 +105,6 @@ const AddMembersModal = ({
     };
   }, [group]);
 
-
-
-
   const [selectedMembers, setSelectedMembers] = useState(new Set());
 
   const debounce = (func: (e: string) => void, delay: number) => {
@@ -126,8 +117,6 @@ const AddMembersModal = ({
     };
   };
 
-
-
   const { mutate: searchMutation } = useMutation(getSearchedMembers, {
     onSuccess: (data) => {
       queryClient.setQueryData("members", data);
@@ -139,11 +128,9 @@ const AddMembersModal = ({
   });
 
   const debouncedFetchMembers = useCallback(
-     debounce((query: string) => searchMutation(query), 400),
+    debounce((query: string) => searchMutation(query), 400),
     [searchMutation]
   );
-
-
 
   // State to track the changes - additions and deletions
   const [changes, setChanges] = useState<IMemberChanges>({
@@ -176,25 +163,23 @@ const AddMembersModal = ({
 
   // Handle search input change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault()
+    event.preventDefault();
     setSearchQuery(event.target.value);
     debouncedFetchMembers(event.target.value);
   };
 
-
-  const handleSearchQueryChange = (query: string) => {
-
-  };
+  const handleSearchQueryChange = (query: string) => {};
 
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentMembers = members
-    ?.filter((member) =>
-      `${member.member.first_name} ${member.member.last_name}`
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      member.member.email.toLowerCase().includes(searchTerm.toLowerCase())
+    ?.filter(
+      (member) =>
+        `${member.member.first_name} ${member.member.last_name}`
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        member.member.email.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .slice(indexOfFirstItem, indexOfLastItem);
 
@@ -274,7 +259,9 @@ const AddMembersModal = ({
           Page {currentPage} of {totalPages}
         </span>
         <Button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
           disabled={currentPage === totalPages}
         >
           Next

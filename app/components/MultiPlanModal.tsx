@@ -4,8 +4,18 @@ import { useSession } from "next-auth/react";
 import axios, { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { userCheck } from "@/lib/utils";
+import { ILabImage } from "../types";
 
-const plans = [
+interface Plan {
+  value: string;
+  label: string;
+  features: string[];
+  price: string;
+  basicPrice?: number;
+  plan_choice: string;
+}
+
+const plans: Plan[] = [
   {
     value: "basic",
     label: "Basic",
@@ -24,18 +34,32 @@ const plans = [
   {
     value: "premium",
     label: "Premium",
-    features: ["500 credits per month", "Advanced analytics", "Priority support"],
+    features: [
+      "500 credits per month",
+      "Advanced analytics",
+      "Priority support",
+    ],
     price: "20",
     plan_choice: "monthly",
   },
 ];
 
-export default function MultiPlanModal({ currentPlan, currentImage }) {
+export default function MultiPlanModal({
+  currentPlan,
+  currentImage,
+}: {
+  currentPlan: string | undefined;
+  currentImage: ILabImage;
+}) {
   const { data: session } = useSession();
   const token = session?.user?.tokens?.access_token;
 
-  const subscribe = async (plan) => {
-    document.getElementById("btn").textContent = "Processing";
+  let btn = document.getElementById("btn");
+
+  const subscribe = async (plan: Plan) => {
+    if (btn) {
+      btn.textContent = "Processing";
+    }
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/create/`,
@@ -50,7 +74,9 @@ export default function MultiPlanModal({ currentPlan, currentImage }) {
           },
         }
       );
-      document.getElementById("btn").textContent = "Processing";
+      if (btn) {
+        btn.textContent = "Processing";
+      }
       if (response.status === 200) {
         window.location.href = response.data.authorization_url;
         toast({
@@ -73,8 +99,10 @@ export default function MultiPlanModal({ currentPlan, currentImage }) {
     }
   };
 
-  const upgradeSubscription = async (plan) => {
-    document.getElementById("btn").textContent = "Updating";
+  const upgradeSubscription = async (plan: Plan) => {
+    if (btn) {
+      btn.textContent = "Updating";
+    }
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/update/`,
@@ -104,7 +132,9 @@ export default function MultiPlanModal({ currentPlan, currentImage }) {
     } catch (error) {
       userCheck(error as AxiosError);
       console.error("error", error);
-      document.getElementById("btn").textContent = `Subscribe to ${plan.value}`;
+      if (btn) {
+        btn.textContent = `Subscribe to ${plan.value}`;
+      }
       toast({
         title: "Something went wrong!",
         variant: "destructive",
@@ -112,8 +142,11 @@ export default function MultiPlanModal({ currentPlan, currentImage }) {
     }
   };
 
-  const filteredPlans = plans.filter((plan) => {
-    if (currentPlan === "basic" && (plan.value === "standard" || plan.value === "premium")) {
+  const filteredPlans = plans.filter((plan: Plan) => {
+    if (
+      currentPlan === "basic" &&
+      (plan.value === "standard" || plan.value === "premium")
+    ) {
       return true;
     }
     if (currentPlan === "standard" && plan.value === "premium") {
@@ -135,7 +168,10 @@ export default function MultiPlanModal({ currentPlan, currentImage }) {
       </p>
       <div className="grid gap-6 py-6">
         {filteredPlans.map((plan) => (
-          <div key={plan.value} className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg">
+          <div
+            key={plan.value}
+            className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg"
+          >
             <div className="grid grid-cols-[1fr_auto] items-center gap-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
