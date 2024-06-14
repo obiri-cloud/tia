@@ -4,16 +4,7 @@ import { useSession } from "next-auth/react";
 import axios, { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { userCheck } from "@/lib/utils";
-import { ILabImage } from "../types";
-
-interface Plan {
-  value: string;
-  label: string;
-  features: string[];
-  price: string;
-  basicPrice?: number;
-  plan_choice: string;
-}
+import { ILabImage, Plan } from "../types";
 
 const plans: Plan[] = [
   {

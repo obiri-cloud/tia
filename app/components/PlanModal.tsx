@@ -6,14 +6,24 @@ import { toast } from "@/components/ui/use-toast";
 import { userCheck } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Plan } from "../types";
 
-const PlanModalContent = ({ plan, currentPlan }) => {
+const PlanModalContent = ({
+  plan,
+  currentPlan,
+}: {
+  plan: Plan;
+  currentPlan: string | undefined;
+}) => {
   const { data: session } = useSession();
   const token = session?.user?.tokens?.access_token;
   const router = useRouter();
+  let btn = document.getElementById("btn");
 
   const subscribe = async () => {
-    document.getElementById("btn").textContent = "Processing";
+    if (btn) {
+      btn.textContent = "Processing";
+    }
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/create/`,
@@ -28,9 +38,13 @@ const PlanModalContent = ({ plan, currentPlan }) => {
           },
         }
       );
-      (document.getElementById("btn").textContent = "Processing")
+      if (btn) {
+        btn.textContent = "Processing";
+      }
       if (response.status === 200) {
-        document.getElementById("btn").textContent = "Processing";
+        if (btn) {
+          btn.textContent = "Processing";
+        }
         window.location.href = response.data.authorization_url;
         toast({
           title: "Redirecting you to payment page",
@@ -53,7 +67,9 @@ const PlanModalContent = ({ plan, currentPlan }) => {
   };
 
   const upgradeSubscription = async () => {
-    document.getElementById("btn").textContent = "Updating";
+    if (btn) {
+      btn.textContent = "Updating";
+    }
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/update/`,
@@ -83,7 +99,9 @@ const PlanModalContent = ({ plan, currentPlan }) => {
     } catch (error) {
       userCheck(error as AxiosError);
       console.error("error", error);
-      document.getElementById("btn").textContent = `Subscribe to ${plan.value}`;
+      if (btn) {
+        btn.textContent = `Subscribe to ${plan.value}`;
+      }
       toast({
         title: "Something went wrong!",
         variant: "destructive",

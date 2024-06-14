@@ -11,7 +11,7 @@ interface IUserProfile {
   is_staff: boolean;
   date_joined: string;
   last_login: string | boolean;
-  organization_id:string | null;
+  organization_id: string | null;
 }
 
 interface ILabImage {
@@ -53,9 +53,9 @@ interface IinviteData {
 interface IOrgGroupData {
   id: number;
   name: string;
-   organization: {
-    name:string
-   }
+  organization: {
+    name: string;
+  };
 }
 
 interface ILabInfoDialog {
@@ -140,7 +140,7 @@ interface ISession extends Session {
       is_active: boolean;
       date_joined: string;
       last_login: string | null;
-      organization_id:string | null;
+      organization_id: string | null;
     };
   };
 }
@@ -159,7 +159,7 @@ interface InvitationsResponse {
         username: string;
       };
     };
-    role?: string
+    role?: string;
   }[];
   status: number;
 }
@@ -171,9 +171,6 @@ interface OrganizationGroup {
   }[];
 }
 
-
-
-
 interface GroupMember {
   invitation_status: string;
   join_date: string;
@@ -183,28 +180,30 @@ interface GroupMember {
     id: string;
     last_name: string;
   };
-  role:string
+  role: string;
 }
-
-
 
 interface Link {
   label: string;
   link: string;
   icon: ReactNode;
   position?: string;
-  description: string
+  description: string;
 }
 
 interface RouteLinks {
   links: Link[];
 }
 
-
-type Permissions =
-  | RouteLinks
-  | RouteLinks
-  | RouteLinks
-  | RouteLinks;
+type Permissions = RouteLinks | RouteLinks | RouteLinks | RouteLinks;
 
 type Role = "Admin" | "Editor" | "Viewer" | "Member";
+
+interface Plan {
+  value: string;
+  label: string;
+  features: string[];
+  price: string;
+  basicPrice?: number;
+  plan_choice: string;
+}
