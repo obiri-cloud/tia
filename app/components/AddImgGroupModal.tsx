@@ -22,7 +22,6 @@ import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
 import OrgDialog from "./my-organization/org-dialog";
 import { GroupMember, ILabImage } from "../types";
-import { CheckedState } from "@radix-ui/react-checkbox";
 import { OrgGroup } from "../my-organization/groups/page";
 
 export interface IImageChanges {
