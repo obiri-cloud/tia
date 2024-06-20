@@ -97,7 +97,7 @@ function AddImgGroupModal({
     removed: new Set(),
   });
 
-  const handleCheckedChange = (checked: CheckedState, imageId: string) => {
+  const handleCheckedChange = (checked: string | boolean, imageId: string) => {
     console.log({ checked, imageId });
 
     const updatedSet = new Set(selectedImages);

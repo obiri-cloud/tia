@@ -9,7 +9,6 @@ import { useCallback, useEffect, useState } from "react";
 import { GroupMember } from "../types";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { CheckedState } from "@radix-ui/react-checkbox";
 import OrgDialog from "./my-organization/org-dialog";
 import { OrgGroup } from "../my-organization/groups/page";
 import { useMutation, useQueryClient } from "react-query";
@@ -138,7 +137,7 @@ const AddMembersModal = ({
     removed: new Set(),
   });
 
-  const handleCheckedChange = (checked: CheckedState, memberId: string) => {
+  const handleCheckedChange = (checked: string | boolean, memberId: string) => {
     const updatedSet = new Set(selectedMembers);
     const updatedChanges = { ...changes };
 
