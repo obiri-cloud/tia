@@ -73,7 +73,7 @@ const Images = () => {
       setIsLoadingMembers(true);
       setError(null);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members/`,
         {
           headers: {
             "Content-Type": "application/json",

@@ -90,7 +90,7 @@ const Images = () => {
     try {
       setloadingInvitation(true);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/`,
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/?page_size=2`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -536,10 +536,6 @@ const Images = () => {
 
             <CardContent className="pl-2">
               <Table>
-                {!loadingInvitation &&
-                ((tableData && tableData.length === 0) || !tableData) ? (
-                  <TableCaption>No pending invites found...</TableCaption>
-                ) : null}
                 {loadingInvitation ? (
                   <TableCaption>
                     Loading invitations in your organization...

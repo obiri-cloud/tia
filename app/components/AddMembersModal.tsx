@@ -189,14 +189,13 @@ const AddMembersModal = ({
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentMembers = members
-    ?.filter((member) =>
-      `${member.member.first_name} ${member.member.last_name}`
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      member.member.email.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .slice(indexOfFirstItem, indexOfLastItem);
+  // const currentMembers = members?.filter((member) =>
+  //     `${member.member.first_name} ${member.member.last_name}`
+  //       .toLowerCase()
+  //       .includes(searchTerm.toLowerCase()) ||
+  //     member.member.email.toLowerCase().includes(searchTerm.toLowerCase())
+  //   )
+  //   .slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil((members?.length || 0) / itemsPerPage);
 
