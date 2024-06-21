@@ -23,6 +23,7 @@ import { useSession } from "next-auth/react";
 import OrgDialog from "./my-organization/org-dialog";
 import { GroupMember, ILabImage } from "../types";
 import { OrgGroup } from "../my-organization/groups/page";
+import apiClient from "@/lib/request";
 
 export interface IImageChanges {
   added: Set<string>;
@@ -41,8 +42,6 @@ function AddImgGroupModal({
   const form = useForm();
 
   const { data: session } = useSession();
-  // @ts-ignore
-  const token = session?.user!.tokens?.access_token;
 
   const [loadingImages, setIsLoadingImages] = useState<boolean>(false);
   const [selectedImages, setSelectedImages] = useState(new Set());
@@ -51,16 +50,8 @@ function AddImgGroupModal({
   const getImages = async () => {
     setIsLoadingImages(true);
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${organization_id}/group/${group?.id}/image/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `/organization/${organization_id}/group/${group?.id}/image/list/`
       );
 
       let data = response.data.data;
@@ -68,7 +59,6 @@ function AddImgGroupModal({
 
       let newData = [];
       let list = data[0].lab_image;
-      console.log("list", list);
 
       if (list.length > 0) {
         newData = list ? list.map((d: any) => String(d.id)) : [];
@@ -192,7 +182,7 @@ function AddImgGroupModal({
         type="submit"
         className="w-full"
       >
-        Update Images List
+        Update images List
       </Button>
     </OrgDialog>
   );

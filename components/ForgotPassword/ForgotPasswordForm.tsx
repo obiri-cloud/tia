@@ -9,6 +9,7 @@ import { LabelInputContainer } from "../ui/label-input-container";
 import { Input } from "../ui/neo-input";
 import { Label } from "../ui/neo-label";
 import { BottomGradient } from "../Signup/SForm";
+import apiClient from "@/lib/request";
 
 const ForgotPasswordForm = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -32,16 +33,11 @@ const ForgotPasswordForm = () => {
 
     try {
       formSchema.parse(formData);
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/auth/password/forgot-password/`,
-        JSON.stringify(formData),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
+      const response = await apiClient.post(
+        `/auth/password/forgot-password/`,
+        JSON.stringify(formData)
       );
+
       toast({
         title: response.data.message,
         variant: "success",

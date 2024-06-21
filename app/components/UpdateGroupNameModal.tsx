@@ -13,23 +13,26 @@ import { Button } from "@/components/ui/button";
 import OrgDialog from "./my-organization/org-dialog";
 
 interface UpdateGroupNameModalProps {
-    onSubmit: (e: FormEvent<HTMLFormElement>) => void;
-    updateData: any;
-  }
-  
-  const UpdateGroupNameModal: React.FC<UpdateGroupNameModalProps> = ({ onSubmit, updateData }) => {
-    const form = useForm();
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  updateData: any;
+}
 
-    console.log({updateData})
+const UpdateGroupNameModal: React.FC<UpdateGroupNameModalProps> = ({
+  onSubmit,
+  updateData,
+}) => {
+  const form = useForm();
+
+  console.log({ updateData });
 
   return (
     <OrgDialog
       title="Update Group Name"
-      description="update your group name"
+      description="Please update your group name"
     >
       <Form {...form}>
         <form
-        id="create-group-form"
+          id="create-group-form"
           onSubmit={(e) => onSubmit(e)}
           className=" w-full dark:text-white text-black"
         >

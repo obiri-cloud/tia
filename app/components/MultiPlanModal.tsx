@@ -5,6 +5,7 @@ import axios, { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { userCheck } from "@/lib/utils";
 import { ILabImage, Plan } from "../types";
+import apiClient from "@/lib/request";
 
 const plans: Plan[] = [
   {
@@ -52,8 +53,8 @@ export default function MultiPlanModal({
       btn.textContent = "Processing";
     }
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/create/`,
+      const response = await apiClient.post(
+        `/payment/subscription/create/`,
         {
           amount: plan.price,
           interval: "monthly",
@@ -95,18 +96,10 @@ export default function MultiPlanModal({
       btn.textContent = "Updating";
     }
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/update/`,
-        {
-          amount: plan.price,
-          plan_choice: plan.value,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.post(`/payment/subscription/update/`, {
+        amount: plan.price,
+        plan_choice: plan.value,
+      });
 
       if (response.data.status === 200) {
         window.location.href = `/dashboard/images?image=${currentImage.id}`;
@@ -185,7 +178,7 @@ export default function MultiPlanModal({
               <Button
                 id="btn"
                 variant="outline"
-                className="mt-4 w-full text-sm font-medium"
+                className="mt-4 w-full text-sm font-medium text-black dark:text-white"
                 onClick={() => subscribe(plan)}
               >
                 Subscribe to {plan.label}
@@ -195,7 +188,7 @@ export default function MultiPlanModal({
                 id="btn"
                 variant="outline"
                 onClick={() => upgradeSubscription(plan)}
-                className="mt-4 w-full text-sm font-medium"
+                className="mt-4 w-full text-sm font-medium text-black dark:text-white"
               >
                 Upgrade to {plan.label}
               </Button>

@@ -21,6 +21,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { useState } from "react";
 import DeleteConfirmation from "./delete-confirmation";
 import { RootState } from "@/redux/store";
+import apiClient from "@/lib/request";
 
 dayjs.extend(relativeTime);
 
@@ -91,25 +92,6 @@ export const columns: ColumnDef<IinviteData>[] = [
       <DataTableColumnHeader column={column} title="Action" />
     ),
     cell: ({ row }) => {
-      const getInvitations = async (): Promise<IinviteData[] | undefined> => {
-        try {
-          const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                // @ts-ignore
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          return response.data.data;
-        } catch (error) {
-          console.log(error);
-        }
-      };
-
       const [diag, setdiag] = useState<boolean>();
       const { data: tableData } = useSelector(
         (state: RootState) => state.table
@@ -123,15 +105,8 @@ export const columns: ColumnDef<IinviteData>[] = [
       const [passedData, setPassedData] = useState<IinviteData>();
 
       const deleteInvite = async (id: number) => {
-        const response = await axios.delete(
-          `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/${id}/delete/`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const response = await apiClient.delete(
+          `/organization/${org_id}/invitation/${id}/delete/`
         );
 
         const newData = tableData.filter((item: any) => item.id !== id);
@@ -140,29 +115,6 @@ export const columns: ColumnDef<IinviteData>[] = [
 
         return response.data.data;
       };
-
-      //   const { mutate: deleteInviteMutation } = useMutation(
-      //     (id: number) => deleteInvite(id),
-      //     {
-      //       onSuccess: (data, id) => {
-      //         queryClient.invalidateQueries("invites");
-
-      //         setdiag(false);
-      //         toast({
-      //           variant: "destructive",
-      //           title: data.message || "Invitation deleted successfully",
-      //         });
-      //       },
-      //       onError: (error: any) => {
-      //         const responseData = error.response.data;
-      //         toast({
-      //           variant: "destructive",
-      //           title: responseData.message || "Failed to delete invitation",
-      //         });
-      //         setdiag(false);
-      //       },
-      //     }
-      //   );
 
       const deletebtn = (data: IinviteData) => {
         setPassedData(data);
@@ -178,7 +130,6 @@ export const columns: ColumnDef<IinviteData>[] = [
         });
         await deleteInvite(data);
       };
-      
 
       return (
         <>

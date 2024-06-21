@@ -14,26 +14,27 @@ import {
 } from "@radix-ui/react-icons";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import {  useQueryClient } from "react-query";
+import { useQueryClient } from "react-query";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setMemberPageSize, setMemberTableData } from "@/redux/reducers/MemberTableSlice";
+import {
+  setMemberPageSize,
+  setMemberTableData,
+} from "@/redux/reducers/MemberTableSlice";
 import { RootState } from "@/redux/store";
 import { Table } from "@/components/ui/table";
+import apiClient from "@/lib/request";
 
 interface DataTablePaginationProps<IinviteData> {
   //@ts-ignore
   table: Table<IinviteData>;
 }
 
-export function LabsPagination({
-  table,
-}: DataTablePaginationProps<any>) {
+export function LabsPagination({ table }: DataTablePaginationProps<any>) {
   const { data: session } = useSession();
   const dispatch = useDispatch();
-  const { MemberPageSize: MemberTotalPageSize, MemberOriginalPageSize } = useSelector(
-    (state: RootState) => state.memberTable
-  );
+  const { MemberPageSize: MemberTotalPageSize, MemberOriginalPageSize } =
+    useSelector((state: RootState) => state.memberTable);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageSize, setCurrentPageSize] = useState<number>(2);
@@ -46,15 +47,10 @@ export function LabsPagination({
     pageSize: number
   ): Promise<any | undefined> => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/images/?page_size=${pageSize}`,
+      const response = await apiClient.get(
+        `/organization/${org_id}/images/?page_size=${pageSize}`,
         {
           params: { page },
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
         }
       );
 
@@ -123,8 +119,7 @@ export function LabsPagination({
             <span className="sr-only">Go to previous page</span>
             <ChevronLeftIcon className="h-4 w-4" />
           </Button>
-          <Button 
-
+          <Button
             variant="outline"
             className="h-8 w-8 p-0"
             onClick={() => handlePageChange(currentPage + 1)}

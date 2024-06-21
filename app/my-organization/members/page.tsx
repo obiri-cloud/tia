@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Table, TableCaption } from "@/components/ui/table";
 import { MemberColumns } from "@/app/components/MemberColumns";
 import { toast } from "@/components/ui/use-toast";
-import axios from "axios";
+import apiClient from "@/lib/request";
 import { useSession } from "next-auth/react";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { GroupMember } from "@/app/types";
@@ -72,15 +72,9 @@ const Images = () => {
     try {
       setIsLoadingMembers(true);
       setError(null);
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response =await apiClient.get(
+        `/organization/${org_id}/members`,
+       
       );
 
       if (response.data.status === 404) {
@@ -117,15 +111,8 @@ const Images = () => {
   };
 
   const deleteMember = async (id: number) => {
-    const response = await axios.delete(
-      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/member/${id}/delete/`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const response =await apiClient.delete(
+      `/organization/${org_id}/member/${id}/delete/`,
     );
     return response.data.data;
   };
@@ -153,16 +140,10 @@ const Images = () => {
   );
 
   const updateRole = async ({ id, role }: { id: string; role: string }) => {
-    const response = await axios.put(
-      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/member/${id}/update/role/`,
+    const response = await apiClient.put(
+      `/organization/${org_id}/member/${id}/update/role/`,
       { role: role },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
+
     );
     return response.data;
   };
@@ -185,19 +166,10 @@ const Images = () => {
 
   const fetchMembers = async (query: string) => {
     try {
-      const response = await axios.get(
-        `${
-          process.env.NEXT_PUBLIC_BE_URL
-        }/organization/${org_id}/members/?q=${query}${
+      const response = await apiClient.get(
+        `/organization/${org_id}/members/?q=${query}${
           role == "" ? "" : `&role=${role}`
         }`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
       );
 
       if (response.data.status === 404) {
@@ -236,15 +208,8 @@ const Images = () => {
 
   const fetchRole = async (query: string) => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members/?role=${query}&role=${query}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response =await  apiClient.get(
+        `/organization/${org_id}/members/?role=${query}&role=${query}`,
       );
       
       if (response.data.status === 404) {

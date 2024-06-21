@@ -12,6 +12,8 @@ import { useSession } from "next-auth/react";
 import OrgDialog from "./my-organization/org-dialog";
 import { OrgGroup } from "../my-organization/groups/page";
 import { useMutation, useQueryClient } from "react-query";
+import apiClient from "@/lib/request";
+import { Input } from "@/components/ui/input";
 
 export interface IMemberChanges {
   added: Set<string>;
@@ -42,21 +44,9 @@ const AddMembersModal = ({
     query: string
   ): Promise<GroupMember[] | undefined> => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${organization_id}/members/?q=${query}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `/organization/${organization_id}/members/?q=${query}`
       );
-
-      // if (response.data.status === 404) {
-      //   alert("No members found for this organization.");
-      //   return;
-      // }
 
       setSelectedMembers(new Set(response.data.data));
       return response.data.data;
@@ -70,15 +60,8 @@ const AddMembersModal = ({
   const getMembers = async () => {
     setIsLoadingMembers(true);
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${organization_id}/group/${group?.id}/member/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `/organization/${organization_id}/group/${group?.id}/member/list/`
       );
 
       let data = response.data.data;
@@ -160,27 +143,11 @@ const AddMembersModal = ({
     setChanges(updatedChanges);
   };
 
-  // Handle search input change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setSearchQuery(event.target.value);
     debouncedFetchMembers(event.target.value);
   };
-
-  const handleSearchQueryChange = (query: string) => {};
-
-  // Pagination
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentMembers = members
-    ?.filter(
-      (member) =>
-        `${member.member.first_name} ${member.member.last_name}`
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        member.member.email.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil((members?.length || 0) / itemsPerPage);
 
@@ -192,14 +159,14 @@ const AddMembersModal = ({
       <div className=" overflow-scroll flex flex-col flex-1 ">
         <Form {...form}>
           <form className="space-y-8 flex-1 overflow-scroll">
-            <input
-              type="text"
+            <Input
               placeholder="Search members"
               value={searchQuery}
               onChange={handleSearchChange}
-              // onChange={(e) => handleSearchQueryChange(e.target.value)}
-              className="w-full p-2 mb-4 border border-gray-300 rounded"
+              className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
+              defaultValue=""
             />
+
             <FormField
               name="image"
               render={() => (
@@ -210,7 +177,7 @@ const AddMembersModal = ({
                     </p>
                   ) : !Array.isArray(members) || members.length === 0 ? (
                     <p className="text-center text-black dark:text-white">
-                      No members in the group.
+                      No members found.
                     </p>
                   ) : (
                     members?.map((member: GroupMember) => (
@@ -272,7 +239,7 @@ const AddMembersModal = ({
         className="w-full mt-4"
         id="update-member-submit-button"
       >
-        Update Member List
+        Update member list
       </Button>
     </OrgDialog>
   );

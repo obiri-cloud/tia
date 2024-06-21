@@ -1,6 +1,6 @@
 "use client";
 import { userCheck } from "@/lib/utils";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import React, { SVGProps, useEffect, useState } from "react";
 
 import {
@@ -13,20 +13,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
+
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import secureLocalStorage from "react-secure-storage";
 import { IActiveLab } from "@/app/types";
 import AltRouteCheck from "@/app/components/alt-route-check";
+import apiClient from "@/lib/request";
 
 const ActiveLabsPage = () => {
   const [labs, setLabs] = useState([]);
 
-  const { data: session } = useSession();
-
-  // @ts-ignore
-  const token = session?.user!.tokens?.access_token;
   const router = useRouter();
 
   useEffect(() => {
@@ -35,17 +32,7 @@ const ActiveLabsPage = () => {
 
   const getActiveLabs = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/labs/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.get(`/user/labs/list/`);
 
       setLabs(response.data.data);
     } catch (error) {

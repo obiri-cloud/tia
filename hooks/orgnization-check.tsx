@@ -6,7 +6,7 @@ import { useEffect } from "react";
 const useOrgCheck = () => {
   const { data: session } = useSession();
   const router = useRouter();
-  
+
   let status = session?.user.data.subscription_plan === "basic";
 
   useEffect(() => {
@@ -17,6 +17,7 @@ const useOrgCheck = () => {
         title: "Protected Page",
         description:
           "You are being redirected here because you are not an admin",
+        duration: 2000,
       });
     }
   }, [status, router]);

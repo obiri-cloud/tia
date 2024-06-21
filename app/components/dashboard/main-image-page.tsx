@@ -31,6 +31,7 @@ import { IActiveLab } from "@/app/types";
 import AltRouteCheck from "../alt-route-check";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import MultiPlanModal from "../MultiPlanModal";
+import apiClient from "@/lib/request";
 
 const MainImagePage = ({
   token,
@@ -68,16 +69,7 @@ const MainImagePage = ({
     }
 
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/image/${id}/retrieve/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.get(`/user/image/${id}/retrieve/`);
 
       return response.data;
     } catch (error) {
@@ -171,18 +163,7 @@ const MainImagePage = ({
       comments: "string",
     });
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}${labCreationUrl}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.post(`${labCreationUrl}`, formData);
       if (response.data.status === 400) {
         if (
           response.data.ingress_url &&
@@ -341,17 +322,7 @@ const MainImagePage = ({
       throw new Error("Missing access token");
     }
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/labs/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.get(`/user/labs/list/`);
       if (response.status === 200) {
         return response.data.data.find(
           (res: IActiveLab) => String(res.image) === id

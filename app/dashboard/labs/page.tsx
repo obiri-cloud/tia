@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { SheetClose, SheetFooter } from "@/components/ui/sheet";
 import { Toaster, toast as sooner } from "sonner";
+import apiClient from "@/lib/request";
 
 interface ILabInfo {
   id: number | null;
@@ -138,17 +139,7 @@ const LabsPage = () => {
   }, []);
 
   const getInstructions = async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/user/image/${id}/instruction/`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          // @ts-ignore
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await apiClient.get(`/user/image/${id}/instruction/`);
     if (response.status === 200) {
       setInstructions(response.data.data);
     }
@@ -163,18 +154,7 @@ const LabsPage = () => {
       duration: 2000,
     });
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/delete/`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.post(`/user/lab/delete/`, formData);
       if (response.data.status === 200) {
         secureLocalStorage.removeItem("tialab_info");
         toast({
@@ -325,13 +305,6 @@ const LabsPage = () => {
               <CustomIframe>
                 <Instructions instructions={instructions} />
               </CustomIframe>
-              {/* <iframe
-                width="100%"
-                height="100%"
-              >
-                <Instructions instructions={instructions} />
-
-              </iframe> */}
             </div>
           </div>
           <div
@@ -656,16 +629,9 @@ const ReviewDrawer = () => {
 
     try {
       formSchema.parse(formData);
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/review/create/`,
-        JSON.stringify(formData),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.post(
+        `/user/lab/review/create/`,
+        JSON.stringify(formData)
       );
 
       toast({

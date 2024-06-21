@@ -3,15 +3,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-
 import { toast } from "@/components/ui/use-toast";
-import { formatDistanceToNow, format } from "date-fns";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { IinviteData } from "@/app/types";
 import Link from "next/link";
-import { ChevronRight, MoreVerticalIcon } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import { useForm } from "react-hook-form";
 import InviteModal from "@/app/components/InviteModal";
@@ -30,30 +28,9 @@ import {
 } from "@/redux/reducers/tableSlice";
 import { setdialogState } from "@/redux/reducers/dialogSlice";
 import { setnextState } from "@/redux/reducers/nextPaginationSlice";
-import {
-  TableBody,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableCaption,
-  TableCell,
-  Table,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationEllipsis,
-  PaginationNext,
-  PaginationLink,
-} from "@/components/ui/pagination";
+import { TableCaption, Table } from "@/components/ui/table";
+
+import apiClient from "@/lib/request";
 
 const Images = () => {
   const [file, setfile] = useState<any>();
@@ -89,24 +66,13 @@ const Images = () => {
   const getInvitations = async (): Promise<IinviteData[] | undefined> => {
     try {
       setloadingInvitation(true);
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `/organization/${org_id}/invitation/list/`
       );
-      console.log("--here-->", response.data.next);
 
       if (response.data.next) {
         dispatch(setnextState(true));
       }
-
-      console.log("response.data.data", response.data);
 
       dispatch(setTableData(response.data.data));
       dispatch(setPageSize(Math.ceil(response.data.count / 2)));
@@ -119,35 +85,16 @@ const Images = () => {
     }
   };
 
-  const deletebtn = (data: IinviteData) => {
-    setPassedData(data);
-    dispatch(setdialogState(true));
-  };
-
   useEffect(() => {
     getInvitations();
   }, []);
-
-  const formatExpiration = (expires: string) => {
-    const expirationDate = new Date(expires);
-    const remainingTime = expirationDate.getTime() - new Date().getTime();
-    if (remainingTime > 0) {
-      return formatDistanceToNow(expirationDate, { addSuffix: true });
-    } else {
-      return "Expired";
-    }
-  };
 
   //mutation
   const SendInvitation = async (formData: FormData) => {
     const axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/create/`,
+      url: `/organization/${org_id}/invitation/create/`,
       data: formData,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
     };
 
     const response = await axios(axiosConfig);
@@ -155,53 +102,9 @@ const Images = () => {
     return response.data;
   };
 
-  const {
-    mutate: SendInviteMutation,
-    isLoading: updatingGroups,
-    error: groupUpdateError,
-  } = useMutation((formData: FormData) => SendInvitation(formData), {
-    onSuccess: () => {
-      queryClient.invalidateQueries("invites");
-      (document.getElementById("email-id") as HTMLInputElement).value = "";
-      toast({
-        variant: "success",
-        title: "Invitation Sent Successfully",
-        description: "",
-      });
-      setIsOpenViewDialog2(false);
-      (
-        document.getElementById("submit-button") as HTMLButtonElement
-      ).textContent = "Invitation Sent";
-    },
-
-    onError: (error: any) => {
-      const responseData = error.response.data;
-      toast({
-        variant: "destructive",
-        title: responseData.data,
-      });
-      (
-        document.getElementById("submit-button") as HTMLButtonElement
-      ).textContent = "Error Sending Invitaion";
-    },
-  });
-
-  const formatDate = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return format(date, "MMMM dd, yyyy h:mm a");
-  };
-
   const deleteInvite = async (id: number) => {
-    const response = await axios.delete(
-      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/${id}/delete/`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          // @ts-ignore
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const response = await apiClient.delete(
+      `/organization/${org_id}/invitation/${id}/delete/`
     );
     return response.data.data;
   };
@@ -226,17 +129,11 @@ const Images = () => {
 
   const queryClient = useQueryClient();
 
-  const addInvite = async (formData: any) => {
-    const axiosConfig = {
-      method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/create/`,
-      data: formData,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    const response = await axios(axiosConfig);
+  const addInvite = async (data: string) => {
+    const response = await apiClient.post(
+      `/organization/${org_id}/invitation/create/`,
+      data
+    );
     return response.data;
   };
 
@@ -246,7 +143,7 @@ const Images = () => {
 
     const axiosConfig = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/create/bulk/`,
+      url: `/organization/${org_id}/invitation/create/bulk/`,
       data: formData,
       headers: {
         "Content-Type": "multipart/form-data",
@@ -260,7 +157,7 @@ const Images = () => {
   };
 
   const { mutate: addInviteMutation } = useMutation(
-    (formData: any) => addInvite(formData),
+    (data: string) => addInvite(data),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("invites");
@@ -335,9 +232,9 @@ const Images = () => {
     (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
       true;
     (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
-      "Sending Invitation Link...";
+      "Sending invitation link...";
     (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
-      "Sending Invitation Link...";
+      "Sending invitation link...";
 
     addBulkInviteMutation(file);
   };
@@ -346,9 +243,9 @@ const Images = () => {
     (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
       true;
     (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
-      "Sending Invitation Link...";
+      "Sending invitation link...";
     (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
-      "Sending Invitation Link...";
+      "Sending invitation link...";
 
     const emailData = {
       emails: Array.from(
@@ -356,7 +253,7 @@ const Images = () => {
       ),
     };
 
-    addInviteMutation(emailData);
+    addInviteMutation(JSON.stringify(emailData));
   };
 
   const addGroup = () => {
@@ -381,15 +278,8 @@ const Images = () => {
 
   const fetchsearchInvites = async (query: string) => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/?q=${query}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `/organization/${org_id}/invitation/list/?q=${query}`
       );
 
       if (response.status === 200) {

@@ -22,7 +22,6 @@ const InviteModal = ({
   onRemoveEmail,
   onSend,
 }: InviteModalProps) => {
-
   return (
     <OrgDialog
       title="Invite Members"
@@ -61,7 +60,7 @@ const InviteModal = ({
           variant="black"
           onClick={onSubmit}
         >
-          Add Email
+          Add email
         </Button>
       </div>
 
@@ -72,7 +71,7 @@ const InviteModal = ({
           variant="black"
           onClick={onSend}
         >
-          Send Invitation Link
+          Send invitation link
         </Button>
       )}
     </OrgDialog>

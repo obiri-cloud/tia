@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { setOrgName } from "@/redux/reducers/OrganizationSlice";
+import apiClient from "@/lib/request";
 
 const OrganizationHeader = () => {
   const { data: session } = useSession();
@@ -24,18 +24,7 @@ const OrganizationHeader = () => {
 
   const getOrg = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${ord_id}/retrieve/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      // dispatch(setOrgName(response.data.data.name))
+      const response = await apiClient.get(`/organization/${ord_id}/retrieve/`);
 
       return response.data.data;
     } catch (error) {}

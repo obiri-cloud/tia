@@ -12,10 +12,9 @@ import {
 } from "@/components/ui/form";
 import { FormEvent, useEffect, useState } from "react";
 
-import { GroupMember } from "../types";
-import axios from "axios";
 import { useSession } from "next-auth/react";
 import { OrgGroup } from "../my-organization/groups/page";
+import apiClient from "@/lib/request";
 
 const AttachMemberToGroup = ({
   groups,
@@ -32,32 +31,6 @@ const AttachMemberToGroup = ({
 
   let organization_id = session?.user.data.organization_id;
 
-  const getGroups = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${organization_id}/group/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      let data = response.data.data;
-      let newData = [];
-      if (data[0].member.length > 0) {
-        newData = data ? data.map((d: any) => d.member[0].id) : [];
-      }
-
-      setData(newData);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
     new Set(data)
   );
@@ -71,13 +44,12 @@ const AttachMemberToGroup = ({
     };
   }, [data]);
 
-
-  function renderIni(str: string){
-    let d: string[] = str.split(" ")
-    if (d.length > 1){
-        return `${d[0][0]}${d[1][0]}`
-    }else{
-        return `${d[0]}${d[1]}`
+  function renderIni(str: string) {
+    let d: string[] = str.split(" ");
+    if (d.length > 1) {
+      return `${d[0][0]}${d[1][0]}`;
+    } else {
+      return `${d[0]}${d[1]}`;
     }
   }
 
@@ -109,16 +81,16 @@ const AttachMemberToGroup = ({
                       <div className="flex items-center space-x-4">
                         <Checkbox
                           className="text-black dark:text-white"
-                        //   checked={selectedMembers?.has(member.member.id)}
-                        //   onCheckedChange={(checked: boolean) => {
-                        //     const updatedSet = new Set(selectedMembers);
-                        //     if (checked) {
-                        //       updatedSet.add(member.member.id);
-                        //     } else {
-                        //       updatedSet.delete(member.member.id);
-                        //     }
-                        //     setSelectedMembers(updatedSet);
-                        //   }}
+                          //   checked={selectedMembers?.has(member.member.id)}
+                          //   onCheckedChange={(checked: boolean) => {
+                          //     const updatedSet = new Set(selectedMembers);
+                          //     if (checked) {
+                          //       updatedSet.add(member.member.id);
+                          //     } else {
+                          //       updatedSet.delete(member.member.id);
+                          //     }
+                          //     setSelectedMembers(updatedSet);
+                          //   }}
                         />
                         <div className="bg-muted text-black dark:text-white font-bold p-4 w-4 h-4 flex justify-center items-center uppercase  rounded-full">
                           <span>{renderIni(group.name)}</span>
@@ -126,8 +98,7 @@ const AttachMemberToGroup = ({
 
                         <div className="flex-1">
                           <div className="font-medium text-black dark:text-white ">
-                          {group.name}
-
+                            {group.name}
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
                             {group.organization.name}
@@ -141,7 +112,7 @@ const AttachMemberToGroup = ({
           />
           {groups && groups.length > 0 ? (
             <Button className="w-full" id="add-member-submit-button">
-              Update Member List
+              Update member list
             </Button>
           ) : null}
         </form>

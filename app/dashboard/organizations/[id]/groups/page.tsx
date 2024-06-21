@@ -24,33 +24,20 @@ import {
 } from "@/components/ui/table";
 import AltRouteCheck from "@/app/components/alt-route-check";
 import { Arrow } from "@/public/svgs/Arrow";
+import apiClient from "@/lib/request";
 
 const OrganizationPage = () => {
   const params = useParams();
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const id = params.id;
   const name = searchParams.get("name");
-  const { data: session } = useSession();
-
-  // @ts-ignore
-  const token = session?.user!.tokens?.access_token;
 
   const getOrgnaizationImages = async (): Promise<
     OrganizationGroup | undefined
   > => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/org/${id}/groups/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.get(`/user/org/${id}/groups/`);
       console.log("Response", response);
 
       return response.data;

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/input-otp";
 import { BottomGradient } from "./SForm";
 import ResendOTP from "./ResendOTP";
+import apiClient from "@/lib/request";
 
 const SConfirmationForm = () => {
   const codeRef = useRef<HTMLInputElement>(null);
@@ -54,16 +55,11 @@ const SConfirmationForm = () => {
 
     try {
       formSchema.parse(formData);
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/auth/registration/confirm/`,
-        JSON.stringify(formData),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
+      const response = await apiClient.post(
+        `/auth/registration/confirm/`,
+        JSON.stringify(formData)
       );
+
       toast({
         variant: "success",
         title: "Confirmation succesful. You can login now.",

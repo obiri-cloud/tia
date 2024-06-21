@@ -1280,11 +1280,36 @@ code {
   top: 50%;
   left: 0;
   transform: translate(-50%, -50%);
-  background-color: #007acb;
+  background: linear-gradient(
+    145deg,
+    rgba(0, 122, 203, 0.7),
+    rgba(0, 122, 203, 0.3)
+  ); /* Blue gradient with transparency */
+  color: white; /* Ensure the text/icon is visible */
   border: none;
-  padding: 10px;
-  border-radius: 5px;
+  width: 50px; /* Set a fixed width */
+  height: 150px; /* Set a fixed height */
+  border-radius: 5px; /* Adjust border-radius for vertical button */
   cursor: pointer;
+  font-size: 16px; /* Adjust font size for better visibility */
+  text-align: center; /* Center the text/icon */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+  backdrop-filter: blur(5px); /* Glass-like effect */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3),
+    inset 0 2px 3px rgba(255, 255, 255, 0.3); /* Add shadow and inner highlight for 3D effect */
+}
+
+.svg-button:hover {
+  background: linear-gradient(
+    145deg,
+    rgba(0, 95, 153, 0.7),
+    rgba(0, 95, 153, 0.3)
+  ); /* Darker blue gradient with transparency for hover effect */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4),
+    inset 0 3px 5px rgba(255, 255, 255, 0.4); /* Enhanced shadow and inner highlight for hover effect */
 }
 
 .svg-button svg {

@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import apiClient from "@/lib/request";
 
 const InstructionPage = () => {
   const params = useParams();
@@ -46,17 +47,8 @@ const InstructionPage = () => {
 
   const getCurrentImage = async () => {
     const id = params.id;
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/retrieve/`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          // @ts-ignore
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+
+    const response = await apiClient.get(`/moderator/image/${id}/retrieve/`);
     if (response.status === 200) {
       setCurrentImage(response.data);
     }
@@ -84,16 +76,8 @@ const InstructionPage = () => {
     const id = params.id;
 
     try {
-      const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/instruction/${siq}/delete/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.delete(
+        `/moderator/image/${id}/instruction/${siq}/delete/`
       );
       if (response.status === 200) {
         toast({
@@ -120,13 +104,11 @@ const InstructionPage = () => {
           )}
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/dashboard" className="font-medium text-mint">
-              Go to labs
-            </Link>
-          ) : null
-        }
+        {session?.user && session?.user.data.is_admin ? (
+          <Link href="/dashboard" className="font-medium text-mint">
+            Go to labs
+          </Link>
+        ) : null}
       </div>
       <div className="p-4">
         {currentImage?.name ? (

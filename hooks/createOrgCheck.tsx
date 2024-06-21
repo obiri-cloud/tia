@@ -1,9 +1,6 @@
-import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { useDispatch } from "react-redux";
+import apiClient from "@/lib/request";
 
 const useOrgCheck = () => {
   const { data: session, update } = useSession();
@@ -15,16 +12,7 @@ const useOrgCheck = () => {
   useEffect(() => {
     const getOrgOwner = async () => {
       try {
-        const response = await axios.get(
-         `${process.env.NEXT_PUBLIC_BE_URL}/auth/user/`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await apiClient.get(`/auth/user/`);
 
         let user = response.data;
         let sessionUser = session?.user.data;
@@ -57,7 +45,6 @@ const useOrgCheck = () => {
             }
           });
         }
-        console.log("differences", differences);
         Object.keys(differences).forEach((key) => {
           if (key !== "id" && key !== "is_staff") {
             update({ [key]: differences[key].userValue });

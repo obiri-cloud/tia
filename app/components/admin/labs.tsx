@@ -36,6 +36,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
+import apiClient from "@/lib/request";
 
 const Labs = () => {
   const { labCount, labList } = useSelector((state: RootState) => state.admin);
@@ -59,17 +60,7 @@ const Labs = () => {
       duration: 2000,
     });
     try {
-      const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BE_URL}/moderator/lab/${id}/delete/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.delete(`/moderator/lab/${id}/delete/`);
 
       if (response.status === 204) {
         toast({

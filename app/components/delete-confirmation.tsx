@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import React, { FC, useRef } from "react";
 import { IInstruction, ILabImage, ILabList } from "../types";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 interface ILabInfo {
   id: number | null;
@@ -32,10 +33,6 @@ const DeleteConfirmation: FC<IDeleteConfirmation> = ({
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const closeDialog = () => {
-    document.getElementById("closeDialog")?.click();
-  };
-
   const end = () => {
     if (buttonRef.current) {
       buttonRef.current.disabled = true;
@@ -50,14 +47,15 @@ const DeleteConfirmation: FC<IDeleteConfirmation> = ({
         <DialogDescription>{text}</DialogDescription>
       </DialogHeader>
       <div className="grid grid-cols-2 gap-4">
-        <Button
-         id="closeDialog"
-          onClick={closeDialog}
-          className=" mt-6 disabled:bg-black-900/10 w-full bg-black text-white  glassBorder"
-          variant="black"
-        >
-          {noText}
-        </Button>
+        <DialogClose asChild>
+          <Button
+            id="closeDialog"
+            className=" mt-6 disabled:bg-black-900/10 w-full bg-black text-white  glassBorder"
+            variant="black"
+          >
+            {noText}
+          </Button>
+        </DialogClose>
         <Button
           ref={buttonRef}
           onClick={() => end()}

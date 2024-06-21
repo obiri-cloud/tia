@@ -40,6 +40,8 @@ import { Sheet } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import UpdateGroupNameModal from "@/app/components/UpdateGroupNameModal";
 
+import apiClient from "@/lib/request";
+
 export interface OrgGroup {
   id: string;
   name: string;
@@ -50,12 +52,12 @@ export interface OrgGroup {
 
 const OrganizationGroup = () => {
   const { data: session } = useSession();
-  const [searchQuery, setSearchQuery] = useState('');
-  
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenViewDialogOpen2, setIsOpenViewDialog2] =
     useState<boolean>(false);
-    const [isOpenViewDialogOpen4, setIsOpenViewDialog4] =
+  const [isOpenViewDialogOpen4, setIsOpenViewDialog4] =
     useState<boolean>(false);
   const [isOpenViewDialogOpen1, setIsOpenViewDialog1] =
     useState<boolean>(false);
@@ -64,26 +66,18 @@ const OrganizationGroup = () => {
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<OrgGroup>();
-  const [group, setGroup] = useState<OrgGroup>();
-  const [emptyQuery,setemptyQuery]=useState(false)
-  const [updateData,setUpdateData]=useState<any>(null)
-  
+  const [group, setGroup] = useState<OrgGroup | null>(null);
+  const [emptyQuery, setemptyQuery] = useState(false);
+  const [updateData, setUpdateData] = useState<any>(null);
+
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
 
   const getGroups = async (): Promise<OrgGroup[] | undefined> => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `/organization/${org_id}/group/list/`
       );
 
       return response.data.data;
@@ -94,18 +88,7 @@ const OrganizationGroup = () => {
 
   const getMembers = async (): Promise<GroupMember[] | undefined> => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log('res',response);
+      const response = await apiClient.get(`/organization/${org_id}/members/`);
       return response.data.data;
     } catch (error) {
       console.log(error);
@@ -116,17 +99,7 @@ const OrganizationGroup = () => {
 
   const getOrgImages = async (): Promise<ILabImage[] | undefined> => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/images/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.get(`/organization/${org_id}/images/`);
 
       return response.data.data;
     } catch (error) {
@@ -143,22 +116,13 @@ const OrganizationGroup = () => {
   const queryClient = useQueryClient();
 
   const deleteGroup = async (id: number) => {
-    const response = await axios.delete(
-      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${id}/delete/`,
-
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          // @ts-ignore
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const response = await apiClient.delete(
+      `/organization/${org_id}/group/${id}/delete/`
     );
     return response.data.data;
   };
 
-  console.log({groups})
+  console.log({ groups });
 
   const { mutate: deleteGroupMutation } = useMutation(
     (id: number) => deleteGroup(id),
@@ -176,7 +140,7 @@ const OrganizationGroup = () => {
         const responseData = error.response.data;
         toast({
           variant: "destructive",
-          title:responseData.data || responseData.detail,
+          title: responseData.data || responseData.detail,
         });
         setIsOpenViewDialog(false);
       },
@@ -188,41 +152,24 @@ const OrganizationGroup = () => {
     setIsOpenViewDialog(true);
   };
 
-  const createGroup = async (formData: FormData) => {
-    console.log({ formData });
-    const axiosConfig = {
-      method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/create/`,
-      data: formData,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    const response = await axios(axiosConfig);
+  const createGroup = async (data: string) => {
+    const response = await apiClient.post(
+      `/organization/${org_id}/group/create/`,
+      data
+    );
     return response.data;
   };
 
-
-  const updateGroupName = async (formData: FormData) => {
-    console.log({ formData });
-    const axiosConfig = {
-      method: "PUT",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${updateData.id}/update/`,
-      data: formData,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    const response = await axios(axiosConfig);
+  const updateGroupName = async (data: string) => {
+    const response = await apiClient.put(
+      `/organization/${org_id}/group/${updateData.id}/update/`,
+      data
+    );
     return response.data;
   };
 
   const { mutate: createGroupMutation } = useMutation(
-    (formData: FormData) => createGroup(formData),
+    (data: string) => createGroup(data),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("groups");
@@ -232,7 +179,7 @@ const OrganizationGroup = () => {
           title: "Group created successfully",
           duration: 2000,
         });
-        setIsOpenViewDialog4(false);
+        setIsOpenViewDialog2(false);
         (
           document.getElementById("submit-button") as HTMLButtonElement
         ).textContent = "Create Group";
@@ -241,7 +188,8 @@ const OrganizationGroup = () => {
         const responseData = error.response.data;
         toast({
           variant: "destructive",
-          title:responseData.data || responseData.detail,
+          title: responseData.data || responseData.detail,
+          duration: 2000,
         });
         (
           document.getElementById("submit-button") as HTMLButtonElement
@@ -250,9 +198,8 @@ const OrganizationGroup = () => {
     }
   );
 
-
   const { mutate: updateGroupNameMutation } = useMutation(
-    (formData: FormData) => updateGroupName(formData),
+    (data: string) => updateGroupName(data),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("groups");
@@ -271,7 +218,8 @@ const OrganizationGroup = () => {
         const responseData = error.response.data;
         toast({
           variant: "destructive",
-          title:responseData.data || responseData.detail,
+          title: responseData.data || responseData.detail,
+          duration: 2000,
         });
         (
           document.getElementById("submit-button") as HTMLButtonElement
@@ -291,31 +239,25 @@ const OrganizationGroup = () => {
     const name = (document.getElementById("group-name") as HTMLInputElement)
       ?.value;
 
-    const formData = new FormData();
-    formData.append("name", name || "");
-    createGroupMutation(formData);
+    const data = JSON.stringify({ name });
+    createGroupMutation(data);
   };
 
-
-  const UpdateGroupName = (event: FormEvent<HTMLFormElement>) => {
+  const handleUpdateGroupName = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     (
       document.getElementById("create-group-submit-button") as HTMLButtonElement
     ).disabled = true;
     (
       document.getElementById("create-group-submit-button") as HTMLButtonElement
-    ).textContent = "updating Group Name...";
+    ).textContent = "Updating group name...";
     const name = (document.getElementById("group-name") as HTMLInputElement)
       ?.value;
 
-    const formData = new FormData();
-    formData.append("name", name || "");
-    updateGroupNameMutation(formData);
+    updateGroupNameMutation(JSON.stringify({ name }));
   };
 
   const updateMember = (members: IMemberChanges) => {
-    console.log("members", members);
-
     (
       document.getElementById(
         "update-member-submit-button"
@@ -350,7 +292,7 @@ const OrganizationGroup = () => {
           document.getElementById(
             "update-member-submit-button"
           ) as HTMLButtonElement
-        ).textContent = "Update Member List";
+        ).textContent = "Update member list";
       },
       onError: (error: any) => {
         const responseData = error.response.data;
@@ -363,28 +305,17 @@ const OrganizationGroup = () => {
           document.getElementById(
             "update-member-submit-button"
           ) as HTMLButtonElement
-        ).textContent = "Update Member List";
+        ).textContent = "Update member list";
       },
     }
   );
 
   const updateMemberFn = async (members: Set<string>, action: string) => {
-    console.log("action", action);
-    console.log("members", members);
-
-    let axiosConfig = {
-      method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${group?.id}/member/${action}/`,
-      data: {
-        user_ids: Array.from(members),
-      },
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
     try {
-      const response = await axios(axiosConfig);
+      const response = await apiClient.post(
+        `/organization/${org_id}/group/${group?.id}/member/${action}/`,
+        JSON.stringify({ user_ids: Array.from(members) })
+      );
       console.log({ response });
       if (response.status === 201 || response.status === 200) {
         toast({
@@ -403,16 +334,18 @@ const OrganizationGroup = () => {
     } catch (error: any) {
       console.error("error", error.response.data.detail);
       const responseData = error.response.data;
-      console.error("error", error.response.data.detail,responseData );
+      console.error("error", error.response.data.detail, responseData);
       if (error.response) {
         toast({
           variant: "destructive",
           title: responseData.data || error.response.data.detail,
+          duration: 2000,
         });
       } else {
         toast({
           variant: "destructive",
-          title: responseData.data?responseData.data:responseData.detail,
+          title: responseData.data ? responseData.data : responseData.detail,
+          duration: 2000,
         });
       }
     } finally {
@@ -438,11 +371,13 @@ const OrganizationGroup = () => {
       updateImagesFn(data.images, data.action),
     {
       onSuccess: (data) => {
-        console.log('data',data);
+        console.log("data", data);
         queryClient.invalidateQueries("members");
         toast({
-          variant: data.data?.message?"success":"destructive",
-          title: data.data?.message || data.response.data.detail && data.response.data.detail,
+          variant: data.data?.message ? "success" : "destructive",
+          title:
+            data.data?.message ||
+            (data.response.data.detail && data.response.data.detail),
           description: "",
           duration: 2000,
         });
@@ -451,12 +386,12 @@ const OrganizationGroup = () => {
           document.getElementById(
             "add-image-to-grp-button"
           ) as HTMLButtonElement
-        ).textContent = "Update Images List";
+        ).textContent = "Update images List";
       },
       onError: (error: any) => {
         const responseData = error.response.data;
-        console.log({responseData});
-        
+        console.log({ responseData });
+
         toast({
           variant: "destructive",
           title: responseData.data || responseData.detail,
@@ -466,51 +401,38 @@ const OrganizationGroup = () => {
           document.getElementById(
             "add-image-to-grp-button"
           ) as HTMLButtonElement
-        ).textContent = "Update Images List";
+        ).textContent = "Update images List";
       },
     }
   );
 
   const updateImagesFn = async (images: Set<string>, action: string) => {
-    let axiosConfig = {
-      method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${group?.id}/image/${action}/`,
-      data: {
-        image_ids: Array.from(images),
-      },
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-     
     try {
-    let response=  await axios(axiosConfig);
-    return response
+      let response = await apiClient.post(
+        `/organization/${org_id}/group/${group?.id}/image/${action}/`,
+        {
+          image_ids: Array.from(images),
+        }
+      );
+      return response;
     } catch (error: any) {
-      return error
+      return error;
     }
   };
 
-
-
-
-
   const fetchSearchGroups = async (query: string) => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/list/?q=${query}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `/organization/${org_id}/group/list/?q=${query}`
       );
 
       if (response.status === 200) {
-        if(response.data.data==="No Group(s) found for the specified search criteria"){setemptyQuery(true)}
+        if (
+          response.data.data ===
+          "No Group(s) found for the specified search criteria"
+        ) {
+          setemptyQuery(true);
+        }
         return response.data.data;
       } else {
         throw new Error(response.data);
@@ -524,9 +446,12 @@ const OrganizationGroup = () => {
     onSuccess: (data) => {
       if (Array.isArray(data)) {
         queryClient.setQueryData("groups", data);
-        setemptyQuery(false)
+        setemptyQuery(false);
       } else {
-        queryClient.setQueryData("groups", { status: data.status, message: data.message });
+        queryClient.setQueryData("groups", {
+          status: data.status,
+          message: data.message,
+        });
       }
     },
     onError: (error: any) => {
@@ -534,9 +459,9 @@ const OrganizationGroup = () => {
     },
   });
 
-  const debounce = (func:any, delay:any) => {
-    let timeoutId:any;
-    return (...args:any) => {
+  const debounce = (func: any, delay: any) => {
+    let timeoutId: any;
+    return (...args: any) => {
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         func.apply(null, args);
@@ -544,9 +469,10 @@ const OrganizationGroup = () => {
     };
   };
 
-
-  const debouncedfetchSearchGroups = useCallback(debounce((query:string) => searchMutation(query), 400), [searchMutation]);
-
+  const debouncedfetchSearchGroups = useCallback(
+    debounce((query: string) => searchMutation(query), 400),
+    [searchMutation]
+  );
 
   const handleSearchQueryChange = (query: string) => {
     setSearchQuery(query);
@@ -587,12 +513,12 @@ const OrganizationGroup = () => {
           </CardHeader>
 
           <div className="flex items-center gap-4 m-5">
-              <Input   
-                        placeholder="Search Groups"
-                        value={searchQuery}
-                        onChange={(e) => handleSearchQueryChange(e.target.value)}
-              />
-            </div>
+            <Input
+              placeholder="Search Groups"
+              value={searchQuery}
+              onChange={(e) => handleSearchQueryChange(e.target.value)}
+            />
+          </div>
           <Dialog>
             <CardContent className="pl-2">
               <Table>
@@ -614,12 +540,14 @@ const OrganizationGroup = () => {
                   </TableCaption>
                 ) : null}
 
-              {emptyQuery&&(
-                <TableCaption>No Group(s) found for the specified search criteria</TableCaption>
-              )}
+                {emptyQuery && (
+                  <TableCaption>
+                    No Group(s) found for the specified search criteria
+                  </TableCaption>
+                )}
                 <TableBody>
                   {!loadingGroups
-                    ?  Array.isArray(groups) && groups.length > 0
+                    ? Array.isArray(groups) && groups.length > 0
                       ? groups.map((group: OrgGroup, i: number) => (
                           <TableRow key={i}>
                             <TableCell className="font-medium  underline">
@@ -651,19 +579,22 @@ const OrganizationGroup = () => {
                                       setGroup(group),
                                         setIsOpenViewDialog1(true);
                                     }}
-                                    className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
+                                    className="font-medium cursor-pointe text-white-500 py-2"
                                   >
                                     Add Labs
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
-                                    onClick={() => {setIsOpenViewDialog4(true),setUpdateData(group)}}
-                                    className="font-medium cursor-pointer hover:text-red-500 text-white-500 py-2"
+                                    onClick={() => {
+                                      setIsOpenViewDialog4(true),
+                                        setUpdateData(group);
+                                    }}
+                                    className="font-medium cursor-pointe text-white-500 py-2"
                                   >
                                     Update Group Name
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => prepareDelete(group)}
-                                    className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
+                                    className="font-medium cursor-pointer hover:text-[#ff0000_!important] text-red-500 py-2"
                                   >
                                     Delete
                                   </DropdownMenuItem>
@@ -710,7 +641,10 @@ const OrganizationGroup = () => {
           isOpenViewDialogOpen4 ? setIsOpenViewDialog4 : setIsOpenDeleteDialog
         }
       >
-        <UpdateGroupNameModal onSubmit={UpdateGroupName} updateData={updateData} />
+        <UpdateGroupNameModal
+          onSubmit={handleUpdateGroupName}
+          updateData={updateData}
+        />
       </Dialog>
 
       <Sheet
@@ -719,11 +653,13 @@ const OrganizationGroup = () => {
           isOpenViewDialogOpen1 ? setIsOpenViewDialog1 : setIsOpenDeleteDialog
         }
       >
-        <AddImgGroupModal
-          images={images}
-          group={group}
-          onSubmit={updateImages}
-        />
+        {group && (
+          <AddImgGroupModal
+            images={images}
+            group={group}
+            onSubmit={updateImages}
+          />
+        )}
       </Sheet>
 
       <Sheet
@@ -732,11 +668,13 @@ const OrganizationGroup = () => {
           isOpenViewDialogOpen3 ? setIsOpenViewDialog3 : setIsOpenDeleteDialog
         }
       >
-        <AddMembersModal
-          members={members}
-          onSubmit={updateMember}
-          group={group}
-        />
+        {group && (
+          <AddMembersModal
+            members={members}
+            onSubmit={updateMember}
+            group={group}
+          />
+        )}
       </Sheet>
     </div>
   );

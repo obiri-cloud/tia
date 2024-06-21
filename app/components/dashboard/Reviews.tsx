@@ -5,22 +5,14 @@ import axios from "axios";
 import React, { useRef } from "react";
 import { useQuery } from "react-query";
 import StarRatings from "react-star-ratings";
+import apiClient from "@/lib/request";
 
 const Reviews = ({ id, token }: { id: string | null; token: string }) => {
   const getReviews = async (
     id: string | null,
     token: string
   ): Promise<IReview[] | null> => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/review/top?image=${id}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await apiClient.get(`/user/lab/review/top?image=${id}`);
 
     if (response.status === 200) {
       return response.data.data;

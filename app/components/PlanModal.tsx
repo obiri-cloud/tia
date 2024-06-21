@@ -7,6 +7,7 @@ import { userCheck } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Plan } from "../types";
+import apiClient from "@/lib/request";
 
 const PlanModalContent = ({
   plan,
@@ -25,19 +26,11 @@ const PlanModalContent = ({
       btn.textContent = "Processing";
     }
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/create/`,
-        {
-          amount: plan.price,
-          interval: "monthly",
-          plan_choice: plan.value,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.post(`/payment/subscription/create/`, {
+        amount: plan.price,
+        interval: "monthly",
+        plan_choice: plan.value,
+      });
       if (btn) {
         btn.textContent = "Processing";
       }
@@ -71,18 +64,10 @@ const PlanModalContent = ({
       btn.textContent = "Updating";
     }
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/update/`,
-        {
-          amount: plan.price,
-          plan_choice: plan.value,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.post(`/payment/subscription/update/`, {
+        amount: plan.price,
+        plan_choice: plan.value,
+      });
 
       if (response.data.status === 200) {
         window.location.href = "/dashboard/account";
@@ -128,7 +113,7 @@ const PlanModalContent = ({
           ${plan.price}/month
         </span>
       </div>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 text-black dark:text-white">
         <Input id="discount" placeholder="Enter discount code" />
         <Button variant="outline">Apply</Button>
       </div>

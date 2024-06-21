@@ -10,12 +10,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function userCheck(error: AxiosError | null) {
+  console.log("error", error);
+
   if (
     error instanceof AxiosError &&
-     //@ts-ignore
+    //@ts-ignore
     (error.response.data.code === "user_not_found" ||
-     //@ts-ignore
-    error.response.data.code === "user_inactive" ||
+      //@ts-ignore
+      error.response.data.code === "user_inactive" ||
       //@ts-ignore
       error.response.data.code === "token_not_valid")
   ) {
@@ -23,7 +25,7 @@ export function userCheck(error: AxiosError | null) {
       variant: "destructive",
       title: "Session Expired",
     });
-    signOut({ callbackUrl: "/login" });
+    // signOut({ callbackUrl: "/login" });
     secureLocalStorage.removeItem("tialabs_info");
   }
 }
