@@ -31,6 +31,7 @@ import { setnextState } from "@/redux/reducers/nextPaginationSlice";
 import { TableCaption, Table } from "@/components/ui/table";
 
 import apiClient from "@/lib/request";
+import formClient from "@/lib/formRequest";
 
 const Images = () => {
   const [file, setfile] = useState<any>();
@@ -141,18 +142,10 @@ const Images = () => {
     let formData = new FormData();
     formData.append("file", file);
 
-    const axiosConfig = {
-      method: "POST",
-      url: `/organization/${org_id}/invitation/create/bulk/`,
-      data: formData,
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    const response = await axios(axiosConfig);
+    const response = await formClient.post(
+      `/organization/${org_id}/invitation/create/bulk/`,
+      formData
+    );
     return response.data;
   };
 

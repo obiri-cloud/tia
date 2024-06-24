@@ -38,7 +38,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ContentProps, ILabImage } from "@/app/types";
 import { Trash } from "lucide-react";
-import apiClient from "@/lib/request";
+import formClient from "@/lib/formRequest";
 
 const NewImageForm = () => {
   const form = useForm();
@@ -297,31 +297,16 @@ const NewImageForm = () => {
       formData.append("image_picture", imagePictureRef.current!.files[0]);
     }
 
-    // let axiosConfig = {
-    //   method: "POST",
-    //   url: `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/create/`,
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     // "Content-Type": "multipart/form-data",
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    //   data: df,
-    // };
-
-    // if (imageDetails) {
-    //   axiosConfig.method = "PUT";
-    //   axiosConfig.url = `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${imageDetails.id}/update/`;
-    // }
-
     try {
       formSchema.parse(parseFormData);
       let response;
       if (imageDetails) {
-        response = await apiClient(
-          `/moderator/image/${imageDetails.id}/update/`
+        response = await formClient.put(
+          `/moderator/image/${imageDetails.id}/update/`,
+          df
         );
       } else {
-        response = await apiClient(`/moderator/image/create/`);
+        response = await formClient.post(`/moderator/image/create/`, df);
       }
 
       if (response.status === 201 || response.status === 200) {
