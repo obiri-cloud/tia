@@ -18,7 +18,7 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DeleteConfirmation from "./delete-confirmation";
 import { RootState } from "@/redux/store";
 import {
@@ -37,16 +37,160 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TableCell } from "@/components/ui/table";
+import apiClient from "@/lib/request";
 import {
   setMemberOriginalPageSize,
   setMemberPageSize,
   setMemberTableData,
 } from "@/redux/reducers/MemberTableSlice";
-import apiClient from "@/lib/request";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { TrashIcon } from "@radix-ui/react-icons";
 
 dayjs.extend(relativeTime);
 
 export const MemberColumns: ColumnDef<any>[] = [
+  {
+    id: "select",
+    header: ({ table }) => {
+      const [selected, setSelected] = useState(false);
+      const [diag, setdiag] = useState<boolean>(false);
+      const { Memberdata: tableData } = useSelector(
+        (state: RootState) => state.memberTable
+      );
+      const { data: session } = useSession();
+      const dispatch = useDispatch();
+      const token = session?.user!.tokens?.access_token;
+      const org_id = session?.user!.data?.organization_id;
+
+      const handleSelectAll = (value: boolean) => {
+        table.toggleAllPageRowsSelected(!!value);
+        setSelected(!!value);
+      };
+
+      useEffect(() => {
+        const subscription = table.getState().rowSelection;
+        setSelected(Object.keys(subscription).length > 0);
+      }, [table.getState().rowSelection]);
+
+      const delData = table
+        .getFilteredSelectedRowModel()
+        .rows.map((a) => a.original.member.id);
+
+      console.log("------>", delData);
+
+      const getInvitations = async (): Promise<IinviteData[] | undefined> => {
+        try {
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/members/?page_size=2`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                // @ts-ignore
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          dispatch(setMemberTableData(response.data.data));
+          dispatch(setMemberPageSize(Math.ceil(response.data.count / 2)));
+          dispatch(setMemberOriginalPageSize(response.data.count));
+
+          return response.data.data;
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      const deleteInvite = async (id: number) => {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/member/delete/`,
+          {
+            user_ids: delData,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const newData = tableData.filter(
+          (item: any) => !delData.includes(item.id)
+        );
+        dispatch(setTableData(newData));
+
+        return response.data.data;
+      };
+
+      const deleteInviteMutation = async (data: any) => {
+        table.toggleAllPageRowsSelected(false);
+        setSelected(false);
+        setdiag(false);
+        toast({
+          variant: "destructive",
+          title: data.message || "Invitation deleted successfully",
+        });
+        await deleteInvite(data);
+        await getInvitations();
+      };
+
+      return (
+        <div className="flex gap-2 items-center">
+          {tableData.length === 0 ? null : (
+            <Checkbox
+              checked={
+                table.getIsAllPageRowsSelected() ||
+                (table.getIsSomePageRowsSelected() && "indeterminate")
+              }
+              onCheckedChange={(value) => handleSelectAll(!!value)}
+              aria-label="Select all"
+              className="translate-y-[2px]"
+            />
+          )}
+
+          {selected ? (
+            <Button
+              variant="outline"
+              id="closeDialog"
+              size="icon"
+              className="text-red-500"
+              onClick={() => setdiag(true)}
+            >
+              <TrashIcon className="h-4 w-4 text-red-500" />
+              <p className="sr-only">Delete</p>
+            </Button>
+          ) : null}
+
+          <Dialog open={diag} onOpenChange={setdiag}>
+            <DeleteConfirmation
+              text={`Do you want to delete these invitations`}
+              noText="No"
+              confirmText="Yes, Delete!"
+              confirmFunc={() => deleteInviteMutation(delData)}
+            />
+          </Dialog>
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value: any) => {
+            row.toggleSelected(!!value);
+          }}
+          aria-label="Select row"
+          className="translate-y-[2px]"
+        />
+      );
+    },
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "Email",
     header: ({ column }) => (

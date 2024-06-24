@@ -1,9 +1,15 @@
 "use client";
 import axios, { AxiosError } from "axios";
-import React, { FormEvent, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast";
-
+import { ToastAction } from "@radix-ui/react-toast";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -68,13 +74,14 @@ const plans = [
 
 const AccountPage = () => {
   const { data: session } = useSession();
-
   const [userData, setUserData] = useState<IUserProfile>();
   const [editMode, setEditMode] = useState(false);
-  const [open, setOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(plans[0]);
-
+  const [deactivateAccountOpen, setDeactivateAccountOpen] = useState(false);
+  const [deactivateSubscriptionOpen, setDeactivateSubscriptionOpen] =
+    useState(false);
+  const [open, setOpen] = useState(false);
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -200,14 +207,14 @@ const AccountPage = () => {
       console.log("account----->", response);
       if (response.status === 204) {
         toast({
-          title: "Subcription deactivated successfully!",
+          title: "Subscription deactivated successfully!",
           variant: "success",
           duration: 2000,
         });
         window.location.href = "/dashboard/account";
       } else {
         toast({
-          title: "Something went wrong deactivating your account.",
+          title: "Something went wrong!",
           variant: "destructive",
           duration: 2000,
         });
@@ -216,11 +223,57 @@ const AccountPage = () => {
       userCheck(error as AxiosError);
       console.error("error", error);
       toast({
-        title: "Something went wrong deactivating your account.",
+        //@ts-ignore
+        title: error.response.data.message,
         variant: "destructive",
         duration: 2000,
       });
     }
+  };
+
+  const changeAvatar = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const image = e.target.files[0];
+      const formData = new FormData();
+      formData.append("avatar", image);
+
+      try {
+        const response = await apiClient.post(
+          `/auth/avatar/change/`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          toast({
+            title: "Avatar Updated",
+            variant: "success",
+          });
+          getUser();
+        } else {
+          toast({
+            title: "Error when updating.",
+            action: <ToastAction altText="Try again">Try again</ToastAction>,
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        userCheck(error as AxiosError);
+        toast({
+          title: "Error when updating.",
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const getFilteredPlans = () => {
+    return plans.filter((plan) => plan.value !== currentPlan);
   };
 
   return (
@@ -355,7 +408,7 @@ const AccountPage = () => {
                 <Command>
                   <CommandEmpty>No plans found.</CommandEmpty>
                   <CommandGroup className="dark:bg-comboBg bg-white">
-                    {plans.map((plan) => (
+                    {getFilteredPlans().map((plan) => (
                       <CommandItem
                         key={plan.value}
                         value={plan.value}
@@ -372,14 +425,14 @@ const AccountPage = () => {
                         className="capitalize"
                       >
                         {plan.label}
-                        <CheckIcon
+                        {/* <CheckIcon
                           className={cn(
                             "ml-auto h-4 w-4",
                             selectedPlan.value === plan.value
                               ? "opacity-100"
                               : "opacity-0"
                           )}
-                        />
+                        /> */}
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -392,44 +445,73 @@ const AccountPage = () => {
 
           <div className="sc-jEJXZe cyvxRV"></div>
 
-          <div className="sc-hLBbgP   flex justify-between mt-10">
+          <div className="sc-hLBbgP flex justify-between mt-10">
             <div className="">
               <div className="sc-hLBbgP gUrCBj">
                 <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText whiteDark">
-                  Deactivate
+                  Deactivate Account
                 </span>
               </div>
               <div className="sc-bcXHqe sc-cRIgaW cpMQpB htAZxf">
                 Deactivate your account
               </div>
             </div>
-            <DialogTrigger>
-              <Button variant="destructive">Deactivate</Button>
+            <DialogTrigger asChild>
+              <Button
+                variant="destructive"
+                onClick={() => setDeactivateAccountOpen(true)}
+              >
+                Deactivate account
+              </Button>
             </DialogTrigger>
           </div>
 
-          <div className="sc-hLBbgP   flex justify-between mt-10">
+          <Dialog
+            open={deactivateAccountOpen}
+            onOpenChange={setDeactivateAccountOpen}
+          >
+            <DeactivateConfirmation
+              text="Do you want to deactivate your account?"
+              noText="No, cancel"
+              confirmText="Yes, deactivate"
+              confirmFunc={deactivateAccount}
+            />
+          </Dialog>
+
+          <div className="sc-hLBbgP flex justify-between mt-10">
             <div className="">
               <div className="sc-hLBbgP gUrCBj">
                 <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText whiteDark">
-                  Delete subscription
+                  Deactivate Subscription
                 </span>
               </div>
               <div className="sc-bcXHqe sc-cRIgaW cpMQpB htAZxf">
-                Deactivate Subscription
+                Deactivate your subscription
               </div>
             </div>
-            <DialogTrigger>
-              <Button variant="destructive">Deactivate</Button>
+            <DialogTrigger asChild>
+              <Button
+                variant="destructive"
+                onClick={() => setDeactivateSubscriptionOpen(true)}
+              >
+                Deactivate subscription
+              </Button>
             </DialogTrigger>
           </div>
+
+          <Dialog
+            open={deactivateSubscriptionOpen}
+            onOpenChange={setDeactivateSubscriptionOpen}
+          >
+            <DeactivateConfirmation
+              text="Do you want to deactivate your subscription?"
+              noText="No, cancel"
+              confirmText="Yes, deactivate"
+              confirmFunc={deactivateSubscription}
+            />
+          </Dialog>
+
           <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>
-          <DeactivateConfirmation
-            text="Do you want to deactivate your Subscription?"
-            noText="No, cancel"
-            confirmText="Yes, deactivate"
-            confirmFunc={() => deactivateSubscription()}
-          />
         </div>
       </div>
 

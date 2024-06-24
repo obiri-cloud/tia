@@ -17,7 +17,7 @@ import { useSession } from "next-auth/react";
 import { useQueryClient } from "react-query";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPageSize, setTableData } from "@/redux/reducers/tableSlice";
+import { setOriginalPageSize, setPageSize, setTableData } from "@/redux/reducers/tableSlice";
 import { RootState } from "@/redux/store";
 import { Table } from "@/components/ui/table";
 import apiClient from "@/lib/request";
@@ -27,7 +27,7 @@ interface DataTablePaginationProps<IinviteData> {
   table: Table<IinviteData>;
 }
 
-export function DataTablePagination<IinviteData>({
+export function  DataTablePagination<IinviteData>({
   table,
 }: DataTablePaginationProps<any>) {
   const { data: session } = useSession();
@@ -54,7 +54,7 @@ export function DataTablePagination<IinviteData>({
         }
       );
 
-      dispatch(setTableData(response.data.data));
+       dispatch(setTableData(response.data.data));
       return;
     } catch (error) {
       console.log(error);
@@ -75,6 +75,9 @@ export function DataTablePagination<IinviteData>({
     }
   };
 
+  console.log('t----->',totalPageSize)
+
+
   return (
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-sm text-muted-foreground"></div>
@@ -82,23 +85,23 @@ export function DataTablePagination<IinviteData>({
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Rows per page</p>
           <Select
-            value={`${table.getState().pagination.pageSize}`}
+            value={`${currentPageSize}`}
             onValueChange={handleRowChnage}
           >
             <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
+              <SelectValue placeholder={`${currentPageSize}`} />
             </SelectTrigger>
             <SelectContent side="top">
               {[1, 2, 20].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize.toString()}
+                  {pageSize}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {currentPage} of {totalPageSize}
+          Page {currentPage} of {isNaN(totalPageSize) ? 1 : totalPageSize}
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -123,7 +126,7 @@ export function DataTablePagination<IinviteData>({
             variant="outline"
             className="h-8 w-8 p-0"
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPageSize}
+            disabled={currentPage === totalPageSize || isNaN(totalPageSize)}
           >
             <span className="sr-only">Go to next page</span>
             <ChevronRightIcon className="h-4 w-4" />
@@ -132,7 +135,7 @@ export function DataTablePagination<IinviteData>({
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
             onClick={() => handlePageChange(totalPageSize)}
-            disabled={currentPage === totalPageSize}
+            disabled={currentPage === totalPageSize || isNaN(totalPageSize)}
           >
             <span className="sr-only">Go to last page</span>
             <DoubleArrowRightIcon className="h-4 w-4" />

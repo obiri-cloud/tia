@@ -142,6 +142,11 @@ export default function MultiPlanModal({
     return false;
   });
 
+  const isUpgrade = (current: string | undefined, target: string) => {
+    const plansOrder = ["basic", "standard", "premium"];
+    return plansOrder.indexOf(target) > plansOrder.indexOf(current ?? "");
+  };
+
   return (
     <div className="sm:max-w-[600px] p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
       <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -181,7 +186,10 @@ export default function MultiPlanModal({
                 className="mt-4 w-full text-sm font-medium text-black dark:text-white"
                 onClick={() => subscribe(plan)}
               >
-                Subscribe to {plan.label}
+                <p className="dark:text-white text-black">
+                  {" "}
+                  Subscribe to {plan.label}
+                </p>
               </Button>
             ) : (
               <Button
@@ -190,7 +198,9 @@ export default function MultiPlanModal({
                 onClick={() => upgradeSubscription(plan)}
                 className="mt-4 w-full text-sm font-medium text-black dark:text-white"
               >
-                Upgrade to {plan.label}
+                {isUpgrade(currentPlan, plan.value)
+                  ? `Upgrade to ${plan.label}`
+                  : `Downgrade to ${plan.label}`}
               </Button>
             )}
           </div>

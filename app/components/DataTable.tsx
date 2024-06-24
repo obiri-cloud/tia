@@ -108,7 +108,7 @@ export function DataTable<IinviteData, TValue>({data,columns,}: DataTableProps<a
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                 You have no pending invitations
                 </TableCell>
               </TableRow>
             )}

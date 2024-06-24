@@ -60,7 +60,7 @@ const Images = () => {
     useState<boolean>(false);
   const [loadingMembers, setIsLoadingMembers] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [error, setError] = useState<string | null | boolean >(null);
+  const [error, setError] = useState<string | null | boolean>(null);
   const dispatch = useDispatch();
   const { Memberdata: tableData } = useSelector(
     (state: RootState) => state.memberTable
@@ -72,10 +72,7 @@ const Images = () => {
     try {
       setIsLoadingMembers(true);
       setError(null);
-      const response =await apiClient.get(
-        `/organization/${org_id}/members`,
-       
-      );
+      const response = await apiClient.get(`/organization/${org_id}/members`);
 
       if (response.data.status === 404) {
         setIsLoadingMembers(false);
@@ -111,8 +108,8 @@ const Images = () => {
   };
 
   const deleteMember = async (id: number) => {
-    const response =await apiClient.delete(
-      `/organization/${org_id}/member/${id}/delete/`,
+    const response = await apiClient.delete(
+      `/organization/${org_id}/member/${id}/delete/`
     );
     return response.data.data;
   };
@@ -142,8 +139,7 @@ const Images = () => {
   const updateRole = async ({ id, role }: { id: string; role: string }) => {
     const response = await apiClient.put(
       `/organization/${org_id}/member/${id}/update/role/`,
-      { role: role },
-
+      { role: role }
     );
     return response.data;
   };
@@ -169,7 +165,7 @@ const Images = () => {
       const response = await apiClient.get(
         `/organization/${org_id}/members/?q=${query}${
           role == "" ? "" : `&role=${role}`
-        }`,
+        }`
       );
 
       if (response.data.status === 404) {
@@ -208,10 +204,10 @@ const Images = () => {
 
   const fetchRole = async (query: string) => {
     try {
-      const response =await  apiClient.get(
-        `/organization/${org_id}/members/?role=${query}&role=${query}`,
+      const response = await apiClient.get(
+        `/organization/${org_id}/members/?role=${query}&role=${query}`
       );
-      
+
       if (response.data.status === 404) {
         setIsLoadingMembers(false);
         setError("No member(s) found for the specified search criteria. ");
@@ -237,16 +233,14 @@ const Images = () => {
     },
   });
 
-  
-
   const debouncedRoleMembers = useCallback(
     debounce((query: string) => searchRoleMutation(query), 100),
     [searchRoleMutation]
   );
 
-  const fetchrole = async(query: string) => {
+  const fetchrole = async (query: string) => {
     if (query == "all") {
-      getMembers()
+      getMembers();
       return;
     }
     debouncedRoleMembers(query);
@@ -314,15 +308,16 @@ const Images = () => {
                   </TableCaption>
                 )}
                 {error && (
-                  <TableCaption className="text-red-500">
-                    {error}
-                  </TableCaption>
+                  <TableCaption className="text-red-500">{error}</TableCaption>
                 )}
-                {!loadingMembers && !error && tableData && tableData.length === 0 && (
-                  <TableCaption>
-                    No member(s) found for this Organization...
-                  </TableCaption>
-                )}
+                {!loadingMembers &&
+                  !error &&
+                  tableData &&
+                  tableData.length === 0 && (
+                    <TableCaption>
+                      No member(s) found for this Organization...
+                    </TableCaption>
+                  )}
                 {tableData && (
                   <MemberDataTable
                     data={tableData as any}

@@ -21,6 +21,8 @@ const PlanModalContent = ({
   const router = useRouter();
   let btn = document.getElementById("btn");
 
+  console.log;
+
   const subscribe = async () => {
     if (btn) {
       btn.textContent = "Processing";
@@ -93,6 +95,10 @@ const PlanModalContent = ({
       });
     }
   };
+  const isUpgrade = (current: string | undefined, target: string) => {
+    const plansOrder = ["basic", "standard", "premium"];
+    return plansOrder.indexOf(target) > plansOrder.indexOf(current ?? "");
+  };
 
   return (
     <div className="p-2 space-y-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
@@ -100,7 +106,7 @@ const PlanModalContent = ({
         {plan.label} Plan
       </h2>
       <ul className="space-y-2 mb-6">
-        {plan.features.map((feature, index) => (
+        {plan.features.map((feature: any, index: any) => (
           <li key={index} className="flex items-center">
             <CheckIcon className="w-5 h-5 mr-2 text-green-500" />
             <span className="text-gray-800 dark:text-gray-200">{feature}</span>
@@ -115,7 +121,9 @@ const PlanModalContent = ({
       </div>
       <div className="flex items-center space-x-2 text-black dark:text-white">
         <Input id="discount" placeholder="Enter discount code" />
-        <Button variant="outline">Apply</Button>
+        <Button variant="outline" className="dark:text-black">
+          <p className="dark:text-white text-black"> Apply</p>
+        </Button>
       </div>
       {currentPlan === "basic" ? (
         <p
@@ -131,7 +139,10 @@ const PlanModalContent = ({
           onClick={upgradeSubscription}
           className="inline-flex cursor-pointer items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-200 dark:focus:ring-gray-50"
         >
-          Upgrade to {plan.label}
+          {/* Upgrade to {plan.label} */}
+          {isUpgrade(currentPlan, plan.value)
+            ? `Upgrade to ${plan.label}`
+            : `Downgrade to ${plan.label}`}
         </p>
       )}
     </div>

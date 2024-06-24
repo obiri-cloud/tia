@@ -426,10 +426,6 @@ const Images = () => {
 
             <CardContent className="pl-2">
               <Table>
-                {!loadingInvitation &&
-                ((tableData && tableData.length === 0) || !tableData) ? (
-                  <TableCaption>No pending invites found...</TableCaption>
-                ) : null}
                 {loadingInvitation ? (
                   <TableCaption>
                     Loading invitations in your organization...
