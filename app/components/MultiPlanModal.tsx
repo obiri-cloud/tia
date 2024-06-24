@@ -140,7 +140,7 @@ export default function MultiPlanModal({ currentPlan, currentImage }:{ currentPl
         Upgrade Your Plan
       </p>
       <p className="mt-2 text-gray-600 dark:text-gray-400">
-        Choose the plan that best fits your needs and budget.
+        Choose the plan that best fits your needs and budget
       </p>
       <div className="grid gap-6 py-6">
         {filteredPlans.map((plan) => (
