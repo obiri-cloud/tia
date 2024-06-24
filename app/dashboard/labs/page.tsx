@@ -318,7 +318,7 @@ const LabsPage = () => {
                 <MagicSpinner size={100} color="#686769" loading={isLoading} />
               </div>
             ) : null}
-            <div className="iframe-wrapper">
+            <div className="iframe-wrapper min-h-screen">
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="svg-button"
@@ -335,6 +335,7 @@ const LabsPage = () => {
                 width="100%"
                 height="100%"
                 onLoad={handleLoad}
+                className="h-screen"
               ></iframe>
             </div>
           </div>

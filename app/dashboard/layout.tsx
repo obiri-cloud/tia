@@ -149,7 +149,9 @@ export default function UserDashboardLayout({
 
         <div
           className={`${
-            !pathname.startsWith("/dashboard/labs") ? "sm:ml-[220px]" : ""
+            !pathname.startsWith("/dashboard/labs")
+              ? "sm:ml-[220px]"
+              : "overflow-y-hidden"
           } overflow-y-auto h-screen`}
         >
           {children}
