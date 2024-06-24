@@ -35,6 +35,8 @@ const authOptions: NextAuthOptions = {
             }
           );
 
+          console.log("res", res);
+
           if (res.ok) {
             const user = await res.json();
             if (user.status >= 400 && user.status <= 404) {
@@ -45,11 +47,15 @@ const authOptions: NextAuthOptions = {
             return user;
           } else {
             const errorData = await res.json();
+            console.log("errorData", errorData);
+
             throw new Error(
               JSON.stringify({ errors: errorData.message, status: false })
             );
           }
         } catch (error) {
+          console.log("errorObj", error);
+
           //@ts-ignore
 
           const errorObj = JSON.parse(error.message);

@@ -31,6 +31,7 @@ import { IActiveLab } from "@/app/types";
 import AltRouteCheck from "../alt-route-check";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import MultiPlanModal from "../MultiPlanModal";
+import apiClient from "@/lib/request";
 
 const MainImagePage = ({
   token,
@@ -46,7 +47,6 @@ const MainImagePage = ({
   const router = useRouter();
   const id = searchParams.get("image");
 
-
   const paramId = params.id;
   const gid = params.gid;
   const name = searchParams.get("name") ?? "";
@@ -59,7 +59,7 @@ const MainImagePage = ({
   console.log({ labCreationUrl, redirectUrl });
 
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [openModal,setOpenModal]=useState(false)
+  const [openModal, setOpenModal] = useState(false);
   const [creatingStarted, setCreatingStarted] = useState(false);
   const [jokes, setJokes] = useState<string[]>([]);
 
@@ -69,16 +69,7 @@ const MainImagePage = ({
     }
 
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/image/${id}/retrieve/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.get(`/user/image/${id}/retrieve/`);
 
       return response.data;
     } catch (error) {
@@ -95,7 +86,7 @@ const MainImagePage = ({
     getCurrentImage(id, token)
   );
 
-  console.log({currentImage})
+  console.log({ currentImage });
 
   const { data: isActive } = useQuery(["active-labs", id], () =>
     getActiveLabs()
@@ -172,18 +163,7 @@ const MainImagePage = ({
       comments: "string",
     });
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}${labCreationUrl}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.post(`${labCreationUrl}`, formData);
       if (response.data.status === 400) {
         if (
           response.data.ingress_url &&
@@ -249,7 +229,7 @@ const MainImagePage = ({
       }
     } catch (error) {
       console.error("error this one", error);
-      setOpenModal(true)
+      setOpenModal(true);
       if (error instanceof AxiosError) {
         userCheck(error as AxiosError);
       }
@@ -342,17 +322,7 @@ const MainImagePage = ({
       throw new Error("Missing access token");
     }
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/labs/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.get(`/user/labs/list/`);
       if (response.status === 200) {
         return response.data.data.find(
           (res: IActiveLab) => String(res.image) === id
@@ -541,18 +511,21 @@ const MainImagePage = ({
             ) : null}
           </div>
           <Dialog open={openModal} onOpenChange={setOpenModal}>
-        <DialogContent>
-          <MultiPlanModal currentPlan={currentPlan} currentImage={currentImage}/>
-          <DialogClose asChild>
-            <button
-              aria-label="Close"
-              className="absolute top-2.5 right-2.5 inline-flex h-8 w-8 appearance-none items-center justify-center rounded-full focus:outline-none"
-            >
-              <span className="sr-only">Close</span>
-            </button>
-          </DialogClose>
-        </DialogContent>
-      </Dialog>  
+            <DialogContent>
+              <MultiPlanModal
+                currentPlan={currentPlan}
+                currentImage={currentImage}
+              />
+              <DialogClose asChild>
+                <button
+                  aria-label="Close"
+                  className="absolute top-2.5 right-2.5 inline-flex h-8 w-8 appearance-none items-center justify-center rounded-full focus:outline-none"
+                >
+                  <span className="sr-only">Close</span>
+                </button>
+              </DialogClose>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>

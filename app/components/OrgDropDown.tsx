@@ -24,58 +24,40 @@ import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { userCheck } from "@/lib/utils";
 import { InvitationsResponse, NoInvitationsResponse } from "@/app/types";
-import {
-  Mail,
-  MessageSquare,
-  PlusCircle,
-  PlusCircleIcon,
-  Shield,
-  UserPlus,
-  Users2,
-} from "lucide-react";
+import { PlusCircleIcon, Shield, Users2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import OrganizationHeader from "./admin/OrganizationHeader";
+
 import ProfileHeader from "./admin/profile-header";
+import apiClient from "@/lib/request";
 
 export default function OrgDropDown() {
   const { data: session, update } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const token = session?.user?.tokens?.access_token;
+
   const queryClient = useQueryClient();
   const orgCheck = useOrgCheck();
   let subscription_plan = session?.user.data.subscription_plan;
-  let is_super = session?.user.data.is_superuser;
   let is_admin = session?.user.data.is_admin;
 
-  const createOrg = async (formData: FormData) => {
-    const axiosConfig = {
-      method: "POST",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/organization/create/`,
-      data: formData,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    const response = await axios(axiosConfig);
+  const createOrg = async (data: string) => {
+    const response = await apiClient.post(`/organization/create/`, data);
     return response.data;
   };
 
   const { mutate: createOrganizationMutation } = useMutation(
-    (formData: FormData) => createOrg(formData),
+    (data: string) => createOrg(data),
     {
       onSuccess: (data) => {
         queryClient.invalidateQueries("orgName");
         if (session) {
           update({ organization_id: data.data.id });
-          router.push("/my-organization");
+          router.push("/my-organization/overview");
         }
 
         toast({
@@ -100,9 +82,7 @@ export default function OrgDropDown() {
     const name = (document.getElementById("Org-name") as HTMLInputElement)
       ?.value;
 
-    const formData = new FormData();
-    formData.append("name", name || "");
-    createOrganizationMutation(formData);
+    createOrganizationMutation(JSON.stringify({ name }));
   };
 
   const handleCreateOrgClick = () => {
@@ -110,19 +90,8 @@ export default function OrgDropDown() {
   };
 
   const getOrg = async (id: string) => {
-    console.log("here");
-
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${id}/retrieve/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          }
-        }
-      );
+      const response = await apiClient.get(`/organization/${id}/retrieve/`);
       console.log("response.data.data", response.data.data);
 
       return response.data.data;
@@ -133,24 +102,18 @@ export default function OrgDropDown() {
 
   const { data: organization } = useQuery(
     ["organization-details", orgCheck.id],
-    () => getOrg(orgCheck.id)
+    () => getOrg(orgCheck.id),
+    {
+      enabled: !!orgCheck.id, // The query will only run if orgCheck.id is truthy
+    }
   );
 
   const getInvitations = async (): Promise<
     NoInvitationsResponse | InvitationsResponse | undefined
   > => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/org/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.get(`/user/org/list/`);
+
       return response.data;
     } catch (error) {
       userCheck(error as AxiosError);
@@ -167,52 +130,6 @@ export default function OrgDropDown() {
     await update({ role: org?.role, organization_id: org });
     router.push("/my-organization/overview");
   };
-
-//   const renderOrganizations = () => {
-//     if (isLoading) {
-//       return (
-//         <>
-//           {new Array(6).fill(1).map((_, i) => (
-//             <Skeleton
-//               key={i}
-//               className="lab-card rounded-2xl p-8 lg:w-[375px] w-full h-[200px]"
-//             />
-//           ))}
-//         </>
-//       );
-//     }
-
-//     if (organizations && Array.isArray(organizations.data) && organizations.data.length > 0) {
-//       return organizations.data.map((org:any, index:any) => (
-//         <TooltipProvider key={index}>
-//           <DropdownMenuItem>
-//             <Link
-//               href={`/dashboard/organizations/${org.organization.id}/groups?name=${org.organization.name}`}
-//               className="flex justify-between w-full items-center gap-2"
-//             >
-//               <span>{org.organization.name}</span>
-//               {org.role !== "Member" && (
-//                 <Tooltip>
-//                   <TooltipTrigger asChild>
-//                     <span className="text-sm font-medium underline" onClick={(e)=>goToOrg(e,org)}>
-//                       {org.role}
-//                     </span>
-//                   </TooltipTrigger>
-//                   <TooltipContent className=" z-10 w-[200px] bg-white text-gray-800 p-2 rounded-lg shadow-md border border-gray-300">
-//                     <p>
-//                       {ROLES.find((role) => role.role === org.role)?.desc}
-//                     </p>
-//                   </TooltipContent>
-//                 </Tooltip>
-//               )}
-//             </Link>
-//           </DropdownMenuItem>
-//         </TooltipProvider>
-//       ));
-//     }
-
-//     return <p>No organizations found</p>;
-//   };
 
   return (
     <DropdownMenu>
@@ -232,35 +149,44 @@ export default function OrgDropDown() {
             <DropdownMenuItem>
               <Link href="/my-organization/overview" className="flex">
                 <Users2 className="h-4 w-4 mr-2" />
-                <span  onClick={(e: any) => goToOrg(e, organization.id)}>{organization.name}</span>
+                <span onClick={(e: any) => goToOrg(e, organization.id)}>
+                  {organization.name}
+                </span>
               </Link>
             </DropdownMenuItem>
           ) : subscription_plan !== "basic" ? (
-            <DropdownMenuItem>
-              <Link
-                href="#"
-                onClick={handleCreateOrgClick}
-                className="text-gray-400 text-sm"
-              >
+            <DropdownMenuItem
+              onClick={handleCreateOrgClick}
+              className="flex items-center justify-between cursor-pointer "
+            >
+              <Link href="#" className="text-gray-400 text-sm">
                 Create organization
               </Link>
               <PlusCircleIcon className="h-4 w-4 text-gray-400 ml-2" />
             </DropdownMenuItem>
           ) : (
-            <p className="dark:text-white text-gray-400 w-full text-center text-sm py-1.5">
-              You are on the free plan. Upgrade to the premium or standard plan
-              to create an organization.
-            </p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="w-full">
+                  <DropdownMenuItem
+                    disabled
+                    onClick={handleCreateOrgClick}
+                    className="flex items-center justify-between cursor-pointer "
+                  >
+                    <Link href="#" className="text-gray-400 text-sm">
+                      Create organization
+                    </Link>
+                    <PlusCircleIcon className="h-4 w-4 text-gray-400 ml-2" />
+                  </DropdownMenuItem>
+                </TooltipTrigger>
+                <TooltipContent>
+                  This feature is only available to users on the premium or
+                  standard plan.
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
-        {/* <DropdownMenuItem>
-          <Link href="/dashboard">
-            <div className="flex items-center gap-2">
-              <AdminIcon className="h-4 w-4" />
-              Go to Labs
-            </div>
-          </Link>
-        </DropdownMenuItem> */}
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-sm font-medium">
           Other Organizations
@@ -292,7 +218,9 @@ export default function OrgDropDown() {
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                          <Link href={`/dashboard/organizations/${org.organization.id}/groups`}>
+                          <Link
+                            href={`/dashboard/organizations/${org.organization.id}/groups`}
+                          >
                             <span>Go to labs</span>
                           </Link>
                         </DropdownMenuItem>
@@ -307,10 +235,7 @@ export default function OrgDropDown() {
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link
-                href="/admin"
-                className="flex items-center"
-              >
+              <Link href="/admin" className="flex items-center">
                 <Shield className="h-4 w-4 mr-2" />
                 <span>Go to admin</span>
               </Link>
@@ -353,7 +278,6 @@ function BuildingIcon(props: any) {
     </svg>
   );
 }
-
 
 function ChevronDownIcon(props: any) {
   return (

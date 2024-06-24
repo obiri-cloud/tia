@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { toast } from "@/components/ui/use-toast";
-import { ToastAction } from "../ui/toast";
+import apiClient from "@/lib/request";
 
 const ResendOTP = () => {
   const searchParams = useSearchParams();
@@ -20,15 +20,9 @@ const ResendOTP = () => {
       title: "Sending OTP to your email",
     });
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/auth/registration/resend-otp/`,
-        JSON.stringify(formData),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
+      const response = await apiClient.post(
+        `/auth/registration/resend-otp/`,
+        JSON.stringify(formData)
       );
       if (response.data.status === 201) {
         toast({

@@ -12,14 +12,15 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
-import axios from "axios";
+
 import { useSession } from "next-auth/react";
-import {  useQueryClient } from "react-query";
+import { useQueryClient } from "react-query";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setOriginalPageSize, setPageSize, setTableData } from "@/redux/reducers/tableSlice";
 import { RootState } from "@/redux/store";
 import { Table } from "@/components/ui/table";
+import apiClient from "@/lib/request";
 
 interface DataTablePaginationProps<IinviteData> {
   //@ts-ignore
@@ -46,15 +47,10 @@ export function  DataTablePagination<IinviteData>({
     pageSize: number
   ): Promise<IinviteData[] | undefined> => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/?page_size=${pageSize}`,
+      const response = await apiClient.get(
+        `/organization/${org_id}/invitation/list/?page_size=${pageSize}`,
         {
           params: { page },
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
         }
       );
 

@@ -18,6 +18,7 @@ import ImageTable from "./image-table";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
+import apiClient from "@/lib/request";
 
 const Overview = () => {
   const { data: session } = useSession();
@@ -26,8 +27,6 @@ const Overview = () => {
   );
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-
-
 
   return (
     <div className="space-y-4">
@@ -62,46 +61,16 @@ const Overview = () => {
 
 export default Overview;
 
+//refactor later
+
 export async function getLabListX(token: string | undefined) {
-  return await axios.get(
-    `${process.env.NEXT_PUBLIC_BE_URL}/moderator/labs/list/`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        // @ts-ignore
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return await apiClient.get(`/moderator/labs/list/`);
 }
 
 export async function getOrgList(token: string | undefined) {
-  return await axios.get(
-    `${process.env.NEXT_PUBLIC_BE_URL}/organization/retrieve/`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        // @ts-ignore
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return await apiClient.get(`/organization/retrieve/`);
 }
 
-
-
 export async function getImageListX(token: string | undefined) {
-  return await axios.get(
-    `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/list?page_size=1000`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        // @ts-ignore
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return await apiClient.get(`/moderator/image/list?page_size=1000`);
 }

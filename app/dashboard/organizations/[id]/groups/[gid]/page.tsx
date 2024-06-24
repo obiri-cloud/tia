@@ -11,6 +11,7 @@ import React from "react";
 import { useQuery } from "react-query";
 import { Arrow } from "@/public/svgs/Arrow";
 import AltRouteCheck from "@/app/components/alt-route-check";
+import apiClient from "@/lib/request";
 
 const OrganizationGroupImagePage = () => {
   console.log("OrganizationGroupImagePage");
@@ -32,17 +33,9 @@ const OrganizationGroupImagePage = () => {
     ILabImage[] | undefined
   > => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/org/${id}/group/${gid}/images/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `/user/org/${id}/group/${gid}/images/`
       );
-      console.log("Response", response);
 
       return response.data.data;
     } catch (error) {
@@ -94,7 +87,6 @@ const OrganizationGroupImagePage = () => {
           )}
         </div>
         <AltRouteCheck />
-       
       </div>
 
       <div className="p-4 ">

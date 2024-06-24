@@ -14,7 +14,12 @@ const ProfileHeader = () => {
         {/* {user?.first_name.slice(0, 2)} */}
         <User className="w-5 h-5 text-black dark:text-white" />
       </p>
-      <span className="ms-2  capitalize">{user?.first_name}</span>
+      <div className="ms-2   flex flex-col">
+        <p className="capitalize ">{user?.first_name}</p>
+        <span className="text-[10px] capitalize text-gray-400 -mt-[6px]">
+          {user?.subscription_plan}
+        </span>
+      </div>
     </div>
   );
 };

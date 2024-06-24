@@ -12,6 +12,7 @@ import { IInstruction, ILabImage } from "@/app/types";
 import { ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import apiClient from "@/lib/request";
 
 const SequencePage = () => {
   const editorRef = useRef<TinyMCEEditor | null>(null);
@@ -36,18 +37,9 @@ const SequencePage = () => {
   const getSequenceInfo = async () => {
     const id = params.id;
     const siq = params.siq;
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/instruction/${siq}/retrieve/`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          // @ts-ignore
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const response = await apiClient.get(
+      `/moderator/image/${id}/instruction/${siq}/retrieve/`
     );
-    console.log("response", response);
 
     if (response.status === 200) {
       setInfo(response.data.data);
@@ -66,20 +58,10 @@ const SequencePage = () => {
       text = editorRef.current.getContent();
     }
     let formData = JSON.stringify({ sequence, text, title });
-
     try {
-      const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/instruction/${siq}/update/`,
-        formData,
-
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.patch(
+        `/moderator/image/${id}/instruction/${siq}/update/`,
+        formData
       );
       if (response.status === 200) {
         toast({
@@ -88,7 +70,13 @@ const SequencePage = () => {
         });
         router.push(`/admin/images/${id}/instructions`);
       }
-    } catch (error) {}
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        //@ts-ignore
+        title: error.response.data.message,
+      });
+    }
   };
 
   const createSequenceInst = async () => {
@@ -102,18 +90,9 @@ const SequencePage = () => {
     let formData = JSON.stringify({ sequence: Number(sequence), text, title });
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/instruction/create/`,
-        formData,
-
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.post(
+        `/moderator/image/${id}/instruction/create/`,
+        formData
       );
 
       if (response.status === 201) {
@@ -139,17 +118,8 @@ const SequencePage = () => {
 
   const getCurrentImage = async () => {
     const id = params.id;
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/retrieve/`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          // @ts-ignore
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await apiClient.get(`/moderator/image/${id}/retrieve/`);
+
     if (response.status === 200) {
       setCurrentImage(response.data);
     }
@@ -159,11 +129,9 @@ const SequencePage = () => {
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
-       
           {currentImage?.name ? (
             <Link
-            href={`/admin/images/${params.id}/instructions`}
-
+              href={`/admin/images/${params.id}/instructions`}
               className=" dark:hover:bg-menuHov hover:bg-menuHovWhite p-2 rounded-md"
             >
               {currentImage?.name}
@@ -178,13 +146,11 @@ const SequencePage = () => {
             <Skeleton className="w-[30px] h-[16.5px] rounded-md" />
           )}
         </div>
-        {
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/dashboard" className="font-medium text-mint">
-              Go to labs
-            </Link>
-          ) : null
-        }
+        {session?.user && session?.user.data.is_admin ? (
+          <Link href="/dashboard" className="font-medium text-mint">
+            Go to labs
+          </Link>
+        ) : null}
       </div>
       <div className="p-4">
         <div className="flex gap-2">

@@ -18,6 +18,7 @@ import { createPortal } from "react-dom";
 import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
 import { ContentProps, ILabInfo, ILabInfoDialog } from "@/app/types";
+import apiClient from "@/lib/request";
 
 const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
   const { data: session } = useSession();
@@ -45,17 +46,9 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     });
 
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/create/`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        formData
       );
       setLabInfo(response.data);
       if (response.data.status === 400) {
@@ -147,17 +140,9 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
       duration: 2000,
     });
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/delete/`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        formData
       );
       if (response.data.status === 200) {
         toast({

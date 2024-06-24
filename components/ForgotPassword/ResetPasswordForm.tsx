@@ -12,6 +12,7 @@ import { Label } from "../ui/neo-label";
 import { BottomGradient } from "../Signup/SForm";
 import { EyeIcon, EyeOff } from "lucide-react";
 import { Input } from "../ui/neo-input";
+import apiClient from "@/lib/request";
 
 const ResetPasswordForm = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -24,7 +25,7 @@ const ResetPasswordForm = () => {
   const searchParams = useSearchParams();
 
   const code = searchParams.get("code");
-  
+
   const email = searchParams.get("email");
 
   const formSchema = z
@@ -69,15 +70,9 @@ const ResetPasswordForm = () => {
 
     try {
       formSchema.parse(formData);
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/auth/password/confirm/forgot-password/`,
-        JSON.stringify(formData),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
+      const response = await apiClient.post(
+        `/auth/password/confirm/forgot-password/`,
+        JSON.stringify(formData)
       );
       toast({
         title: response.data.message,

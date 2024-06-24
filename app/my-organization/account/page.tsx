@@ -21,9 +21,10 @@ import { userCheck } from "@/lib/utils";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import DeactivateConfirmation from "@/app/components/deactivate-confirmation";
 import { useRouter } from "next/navigation";
+import apiClient from "@/lib/request";
 
 const AccountPage = () => {
-  const {data: session, update } = useSession();
+  const { data: session, update } = useSession();
   const org_id = session?.user!.data?.organization_id;
   const [userData, setUserData] = useState<any>();
   const [editMode, setEditMode] = useState(false);
@@ -38,22 +39,8 @@ const AccountPage = () => {
     }),
   });
 
-
-  // @ts-ignore
-  const token = session?.user!.tokens?.access_token;
-
   const getUser = async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/retrieve/`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          // @ts-ignore
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await apiClient.get(`/organization/${org_id}/retrieve/`);
     setUserData(response.data.data);
   };
 
@@ -73,16 +60,7 @@ const AccountPage = () => {
       formData.append("video", image);
 
       try {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BE_URL}auth/avatar/change/`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await apiClient.post(`auth/avatar/change/`, formData);
         if (response.status === 200) {
           toast({
             title: "Avatar Updated",
@@ -116,20 +94,13 @@ const AccountPage = () => {
 
     try {
       formSchema.parse(formData);
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${userData.id}/update/`,
-        JSON.stringify(formData),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.put(
+        `/organization/${userData.id}/update/`,
+        JSON.stringify(formData)
       );
 
       if (response.status === 200) {
-        console.log(response)
+        console.log(response);
         toast({
           variant: "success",
           title: "Profile Updated Successfully",
@@ -143,18 +114,16 @@ const AccountPage = () => {
           title: "Profile Update Error",
         });
       }
-
-
     } catch (error) {
       userCheck(error as AxiosError);
       //@ts-ignore
-      console.log('hjhj---->',error.response.data.detail)
+      console.log("hjhj---->", error.response.data.detail);
       toast({
         variant: "destructive",
         //@ts-ignore
         title: error.response.data.detail,
         // description: err.message,
-      })
+      });
       if (error instanceof z.ZodError) {
         error.issues.map((err) =>
           toast({
@@ -176,19 +145,12 @@ const AccountPage = () => {
       deactivateButtonRef.current.disabled = true;
     }
     try {
-      const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${userData.id}/delete/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.delete(
+        `/organization/${userData.id}/delete/`
       );
 
       if (response.status === 204) {
-        
-        if (session)
-          update({organization_id:null});
+        if (session) update({ organization_id: null });
 
         if (session) {
           const updatedUserData = {
@@ -203,8 +165,6 @@ const AccountPage = () => {
               data: updatedUserData,
             },
           };
-
-
         }
 
         toast({
@@ -213,7 +173,7 @@ const AccountPage = () => {
         });
         router.push("/dashboard");
       } else {
-        console.log({response})
+        console.log({ response });
         toast({
           title: "Something went deactivating your organizaton",
           variant: "destructive",
@@ -224,11 +184,13 @@ const AccountPage = () => {
 
       console.error("error", error);
 
-      toast({
-        //@ts-ignore
-        title: error.response.data.detail ||  "Something went deactivating your account"  ,
-        variant: "destructive",
-      });
+      // toast({
+      //   title:
+      //     //@ts-ignore
+      //     error.response.data.detail ||
+      //     "Something went deactivating your account",
+      //   variant: "destructive",
+      // });
     } finally {
       if (deactivateButtonRef.current) {
         deactivateButtonRef.current.disabled = false;

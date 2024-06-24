@@ -7,9 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-} from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
   Table,
@@ -28,7 +26,7 @@ import { useSession } from "next-auth/react";
 
 import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { useSearchParams } from "next/navigation";
-import { ILabImage,  IOrgGroupData } from "@/app/types";
+import { ILabImage, IOrgGroupData } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import {
@@ -40,15 +38,15 @@ import {
 import { MoreVerticalIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import AltRouteCheck from "@/app/components/alt-route-check";
+import apiClient from "@/lib/request";
 
 const OrganizationGroupImagePage = () => {
   const { data: session } = useSession();
-  
+
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);
   const [passedData, setPassedData] = useState<any>();
-
 
   const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
@@ -59,49 +57,31 @@ const OrganizationGroupImagePage = () => {
   const name = searchParams.get("name");
   const group = searchParams.get("group_name");
 
-
-
-
   // get groups
-  const getImagesInGroup =async (): Promise<ILabImage[] | undefined> => {
+  const getImagesInGroup = async (): Promise<ILabImage[] | undefined> => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${id}/image/list/?page=1`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      const response = await apiClient.get(
+        `/organization/${org_id}/group/${id}/image/list/?page=1`
+      );
 
-       return response.data.data[0].lab_image
+      return response.data.data[0].lab_image;
     } catch (error) {
       console.log(error);
     }
   };
-
-
 
   const deletebtn = (data: IOrgGroupData) => {
     setPassedData(data);
     setIsOpenViewDialog(true);
   };
 
-  const deleteGroupImage = async (data:number) => {
+  const deleteGroupImage = async (data: number) => {
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${id}/image/delete/`,
-        {
-            image_ids: [data]
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.post(
+        `/organization/${org_id}/group/${id}/image/delete/`,
+        JSON.stringify({
+          image_ids: [data],
+        })
       );
       return response;
     } catch (error) {
@@ -113,11 +93,9 @@ const OrganizationGroupImagePage = () => {
     }
   };
 
-  const { data: imageList } = useQuery(
-    ["ImagesInGroup"],
-    () => getImagesInGroup()
+  const { data: imageList } = useQuery(["ImagesInGroup"], () =>
+    getImagesInGroup()
   );
-
 
   const { mutate: deleteGroupImageMutation } = useMutation(
     (id: number) => deleteGroupImage(id),
@@ -127,31 +105,26 @@ const OrganizationGroupImagePage = () => {
         setIsOpenViewDialog(false);
         toast({
           variant: "success",
-          title: 'Image  deleted Sucessfully',
+          title: "Image  deleted Sucessfully",
         });
       },
       onError: (error: any) => {
         const responseData = error.response.data;
-        console.log({responseData})
+        console.log({ responseData });
         toast({
           variant: "destructive",
           title: responseData.data,
         });
         setIsOpenViewDialog(false);
-
       },
     }
   );
-
-
-
-
 
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
-        <Link
+          <Link
             href={
               session?.user.data.role
                 ? `/dashboard/organizations`
@@ -197,7 +170,6 @@ const OrganizationGroupImagePage = () => {
             </Dialog>
           </CardHeader>
           <Dialog>
-
             <CardContent className="pl-2">
               <Table>
                 <TableHeader>
@@ -217,7 +189,9 @@ const OrganizationGroupImagePage = () => {
                         <TableCell className="font-medium">
                           {image.name}
                         </TableCell>
-                        <TableCell className="capitalize">{image.difficulty_level}</TableCell>
+                        <TableCell className="capitalize">
+                          {image.difficulty_level}
+                        </TableCell>
                         <TableCell>{image.duration}</TableCell>
                         <TableCell className="underline font-medium text-right">
                           <DropdownMenu>
@@ -225,7 +199,6 @@ const OrganizationGroupImagePage = () => {
                               <MoreVerticalIcon className="w-4 h-4" />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="left-[-20px_!important]">
-                     
                               <DropdownMenuItem
                                 onClick={() => deletebtn(image)}
                                 className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
@@ -240,7 +213,7 @@ const OrganizationGroupImagePage = () => {
                   ) : (
                     <TableRow>
                       <TableCell colSpan={4} className="text-center">
-                         No Labs Available In this Group
+                        No Labs Available In this Group
                       </TableCell>
                     </TableRow>
                   )}
@@ -258,7 +231,6 @@ const OrganizationGroupImagePage = () => {
         }
       >
         <DeleteConfirmation
-          
           text={`Do you want to delete ${passedData?.name} from ${group} group ?`}
           noText="No"
           confirmText="Yes, Delete!"

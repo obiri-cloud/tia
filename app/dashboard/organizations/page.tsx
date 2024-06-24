@@ -19,6 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import apiClient from "@/lib/request";
 
 const ROLES = [
   {
@@ -50,17 +51,7 @@ const OrganizationsPage = () => {
     NoInvitationsResponse | InvitationsResponse | undefined
   > => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/org/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.get(`/user/org/list/`);
       return response.data;
     } catch (error) {
       userCheck(error as AxiosError);

@@ -4,8 +4,10 @@ import { useSession } from "next-auth/react";
 import axios, { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { userCheck } from "@/lib/utils";
+import { ILabImage, Plan } from "../types";
+import apiClient from "@/lib/request";
 
-const plans = [
+const plans: Plan[] = [
   {
     value: "basic",
     label: "Basic",
@@ -24,22 +26,35 @@ const plans = [
   {
     value: "premium",
     label: "Premium",
-    features: ["500 credits per month", "Advanced analytics", "Priority support"],
+    features: [
+      "500 credits per month",
+      "Advanced analytics",
+      "Priority support",
+    ],
     price: "20",
     plan_choice: "monthly",
   },
 ];
 
-export default function MultiPlanModal({ currentPlan, currentImage }:{ currentPlan:any, currentImage:any }) {
+export default function MultiPlanModal({
+  currentPlan,
+  currentImage,
+}: {
+  currentPlan: string | undefined;
+  currentImage: ILabImage;
+}) {
   const { data: session } = useSession();
   const token = session?.user?.tokens?.access_token;
 
-  const subscribe = async (plan:any) => {
-    //@ts-ignore
-    document.getElementById("btn").textContent = "Processing";
+  let btn = document.getElementById("btn");
+
+  const subscribe = async (plan: Plan) => {
+    if (btn) {
+      btn.textContent = "Processing";
+    }
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/create/`,
+      const response = await apiClient.post(
+        `/payment/subscription/create/`,
         {
           amount: plan.price,
           interval: "monthly",
@@ -51,8 +66,9 @@ export default function MultiPlanModal({ currentPlan, currentImage }:{ currentPl
           },
         }
       );
-      //@ts-ignore
-      document.getElementById("btn").textContent = "Processing";
+      if (btn) {
+        btn.textContent = "Processing";
+      }
       if (response.status === 200) {
         window.location.href = response.data.authorization_url;
         toast({
@@ -75,22 +91,15 @@ export default function MultiPlanModal({ currentPlan, currentImage }:{ currentPl
     }
   };
 
-  const upgradeSubscription = async (plan:any) => {
-    //@ts-ignore
-    document.getElementById("btn").textContent = "Updating";
+  const upgradeSubscription = async (plan: Plan) => {
+    if (btn) {
+      btn.textContent = "Updating";
+    }
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/update/`,
-        {
-          amount: plan.price,
-          plan_choice: plan.value,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.post(`/payment/subscription/update/`, {
+        amount: plan.price,
+        plan_choice: plan.value,
+      });
 
       if (response.data.status === 200) {
         window.location.href = `/dashboard/images?image=${currentImage.id}`;
@@ -107,8 +116,9 @@ export default function MultiPlanModal({ currentPlan, currentImage }:{ currentPl
     } catch (error) {
       userCheck(error as AxiosError);
       console.error("error", error);
-      //@ts-ignore
-      document.getElementById("btn").textContent = `Subscribe to ${plan.value}`;
+      if (btn) {
+        btn.textContent = `Subscribe to ${plan.value}`;
+      }
       toast({
         title: "Something went wrong!",
         variant: "destructive",
@@ -116,8 +126,11 @@ export default function MultiPlanModal({ currentPlan, currentImage }:{ currentPl
     }
   };
 
-  const filteredPlans = plans.filter((plan) => {
-    if (currentPlan === "basic" && (plan.value === "standard" || plan.value === "premium")) {
+  const filteredPlans = plans.filter((plan: Plan) => {
+    if (
+      currentPlan === "basic" &&
+      (plan.value === "standard" || plan.value === "premium")
+    ) {
       return true;
     }
     if (currentPlan === "standard" && plan.value === "premium") {
@@ -129,9 +142,9 @@ export default function MultiPlanModal({ currentPlan, currentImage }:{ currentPl
     return false;
   });
 
-  const isUpgrade = (current: string, target: string) => {
-    const plansOrder = ['basic', 'standard', 'premium'];
-    return plansOrder.indexOf(target) > plansOrder.indexOf(current);
+  const isUpgrade = (current: string | undefined, target: string) => {
+    const plansOrder = ["basic", "standard", "premium"];
+    return plansOrder.indexOf(target) > plansOrder.indexOf(current ?? "");
   };
 
   return (
@@ -144,7 +157,10 @@ export default function MultiPlanModal({ currentPlan, currentImage }:{ currentPl
       </p>
       <div className="grid gap-6 py-6">
         {filteredPlans.map((plan) => (
-          <div key={plan.value} className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg">
+          <div
+            key={plan.value}
+            className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg"
+          >
             <div className="grid grid-cols-[1fr_auto] items-center gap-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
@@ -167,21 +183,24 @@ export default function MultiPlanModal({ currentPlan, currentImage }:{ currentPl
               <Button
                 id="btn"
                 variant="outline"
-                className="mt-4 w-full text-sm font-medium"
+                className="mt-4 w-full text-sm font-medium text-black dark:text-white"
                 onClick={() => subscribe(plan)}
               >
-                <p className="dark:text-white text-black"> Subscribe to {plan.label}</p>
+                <p className="dark:text-white text-black">
+                  {" "}
+                  Subscribe to {plan.label}
+                </p>
               </Button>
             ) : (
               <Button
                 id="btn"
                 variant="outline"
                 onClick={() => upgradeSubscription(plan)}
-                className="mt-4 w-full text-sm font-medium"
+                className="mt-4 w-full text-sm font-medium text-black dark:text-white"
               >
-                   {isUpgrade(currentPlan, plan.value)
-                ? `Upgrade to ${plan.label}`
-                : `Downgrade to ${plan.label}`}
+                {isUpgrade(currentPlan, plan.value)
+                  ? `Upgrade to ${plan.label}`
+                  : `Downgrade to ${plan.label}`}
               </Button>
             )}
           </div>

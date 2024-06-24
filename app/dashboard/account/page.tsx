@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import axios, { AxiosError } from "axios";
 import React, {
   ChangeEvent,
@@ -16,7 +16,13 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import * as z from "zod";
 import { cn, userCheck } from "@/lib/utils";
-import { Dialog, DialogTrigger, DialogContent, DialogClose } from "@/components/ui/dialog";
+
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogClose,
+} from "@/components/ui/dialog";
 import DeactivateConfirmation from "@/app/components/deactivate-confirmation";
 import { IUserProfile } from "@/app/types";
 import { DropToggle } from "@/app/components/DropToggle";
@@ -29,13 +35,13 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
 } from "@/components/ui/command";
 import { CarrotIcon, CheckIcon } from "lucide-react";
 import AltRouteCheck from "@/app/components/alt-route-check";
 import PlanModalContent from "@/app/components/PlanModal";
-import Link from "next/link";
+
+import apiClient from "@/lib/request";
 
 const plans = [
   {
@@ -44,21 +50,25 @@ const plans = [
     features: ["100 credits per month", "Basic analytics", "Community support"],
     price: "0",
     basicPrice: 0,
-    plan_choice: 'monthly'
+    plan_choice: "monthly",
   },
   {
     value: "standard",
     label: "Standard",
     features: ["250 credits per month", "Enhanced analytics", "Email support"],
     price: "10",
-    plan_choice: 'monthly'
+    plan_choice: "monthly",
   },
   {
     value: "premium",
     label: "Premium",
-    features: ["500 credits per month", "Advanced analytics", "Priority support"],
+    features: [
+      "500 credits per month",
+      "Advanced analytics",
+      "Priority support",
+    ],
     price: "20",
-    plan_choice: 'monthly'
+    plan_choice: "monthly",
   },
 ];
 
@@ -69,8 +79,9 @@ const AccountPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(plans[0]);
   const [deactivateAccountOpen, setDeactivateAccountOpen] = useState(false);
-  const [deactivateSubscriptionOpen, setDeactivateSubscriptionOpen] = useState(false);
-  const [open,setOpen]=useState(false)
+  const [deactivateSubscriptionOpen, setDeactivateSubscriptionOpen] =
+    useState(false);
+  const [open, setOpen] = useState(false);
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -80,13 +91,7 @@ const AccountPage = () => {
   const currentPlan = session?.user?.data?.subscription_plan;
 
   const getUser = async () => {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_BE_URL}/auth/user/`, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.get(`/auth/user/`);
     setUserData(response.data);
   };
 
@@ -118,21 +123,15 @@ const AccountPage = () => {
 
     try {
       formSchema.parse(formData);
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/auth/user/update/`,
-        JSON.stringify(formData),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.post(
+        `/auth/user/update/`,
+        JSON.stringify(formData)
       );
       if (response.data.status === 200) {
         toast({
           variant: "success",
           title: "Profile Updated Successfully",
+          duration: 2000,
         });
         setEditMode(false);
         getUser();
@@ -140,6 +139,7 @@ const AccountPage = () => {
         toast({
           variant: "destructive",
           title: "Profile Update Error",
+          duration: 2000,
         });
       }
     } catch (error) {
@@ -150,6 +150,7 @@ const AccountPage = () => {
             variant: "destructive",
             title: "Profile Update Error",
             description: err.message,
+            duration: 2000,
           })
         );
       }
@@ -159,28 +160,26 @@ const AccountPage = () => {
   };
 
   const deactivateAccount = async () => {
-    if (deactivateButtonRef.current) deactivateButtonRef.current.disabled = true;
+    if (deactivateButtonRef.current)
+      deactivateButtonRef.current.disabled = true;
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${process.env.NEXT_PUBLIC_BE_URL}/auth/account/deactivate/`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        {}
       );
 
       if (response.status === 200) {
         toast({
           title: "Account deactivated successfully!",
           variant: "success",
+          duration: 2000,
         });
         signOut({ callbackUrl: "/login" });
       } else {
         toast({
           title: "Something went wrong deactivating your account.",
           variant: "destructive",
+          duration: 2000,
         });
       }
     } catch (error) {
@@ -189,35 +188,35 @@ const AccountPage = () => {
       toast({
         title: "Something went wrong deactivating your account.",
         variant: "destructive",
+        duration: 2000,
       });
     } finally {
-      if (deactivateButtonRef.current) deactivateButtonRef.current.disabled = false;
+      if (deactivateButtonRef.current)
+        deactivateButtonRef.current.disabled = false;
     }
   };
 
   const deactivateSubscription = async () => {
-    if (deactivateButtonRef.current) deactivateButtonRef.current.disabled = true;
+    if (deactivateButtonRef.current)
+      deactivateButtonRef.current.disabled = true;
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/delete/`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.post(
+        `/payment/subscription/delete/`,
+        {}
       );
-      console.log('account----->', response)
+      console.log("account----->", response);
       if (response.status === 204) {
         toast({
           title: "Subscription deactivated successfully!",
           variant: "success",
+          duration: 2000,
         });
-        window.location.href = '/dashboard/account'
+        window.location.href = "/dashboard/account";
       } else {
         toast({
           title: "Something went wrong!",
           variant: "destructive",
+          duration: 2000,
         });
       }
     } catch (error) {
@@ -227,54 +226,14 @@ const AccountPage = () => {
         //@ts-ignore
         title: error.response.data.message,
         variant: "destructive",
+        duration: 2000,
       });
     }
   };
 
-  const changeAvatar = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const image = e.target.files[0];
-      const formData = new FormData();
-      formData.append("avatar", image);
-
-      try {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BE_URL}/auth/avatar/change/`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.status === 200) {
-          toast({
-            title: "Avatar Updated",
-            variant: "success",
-          });
-          getUser();
-        } else {
-          toast({
-            title: "Error when updating.",
-            action: <ToastAction altText="Try again">Try again</ToastAction>,
-            variant: "destructive",
-          });
-        }
-      } catch (error) {
-        userCheck(error as AxiosError);
-        toast({
-          title: "Error when updating.",
-          action: <ToastAction altText="Try again">Try again</ToastAction>,
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
   const getFilteredPlans = () => {
-    return plans.filter(plan => plan.value !== currentPlan);
-  }
+    return plans.filter((plan) => plan.value !== currentPlan);
+  };
 
   return (
     <Dialog>
@@ -400,7 +359,7 @@ const AccountPage = () => {
                   aria-expanded={open}
                   className="w-[200px] justify-between dark:bg-comboBg bg-white theme-selector"
                 >
-                  {currentPlan === "basic" ? 'Subscribe...' : "Upgrade plan..."}
+                  {currentPlan === "basic" ? "Subscribe..." : "Upgrade plan..."}
                   <CarrotIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -413,7 +372,9 @@ const AccountPage = () => {
                         key={plan.value}
                         value={plan.value}
                         onSelect={(currentValue) => {
-                          const selected = plans.find(plan => plan.value === currentValue);
+                          const selected = plans.find(
+                            (plan) => plan.value === currentValue
+                          );
                           if (selected) {
                             setSelectedPlan(selected);
                             setModalOpen(true);
@@ -426,7 +387,9 @@ const AccountPage = () => {
                         {/* <CheckIcon
                           className={cn(
                             "ml-auto h-4 w-4",
-                            selectedPlan.value === plan.value ? "opacity-100" : "opacity-0"
+                            selectedPlan.value === plan.value
+                              ? "opacity-100"
+                              : "opacity-0"
                           )}
                         /> */}
                       </CommandItem>
@@ -453,17 +416,25 @@ const AccountPage = () => {
               </div>
             </div>
             <DialogTrigger asChild>
-              <Button variant="destructive" onClick={() => setDeactivateAccountOpen(true)}>Deactivate account</Button>
+              <Button
+                variant="destructive"
+                onClick={() => setDeactivateAccountOpen(true)}
+              >
+                Deactivate account
+              </Button>
             </DialogTrigger>
           </div>
 
-          <Dialog open={deactivateAccountOpen} onOpenChange={setDeactivateAccountOpen}>
-              <DeactivateConfirmation
-                text="Do you want to deactivate your account?"
-                noText="No, cancel"
-                confirmText="Yes, deactivate"
-                confirmFunc={deactivateAccount}
-              />
+          <Dialog
+            open={deactivateAccountOpen}
+            onOpenChange={setDeactivateAccountOpen}
+          >
+            <DeactivateConfirmation
+              text="Do you want to deactivate your account?"
+              noText="No, cancel"
+              confirmText="Yes, deactivate"
+              confirmFunc={deactivateAccount}
+            />
           </Dialog>
 
           <div className="sc-hLBbgP flex justify-between mt-10">
@@ -478,17 +449,25 @@ const AccountPage = () => {
               </div>
             </div>
             <DialogTrigger asChild>
-              <Button variant="destructive" onClick={() => setDeactivateSubscriptionOpen(true)}>Deactivate subscription</Button>
+              <Button
+                variant="destructive"
+                onClick={() => setDeactivateSubscriptionOpen(true)}
+              >
+                Deactivate subscription
+              </Button>
             </DialogTrigger>
           </div>
 
-          <Dialog open={deactivateSubscriptionOpen} onOpenChange={setDeactivateSubscriptionOpen}>
-              <DeactivateConfirmation
-                text="Do you want to deactivate your subscription?"
-                noText="No, cancel"
-                confirmText="Yes, deactivate"
-                confirmFunc={deactivateSubscription}
-              />
+          <Dialog
+            open={deactivateSubscriptionOpen}
+            onOpenChange={setDeactivateSubscriptionOpen}
+          >
+            <DeactivateConfirmation
+              text="Do you want to deactivate your subscription?"
+              noText="No, cancel"
+              confirmText="Yes, deactivate"
+              confirmFunc={deactivateSubscription}
+            />
           </Dialog>
 
           <div className="border-b dark:border-b-dashboardDarkSeparator border-b-whiteEdge my-6"></div>

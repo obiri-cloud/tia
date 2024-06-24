@@ -4,19 +4,16 @@ import { useForm } from "react-hook-form";
 import { DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Form,
-  FormField,
-  FormItem,
-} from "@/components/ui/form";
+import { Form, FormField, FormItem } from "@/components/ui/form";
 import { useCallback, useEffect, useState } from "react";
 import { GroupMember } from "../types";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { CheckedState } from "@radix-ui/react-checkbox";
 import OrgDialog from "./my-organization/org-dialog";
 import { OrgGroup } from "../my-organization/groups/page";
-import { useMutation, useQueryClient} from "react-query";
+import { useMutation, useQueryClient } from "react-query";
+import apiClient from "@/lib/request";
+import { Input } from "@/components/ui/input";
 
 export interface IMemberChanges {
   added: Set<string>;
@@ -43,25 +40,13 @@ const AddMembersModal = ({
   const [searchQuery, setSearchQuery] = useState("");
   let organization_id = session?.user.data.organization_id;
 
-
-
-  const getSearchedMembers = async (query:any): Promise<GroupMember[] | undefined> => {
+  const getSearchedMembers = async (
+    query: string
+  ): Promise<GroupMember[] | undefined> => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${organization_id}/members/?q=${query}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `/organization/${organization_id}/members/?q=${query}`
       );
-
-      // if (response.data.status === 404) {
-      //   alert("No members found for this organization.");
-      //   return;
-      // }
 
       setSelectedMembers(new Set(response.data.data));
       return response.data.data;
@@ -72,26 +57,17 @@ const AddMembersModal = ({
     }
   };
 
-
   const getMembers = async () => {
     setIsLoadingMembers(true);
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${organization_id}/group/${group?.id}/member/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `/organization/${organization_id}/group/${group?.id}/member/list/`
       );
 
       let data = response.data.data;
       let newData = [];
       let list = data[0].member;
 
-      
       if (list.length > 0) {
         newData = list ? list.map((d: any) => d.id) : [];
       }
@@ -111,9 +87,6 @@ const AddMembersModal = ({
     };
   }, [group]);
 
-
-
-
   const [selectedMembers, setSelectedMembers] = useState(new Set());
 
   const debounce = (func: (e: string) => void, delay: number) => {
@@ -126,8 +99,6 @@ const AddMembersModal = ({
     };
   };
 
-
-
   const { mutate: searchMutation } = useMutation(getSearchedMembers, {
     onSuccess: (data) => {
       queryClient.setQueryData("members", data);
@@ -139,11 +110,9 @@ const AddMembersModal = ({
   });
 
   const debouncedFetchMembers = useCallback(
-     debounce((query: string) => searchMutation(query), 400),
+    debounce((query: string) => searchMutation(query), 400),
     [searchMutation]
   );
-
-
 
   // State to track the changes - additions and deletions
   const [changes, setChanges] = useState<IMemberChanges>({
@@ -151,7 +120,7 @@ const AddMembersModal = ({
     removed: new Set(),
   });
 
-  const handleCheckedChange = (checked: CheckedState, memberId: string) => {
+  const handleCheckedChange = (checked: string | boolean, memberId: string) => {
     const updatedSet = new Set(selectedMembers);
     const updatedChanges = { ...changes };
 
@@ -174,17 +143,13 @@ const AddMembersModal = ({
     setChanges(updatedChanges);
   };
 
-  // Handle search input change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault()
+    event.preventDefault();
     setSearchQuery(event.target.value);
     debouncedFetchMembers(event.target.value);
   };
 
-
-  const handleSearchQueryChange = (query: string) => {
-
-  };
+  const handleSearchQueryChange = (query: string) => {};
 
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -207,14 +172,14 @@ const AddMembersModal = ({
       <div className=" overflow-scroll flex flex-col flex-1 ">
         <Form {...form}>
           <form className="space-y-8 flex-1 overflow-scroll">
-            <input
-              type="text"
+            <Input
               placeholder="Search members"
               value={searchQuery}
               onChange={handleSearchChange}
-              // onChange={(e) => handleSearchQueryChange(e.target.value)}
-              className="w-full p-2 mb-4 border border-gray-300 rounded"
+              className="glassBorder dark:text-white dark:bg-black/10 bg-white text-black"
+              defaultValue=""
             />
+
             <FormField
               name="image"
               render={() => (
@@ -225,7 +190,7 @@ const AddMembersModal = ({
                     </p>
                   ) : !Array.isArray(members) || members.length === 0 ? (
                     <p className="text-center text-black dark:text-white">
-                      No members in the group.
+                      No members found.
                     </p>
                   ) : (
                     members?.map((member: GroupMember) => (
@@ -273,7 +238,9 @@ const AddMembersModal = ({
           Page {currentPage} of {totalPages}
         </span>
         <Button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
           disabled={currentPage === totalPages}
         >
           Next
@@ -285,7 +252,7 @@ const AddMembersModal = ({
         className="w-full mt-4"
         id="update-member-submit-button"
       >
-        Update Member List
+        Update member list
       </Button>
     </OrgDialog>
   );

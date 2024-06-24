@@ -6,36 +6,40 @@ import { toast } from "@/components/ui/use-toast";
 import { userCheck } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Plan } from "../types";
+import apiClient from "@/lib/request";
 
-const PlanModalContent = ({ plan, currentPlan }:{plan:any,currentPlan:any}) => {
+const PlanModalContent = ({
+  plan,
+  currentPlan,
+}: {
+  plan: Plan;
+  currentPlan: string | undefined;
+}) => {
   const { data: session } = useSession();
   const token = session?.user?.tokens?.access_token;
   const router = useRouter();
+  let btn = document.getElementById("btn");
 
-  console.log
+  console.log;
 
   const subscribe = async () => {
-   //@ts-ignore
-    document.getElementById("btn").textContent = "Processing";
+    if (btn) {
+      btn.textContent = "Processing";
+    }
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/create/`,
-        {
-          amount: plan.price,
-          interval: "monthly",
-          plan_choice: plan.value,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-            //@ts-ignore
-      (document.getElementById("btn").textContent = "Processing")
+      const response = await apiClient.post(`/payment/subscription/create/`, {
+        amount: plan.price,
+        interval: "monthly",
+        plan_choice: plan.value,
+      });
+      if (btn) {
+        btn.textContent = "Processing";
+      }
       if (response.status === 200) {
-        //@ts-ignore
-        document.getElementById("btn").textContent = "Processing";
+        if (btn) {
+          btn.textContent = "Processing";
+        }
         window.location.href = response.data.authorization_url;
         toast({
           title: "Redirecting you to payment page",
@@ -58,21 +62,14 @@ const PlanModalContent = ({ plan, currentPlan }:{plan:any,currentPlan:any}) => {
   };
 
   const upgradeSubscription = async () => {
-    //@ts-ignore
-    document.getElementById("btn").textContent = "Updating";
+    if (btn) {
+      btn.textContent = "Updating";
+    }
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/update/`,
-        {
-          amount: plan.price,
-          plan_choice: plan.value,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.post(`/payment/subscription/update/`, {
+        amount: plan.price,
+        plan_choice: plan.value,
+      });
 
       if (response.data.status === 200) {
         window.location.href = "/dashboard/account";
@@ -89,17 +86,18 @@ const PlanModalContent = ({ plan, currentPlan }:{plan:any,currentPlan:any}) => {
     } catch (error) {
       userCheck(error as AxiosError);
       console.error("error", error);
-    //@ts-ignore
-      document.getElementById("btn").textContent = `Subscribe to ${plan.value}`;
+      if (btn) {
+        btn.textContent = `Subscribe to ${plan.value}`;
+      }
       toast({
         title: "Something went wrong!",
         variant: "destructive",
       });
     }
   };
-  const isUpgrade = (current: string, target: string) => {
-    const plansOrder = ['basic', 'standard', 'premium'];
-    return plansOrder.indexOf(target) > plansOrder.indexOf(current);
+  const isUpgrade = (current: string | undefined, target: string) => {
+    const plansOrder = ["basic", "standard", "premium"];
+    return plansOrder.indexOf(target) > plansOrder.indexOf(current ?? "");
   };
 
   return (
@@ -108,7 +106,7 @@ const PlanModalContent = ({ plan, currentPlan }:{plan:any,currentPlan:any}) => {
         {plan.label} Plan
       </h2>
       <ul className="space-y-2 mb-6">
-        {plan.features.map((feature:any, index:any) => (
+        {plan.features.map((feature: any, index: any) => (
           <li key={index} className="flex items-center">
             <CheckIcon className="w-5 h-5 mr-2 text-green-500" />
             <span className="text-gray-800 dark:text-gray-200">{feature}</span>
@@ -121,10 +119,10 @@ const PlanModalContent = ({ plan, currentPlan }:{plan:any,currentPlan:any}) => {
           ${plan.price}/month
         </span>
       </div>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 text-black dark:text-white">
         <Input id="discount" placeholder="Enter discount code" />
         <Button variant="outline" className="dark:text-black">
-           <p className="dark:text-white text-black"> Apply</p>
+          <p className="dark:text-white text-black"> Apply</p>
         </Button>
       </div>
       {currentPlan === "basic" ? (
@@ -141,10 +139,10 @@ const PlanModalContent = ({ plan, currentPlan }:{plan:any,currentPlan:any}) => {
           onClick={upgradeSubscription}
           className="inline-flex cursor-pointer items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-200 dark:focus:ring-gray-50"
         >
-         {/* Upgrade to {plan.label} */}
-         {isUpgrade(currentPlan, plan.value)
-         ? `Upgrade to ${plan.label}`
-         : `Downgrade to ${plan.label}`}
+          {/* Upgrade to {plan.label} */}
+          {isUpgrade(currentPlan, plan.value)
+            ? `Upgrade to ${plan.label}`
+            : `Downgrade to ${plan.label}`}
         </p>
       )}
     </div>

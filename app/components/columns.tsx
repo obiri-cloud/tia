@@ -8,7 +8,11 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
-import { setOriginalPageSize, setPageSize, setTableData } from "@/redux/reducers/tableSlice";
+import {
+  setOriginalPageSize,
+  setPageSize,
+  setTableData,
+} from "@/redux/reducers/tableSlice";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +24,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import DeleteConfirmation from "./delete-confirmation";
 import { RootState } from "@/redux/store";
+import apiClient from "@/lib/request";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
@@ -31,7 +36,9 @@ export const columns: ColumnDef<IinviteData>[] = [
     header: ({ table }) => {
       const [selected, setSelected] = useState(false);
       const [diag, setdiag] = useState<boolean>(false);
-      const { data: tableData } = useSelector((state: RootState) => state.table);
+      const { data: tableData } = useSelector(
+        (state: RootState) => state.table
+      );
       const { data: session } = useSession();
       const dispatch = useDispatch();
       const token = session?.user!.tokens?.access_token;
@@ -42,101 +49,106 @@ export const columns: ColumnDef<IinviteData>[] = [
         setSelected(!!value);
       };
 
-      console.log('tb',tableData.length==0)
+      console.log("tb", tableData.length == 0);
 
       useEffect(() => {
         const subscription = table.getState().rowSelection;
         setSelected(Object.keys(subscription).length > 0);
       }, [table.getState().rowSelection]);
 
-      const delData=table.getFilteredSelectedRowModel().rows.map((a)=>a.original.id)
+      const delData = table
+        .getFilteredSelectedRowModel()
+        .rows.map((a) => a.original.id);
 
-     console.log('typeof---->',typeof(delData),delData)
+      console.log("typeof---->", typeof delData, delData);
 
+      const getInvitations = async (): Promise<IinviteData[] | undefined> => {
+        try {
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/?page_size=2`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                // @ts-ignore
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
 
-     const getInvitations = async (): Promise<IinviteData[] | undefined> => {
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/list/?page_size=2`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              // @ts-ignore
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-  
-        dispatch(setTableData(response.data.data));
-        dispatch(setPageSize(Math.ceil(response.data.count / 2)));
-        dispatch(setOriginalPageSize(response.data.count));
-  
-        return response.data.data;
-      } catch (error) {
-        console.log(error);
-      }
-    };
+          dispatch(setTableData(response.data.data));
+          dispatch(setPageSize(Math.ceil(response.data.count / 2)));
+          dispatch(setOriginalPageSize(response.data.count));
+
+          return response.data.data;
+        } catch (error) {
+          console.log(error);
+        }
+      };
 
       const deleteInvite = async (id: number) => {
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/delete/`,
           {
-            invitation_ids:delData
+            invitation_ids: delData,
           },
           {
             headers: {
               "Content-Type": "application/json",
               Accept: "application/json",
               Authorization: `Bearer ${token}`,
-            }
+            },
           }
         );
 
-        const newData = tableData.filter((item: any) => !delData.includes(item.id));
+        const newData = tableData.filter(
+          (item: any) => !delData.includes(item.id)
+        );
         dispatch(setTableData(newData));
 
         return response.data.data;
       };
 
       const deleteInviteMutation = async (data: any) => {
-        table.toggleAllPageRowsSelected(false); 
-        setSelected(false); 
-        setdiag(false)
+        table.toggleAllPageRowsSelected(false);
+        setSelected(false);
+        setdiag(false);
         toast({
           variant: "destructive",
           title: data.message || "Invitation deleted successfully",
         });
         await deleteInvite(data);
-        await getInvitations()
+        await getInvitations();
       };
-      
+
       return (
         <div className="flex gap-2 items-center">
-          {tableData.length===0?
-          null:
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) => handleSelectAll(!!value)}
-            aria-label="Select all"
-            className="translate-y-[2px]"
-          />
-         }
+          {tableData.length === 0 ? null : (
+            <Checkbox
+              checked={
+                table.getIsAllPageRowsSelected() ||
+                (table.getIsSomePageRowsSelected() && "indeterminate")
+              }
+              onCheckedChange={(value) => handleSelectAll(!!value)}
+              aria-label="Select all"
+              className="translate-y-[2px]"
+            />
+          )}
 
           {selected ? (
-            <Button variant="outline" id="closeDialog" size="icon" className="text-red-500" onClick={()=>setdiag(true)}>
+            <Button
+              variant="outline"
+              id="closeDialog"
+              size="icon"
+              className="text-red-500"
+              onClick={() => setdiag(true)}
+            >
               <TrashIcon className="h-4 w-4 text-red-500" />
               <p className="sr-only">Delete</p>
             </Button>
           ) : null}
 
-         <Dialog
-            open={diag}
-            onOpenChange={setdiag}
-          >
+          <Dialog open={diag} onOpenChange={setdiag}>
             <DeleteConfirmation
               text={`Do you want to delete these invitations`}
               noText="No"
@@ -148,18 +160,16 @@ export const columns: ColumnDef<IinviteData>[] = [
       );
     },
     cell: ({ row }) => {
-
       return (
         <Checkbox
           checked={row.getIsSelected()}
-          onCheckedChange={(value:any) => {
+          onCheckedChange={(value: any) => {
             row.toggleSelected(!!value);
           }}
           aria-label="Select row"
           className="translate-y-[2px]"
         />
-      )
-
+      );
     },
     enableSorting: false,
     enableHiding: false,
@@ -223,7 +233,9 @@ export const columns: ColumnDef<IinviteData>[] = [
     ),
     cell: ({ row }) => {
       const [diag, setdiag] = useState<boolean>(false);
-      const { data: tableData } = useSelector((state: RootState) => state.table);
+      const { data: tableData } = useSelector(
+        (state: RootState) => state.table
+      );
       const { data: session } = useSession();
       const dispatch = useDispatch();
       const token = session?.user!.tokens?.access_token;
@@ -231,15 +243,8 @@ export const columns: ColumnDef<IinviteData>[] = [
       const [passedData, setPassedData] = useState<IinviteData>();
 
       const deleteInvite = async (id: number) => {
-        const response = await axios.delete(
-          `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/invitation/${id}/delete/`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const response = await apiClient.delete(
+          `/organization/${org_id}/invitation/${id}/delete/`
         );
 
         const newData = tableData.filter((item: any) => item.id !== id);
@@ -278,10 +283,7 @@ export const columns: ColumnDef<IinviteData>[] = [
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Dialog
-            open={diag}
-            onOpenChange={setdiag}
-          >
+          <Dialog open={diag} onOpenChange={setdiag}>
             <DeleteConfirmation
               text={`Do you want to delete ${passedData?.recipient_email} invitation`}
               noText="No"
@@ -295,7 +297,7 @@ export const columns: ColumnDef<IinviteData>[] = [
   },
 ];
 
-function TrashIcon(props:any) {
+function TrashIcon(props: any) {
   return (
     <svg
       {...props}
@@ -313,5 +315,5 @@ function TrashIcon(props:any) {
       <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
       <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
     </svg>
-  )
+  );
 }

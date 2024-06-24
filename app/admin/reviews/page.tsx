@@ -8,27 +8,16 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import StarRatings from "react-star-ratings";
+import apiClient from "@/lib/request";
 
 const ReviewsPage = () => {
   const [reviews, setReviews] = useState<IReview[] | null>(null);
 
   const { data: session } = useSession();
 
-  // @ts-ignore
-  const token = session?.user!.tokens?.access_token;
   const getReviews = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/moderator/review/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.get(`/moderator/review/list/`);
 
       setReviews(response.data.data);
     } catch (error) {}

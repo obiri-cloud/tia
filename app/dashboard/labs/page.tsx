@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { SheetClose, SheetFooter } from "@/components/ui/sheet";
 import { Toaster, toast as sooner } from "sonner";
+import apiClient from "@/lib/request";
 
 interface ILabInfo {
   id: number | null;
@@ -62,6 +63,7 @@ const LabsPage = () => {
   const [isFullscreen, setIsFullscreen] = useState(
     !!document.fullscreenElement
   );
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
@@ -137,17 +139,7 @@ const LabsPage = () => {
   }, []);
 
   const getInstructions = async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/user/image/${id}/instruction/`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          // @ts-ignore
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await apiClient.get(`/user/image/${id}/instruction/`);
     if (response.status === 200) {
       setInstructions(response.data.data);
     }
@@ -162,18 +154,7 @@ const LabsPage = () => {
       duration: 2000,
     });
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/delete/`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.post(`/user/lab/delete/`, formData);
       if (response.data.status === 200) {
         secureLocalStorage.removeItem("tialab_info");
         toast({
@@ -276,57 +257,78 @@ const LabsPage = () => {
     <Dialog>
       <Toaster position="bottom-right" />
       <div className="h-full flex flex-col">
-        <ResizablePanelGroup direction="horizontal" className="flex-1">
-          <ResizablePanel defaultSize={40} minSize={30} className="">
-            <div className="">
-              <div className="flex justify-between p-3 border-b border-b-gray-200">
-                <Button
+        <div className="flex flex-1">
+          <div
+            className={`iframe-container bg-[#333]  items-center ${
+              isExpanded ? "hidden" : "block"
+            }`}
+            style={{
+              flexBasis: isExpanded ? "0%" : "30%",
+              border: "2px dotted #444",
+            }}
+          >
+            <div className="button-container">
+              <div className="flex gap-4 items-center">
+                <button
+                  className="button bg-[#007acb_!important]"
                   onClick={() => router.push("/dashboard")}
-                  variant="outline"
-                  className=" bg-white shadow-2xl	  text-black font-normal"
+                  // variant="outline"
+                  // className="bg-white shadow-2xl text-black font-normal"
                 >
                   Home
-                </Button>
-                <div className="countdown">
-                  <CountdownClock
-                    startTime={labInfo?.creation_date || ""}
-                    time={labInfo?.duration || 0}
-                    endLab={endLab}
-                  />
+                </button>
+                <div id="dots">
+                  <div className="dot"></div>
+                  <div className="pulse44"></div>
                 </div>
-                <DialogTrigger className=" text-left">
-                  <Button
-                    disabled={deleting}
-                    variant="destructive"
-                    className=" disabled:bg-red-900/90 font-normal"
-                  >
-                    {deleting ? "Ending Lab..." : "End Lab"}
-                  </Button>
-                </DialogTrigger>
               </div>
 
-              <div className="h-full playground">
-                <CustomIframe>
-                  <Instructions instructions={instructions} />
-                </CustomIframe>
-                {/* <iframe
-                width="100%"
-                height="100%"
-              >
-                <Instructions instructions={instructions} />
-
-              </iframe> */}
-              </div>
+              {/* <div className="countdown"> */}
+              <CountdownClock
+                startTime={labInfo?.creation_date || ""}
+                time={labInfo?.duration || 0}
+                endLab={endLab}
+              />
+              {/* </div> */}
+              <DialogTrigger className="text-left endlab-button">
+                <span
+                // disabled={deleting}
+                // variant="destructive"
+                // className="button"
+                >
+                  {deleting ? "Ending Lab..." : "End Lab"}
+                </span>
+              </DialogTrigger>
             </div>
-          </ResizablePanel>
-          <ResizableHandle withHandle={true} />
-          <ResizablePanel defaultSize={60} minSize={50}>
+
+            <div className="h-full playground iframe-wrapper">
+              <CustomIframe>
+                <Instructions instructions={instructions} />
+              </CustomIframe>
+            </div>
+          </div>
+          <div
+            className={`iframe-container full-height ${
+              isExpanded ? "w-full" : ""
+            }`}
+            style={{ flexBasis: isExpanded ? "100%" : "70%" }}
+          >
             {isLoading ? (
               <div className="h-full flex justify-center items-center instructions">
                 <MagicSpinner size={100} color="#686769" loading={isLoading} />
               </div>
             ) : null}
-            <div className="h-full playground">
+            <div className="iframe-wrapper">
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="svg-button"
+              >
+                {isExpanded ? (
+                  <ArrowRightFromLineIcon className="w-5 h-5 text-black stroke-[3px]" />
+                ) : (
+                  <ArrowLeftFromLineIcon className="w-5 h-5 text-black stroke-[3px]" />
+                )}
+              </button>
               <iframe
                 allow="clipboard-write; clipboard-read"
                 src={(labInfo && labInfo.url) || ""}
@@ -335,8 +337,8 @@ const LabsPage = () => {
                 onLoad={handleLoad}
               ></iframe>
             </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
+          </div>
+        </div>
 
         {isNotDesktop ? (
           <button
@@ -389,7 +391,7 @@ const LabsPage = () => {
       </div>
       <button
         onClick={handleFullScreenToggle}
-        className="bg-black p-3 rounded-lg absolute bottom-5 right-5"
+        className="bg-[#21C481] p-3 rounded-[5px] absolute bottom-5 right-5"
       >
         {isFullscreen ? (
           <Minimize2 className="w-5 h-5 text-white" />
@@ -456,7 +458,15 @@ const Instructions: FC<{ instructions: IInstruction[] | null }> = ({
           </div>
           {Array.isArray(instructions) ? (
             instructions.length === 0 ? (
-              <p>No instructions found for this lab...</p>
+              <p
+                style={{
+                  color: "white",
+                  fontFamily: "Montserrat",
+                }}
+                className="text-white ft-mt"
+              >
+                No instructions found for this lab...
+              </p>
             ) : (
               <PrismComponent
                 content={
@@ -543,7 +553,12 @@ import {
 } from "@/components/ui/resizable";
 import CustomIframe from "@/app/components/custom-iframe";
 import Link from "next/link";
-import { Expand, Minimize2 } from "lucide-react";
+import {
+  ArrowLeftFromLineIcon,
+  ArrowRightFromLineIcon,
+  Expand,
+  Minimize2,
+} from "lucide-react";
 
 const ReviewDrawer = () => {
   const ratings = [
@@ -614,16 +629,9 @@ const ReviewDrawer = () => {
 
     try {
       formSchema.parse(formData);
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/lab/review/create/`,
-        JSON.stringify(formData),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.post(
+        `/user/lab/review/create/`,
+        JSON.stringify(formData)
       );
 
       toast({

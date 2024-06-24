@@ -1,4 +1,4 @@
-*{
+* {
   /* border: 1px solid red !important; */
 }
 
@@ -1216,10 +1216,336 @@ code {
   all: revert;
 }
 
-
-
 .scroller {
   height: 100px;
   overflow-y: scroll;
   scrollbar-color: #808080 #242425;
+}
+
+.content {
+  display: flex;
+  height: 100%;
+}
+
+/* Style for the iframes container */
+.iframe-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.full-height {
+  height: 100%;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #333;
+  border-bottom: 2px dotted #444;
+}
+
+.button-container button {
+  background-color: #007acb;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-family: "Montserrat", sans-serif;
+  min-width: 100px;
+  text-align: center;
+}
+
+.button-container button:hover {
+  background-color: #005f99;
+}
+
+.iframe-wrapper {
+  flex: 1;
+  position: relative;
+  background-color: #252526;
+  border: 1px solid #3c3c3c;
+}
+
+.iframe-wrapper iframe {
+  border: none;
+  width: 100%;
+  height: 100%;
+}
+
+.svg-button {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(
+    145deg,
+    rgba(0, 122, 203, 0.7),
+    rgba(0, 122, 203, 0.3)
+  ); /* Blue gradient with transparency */
+  color: white; /* Ensure the text/icon is visible */
+  border: none;
+  width: 50px; /* Set a fixed width */
+  height: 150px; /* Set a fixed height */
+  border-radius: 5px; /* Adjust border-radius for vertical button */
+  cursor: pointer;
+  font-size: 16px; /* Adjust font size for better visibility */
+  text-align: center; /* Center the text/icon */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+  backdrop-filter: blur(5px); /* Glass-like effect */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3),
+    inset 0 2px 3px rgba(255, 255, 255, 0.3); /* Add shadow and inner highlight for 3D effect */
+}
+
+.svg-button:hover {
+  background: linear-gradient(
+    145deg,
+    rgba(0, 95, 153, 0.7),
+    rgba(0, 95, 153, 0.3)
+  ); /* Darker blue gradient with transparency for hover effect */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4),
+    inset 0 3px 5px rgba(255, 255, 255, 0.4); /* Enhanced shadow and inner highlight for hover effect */
+}
+
+.svg-button svg {
+  stroke: #fff;
+}
+
+.float-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007acb;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.float-button svg {
+  stroke: white;
+}
+
+/* Style for the full screen button */
+.fullscreen-button {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 2; /* Ensure button is above overlay */
+  background-color: rgba(255, 215, 0, 0.9); /* Royal Blue */
+  border-radius: 5px;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.fullscreen-button:hover {
+  background-color: rgba(255, 215, 0, 1); /* Royal Blue on hover */
+  transform: translateY(-2px);
+}
+.button {
+  padding: 12px 24px;
+  background-color: #007acb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 5px 5px 10px #141414, -5px -5px 10px #282828;
+  font-family: "Montserrat", sans-serif; /* Ensure the font is consistent */
+}
+
+.timer {
+  font-size: 1.2rem;
+  color: #d7d6d4 !important; /* Light cyan color */
+  padding: 10px 20px;
+  background-color: #252526;
+  border-radius: 8px;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+  font-family: "Montserrat", sans-serif; /* Ensure the font is consistent */
+  font-weight: bold;
+}
+
+/* animation */
+
+#dots {
+  position: relative;
+  width: 12px;
+  height: 12px;
+}
+
+.dot,
+.pulse44 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.dot {
+  background: rgba(42, 218, 42, 0.25); /* Light green background */
+  z-index: 1;
+  animation: 2s ease-in-out pulse11 infinite;
+  animation-timing-function: linear;
+  opacity: 1;
+}
+
+.pulse44 {
+  background-color: #2ada2a; /* Green color */
+  border: 0 solid rgba(42, 218, 42, 0.25);
+  animation: 2s ease-in-out pulse22 infinite;
+  animation-timing-function: linear;
+  z-index: 10;
+}
+
+@-moz-keyframes pulse11 {
+  0% {
+    -moz-transform: scale(0.2);
+    opacity: 0.7;
+  }
+  25% {
+    -moz-transform: scale(0.3);
+    opacity: 0.8;
+  }
+  50% {
+    -moz-transform: scale(0.4);
+    opacity: 1;
+  }
+  75% {
+    -moz-transform: scale(0.5);
+    opacity: 0.8;
+  }
+  100% {
+    -moz-transform: scale(1);
+    opacity: 0.7;
+  }
+}
+
+@-webkit-keyframes pulse11 {
+  0% {
+    -webkit-transform: scale(1.5);
+    opacity: 0.7;
+  }
+  25% {
+    -webkit-transform: scale(2);
+    opacity: 0.8;
+  }
+  50% {
+    -webkit-transform: scale(3);
+    opacity: 1;
+  }
+  75% {
+    -webkit-transform: scale(2);
+    opacity: 0.8;
+  }
+  100% {
+    -webkit-transform: scale(1.5);
+    opacity: 0.7;
+  }
+}
+
+@-moz-keyframes pulse22 {
+  0% {
+    -moz-transform: scale(1);
+  }
+  25% {
+    -moz-transform: scale(1.1);
+  }
+  50% {
+    -moz-transform: scale(1.2);
+  }
+  75% {
+    -moz-transform: scale(1.1);
+  }
+  100% {
+    -moz-transform: scale(1);
+  }
+}
+
+@-webkit-keyframes pulse22 {
+  0% {
+    -webkit-transform: scale(1);
+  }
+  25% {
+    -webkit-transform: scale(1.1);
+  }
+  50% {
+    -webkit-transform: scale(1.4);
+  }
+  75% {
+    -webkit-transform: scale(1.1);
+  }
+  100% {
+    -webkit-transform: scale(1);
+  }
+}
+
+@keyframes pulse11 {
+  0% {
+    transform: scale(0.2);
+    opacity: 0.7;
+  }
+  25% {
+    transform: scale(0.3);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(0.4);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulse22 {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1.4);
+  }
+  75% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.endlab-button {
+  padding: 12px 24px;
+  background-color: #e63946 !important;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 5px 5px 10px #141414, -5px -5px 10px #282828;
+  font-family: "Montserrat", sans-serif; /* Ensure the font is consistent */
+}
+
+.endlab-button:hover {
+  background: linear-gradient(352deg, #f32626, #ffc4c4);
+  transform: translateY(-2px);
+}
+
+.ft-mt {
+  font-family: "Montserrat", sans-serif; /* Ensure the font is consistent */
 }

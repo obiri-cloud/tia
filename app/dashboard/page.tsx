@@ -14,6 +14,8 @@ import { ChevronRight } from "lucide-react";
 import { useQuery } from "react-query";
 import AltRouteCheck from "../components/alt-route-check";
 import LabCard from "../components/LabCard";
+import request from "@/lib/request";
+import apiClient from "@/lib/request";
 
 const UserPage = () => {
   const { data: session } = useSession();
@@ -26,17 +28,7 @@ const UserPage = () => {
 
   const getImages = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/image/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      const response = await apiClient.get(`/user/image/list/`);
       return response.data.data;
     } catch (error) {
       userCheck(error as AxiosError);
@@ -62,26 +54,6 @@ const UserPage = () => {
         <div className=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6">
           {images && images.length >= -1 ? (
             images.map((image: ILabImage, i: number) => (
-              // <div
-              //   onClick={() => viewImage(image)}
-              //   key={i}
-              //   className={`lab-card rounded-2xl p-8 w-full pl-6 neu-shadow dark:bg-cardDarkBg dark:text-white dark:shadow-none bg-white cursor-pointer`}
-              // >
-              //   <img
-              //     src={image.image_picture ?? ""}
-              //     alt=""
-              //     className="w-[60px] h-[60px]"
-              //   />
-              //   <div className="mt-[40px] ">
-              //     <h6 className="font-semibold leading-[140%] text-2xl app-text-clip h-[65px] max-h-[65px]">
-              //       {image.name}
-              //     </h6>
-              //   </div>
-              //   <span className="flex gap-[10px] items-center h-fit lg:mt-[36px] mt-[28px] font-medium ">
-              //     <h5 className="leading-[150%] font-medium">Go to lab</h5>
-              //     <Arrow className="pointer  -rotate-45 transition-all delay-150 dark:fill-white fill-black" />
-              //   </span>
-              // </div>
               <LabCard key={i} lab={image} viewImage={viewImage} />
             ))
           ) : (

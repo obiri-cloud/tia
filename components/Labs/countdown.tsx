@@ -64,13 +64,14 @@ export const CountdownClock: React.FC<CountdownProps> = ({
   return (
     <div
       id="link"
-      className={`px-3 shadow-md p-2 rounded-lg font-medium h-10 ${
-        tenSecLeft ? "shake-card" : ""
-      } ${
-        !fiveMinLeft
-          ? "text-white bg-danger"
-          : "text-white bg-black  font-medium "
-      }`}
+      className="timer text-[#d7d6d4] flex items-center"
+      // className={`px-3 shadow-md p-2 rounded-lg font-medium h-10 ${
+      //   tenSecLeft ? "shake-card" : ""
+      // } ${
+      //   !fiveMinLeft
+      //     ? "text-white bg-danger"
+      //     : "text-white bg-black  font-medium "
+      // }`}
     >
       <p>{formatTime(timeRemaining)}</p>
     </div>

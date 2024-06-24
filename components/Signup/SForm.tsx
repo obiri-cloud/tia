@@ -10,11 +10,11 @@ import { toast } from "@/components/ui/use-toast";
 import axios, { AxiosError } from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useRef } from "react";
-import { EyeIcon, EyeOff } from "lucide-react";
 import { LabelInputContainer } from "../ui/label-input-container";
 import Link from "next/link";
 import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
+import apiClient from "@/lib/request";
 
 export function SignupFormDemo() {
   const form = useForm();
@@ -46,8 +46,7 @@ export function SignupFormDemo() {
       password2: z.string().min(6, {
         message: "Password has to be longer than 6 characaters",
       }),
-      orgid: z.string().optional()
-
+      orgid: z.string().optional(),
     })
     .superRefine(({ password1, password2 }, ctx) => {
       if (password1 !== password2) {
@@ -71,20 +70,13 @@ export function SignupFormDemo() {
       password1: passwordRef.current?.value,
       password2: confirmPasswordRef.current?.value,
       orgid: searchParams.get("orgid") ?? "",
-
     };
 
     try {
       formSchema.parse(formData);
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BE_URL}/auth/registration/`,
-        JSON.stringify(formData),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
+      const response = await apiClient.post(
+        `/auth/registration/`,
+        JSON.stringify(formData)
       );
 
       if (response.data.status === 201) {

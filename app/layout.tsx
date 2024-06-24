@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import "./app.css";
 import { Toaster } from "@/components/ui/toaster";
@@ -14,6 +14,7 @@ import authOptions from "./api/auth/[...nextauth]/options";
 import { ReactQueryClientProvider } from "./components/ReactQueryClientProvider";
 
 const inter = Inter({ subsets: ["latin"] });
+// const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "TIA Labs",
@@ -59,6 +60,10 @@ export default async function RootLayout({
           />
           <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
+          <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet"
+          />
           <script>hljs.highlightAll();</script>
           <Toaster />
         </body>

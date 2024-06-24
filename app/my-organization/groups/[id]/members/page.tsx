@@ -23,8 +23,8 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 
 import DeleteConfirmation from "@/app/components/delete-confirmation";
-import {  useSearchParams } from "next/navigation";
-import { GroupMember,IOrgGroupData } from "@/app/types";
+import { useSearchParams } from "next/navigation";
+import { GroupMember, IOrgGroupData } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import {
@@ -38,6 +38,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import AltRouteCheck from "@/app/components/alt-route-check";
 import { OrgGroup } from "../../page";
 import AttachMemberToGroup from "@/app/components/AttachMemberToGroup";
+import apiClient from "@/lib/request";
 
 const OrganizationGroupMembersPage = () => {
   const [imageList, setImagelist] = useState<any>();
@@ -63,16 +64,8 @@ const OrganizationGroupMembersPage = () => {
   //delete members in the group
   const deleteblink = async (data: any) => {
     try {
-      const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${id}/member/${data}/delete/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.delete(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/group/${id}/member/${data}/delete/`
       );
       if (response.data.status === 204) {
         setIsOpenViewDialog(false);
@@ -95,16 +88,8 @@ const OrganizationGroupMembersPage = () => {
 
   const getGroups = async (): Promise<OrgGroup[] | undefined> => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/group/list/`
       );
 
       return response.data.data;
@@ -117,16 +102,8 @@ const OrganizationGroupMembersPage = () => {
 
   const getMembers = async (): Promise<GroupMember[] | undefined> => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/organization/members/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `${process.env.NEXT_PUBLIC_BE_URL}/organization/members/`
       );
 
       return response.data.data;

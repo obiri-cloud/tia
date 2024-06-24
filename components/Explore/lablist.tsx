@@ -6,16 +6,15 @@ import { Skeleton } from "../ui/skeleton";
 import LabInfoDialog from "@/app/components/explore/labinfodialog";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import axios, { AxiosError } from "axios";
-import { errorToJSON } from "next/dist/server/render";
-import secureLocalStorage from "react-secure-storage";
+
 import { userCheck } from "@/lib/utils";
 import { ILabImage } from "@/app/types";
+import apiClient from "@/lib/request";
 
 const LabList = () => {
   const { data: session } = useSession();
   // @ts-ignore
   const token = session?.user!.tokens?.access_token;
-  
 
   const [labs, setLabs] = useState<ILabImage[]>();
   const [currentLab, setCurrentLab] = useState<ILabImage>();
@@ -26,20 +25,10 @@ const LabList = () => {
 
   const getLabs = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}/user/image/list/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.get(`/user/image/list/`);
       setLabs(response.data.data);
     } catch (error) {
-      userCheck(error as AxiosError)
+      userCheck(error as AxiosError);
       console.error("error", error);
     }
   };

@@ -44,6 +44,7 @@ export default function DashboardPage({
       variant: "destructive",
       title: "Protected Page",
       description: "You are being redirected here because you are not an admin",
+      duration: 2000,
     });
     router.push("/dashboard");
   }
