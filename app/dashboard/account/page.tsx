@@ -231,47 +231,6 @@ const AccountPage = () => {
     }
   };
 
-  const changeAvatar = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const image = e.target.files[0];
-      const formData = new FormData();
-      formData.append("avatar", image);
-
-      try {
-        const response = await apiClient.post(
-          `/auth/avatar/change/`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.status === 200) {
-          toast({
-            title: "Avatar Updated",
-            variant: "success",
-          });
-          getUser();
-        } else {
-          toast({
-            title: "Error when updating.",
-            action: <ToastAction altText="Try again">Try again</ToastAction>,
-            variant: "destructive",
-          });
-        }
-      } catch (error) {
-        userCheck(error as AxiosError);
-        toast({
-          title: "Error when updating.",
-          action: <ToastAction altText="Try again">Try again</ToastAction>,
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
   const getFilteredPlans = () => {
     return plans.filter((plan) => plan.value !== currentPlan);
   };
