@@ -3,7 +3,7 @@
 import React, { useRef, FormEvent, useState } from "react";
 import * as z from "zod";
 import { toast } from "@/components/ui/use-toast";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/input-otp";
 import { BottomGradient } from "./SForm";
 import ResendOTP from "./ResendOTP";
-import apiClient from "@/lib/request";
+import noAuthClient from "@/lib/noAuthRequest";
 
 const SConfirmationForm = () => {
   const codeRef = useRef<HTMLInputElement>(null);
@@ -55,7 +55,7 @@ const SConfirmationForm = () => {
 
     try {
       formSchema.parse(formData);
-      const response = await apiClient.post(
+      const response = await noAuthClient.post(
         `/auth/registration/confirm/`,
         JSON.stringify(formData)
       );

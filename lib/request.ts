@@ -21,26 +21,6 @@ const apiClient = () => {
     return request;
   });
 
-  // instance.interceptors.response.use(
-  //   async (response) =>
-  //     new Promise((resolve, reject) => {
-  //       if (response.data) {
-  //         resolve(response.data);
-  //       } else {
-  //         resolve(response);
-  //       }
-  //     }),
-  //   (e) =>
-  //     new Promise((resolve, reject) => {
-  //       if (e.response?.data) {
-  //         const { statusCode, message } = e.response.data;
-  //         console.log(statusCode, message);
-  //       }
-
-  //       return reject(e.response?.data || e.response || e);
-  //     })
-  // );
-
   return instance;
 };
 

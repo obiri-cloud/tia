@@ -14,7 +14,7 @@ import { LabelInputContainer } from "../ui/label-input-container";
 import Link from "next/link";
 import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
-import apiClient from "@/lib/request";
+import noAuthClient from "@/lib/noAuthRequest";
 
 export function SignupFormDemo() {
   const form = useForm();
@@ -74,7 +74,7 @@ export function SignupFormDemo() {
 
     try {
       formSchema.parse(formData);
-      const response = await apiClient.post(
+      const response = await noAuthClient.post(
         `/auth/registration/`,
         JSON.stringify(formData)
       );
@@ -86,6 +86,7 @@ export function SignupFormDemo() {
           variant: "destructive",
           title: "Sign Up Error",
           description: response.data.message,
+          duration: 2000,
         });
         if (buttonRef.current) {
           buttonRef.current.disabled = false;
