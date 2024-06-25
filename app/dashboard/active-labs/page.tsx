@@ -40,17 +40,17 @@ const ActiveLabsPage = () => {
     }
   };
 
-  const viewLab = (image: IActiveLab) => {
+  const viewLab = (lab: IActiveLab) => {
     secureLocalStorage.setItem(
-      "tialab_info",
+      `tialab_info_${lab.id}`,
       JSON.stringify({
-        id: image.image.id,
-        url: image.ingress_url,
-        creation_date: image.creation_date,
-        duration: image.image.duration,
+        id: lab.image.id,
+        url: lab.ingress_url,
+        creation_date: lab.creation_date,
+        duration: lab.image.duration,
       })
     );
-    router.push(`/dashboard/labs?lab=${image.id}&image=${image.image.id}`);
+    router.push(`/dashboard/labs?lab=${lab.id}&image=${lab.image.id}`);
   };
   return (
     <div className="">
