@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, {
@@ -13,7 +13,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Panel, PanelGroup } from "react-resizable-panels";
 import { MagicSpinner } from "react-spinners-kit";
 import { Drawer } from "vaul";
 import info from "@/public/svgs/info.svg";
@@ -29,6 +28,16 @@ import {
 import { SheetClose, SheetFooter } from "@/components/ui/sheet";
 import { Toaster, toast as sooner } from "sonner";
 import apiClient from "@/lib/request";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+} from "@/components/ui/dropdown-menu";
 
 interface ILabInfo {
   id: number | null;
@@ -64,9 +73,11 @@ const LabsPage = () => {
     !!document.fullscreenElement
   );
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeLabs, setActiveLabs] = useState<IActiveLab[]>([]);
 
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
+  const labId = searchParams.get("lab");
   let intervalId: string | number | NodeJS.Timeout | undefined;
   const router = useRouter();
 
@@ -88,7 +99,7 @@ const LabsPage = () => {
   };
 
   let cnt = 0;
-  let timeoutId;
+  let timeoutId: NodeJS.Timeout | undefined;
 
   useEffect(() => {
     setTheme("light");
@@ -136,6 +147,10 @@ const LabsPage = () => {
     }
 
     return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    getActiveLabs();
   }, []);
 
   const getInstructions = async () => {
@@ -194,7 +209,6 @@ const LabsPage = () => {
   const handleClick = () => {
     if (drawerButton) {
       drawerButton.current?.click();
-      // reviewDrawerButton.current?.click();
     }
   };
 
@@ -253,6 +267,21 @@ const LabsPage = () => {
     };
   }, []);
 
+  const getActiveLabs = async () => {
+    try {
+      const response = await apiClient.get(`/user/labs/list/`);
+      if (response.status === 200) {
+        console.log("active", response);
+
+        setActiveLabs(response.data.data);
+      } else {
+        throw new Error("Failed to fetch active labs");
+      }
+    } catch (error) {
+      userCheck(error as AxiosError);
+    }
+  };
+
   return (
     <Dialog>
       <Toaster position="bottom-right" />
@@ -269,14 +298,62 @@ const LabsPage = () => {
           >
             <div className="button-container">
               <div className="flex gap-4 items-center">
-                <button
-                  className="button bg-[#007acb_!important]"
-                  onClick={() => router.push("/dashboard")}
-                  // variant="outline"
-                  // className="bg-white shadow-2xl text-black font-normal"
-                >
-                  Home
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline">
+                      <MenuIcon className="w-5 h-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 cursor-pointer">
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => router.push("/dashboard")}
+                    >
+                      Home
+                    </DropdownMenuItem>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        Active Labs
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                          {activeLabs?.map((lab) => (
+                            <DropdownMenuItem
+                              disabled={Number(labId) == lab.id}
+                            >
+                              <Link
+                                href={`/dashboard/labs/?lab=${lab?.id}&image=${lab?.image?.id}`}
+                              >
+                                {lab?.name}
+                              </Link>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuSubContent>
+                      </DropdownMenuPortal>
+                    </DropdownMenuSub>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        Course Outline
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                          {instructions && instructions.length > 0 ? (
+                            instructions?.map((instruction) => (
+                              <DropdownMenuItem>
+                                {instruction.title}
+                              </DropdownMenuItem>
+                            ))
+                          ) : (
+                            <DropdownMenuItem disabled>
+                              No instructions found
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuSubContent>
+                      </DropdownMenuPortal>
+                    </DropdownMenuSub>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                 <div id="dots">
                   <div className="dot"></div>
                   <div className="pulse44"></div>
@@ -545,7 +622,7 @@ import { z } from "zod";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import PrismComponent from "@/app/components/PrismComponent";
-import { ContentProps, IInstruction } from "@/app/types";
+import { ContentProps, IActiveLab, IInstruction } from "@/app/types";
 import { Label } from "@/components/ui/neo-label";
 import {
   ResizableHandle,
@@ -558,6 +635,7 @@ import {
   ArrowLeftFromLineIcon,
   ArrowRightFromLineIcon,
   Expand,
+  MenuIcon,
   Minimize2,
 } from "lucide-react";
 

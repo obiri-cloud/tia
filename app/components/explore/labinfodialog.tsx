@@ -95,6 +95,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
           title: "Lab Creation Stopped",
           variant: "destructive",
           description: "Deleting all created resources",
+          duration: 2000,
         });
       } else {
         // Handle other errors
