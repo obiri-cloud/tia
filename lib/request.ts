@@ -1,5 +1,7 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { getSession } from "next-auth/react";
+import { toast } from "@/components/ui/use-toast";
+import secureLocalStorage from "react-secure-storage";
 
 const apiClient = () => {
   const instance = axios.create({
@@ -20,6 +22,30 @@ const apiClient = () => {
     }
     return request;
   });
+
+  instance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (
+        error instanceof AxiosError &&
+        //@ts-ignore
+        (error.response.data.code === "user_not_found" ||
+          //@ts-ignore
+          error.response.data.code === "user_inactive" ||
+          //@ts-ignore
+          error.response.data.code === "token_not_valid")
+      ) {
+        toast({
+          variant: "destructive",
+          title: "Session Expired",
+        });
+        // signOut({ callbackUrl: "/login" });
+        secureLocalStorage.removeItem("tialabs_info");
+      }
+
+      return Promise.reject(error);
+    }
+  );
 
   return instance;
 };
