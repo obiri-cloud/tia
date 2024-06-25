@@ -56,7 +56,6 @@ const MainImagePage = ({
 
   const { data: session } = useSession();
   const currentPlan = session?.user?.data?.subscription_plan;
-  console.log({ labCreationUrl, redirectUrl });
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [openModal, setOpenModal] = useState(false);
@@ -85,8 +84,6 @@ const MainImagePage = ({
   const { isLoading, data: currentImage } = useQuery(["image", id], () =>
     getCurrentImage(id, token)
   );
-
-  console.log({ currentImage });
 
   const { data: isActive } = useQuery(["active-labs", id], () =>
     getActiveLabs()
@@ -177,8 +174,9 @@ const MainImagePage = ({
             duration: 2000,
           });
           let data = response.data;
+          console.log("==", { data });
           secureLocalStorage.setItem(
-            "tialab_info",
+            `tialab_info_${data.id}`,
             JSON.stringify({
               id: data.image_id,
               url: data.ingress_url,
@@ -202,6 +200,7 @@ const MainImagePage = ({
             title: response.data.message,
             variant: "success",
             description: "Resume this lab or end this one and start a new.",
+            duration: 2000,
           });
         }
       }
@@ -211,6 +210,7 @@ const MainImagePage = ({
           title: response.data.message,
           variant: "destructive",
           description: "Lab timed out",
+          duration: 2000,
         });
       }
 
@@ -279,8 +279,9 @@ const MainImagePage = ({
       } else {
         if (data.data) {
           resolved = true;
+          console.log("<==>", data.data);
           secureLocalStorage.setItem(
-            "tialab_info",
+            `tialab_info_${data.data.lab_id}`,
             JSON.stringify({
               id: data.data.image_id,
               url: data.data.ingress_url,
