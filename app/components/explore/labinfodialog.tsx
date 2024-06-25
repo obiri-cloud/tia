@@ -109,7 +109,7 @@ const LabInfoDialog: FC<ILabInfoDialog> = ({ lab }) => {
     const timer = setInterval(() => setProgress((prev) => prev + 10), 1000);
     setTimeout(() => {
       secureLocalStorage.setItem(
-        "tialab_info",
+        `tialab_info_${data.id}`,
         JSON.stringify({
           id: data.image_id,
           url: data.ingress_url,
