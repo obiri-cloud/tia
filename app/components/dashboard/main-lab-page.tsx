@@ -56,8 +56,6 @@ const MainLabPage = ({
   const [isLoading, setIsLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
 
-  // @ts-ignore
-
   const token = session?.user!.tokens?.access_token;
   const { systemTheme, theme, setTheme } = useTheme();
 
@@ -71,6 +69,7 @@ const MainLabPage = ({
 
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
+  const labId = searchParams.get("id");
   let intervalId: string | number | NodeJS.Timeout | undefined;
 
   //choose the screen size
@@ -102,10 +101,11 @@ const MainLabPage = ({
   useEffect(() => {
     getInstructions();
     let tialab_info: ILabInfo | null = null;
+    let lab_key = `tialab_info_${labId}`;
 
-    if (secureLocalStorage.getItem("tialab_info")) {
+    if (secureLocalStorage.getItem(lab_key)) {
       tialab_info = JSON.parse(
-        (secureLocalStorage.getItem("tialab_info") as string) || ""
+        (secureLocalStorage.getItem(lab_key) as string) || ""
       );
     }
 
