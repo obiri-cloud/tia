@@ -84,9 +84,8 @@ const AccountPage = () => {
   const [open, setOpen] = useState(false);
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const deactivateButtonRef = useRef<HTMLButtonElement>(null);
-
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const token = session?.user?.tokens?.access_token;
   const currentPlan = session?.user?.data?.subscription_plan;
 
