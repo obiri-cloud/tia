@@ -299,24 +299,6 @@ const LabsPage = () => {
     );
 
     location.href = `/dashboard/labs?lab=${lab.id}&image=${lab.image.id}`;
-
-    // secureLocalStorage.setItem(
-    //   `tialab_info_${lab.id}`,
-    //   JSON.stringify({
-    //     id: lab.image.id,
-    //     url: lab.ingress_url,
-    //     creation_date: lab.creation_date,
-    //     duration: lab.image.duration,
-    //   })
-    // );
-    // router.push(`/dashboard/labs?lab=${lab.id}&image=${lab.image.id}`);
-
-    // router.push(`/dashboard/labs/?lab=${lab.id}&image=${lab.image.id}`);
-
-    // // Reload the page to ensure data is grabbed from local storage
-    // setTimeout(() => {
-    //   location.reload();
-    // }, 0);
   };
 
   return (
