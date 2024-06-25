@@ -110,10 +110,11 @@ const LabsPage = () => {
   useEffect(() => {
     getInstructions();
     let tialab_info: ILabInfo | null = null;
+    let lab_key = `tialab_info_${labId}`;
 
-    if (secureLocalStorage.getItem("tialab_info")) {
+    if (secureLocalStorage.getItem(lab_key)) {
       tialab_info = JSON.parse(
-        (secureLocalStorage.getItem("tialab_info") as string) || ""
+        (secureLocalStorage.getItem(lab_key) as string) || ""
       );
     }
 
@@ -147,7 +148,7 @@ const LabsPage = () => {
     }
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [secureLocalStorage]);
 
   useEffect(() => {
     getActiveLabs();
@@ -282,6 +283,42 @@ const LabsPage = () => {
     }
   };
 
+  const handleMenuItemClick = (lab: IActiveLab, labId: string | null) => {
+    if (Number(labId) === lab.id) {
+      return;
+    }
+
+    secureLocalStorage.setItem(
+      `tialab_info_${lab.id}`,
+      JSON.stringify({
+        id: lab.image.id,
+        url: lab.ingress_url,
+        creation_date: lab.creation_date,
+        duration: lab.image.duration,
+      })
+    );
+
+    location.href = `/dashboard/labs?lab=${lab.id}&image=${lab.image.id}`;
+
+    // secureLocalStorage.setItem(
+    //   `tialab_info_${lab.id}`,
+    //   JSON.stringify({
+    //     id: lab.image.id,
+    //     url: lab.ingress_url,
+    //     creation_date: lab.creation_date,
+    //     duration: lab.image.duration,
+    //   })
+    // );
+    // router.push(`/dashboard/labs?lab=${lab.id}&image=${lab.image.id}`);
+
+    // router.push(`/dashboard/labs/?lab=${lab.id}&image=${lab.image.id}`);
+
+    // // Reload the page to ensure data is grabbed from local storage
+    // setTimeout(() => {
+    //   location.reload();
+    // }, 0);
+  };
+
   return (
     <Dialog>
       <Toaster position="bottom-right" />
@@ -319,13 +356,11 @@ const LabsPage = () => {
                         <DropdownMenuSubContent>
                           {activeLabs?.map((lab) => (
                             <DropdownMenuItem
+                              className="cursor-pointer"
                               disabled={Number(labId) == lab.id}
+                              onClick={() => handleMenuItemClick(lab, labId)}
                             >
-                              <Link
-                                href={`/dashboard/labs/?lab=${lab?.id}&image=${lab?.image?.id}`}
-                              >
-                                {lab?.name}
-                              </Link>
+                              {lab?.name}
                             </DropdownMenuItem>
                           ))}
                         </DropdownMenuSubContent>
