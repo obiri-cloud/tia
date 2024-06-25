@@ -70,6 +70,8 @@ const MainLabPage = ({
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
   const labId = searchParams.get("id");
+  let lab_key = `tialab_info_${labId}`;
+
   let intervalId: string | number | NodeJS.Timeout | undefined;
 
   //choose the screen size
@@ -101,7 +103,6 @@ const MainLabPage = ({
   useEffect(() => {
     getInstructions();
     let tialab_info: ILabInfo | null = null;
-    let lab_key = `tialab_info_${labId}`;
 
     if (secureLocalStorage.getItem(lab_key)) {
       tialab_info = JSON.parse(
@@ -159,7 +160,7 @@ const MainLabPage = ({
     try {
       const response = await apiClient.post(`${labDeletionUrl}`, formData);
       if (response.data.status === 200) {
-        secureLocalStorage.removeItem("tialab_info");
+        secureLocalStorage.removeItem(`tialab_info_${lab_key}`);
         toast({
           title: "Lab Deleted Successfully...",
           variant: "success",

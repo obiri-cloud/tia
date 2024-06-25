@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { logout } from "@/lib/logout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,11 +38,6 @@ export default function UserDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const logout = () => {
-    signOut({ callbackUrl: "/login" });
-    secureLocalStorage.removeItem("tialabs_info");
-  };
-
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();

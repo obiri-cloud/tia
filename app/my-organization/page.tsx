@@ -48,6 +48,7 @@ import {
 import { LabsDataTable } from "../components/LabsDataTable";
 import { labsColumns } from "../components/LabsColumns";
 import apiClient from "@/lib/request";
+import AltRouteCheck from "../components/alt-route-check";
 
 const myOrganizationPage = () => {
   const { data: session } = useSession();
@@ -283,11 +284,7 @@ const myOrganizationPage = () => {
           </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {session?.user && session?.user.data.is_admin ? (
-          <Link href="/dashboard" className="font-medium text-mint">
-            Go to dashboard
-          </Link>
-        ) : null}
+        <AltRouteCheck />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 m-4 ">

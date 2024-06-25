@@ -41,6 +41,7 @@ import { Input } from "@/components/ui/input";
 import UpdateGroupNameModal from "@/app/components/UpdateGroupNameModal";
 
 import apiClient from "@/lib/request";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 export interface OrgGroup {
   id: string;
@@ -495,12 +496,8 @@ const OrganizationGroup = () => {
           </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
+        <AltRouteCheck />
 
-        {session?.user && session?.user.data.is_admin ? (
-          <Link href="/dashboard" className="font-medium text-mint">
-            Go to dashboard
-          </Link>
-        ) : null}
       </div>
       <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">

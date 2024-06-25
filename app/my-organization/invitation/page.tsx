@@ -32,6 +32,7 @@ import { TableCaption, Table } from "@/components/ui/table";
 
 import apiClient from "@/lib/request";
 import formClient from "@/lib/formRequest";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 const InivitationPage = () => {
   const [file, setfile] = useState<any>();
@@ -367,11 +368,8 @@ const InivitationPage = () => {
           </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {session?.user && session?.user.data.is_admin ? (
-          <Link href="/dashboard" className="font-medium text-mint">
-            Go to dashboard
-          </Link>
-        ) : null}
+        <AltRouteCheck />
+      
       </div>
       <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">
