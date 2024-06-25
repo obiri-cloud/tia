@@ -3,11 +3,8 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
-import React, { FC } from "react";
-
-
+import React, { FC, useState } from "react";
 
 interface IDeactivateConfirmation {
   text: string;
@@ -15,15 +12,31 @@ interface IDeactivateConfirmation {
   confirmText: string;
   confirmFunc: () => void;
 }
+
 const DeactivateConfirmation: FC<IDeactivateConfirmation> = ({
   text,
   noText,
   confirmText,
   confirmFunc,
 }) => {
+  const [loading, setLoading] = useState(false);
+
   const closeDialog = () => {
     document.getElementById("closeDialog")?.click();
   };
+
+  const handleConfirmClick = async () => {
+    setLoading(true);
+    try {
+      await confirmFunc();
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+      closeDialog();
+    }
+  };
+
   return (
     <DialogContent>
       <DialogHeader>
@@ -32,17 +45,18 @@ const DeactivateConfirmation: FC<IDeactivateConfirmation> = ({
       <div className="grid grid-cols-2 gap-4">
         <Button
           onClick={closeDialog}
-          className=" mt-6 disabled:bg-black-900/10 w-full bg-black text-white  glassBorder"
+          className="mt-6 disabled:bg-black-900/10 w-full bg-black text-white glassBorder"
           variant="black"
         >
           {noText}
         </Button>
         <Button
-          onClick={() => confirmFunc()}
+          onClick={handleConfirmClick}
           variant="destructive"
           className="mt-6 block py-2 px-4 rounded-md"
+          disabled={loading}
         >
-          {confirmText}
+          {loading ? "Processing..." : confirmText}
         </Button>
       </div>
     </DialogContent>

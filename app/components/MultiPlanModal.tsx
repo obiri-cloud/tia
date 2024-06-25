@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import axios, { AxiosError } from "axios";
@@ -45,13 +45,11 @@ export default function MultiPlanModal({
 }) {
   const { data: session } = useSession();
   const token = session?.user?.tokens?.access_token;
-
-  let btn = document.getElementById("btn");
+  const [loading, setLoading] = useState(false);
+  const [loading2, setLoading2] = useState(false);
 
   const subscribe = async (plan: Plan) => {
-    if (btn) {
-      btn.textContent = "Processing";
-    }
+    setLoading(true);
     try {
       const response = await apiClient.post(
         `/payment/subscription/create/`,
@@ -66,9 +64,6 @@ export default function MultiPlanModal({
           },
         }
       );
-      if (btn) {
-        btn.textContent = "Processing";
-      }
       if (response.status === 200) {
         window.location.href = response.data.authorization_url;
         toast({
@@ -88,13 +83,13 @@ export default function MultiPlanModal({
         title: "Something went wrong!",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   const upgradeSubscription = async (plan: Plan) => {
-    if (btn) {
-      btn.textContent = "Updating";
-    }
+    setLoading2(true);
     try {
       const response = await apiClient.post(`/payment/subscription/update/`, {
         amount: plan.price,
@@ -116,13 +111,12 @@ export default function MultiPlanModal({
     } catch (error) {
       userCheck(error as AxiosError);
       console.error("error", error);
-      if (btn) {
-        btn.textContent = `Subscribe to ${plan.value}`;
-      }
       toast({
         title: "Something went wrong!",
         variant: "destructive",
       });
+    } finally {
+      setLoading2(false);
     }
   };
 
@@ -153,7 +147,7 @@ export default function MultiPlanModal({
         Upgrade Your Plan
       </p>
       <p className="mt-2 text-gray-600 dark:text-gray-400">
-        Choose the plan that best fits your needs and budget.
+        Choose the plan that best fits your needs and budget
       </p>
       <div className="grid gap-6 py-6">
         {filteredPlans.map((plan) => (
@@ -185,11 +179,9 @@ export default function MultiPlanModal({
                 variant="outline"
                 className="mt-4 w-full text-sm font-medium text-black dark:text-white"
                 onClick={() => subscribe(plan)}
+                disabled={loading}
               >
-                <p className="dark:text-white text-black">
-                  {" "}
-                  Subscribe to {plan.label}
-                </p>
+                {loading ? "Processing..." : `Subscribe to ${plan.label}`}
               </Button>
             ) : (
               <Button
@@ -197,8 +189,11 @@ export default function MultiPlanModal({
                 variant="outline"
                 onClick={() => upgradeSubscription(plan)}
                 className="mt-4 w-full text-sm font-medium text-black dark:text-white"
+                disabled={loading}
               >
-                {isUpgrade(currentPlan, plan.value)
+                {loading
+                  ? "Processing..."
+                  : isUpgrade(currentPlan, plan.value)
                   ? `Upgrade to ${plan.label}`
                   : `Downgrade to ${plan.label}`}
               </Button>

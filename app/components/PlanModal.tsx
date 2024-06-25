@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CheckIcon } from "lucide-react";
@@ -19,27 +20,17 @@ const PlanModalContent = ({
   const { data: session } = useSession();
   const token = session?.user?.tokens?.access_token;
   const router = useRouter();
-  let btn = document.getElementById("btn");
-
-  console.log;
+  const [loading, setLoading] = useState(false);
 
   const subscribe = async () => {
-    if (btn) {
-      btn.textContent = "Processing";
-    }
+    setLoading(true);
     try {
       const response = await apiClient.post(`/payment/subscription/create/`, {
         amount: plan.price,
         interval: "monthly",
         plan_choice: plan.value,
       });
-      if (btn) {
-        btn.textContent = "Processing";
-      }
       if (response.status === 200) {
-        if (btn) {
-          btn.textContent = "Processing";
-        }
         window.location.href = response.data.authorization_url;
         toast({
           title: "Redirecting you to payment page",
@@ -58,13 +49,13 @@ const PlanModalContent = ({
         title: "Something went wrong!",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   const upgradeSubscription = async () => {
-    if (btn) {
-      btn.textContent = "Updating";
-    }
+    setLoading(true);
     try {
       const response = await apiClient.post(`/payment/subscription/update/`, {
         amount: plan.price,
@@ -86,15 +77,15 @@ const PlanModalContent = ({
     } catch (error) {
       userCheck(error as AxiosError);
       console.error("error", error);
-      if (btn) {
-        btn.textContent = `Subscribe to ${plan.value}`;
-      }
       toast({
         title: "Something went wrong!",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
+
   const isUpgrade = (current: string | undefined, target: string) => {
     const plansOrder = ["basic", "standard", "premium"];
     return plansOrder.indexOf(target) > plansOrder.indexOf(current ?? "");
@@ -126,24 +117,27 @@ const PlanModalContent = ({
         </Button>
       </div>
       {currentPlan === "basic" ? (
-        <p
+        <Button
           id="btn"
           onClick={subscribe}
           className="inline-flex items-center justify-center px-4 cursor-pointer py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-200 dark:focus:ring-gray-50"
+          disabled={loading}
         >
-          Subscribe to {plan.label}
-        </p>
+          {loading ? "Processing..." : `Subscribe to ${plan.label}`}
+        </Button>
       ) : (
-        <p
+        <Button
           id="btn"
           onClick={upgradeSubscription}
           className="inline-flex cursor-pointer items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-200 dark:focus:ring-gray-50"
+          disabled={loading}
         >
-          {/* Upgrade to {plan.label} */}
-          {isUpgrade(currentPlan, plan.value)
+          {loading
+            ? "Processing..."
+            : isUpgrade(currentPlan, plan.value)
             ? `Upgrade to ${plan.label}`
             : `Downgrade to ${plan.label}`}
-        </p>
+        </Button>
       )}
     </div>
   );
