@@ -21,10 +21,10 @@ import useOrgCheck from "@/hooks/createOrgCheck";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios, { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { userCheck } from "@/lib/utils";
 import { InvitationsResponse, NoInvitationsResponse } from "@/app/types";
-import { PlusCircleIcon, Shield, Users2 } from "lucide-react";
+import { LayoutDashboard, PlusCircleIcon, Shield, Users2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -39,6 +39,7 @@ export default function OrgDropDown() {
   const { data: session, update } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   const queryClient = useQueryClient();
   const orgCheck = useOrgCheck();
@@ -238,6 +239,17 @@ export default function OrgDropDown() {
               <Link href="/admin" className="flex items-center">
                 <Shield className="h-4 w-4 mr-2" />
                 <span>Go to admin</span>
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
+        {!pathname?.startsWith("/dashboard") && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Link href="/dashboard" className="flex items-center">
+                <LayoutDashboard className="h-4 w-4 mr-2" />
+                <span>Go to dashboard</span>
               </Link>
             </DropdownMenuItem>
           </>
