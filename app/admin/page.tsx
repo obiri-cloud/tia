@@ -1,39 +1,23 @@
 "use client";
 import Overview from "../components/admin/overview";
-import Images from "../components/admin/images";
-import Labs from "../components/admin/labs";
-import ReduxProvider from "@/redux/ReduxProvider";
 import GetAdmin from "../components/admin/get-admin";
 import { ChevronRight } from "lucide-react";
-import Link from "next/link";
-import { useSession } from "next-auth/react";
+import AltRouteCheck from "../components/alt-route-check";
 
 export default function DashboardPage() {
-  const { data: session } = useSession();
-
-  
   return (
-      <div className="">
-        <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
-          <div className="flex items-center">
-            <span className="p-2 ">Overview</span>
-            <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
-          </div>
-          {
-            session?.user && session?.user.data.is_admin ? (
-              <Link href="/dashboard" className="font-medium text-mint">
-                Go to labs
-              </Link>
-            ) : null
-          }
+    <div className="">
+      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+        <div className="flex items-center">
+          <span className="p-2 ">Overview</span>
+          <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        <div className="p-4">
-          <GetAdmin />
-          <Overview />
-        </div>
-        {/* <Images />
-        <Labs /> */}
+        <AltRouteCheck />
       </div>
-
+      <div className="p-4">
+        <GetAdmin />
+        <Overview />
+      </div>
+    </div>
   );
 }

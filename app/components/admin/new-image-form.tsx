@@ -31,14 +31,28 @@ import {
   setImageList,
 } from "@/redux/reducers/adminSlice";
 import { useDispatch, useSelector } from "react-redux";
-import trash from "@/public/svgs/trash.svg";
-import Image from "next/image";
 import { RootState } from "@/redux/store";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ContentProps, ILabImage } from "@/app/types";
-import { Trash } from "lucide-react";
+import { CheckIcon, Trash } from "lucide-react";
 import formClient from "@/lib/formRequest";
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CaretSortIcon } from "@radix-ui/react-icons";
+import { cn } from "@/lib/cn";
 
 const NewImageForm = () => {
   const form = useForm();
@@ -57,6 +71,7 @@ const NewImageForm = () => {
   const durationRef = useRef<HTMLInputElement>(null);
   const commandRef = useRef<HTMLInputElement>(null);
   const argumentsRef = useRef<HTMLInputElement>(null);
+  const tagsRef = useRef<HTMLInputElement>(null);
 
   const [
     readinessProbeInitialDelaySeconds,
@@ -143,9 +158,7 @@ const NewImageForm = () => {
     liveness_probe_success_threshold: z.string().optional(),
     liveness_probe_failure_threshold: z.string().optional(),
 
-    description: z.string().min(3, {
-      message: "Description has to be 3 characters or more",
-    }),
+    description: z.string().optional(),
   });
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -162,6 +175,7 @@ const NewImageForm = () => {
       duration: durationRef.current?.value,
       command: commandRef.current?.value,
       arguments: argumentsRef.current?.value,
+      tags: tagsRef.current?.value,
       description: descriptionRef.current?.value,
       sidecar: sideCar,
     };
@@ -175,6 +189,7 @@ const NewImageForm = () => {
       description: descriptionRef.current?.value || "",
       command: commandRef.current?.value || "",
       arguments: argumentsRef.current?.value || "",
+      tags: tagsRef.current?.value || "",
       sidecar: sideCar,
     };
 
@@ -189,6 +204,7 @@ const NewImageForm = () => {
     formData.append("description", descriptionRef.current?.value || "");
     formData.append("command", commandRef.current?.value || "");
     formData.append("arguments", argumentsRef.current?.value || "");
+    formData.append("tags", tagsRef.current?.value || "");
 
     // if (imageDetails) {
     if (!readinessProbeInitialDelaySeconds) {
@@ -316,6 +332,7 @@ const NewImageForm = () => {
           description: `Image ${
             imageDetails ? "updated" : "created"
           } successfully`,
+          duration: 2000,
         });
         getImageListX(token).then((response) => {
           dispatch(setImageCount(response.data.count));
@@ -327,6 +344,7 @@ const NewImageForm = () => {
           variant: "destructive",
           title: "Image Creation  Error",
           description: response.data.message,
+          duration: 2000,
         });
       }
     } catch (error) {
@@ -338,6 +356,7 @@ const NewImageForm = () => {
             variant: "destructive",
             title: "Image Creation Error",
             description: err.message,
+            duration: 2000,
           })
         );
       }
@@ -680,6 +699,32 @@ const NewImageForm = () => {
     dispatch(setCurrentImage(null));
   };
 
+  const frameworks = [
+    {
+      value: "next.js",
+      label: "Next.js",
+    },
+    {
+      value: "sveltekit",
+      label: "SvelteKit",
+    },
+    {
+      value: "nuxt.js",
+      label: "Nuxt.js",
+    },
+    {
+      value: "remix",
+      label: "Remix",
+    },
+    {
+      value: "astro",
+      label: "Astro",
+    },
+  ];
+
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
+
   return (
     <DialogContent
       onEsc={(e) => handleOnEsc(e)}
@@ -892,6 +937,71 @@ const NewImageForm = () => {
                       placeholder="Arguments"
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="my-6">
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className=" formTextLight">Tags</FormLabel>
+                  <br />
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-full justify-between"
+                      >
+                        {value
+                          ? frameworks.find(
+                              (framework) => framework.value === value
+                            )?.label
+                          : "Select tag..."}
+                        <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandInput
+                          placeholder="Search tag..."
+                          className="h-9"
+                        />
+                        <CommandList>
+                          <CommandEmpty>No tags found.</CommandEmpty>
+                          <CommandGroup>
+                            {frameworks.map((framework) => (
+                              <CommandItem
+                                key={framework.value}
+                                value={framework.value}
+                                onSelect={(currentValue) => {
+                                  setValue(
+                                    currentValue === value ? "" : currentValue
+                                  );
+                                  setOpen(false);
+                                }}
+                              >
+                                {framework.label}
+                                <CheckIcon
+                                  className={cn(
+                                    "ml-auto h-4 w-4",
+                                    value === framework.value
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}

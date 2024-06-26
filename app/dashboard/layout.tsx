@@ -167,7 +167,7 @@ export default function UserDashboardLayout({
   );
 }
 
-function isActive(path: string, currentPath: string, isExact?: boolean) {
+export function isActive(path: string, currentPath: string, isExact?: boolean) {
   if (isExact) {
     return currentPath === path;
   }

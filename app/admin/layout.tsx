@@ -1,39 +1,63 @@
 "use client";
-import AdminCheck from "../../hooks/admin-check";
 import { Inter } from "next/font/google";
-import { useState, useEffect } from "react";
-import { signOut } from "next-auth/react";
-import secureLocalStorage from "react-secure-storage";
-import { SVGProps } from "react";
-import ProfileHeader from "../components/admin/profile-header";
-import { useDispatch } from "react-redux";
+
 import ReduxProvider from "@/redux/ReduxProvider";
-import {
-  GalleryHorizontal,
-  LogOut,
-  PieChart,
-  Scroll,
-  Star,
-  Users,
-} from "lucide-react";
-import axios from "axios";
+import { LogOut, PieChart, ListVideo, Star, File } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import useAdminCheck from "../../hooks/admin-check";
 import { toast } from "@/components/ui/use-toast";
 import { logout } from "@/lib/logout";
+import Link from "next/link";
+import { isActive } from "../dashboard/layout";
+import { cn } from "@/lib/utils";
+
 const inter = Inter({ subsets: ["latin"] });
 
-export default function DashboardPage({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminPage({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   const isAdmin = useAdminCheck();
 
   const router = useRouter();
+
+  const topMenu = [
+    {
+      name: "Overview",
+      Icon: PieChart,
+      href: "/admin",
+      isExact: true,
+    },
+    {
+      name: "Images",
+      Icon: File,
+      href: "/admin/images",
+      isExact: true,
+    },
+    {
+      name: "Labs",
+      Icon: ListVideo,
+      href: "/admin/labs",
+      isExact: true,
+    },
+    {
+      name: "Reviews",
+      Icon: Star,
+      href: "/admin/reviews",
+      isExact: true,
+    },
+  ];
+
+  const bottomMenu = [
+    {
+      name: "Logout",
+      Icon: LogOut,
+      href: "#",
+      isExact: true,
+      onClick: () => {
+        logout();
+      },
+    },
+  ];
 
   if (!isAdmin) {
     toast({
@@ -77,105 +101,49 @@ export default function DashboardPage({
           className="fixed top-0 left-0 z-40 w-[220px] h-screen transition-transform -translate-x-full sm:translate-x-0 border-r dark:border-r-[#2c2d3c] border-r-whiteEdge dark:text-dashboardText dark:bg-[#191a23] bg-white text-whiteDark"
         >
           <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
-            <ProfileHeader />
+            <h1 className="pl-2 text-lg font-medium tracking-tighter text-center">
+              Tialabs
+            </h1>
             <div className="flex flex-1 flex-col">
               <ul className="space-y-2 font-medium mt-[50px] flex-1">
-                <li>
-                  <a
-                    href="/admin"
-                    className={`
-                  flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group
-
-                  ${
-                    pathname === "/admin"
-                      ? "bg-menuHovWhite dark:bg-menuHov"
-                      : ""
-                  }
-                  `}
+                {topMenu.map((menu) => (
+                  <Link
+                    href={menu.href}
+                    key={menu.name}
+                    className={cn(
+                      isActive(menu.href, pathname, menu.isExact)
+                        ? "bg-gray-200 text-gray-800 active:bg-gray-400 dark:bg-gray-800 dark:text-gray-100 dark:active:bg-gray-700"
+                        : "text-gray-500 hover:bg-gray-200 active:bg-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100 dark:active:bg-gray-700",
+                      "flex w-full items-center space-x-2 rounded-lg p-2 text-sm font-medium"
+                    )}
                   >
-                    <PieChart
-                      className={`
-                  ${
-                    pathname === "/admin"
-                      ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white"
-                      : ""
-                  }
-                  `}
-                    />
-                    <span className="ms-3 font-light">Overview</span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/admin/images"
-                    className={`
-                    ${
-                      pathname === "/admin/images"
-                        ? "bg-menuHovWhite dark:bg-menuHov"
-                        : ""
-                    }
-                    flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group
-                    `}
-                  >
-                    <GalleryHorizontal className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-white dark:fill-white" />
-                    <span className="ms-3 font-light">Images</span>
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="/admin/labs"
-                    className={`
-                    ${
-                      pathname === "/admin/labs"
-                        ? "bg-menuHovWhite dark:bg-menuHov"
-                        : ""
-                    }
-                    flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group
-                    `}
-                  >
-                    <Scroll
-                      className={`
-                  ${
-                    pathname === "/admin/"
-                      ? "w-5 h-5 text-black transition duration-75 dark:group-hover:text-white stroke-whiteDark dark:stroke-white"
-                      : ""
-                  }
-                  `}
-                    />
-                    <span className="ms-3 font-light">Labs</span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/admin/reviews"
-                    className={`
-                    ${
-                      pathname === "/admin/reviews"
-                        ? "bg-menuHovWhite dark:bg-menuHov"
-                        : ""
-                    }
-                    flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group
-                    `}
-                  >
-                    <Star className="w-5 h-5  text-black transition duration-75 dark:group-hover:text-white  dark:stroke-white" />
-                    <span className="ms-3 font-light">Reviews</span>
-                  </a>
-                </li>
+                    {menu.Icon && (
+                      <menu.Icon className="w-4 h-4 mr-2 shrink-0" />
+                    )}
+                    {menu.name}
+                  </Link>
+                ))}
               </ul>
               <div className="">
                 <ul className="space-y-2 font-medium">
-                  <li>
-                    <span
-                      onClick={logout}
-                      className={`
-                      flex items-center p-2  rounded-lg dark:text-white dark:hover:bg-menuHov hover:bg-menuHovWhite group cursor-pointer
-                      `}
+                  {bottomMenu.map((menu) => (
+                    <Link
+                      href={menu.href}
+                      key={menu.name}
+                      className={cn(
+                        isActive(menu.href, pathname, menu.isExact)
+                          ? "bg-gray-200 text-gray-800 active:bg-gray-400 dark:bg-gray-800 dark:text-gray-100 dark:active:bg-gray-700"
+                          : "text-gray-500 hover:bg-gray-200 active:bg-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100 dark:active:bg-gray-700",
+                        "flex w-full items-center space-x-2 rounded-lg p-2 text-sm font-medium"
+                      )}
+                      onClick={menu.onClick}
                     >
-                      <LogOut className="w-5 h-5  transition duration-75 dark:group-hover:text-white fill-white dark:fill-whiteDark" />
-                      <span className="ms-3 font-light">Logout</span>
-                    </span>
-                  </li>
+                      {menu.Icon && (
+                        <menu.Icon className="w-4 h-4 mr-2 shrink-0" />
+                      )}
+                      {menu.name}
+                    </Link>
+                  ))}
                 </ul>
               </div>
             </div>

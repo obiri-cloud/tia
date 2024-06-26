@@ -4,15 +4,9 @@ import ReduxProvider from "@/redux/ReduxProvider";
 import Images from "@/app/components/admin/images";
 import GetAdmin from "@/app/components/admin/get-admin";
 import { ChevronRight } from "lucide-react";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 const AdminImages = () => {
-  const { data: session } = useSession();
- 
-  
   return (
     <ReduxProvider>
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
@@ -20,13 +14,7 @@ const AdminImages = () => {
           <span className="p-2 ">All Images</span>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/dashboard" className="font-medium text-mint">
-              Go to labs
-            </Link>
-          ) : null
-        }
+        <AltRouteCheck />
       </div>
       <div className="p-4">
         <GetAdmin />

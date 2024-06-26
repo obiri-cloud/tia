@@ -21,7 +21,6 @@ interface IImageTableTable {
   imageList: ILabImage[] | null;
 }
 const ImageTable: FC<IImageTableTable> = ({ imageList }) => {
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dispatch = useDispatch();
 

@@ -232,7 +232,7 @@ export default function OrgDropDown() {
             </div>
           )
         ) : null}
-        {is_admin && (
+        {is_admin && !pathname.startsWith("/admin") && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

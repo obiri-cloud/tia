@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -41,6 +41,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
+import { useQuery } from "react-query";
+import apiClient from "@/lib/request";
 
 const Images = () => {
   const { imageCount, imageList } = useSelector(
@@ -60,8 +62,6 @@ const Images = () => {
   const token = session?.user!.tokens?.access_token;
 
   const deleteImage = async (id: number | undefined) => {
-    // setDisabled(true);
-
     let axiosConfig = {
       method: "DELETE",
       url: `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/delete/`,
@@ -80,7 +80,7 @@ const Images = () => {
           title: "Image Deletion",
           description: "Image deleted successfully",
         });
-        // setLocalImageList((prev) => prev?.filter((image) => image.id !== id));
+
         getImageListX(token).then((response) => {
           dispatch(setImageCount(response.data.count));
           dispatch(setImageList(response.data.data));
@@ -103,6 +103,17 @@ const Images = () => {
       // setDisabled(false);
     }
   };
+
+  const getTags = () => {
+    const request = apiClient.get("/moderator/tags/");
+    console.log("request", request);
+    return request;
+  };
+
+  const { data: tags } = useQuery(["tags"], () => getTags());
+
+  console.log("tags", tags);
+
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -243,46 +254,3 @@ const AddButton = () => {
     </DialogTrigger>
   );
 };
-
-// <Dialog>
-// <DialogTrigger
-//   onClick={() =>
-//     dispatch(setCurrentImage(image))
-//   }
-// >
-//   <Button
-//     className="font-medium"
-//     variant="link"
-//   >
-//     View
-//   </Button>
-// </DialogTrigger>
-// <NewImageForm />
-// </Dialog>
-// |
-// <Dialog>
-// <DialogTrigger>
-//   <Button
-//     onClick={() => setImage(image)}
-//     className="font-medium text-red-500"
-//     variant="link"
-//   >
-//     Delete
-//   </Button>
-// </DialogTrigger>
-// <DeleteConfirmation
-//   image={image}
-//   text="Do you want to delete this image"
-//   noText="No"
-//   confirmText="Yes, Delete this image"
-//   confirmFunc={() => deleteImage(image?.id)}
-// />
-// </Dialog>
-// |
-// <Button
-// onClick={() => router.push(`/admin/images/${image.id}/instructions`)}
-// className="font-medium"
-// variant="link"
-// >
-// Attach Instruction
-// </Button>
