@@ -27,7 +27,7 @@ import {
 import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
 import { TrashIcon } from "@radix-ui/react-icons";
-import { IActiveLab } from "@/app/types";
+import { IActiveLab, ILabImage } from "@/app/types";
 import AltRouteCheck from "../alt-route-check";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import MultiPlanModal from "../MultiPlanModal";
@@ -69,6 +69,7 @@ const MainImagePage = ({
 
     try {
       const response = await apiClient.get(`/user/image/${id}/retrieve/`);
+      console.log("response", response);
 
       return response.data;
     } catch (error) {
@@ -419,6 +420,19 @@ const MainImagePage = ({
                   </>
                 )}
               </h1>
+              <div className="mt-4 space-x-1">
+                {currentImage?.tags &&
+                  currentImage?.tags
+                    ?.split(",")
+                    .map((tag: string, i: number) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 border border-1 rounded-md text-sm"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+              </div>
             </div>
             <div className="prose max-w-none">
               <p>
