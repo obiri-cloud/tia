@@ -32,8 +32,9 @@ import { TableCaption, Table } from "@/components/ui/table";
 
 import apiClient from "@/lib/request";
 import formClient from "@/lib/formRequest";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
-const Images = () => {
+const InivitationPage = () => {
   const [file, setfile] = useState<any>();
   const [emailInput, setEmailInput] = useState<string>();
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,7 +56,6 @@ const Images = () => {
   const { data: session } = useSession();
   const { reset } = useForm();
 
-  const token = session?.user!.tokens?.access_token;
   const org_id = session?.user!.data?.organization_id;
   const [loadingInvitation, setloadingInvitation] = useState<boolean>(false);
   const { data: dataDiag } = useSelector((state: RootState) => state.dialogBtn);
@@ -91,7 +91,7 @@ const Images = () => {
   }, []);
 
   //mutation
-  const SendInvitation = async (formData: FormData) => {
+  const sendInvitation = async (formData: FormData) => {
     const axiosConfig = {
       method: "POST",
       url: `/organization/${org_id}/invitation/create/`,
@@ -138,7 +138,7 @@ const Images = () => {
     return response.data;
   };
 
-  const BulkInvite = async (file: any) => {
+  const bulkInvite = async (file: any) => {
     let formData = new FormData();
     formData.append("file", file);
 
@@ -184,7 +184,7 @@ const Images = () => {
   );
 
   const { mutate: addBulkInviteMutation } = useMutation(
-    (file: any) => BulkInvite(file),
+    (file: any) => bulkInvite(file),
     {
       onSuccess: (data) => {
         queryClient.invalidateQueries("invites");
@@ -219,9 +219,7 @@ const Images = () => {
     }
   );
 
-  console.log(totalPages);
-
-  const BulkEmails = () => {
+  const bulkEmails = () => {
     (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
       true;
     (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
@@ -261,8 +259,6 @@ const Images = () => {
     }
   };
 
-  console.log({ multiplEmails });
-
   const removeEmail = (emailToRemove: string) => {
     setMultipleEmails((currentEmails: string[]) =>
       currentEmails.filter((email: string) => email !== emailToRemove)
@@ -286,8 +282,6 @@ const Images = () => {
         throw new Error(response.data);
       }
     } catch (error) {
-      console.log({ error });
-
       if (axios.isAxiosError(error) && error.response) {
         return {
           status: error.response.status,
@@ -374,11 +368,8 @@ const Images = () => {
           </Link>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {session?.user && session?.user.data.is_admin ? (
-          <Link href="/dashboard" className="font-medium text-mint">
-            Go to dashboard
-          </Link>
-        ) : null}
+        <AltRouteCheck />
+      
       </div>
       <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">
@@ -436,18 +427,6 @@ const Images = () => {
       </div>
 
       <Dialog
-        open={dataDiag}
-        onOpenChange={dataDiag ? setdialogState : setIsOpenDeleteDialog}
-      >
-        <DeleteConfirmation
-          text={`Do you want to delete ${passedData?.recipient_email} invitation`} // ${passedData?.recipient_email}
-          noText="No"
-          confirmText="Yes, Delete!"
-          confirmFunc={() => deleteInviteMutation(passedData?.id ?? 0)}
-        />
-      </Dialog>
-
-      <Dialog
         open={isOpenViewDialogOpen2}
         onOpenChange={
           isOpenViewDialogOpen2 ? setIsOpenViewDialog2 : setIsOpenDeleteDialog
@@ -469,10 +448,10 @@ const Images = () => {
           isOpenViewDialogOpen3 ? setIsOpenViewDialog3 : setIsOpenDeleteDialog
         }
       >
-        <BulkInviteModal setfile={setfile} onSend={BulkEmails} />
+        <BulkInviteModal setfile={setfile} onSend={bulkEmails} />
       </Dialog>
     </div>
   );
 };
 
-export default Images;
+export default InivitationPage;

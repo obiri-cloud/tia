@@ -21,6 +21,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import useAdminCheck from "../../hooks/admin-check";
 import { toast } from "@/components/ui/use-toast";
+import { logout } from "@/lib/logout";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function DashboardPage({
@@ -28,11 +29,6 @@ export default function DashboardPage({
 }: {
   children: React.ReactNode;
 }) {
-  const logout = () => {
-    signOut({ callbackUrl: "/login" });
-    secureLocalStorage.removeItem("tialabs_info");
-  };
-
   const pathname = usePathname();
 
   const isAdmin = useAdminCheck();

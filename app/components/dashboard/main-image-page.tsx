@@ -27,7 +27,7 @@ import {
 import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
 import { TrashIcon } from "@radix-ui/react-icons";
-import { IActiveLab } from "@/app/types";
+import { IActiveLab, ILabImage } from "@/app/types";
 import AltRouteCheck from "../alt-route-check";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import MultiPlanModal from "../MultiPlanModal";
@@ -56,7 +56,6 @@ const MainImagePage = ({
 
   const { data: session } = useSession();
   const currentPlan = session?.user?.data?.subscription_plan;
-  console.log({ labCreationUrl, redirectUrl });
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [openModal, setOpenModal] = useState(false);
@@ -70,6 +69,7 @@ const MainImagePage = ({
 
     try {
       const response = await apiClient.get(`/user/image/${id}/retrieve/`);
+      console.log("response", response);
 
       return response.data;
     } catch (error) {
@@ -85,8 +85,6 @@ const MainImagePage = ({
   const { isLoading, data: currentImage } = useQuery(["image", id], () =>
     getCurrentImage(id, token)
   );
-
-  console.log({ currentImage });
 
   const { data: isActive } = useQuery(["active-labs", id], () =>
     getActiveLabs()
@@ -174,10 +172,12 @@ const MainImagePage = ({
             title: response.data.message,
             variant: "success",
             description: "Resuming your lab.",
+            duration: 2000,
           });
           let data = response.data;
+          console.log("==", { data });
           secureLocalStorage.setItem(
-            "tialab_info",
+            `tialab_info_${data.id}`,
             JSON.stringify({
               id: data.image_id,
               url: data.ingress_url,
@@ -201,6 +201,7 @@ const MainImagePage = ({
             title: response.data.message,
             variant: "success",
             description: "Resume this lab or end this one and start a new.",
+            duration: 2000,
           });
         }
       }
@@ -210,6 +211,7 @@ const MainImagePage = ({
           title: response.data.message,
           variant: "destructive",
           description: "Lab timed out",
+          duration: 2000,
         });
       }
 
@@ -238,6 +240,7 @@ const MainImagePage = ({
           title: "Lab Creation Stopped",
           variant: "destructive",
           description: "Deleting all created resources",
+          duration: 2000,
         });
       } else {
         // Handle other errors
@@ -277,8 +280,9 @@ const MainImagePage = ({
       } else {
         if (data.data) {
           resolved = true;
+          console.log("<==>", data.data);
           secureLocalStorage.setItem(
-            "tialab_info",
+            `tialab_info_${data.data.lab_id}`,
             JSON.stringify({
               id: data.data.image_id,
               url: data.data.ingress_url,
@@ -416,6 +420,19 @@ const MainImagePage = ({
                   </>
                 )}
               </h1>
+              <div className="mt-4 space-x-1">
+                {currentImage?.tags &&
+                  currentImage?.tags
+                    ?.split(",")
+                    .map((tag: string, i: number) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 border border-1 rounded-md text-sm"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+              </div>
             </div>
             <div className="prose max-w-none">
               <p>

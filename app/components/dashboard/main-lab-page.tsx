@@ -56,8 +56,6 @@ const MainLabPage = ({
   const [isLoading, setIsLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
 
-  // @ts-ignore
-
   const token = session?.user!.tokens?.access_token;
   const { systemTheme, theme, setTheme } = useTheme();
 
@@ -71,6 +69,9 @@ const MainLabPage = ({
 
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
+  const labId = searchParams.get("id");
+  let lab_key = `tialab_info_${labId}`;
+
   let intervalId: string | number | NodeJS.Timeout | undefined;
 
   //choose the screen size
@@ -103,9 +104,9 @@ const MainLabPage = ({
     getInstructions();
     let tialab_info: ILabInfo | null = null;
 
-    if (secureLocalStorage.getItem("tialab_info")) {
+    if (secureLocalStorage.getItem(lab_key)) {
       tialab_info = JSON.parse(
-        (secureLocalStorage.getItem("tialab_info") as string) || ""
+        (secureLocalStorage.getItem(lab_key) as string) || ""
       );
     }
 
@@ -159,7 +160,7 @@ const MainLabPage = ({
     try {
       const response = await apiClient.post(`${labDeletionUrl}`, formData);
       if (response.data.status === 200) {
-        secureLocalStorage.removeItem("tialab_info");
+        secureLocalStorage.removeItem(`tialab_info_${lab_key}`);
         toast({
           title: "Lab Deleted Successfully...",
           variant: "success",

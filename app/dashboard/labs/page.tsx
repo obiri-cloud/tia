@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, {
@@ -13,7 +13,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Panel, PanelGroup } from "react-resizable-panels";
 import { MagicSpinner } from "react-spinners-kit";
 import { Drawer } from "vaul";
 import info from "@/public/svgs/info.svg";
@@ -29,6 +28,16 @@ import {
 import { SheetClose, SheetFooter } from "@/components/ui/sheet";
 import { Toaster, toast as sooner } from "sonner";
 import apiClient from "@/lib/request";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+} from "@/components/ui/dropdown-menu";
 
 interface ILabInfo {
   id: number | null;
@@ -64,9 +73,11 @@ const LabsPage = () => {
     !!document.fullscreenElement
   );
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeLabs, setActiveLabs] = useState<IActiveLab[]>([]);
 
   const searchParams = useSearchParams();
   const id = searchParams.get("image");
+  const labId = searchParams.get("lab");
   let intervalId: string | number | NodeJS.Timeout | undefined;
   const router = useRouter();
 
@@ -88,7 +99,7 @@ const LabsPage = () => {
   };
 
   let cnt = 0;
-  let timeoutId;
+  let timeoutId: NodeJS.Timeout | undefined;
 
   useEffect(() => {
     setTheme("light");
@@ -99,10 +110,11 @@ const LabsPage = () => {
   useEffect(() => {
     getInstructions();
     let tialab_info: ILabInfo | null = null;
+    let lab_key = `tialab_info_${labId}`;
 
-    if (secureLocalStorage.getItem("tialab_info")) {
+    if (secureLocalStorage.getItem(lab_key)) {
       tialab_info = JSON.parse(
-        (secureLocalStorage.getItem("tialab_info") as string) || ""
+        (secureLocalStorage.getItem(lab_key) as string) || ""
       );
     }
 
@@ -136,6 +148,10 @@ const LabsPage = () => {
     }
 
     return () => clearInterval(intervalId);
+  }, [secureLocalStorage]);
+
+  useEffect(() => {
+    getActiveLabs();
   }, []);
 
   const getInstructions = async () => {
@@ -194,7 +210,6 @@ const LabsPage = () => {
   const handleClick = () => {
     if (drawerButton) {
       drawerButton.current?.click();
-      // reviewDrawerButton.current?.click();
     }
   };
 
@@ -253,6 +268,39 @@ const LabsPage = () => {
     };
   }, []);
 
+  const getActiveLabs = async () => {
+    try {
+      const response = await apiClient.get(`/user/labs/list/`);
+      if (response.status === 200) {
+        console.log("active", response);
+
+        setActiveLabs(response.data.data);
+      } else {
+        throw new Error("Failed to fetch active labs");
+      }
+    } catch (error) {
+      userCheck(error as AxiosError);
+    }
+  };
+
+  const handleMenuItemClick = (lab: IActiveLab, labId: string | null) => {
+    if (Number(labId) === lab.id) {
+      return;
+    }
+
+    secureLocalStorage.setItem(
+      `tialab_info_${lab.id}`,
+      JSON.stringify({
+        id: lab.image.id,
+        url: lab.ingress_url,
+        creation_date: lab.creation_date,
+        duration: lab.image.duration,
+      })
+    );
+
+    location.href = `/dashboard/labs?lab=${lab.id}&image=${lab.image.id}`;
+  };
+
   return (
     <Dialog>
       <Toaster position="bottom-right" />
@@ -269,14 +317,60 @@ const LabsPage = () => {
           >
             <div className="button-container">
               <div className="flex gap-4 items-center">
-                <button
-                  className="button bg-[#007acb_!important]"
-                  onClick={() => router.push("/dashboard")}
-                  // variant="outline"
-                  // className="bg-white shadow-2xl text-black font-normal"
-                >
-                  Home
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline">
+                      <MenuIcon className="w-5 h-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 cursor-pointer">
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => router.push("/dashboard")}
+                    >
+                      Home
+                    </DropdownMenuItem>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        Active Labs
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                          {activeLabs?.map((lab) => (
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              disabled={Number(labId) == lab.id}
+                              onClick={() => handleMenuItemClick(lab, labId)}
+                            >
+                              {lab?.name}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuSubContent>
+                      </DropdownMenuPortal>
+                    </DropdownMenuSub>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        Course Outline
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                          {instructions && instructions.length > 0 ? (
+                            instructions?.map((instruction) => (
+                              <DropdownMenuItem>
+                                {instruction.title}
+                              </DropdownMenuItem>
+                            ))
+                          ) : (
+                            <DropdownMenuItem disabled>
+                              No instructions found
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuSubContent>
+                      </DropdownMenuPortal>
+                    </DropdownMenuSub>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                 <div id="dots">
                   <div className="dot"></div>
                   <div className="pulse44"></div>
@@ -318,7 +412,7 @@ const LabsPage = () => {
                 <MagicSpinner size={100} color="#686769" loading={isLoading} />
               </div>
             ) : null}
-            <div className="iframe-wrapper">
+            <div className="iframe-wrapper min-h-screen">
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="svg-button"
@@ -335,6 +429,7 @@ const LabsPage = () => {
                 width="100%"
                 height="100%"
                 onLoad={handleLoad}
+                className="h-screen"
               ></iframe>
             </div>
           </div>
@@ -544,7 +639,7 @@ import { z } from "zod";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import PrismComponent from "@/app/components/PrismComponent";
-import { ContentProps, IInstruction } from "@/app/types";
+import { ContentProps, IActiveLab, IInstruction } from "@/app/types";
 import { Label } from "@/components/ui/neo-label";
 import {
   ResizableHandle,
@@ -557,6 +652,7 @@ import {
   ArrowLeftFromLineIcon,
   ArrowRightFromLineIcon,
   Expand,
+  MenuIcon,
   Minimize2,
 } from "lucide-react";
 

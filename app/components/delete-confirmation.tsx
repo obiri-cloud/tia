@@ -57,6 +57,7 @@ const DeleteConfirmation: FC<IDeleteConfirmation> = ({
           </Button>
         </DialogClose>
         <Button
+          id="confirm-delete"
           ref={buttonRef}
           onClick={() => end()}
           variant="destructive"

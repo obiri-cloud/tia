@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { logout } from "@/lib/logout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,10 +28,6 @@ export default function UserDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const logout = () => {
-    signOut({ callbackUrl: "/login" });
-    secureLocalStorage.removeItem("tialabs_info");
-  };
   const pathname = usePathname();
 
   const topMenu = [
@@ -61,7 +58,9 @@ export default function UserDashboardLayout({
       Icon: LogOut,
       href: "#",
       isExact: true,
-      onClick: logout,
+      onClick: () => {
+        logout();
+      },
     },
   ];
   return (
@@ -149,7 +148,9 @@ export default function UserDashboardLayout({
 
         <div
           className={`${
-            !pathname.startsWith("/dashboard/labs") ? "sm:ml-[220px]" : ""
+            !pathname.startsWith("/dashboard/labs")
+              ? "sm:ml-[220px]"
+              : "overflow-y-hidden"
           } overflow-y-auto h-screen`}
         >
           {children}

@@ -15,6 +15,7 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import { useEffect } from "react";
 import apiClient from "@/lib/request";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 const OverView = () => {
   const { data: session } = useSession();
@@ -50,9 +51,7 @@ const OverView = () => {
           Overview
         </div>
 
-        <Link href="/dashboard" className="font-medium text-mint mr-9">
-          Go to dashboard
-        </Link>
+        <AltRouteCheck />
       </div>
       <div className="flex flex-wrap gap-4 p-5">
         {isLoading ? (
