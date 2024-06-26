@@ -54,8 +54,6 @@ const authOptions: NextAuthOptions = {
             );
           }
         } catch (error) {
-          console.log("errorObj", error);
-
           //@ts-ignore
 
           const errorObj = JSON.parse(error.message);
