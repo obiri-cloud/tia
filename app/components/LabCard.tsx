@@ -21,13 +21,21 @@ const LabCard = ({
           <h2 className="font-jet font-semibold text-lg leading-4">
             {lab.name}
           </h2>
+          <span className="text-xs text-gray-500 capitalize">
+            {lab.difficulty_level}
+          </span>
         </div>
       </div>
       <p className="mt-3 text-sm">{lab.description}</p>
-      <div className="mt-4">
-        <span className="px-3 py-1 border border-1 rounded-md text-sm">
-          {lab.difficulty_level}
-        </span>
+      <div className="mt-4 space-x-1">
+        {lab?.tags &&
+          lab?.tags
+            ?.split(",")
+            .map((tag) => (
+              <span className="px-3 py-1 border border-1 rounded-md text-sm">
+                {tag}
+              </span>
+            ))}
       </div>
     </div>
   );
