@@ -4,7 +4,7 @@ import React, { useRef, FormEvent } from "react";
 
 import * as z from "zod";
 import { toast } from "@/components/ui/use-toast";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { LabelInputContainer } from "../ui/label-input-container";
 import { Input } from "../ui/neo-input";
 import { Label } from "../ui/neo-label";
@@ -35,12 +35,13 @@ const ForgotPasswordForm = () => {
       formSchema.parse(formData);
       const response = await apiClient.post(
         `/auth/password/forgot-password/`,
-        JSON.stringify(formData)
+        formData
       );
 
       toast({
         title: response.data.message,
         variant: "success",
+        duration: 2000,
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -49,6 +50,7 @@ const ForgotPasswordForm = () => {
             variant: "destructive",
             title: "An error occured when sending the reset code.",
             description: err.message,
+            duration: 2000,
           })
         );
       }

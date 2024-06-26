@@ -72,7 +72,7 @@ const ResetPasswordForm = () => {
       formSchema.parse(formData);
       const response = await apiClient.post(
         `/auth/password/confirm/forgot-password/`,
-        JSON.stringify(formData)
+        formData
       );
       toast({
         title: response.data.message,
