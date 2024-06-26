@@ -40,6 +40,7 @@ interface ILabImage {
   liveness_probe_failure_threshold?: number;
   updated_date?: string;
   sidecar?: boolean;
+  tags?: string;
 }
 
 interface IinviteData {
