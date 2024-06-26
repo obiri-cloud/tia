@@ -18,9 +18,9 @@ import { useQueryClient } from "react-query";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setMemberPageSize,
-  setMemberTableData,
-} from "@/redux/reducers/MemberTableSlice";
+  setLabPageSize,
+  setLabTableData,
+} from "@/redux/reducers/LabSlice";
 import { RootState } from "@/redux/store";
 import { Table } from "@/components/ui/table";
 import apiClient from "@/lib/request";
@@ -33,8 +33,8 @@ interface DataTablePaginationProps<IinviteData> {
 export function LabsPagination({ table }: DataTablePaginationProps<any>) {
   const { data: session } = useSession();
   const dispatch = useDispatch();
-  const { MemberPageSize: MemberTotalPageSize, MemberOriginalPageSize } =
-    useSelector((state: RootState) => state.memberTable);
+  const { LabPageSize: MemberTotalPageSize, LabOriginalPageSize } =
+    useSelector((state: RootState) => state.LabTable);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageSize, setCurrentPageSize] = useState<number>(2);
@@ -54,7 +54,7 @@ export function LabsPagination({ table }: DataTablePaginationProps<any>) {
         }
       );
 
-      dispatch(setMemberTableData(response.data.data));
+      dispatch(setLabTableData(response.data.data));
       return;
     } catch (error) {
       console.log(error);
@@ -70,7 +70,7 @@ export function LabsPagination({ table }: DataTablePaginationProps<any>) {
     {
       setCurrentPage(1);
       setCurrentPageSize(+value);
-      dispatch(setMemberPageSize(Math.ceil(MemberOriginalPageSize / +value)));
+      dispatch(setLabPageSize(Math.ceil(LabOriginalPageSize / +value)));
       await fetchInvitations(1, +value);
     }
   };

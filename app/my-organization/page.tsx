@@ -41,10 +41,10 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import {
-  setMemberOriginalPageSize,
-  setMemberPageSize,
-  setMemberTableData,
-} from "@/redux/reducers/MemberTableSlice";
+  setLabOriginalPageSize,
+  setLabPageSize,
+  setLabTableData,
+} from "@/redux/reducers/LabSlice";
 import { LabsDataTable } from "../components/LabsDataTable";
 import { labsColumns } from "../components/LabsColumns";
 import apiClient from "@/lib/request";
@@ -64,8 +64,8 @@ const myOrganizationPage = () => {
   const queryClient = useQueryClient();
 
   const dispatch = useDispatch();
-  const { Memberdata: tableData } = useSelector(
-    (state: RootState) => state.memberTable
+  const { LabData: tableData } = useSelector(
+    (state: RootState) => state.LabTable
   );
 
   // @ts-ignore
@@ -86,9 +86,9 @@ const myOrganizationPage = () => {
     try {
       const response = await apiClient.get(`/organization/${org_id}/images/`);
       console.log({ logs: response.data });
-      dispatch(setMemberTableData(response.data.data));
-      dispatch(setMemberPageSize(Math.ceil(response.data.count / 2)));
-      dispatch(setMemberOriginalPageSize(response.data.count));
+      dispatch(setLabTableData(response.data.data));
+      dispatch(setLabPageSize(Math.ceil(response.data.count / 2)));
+      dispatch(setLabOriginalPageSize(response.data.count));
       // setIsLoadingMembers(false);
       return response.data.data;
     } catch (error) {
@@ -206,7 +206,7 @@ const myOrganizationPage = () => {
   const { mutate: searcRoleMutation } = useMutation(fetchRole, {
     onSuccess: (data) => {
       console.log({ data: data });
-      dispatch(setMemberTableData(data));
+      dispatch(setLabTableData(data));
       queryClient.setQueryData("orgImages", data);
       setSearchQuery("");
     },
@@ -338,7 +338,8 @@ const myOrganizationPage = () => {
                     No Lab(s) found for the specified search criteria
                   </TableCaption>
                 )}
-                {/* <TableBody>
+                {/* 
+                <TableBody>
                   {tableData
                     && tableData.length > 0
                         && Array.isArray(tableData) && tableData.map((image:ILabImage, i:number) => (
