@@ -1,6 +1,7 @@
 "use client";
 import GetAdmin from "@/app/components/admin/get-admin";
 import Labs from "@/app/components/admin/labs";
+import AltRouteCheck from "@/app/components/alt-route-check";
 import ReduxProvider from "@/redux/ReduxProvider";
 import { ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -17,13 +18,7 @@ const page = () => {
           <span className="p-2 ">All Labs</span>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {
-          session?.user && session?.user.data.is_admin ? (
-            <Link href="/dashboard" className="font-medium text-mint">
-              Go to labs
-            </Link>
-          ) : null
-        }
+        <AltRouteCheck />
       </div>
       <div className="p-4">
         <GetAdmin />

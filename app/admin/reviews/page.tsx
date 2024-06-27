@@ -9,6 +9,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import StarRatings from "react-star-ratings";
 import apiClient from "@/lib/request";
+import AltRouteCheck from "@/app/components/alt-route-check";
 
 const ReviewsPage = () => {
   const [reviews, setReviews] = useState<IReview[] | null>(null);
@@ -33,11 +34,7 @@ const ReviewsPage = () => {
           <span className="p-2 ">All Reviews</span>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
-        {session?.user && session?.user.data.is_admin ? (
-          <Link href="/dashboard" className="font-medium text-mint">
-            Go to labs
-          </Link>
-        ) : null}
+        <AltRouteCheck />
       </div>
       <div className="p-4">
         <div className="reviews">
