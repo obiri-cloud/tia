@@ -3,7 +3,7 @@ import { useTheme } from "next-themes";
 import { useEffect } from "react";
 
 export default function InfinityLoader() {
-  const { systemTheme, theme, setTheme } = useTheme();
+  const { theme } = useTheme();
 
   useEffect(() => {
     async function getLoader() {
@@ -23,4 +23,3 @@ export default function InfinityLoader() {
     ></l-infinity>
   );
 }
-
