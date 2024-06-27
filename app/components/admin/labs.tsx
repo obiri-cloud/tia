@@ -137,7 +137,11 @@ const Labs = () => {
                             {image.name}
                           </TableCell>
                           <TableCell>{image.status}</TableCell>
-                          <TableCell>{image.creation_date}</TableCell>
+                          <TableCell>
+                            {new Date(image.creation_date).toLocaleDateString()}{" "}
+                            -{" "}
+                            {new Date(image.creation_date).toLocaleTimeString()}
+                          </TableCell>
                           <TableCell className="text-center">
                             {image.image}
                           </TableCell>
