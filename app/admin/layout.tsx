@@ -2,7 +2,7 @@
 import { Inter } from "next/font/google";
 
 import ReduxProvider from "@/redux/ReduxProvider";
-import { LogOut, PieChart, ListVideo, Star, File } from "lucide-react";
+import { LogOut, PieChart, ListVideo, Star, File, Tag } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import useAdminCheck from "../../hooks/admin-check";
 import { toast } from "@/components/ui/use-toast";
@@ -37,6 +37,12 @@ export default function AdminPage({ children }: { children: React.ReactNode }) {
       name: "Labs",
       Icon: ListVideo,
       href: "/admin/labs",
+      isExact: true,
+    },
+    {
+      name: "Tags",
+      Icon: Tag,
+      href: "/admin/tags",
       isExact: true,
     },
     {
