@@ -8,8 +8,9 @@ import useAdminCheck from "../../hooks/admin-check";
 import { toast } from "@/components/ui/use-toast";
 import { logout } from "@/lib/logout";
 import Link from "next/link";
-import { isActive } from "../dashboard/layout";
+
 import { cn } from "@/lib/utils";
+import { isActive } from "@/lib/isPathActive";
 
 const inter = Inter({ subsets: ["latin"] });
 
