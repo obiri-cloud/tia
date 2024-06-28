@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, FormEvent, useEffect, useRef, useState } from "react";
+import React, { FormEvent, memo, useEffect, useRef, useState } from "react";
 import {
   Form,
   FormControl,
@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import * as z from "zod";
-import axios from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
 import { getImageListX } from "./overview";
@@ -34,7 +34,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { ContentProps, ILabImage } from "@/app/types";
+import { ContentProps, ILabImage, Tag, TagResponse } from "@/app/types";
 import { CheckIcon, Trash } from "lucide-react";
 import formClient from "@/lib/formRequest";
 
@@ -53,8 +53,11 @@ import {
 } from "@/components/ui/popover";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/cn";
+import apiClient from "@/lib/request";
+import { useQuery } from "react-query";
+import { disableButton, enableButton } from "@/lib/toggleLoaderButton";
 
-const NewImageForm = () => {
+const NewImageForm = memo(() => {
   const form = useForm();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const levels = ["beginner", "intermediate", "hard"];
@@ -162,10 +165,7 @@ const NewImageForm = () => {
   });
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    if (buttonRef.current) {
-      buttonRef.current.disabled = true;
-    }
+    disableButton(buttonRef);
 
     let parseFormData = {
       name: nameRef.current?.value,
@@ -204,7 +204,6 @@ const NewImageForm = () => {
     formData.append("description", descriptionRef.current?.value || "");
     formData.append("command", commandRef.current?.value || "");
     formData.append("arguments", argumentsRef.current?.value || "");
-    formData.append("tags", tagsRef.current?.value || "");
 
     // if (imageDetails) {
     if (!readinessProbeInitialDelaySeconds) {
@@ -317,11 +316,25 @@ const NewImageForm = () => {
       formSchema.parse(parseFormData);
       let response;
       if (imageDetails) {
+        let tagsChanged = false;
+
+        let ogTagArr = imageDetails.tags?.split(", ").map((tag) => tag.trim());
+
+        selectedTags.forEach((tag) => {
+          if (!ogTagArr?.includes(tag)) {
+            tagsChanged = true;
+          }
+        });
+
+        if (tagsChanged) {
+          df["tags"] = selectedTags.join(", ");
+        }
         response = await formClient.put(
           `/moderator/image/${imageDetails.id}/update/`,
           df
         );
       } else {
+        df["tags"] = selectedTags.join(", ");
         response = await formClient.post(`/moderator/image/create/`, df);
       }
 
@@ -334,7 +347,7 @@ const NewImageForm = () => {
           } successfully`,
           duration: 2000,
         });
-        getImageListX(token).then((response) => {
+        getImageListX().then((response) => {
           dispatch(setImageCount(response.data.count));
           dispatch(setImageList(response.data.data));
           document.getElementById("closeDialog")?.click();
@@ -348,8 +361,6 @@ const NewImageForm = () => {
         });
       }
     } catch (error) {
-      console.error("error", error);
-
       if (error instanceof z.ZodError) {
         error.issues.map((err) =>
           toast({
@@ -360,10 +371,17 @@ const NewImageForm = () => {
           })
         );
       }
-    } finally {
-      if (buttonRef.current) {
-        buttonRef.current.disabled = false;
+
+      if (error instanceof AxiosError) {
+        toast({
+          variant: "destructive",
+          title: "Image Creation Error",
+          description: error.message,
+          duration: 2000,
+        });
       }
+    } finally {
+      enableButton(buttonRef, imageDetails ? "Update" : "Save");
     }
     setUpdateImage(false);
   };
@@ -699,31 +717,24 @@ const NewImageForm = () => {
     dispatch(setCurrentImage(null));
   };
 
-  const frameworks = [
-    {
-      value: "next.js",
-      label: "Next.js",
-    },
-    {
-      value: "sveltekit",
-      label: "SvelteKit",
-    },
-    {
-      value: "nuxt.js",
-      label: "Nuxt.js",
-    },
-    {
-      value: "remix",
-      label: "Remix",
-    },
-    {
-      value: "astro",
-      label: "Astro",
-    },
-  ];
+  const fetchTags = async () => {
+    const response: AxiosResponse<TagResponse> = await apiClient.get(
+      "/moderator/tags/"
+    );
+    return response.data.data;
+  };
+  const { data: tags } = useQuery(["tags"], fetchTags);
 
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (imageDetails && imageDetails?.tags !== "") {
+      setSelectedTags(
+        imageDetails.tags?.split(",").map((tag) => tag.trim()) || []
+      );
+    }
+  }, [imageDetails]);
 
   return (
     <DialogContent
@@ -946,7 +957,7 @@ const NewImageForm = () => {
             <FormField
               control={form.control}
               name="tags"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel className=" formTextLight">Tags</FormLabel>
                   <br />
@@ -958,10 +969,8 @@ const NewImageForm = () => {
                         aria-expanded={open}
                         className="w-full justify-between"
                       >
-                        {value
-                          ? frameworks.find(
-                              (framework) => framework.value === value
-                            )?.label
+                        {selectedTags.length > 0
+                          ? selectedTags.join(", ")
                           : "Select tag..."}
                         <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
@@ -972,31 +981,42 @@ const NewImageForm = () => {
                           placeholder="Search tag..."
                           className="h-9"
                         />
-                        <CommandList>
+                        <CommandList className="w-full">
                           <CommandEmpty>No tags found.</CommandEmpty>
                           <CommandGroup>
-                            {frameworks.map((framework) => (
-                              <CommandItem
-                                key={framework.value}
-                                value={framework.value}
-                                onSelect={(currentValue) => {
-                                  setValue(
-                                    currentValue === value ? "" : currentValue
-                                  );
-                                  setOpen(false);
-                                }}
-                              >
-                                {framework.label}
-                                <CheckIcon
-                                  className={cn(
-                                    "ml-auto h-4 w-4",
-                                    value === framework.value
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                              </CommandItem>
-                            ))}
+                            {tags &&
+                              tags?.map((tag: Tag) => (
+                                <CommandItem
+                                  key={tag.id}
+                                  value={tag.name}
+                                  onSelect={() => {
+                                    if (
+                                      selectedTags.find((st) => st === tag.name)
+                                    ) {
+                                      setSelectedTags(
+                                        selectedTags.filter(
+                                          (st) => st !== tag.name
+                                        )
+                                      );
+                                    } else {
+                                      setSelectedTags([
+                                        ...selectedTags,
+                                        tag.name,
+                                      ]);
+                                    }
+                                  }}
+                                >
+                                  {tag.name}
+                                  <CheckIcon
+                                    className={cn(
+                                      "ml-auto h-4 w-4",
+                                      selectedTags.find((st) => st === tag.name)
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
                           </CommandGroup>
                         </CommandList>
                       </Command>
@@ -1051,6 +1071,6 @@ const NewImageForm = () => {
       </Form>
     </DialogContent>
   );
-};
+});
 
 export default NewImageForm;
