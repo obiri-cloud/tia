@@ -89,11 +89,11 @@ export function LabsPagination({ table }: DataTablePaginationProps<any>) {
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[1, 2, 20].map((pageSize) => (
+            {[1, 2, 20].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize.toString()}
+                  {pageSize}
                 </SelectItem>
-              ))}
+             ))}
             </SelectContent>
           </Select>
         </div>

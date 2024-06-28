@@ -196,15 +196,16 @@ const AccountPage = () => {
   };
 
   const deactivateSubscription = async () => {
-    if (deactivateButtonRef.current)
-      deactivateButtonRef.current.disabled = true;
+    if (deactivateButtonRef.current) deactivateButtonRef.current.disabled = true;
     try {
       const response = await apiClient.post(
-        `/payment/subscription/delete/`,
-        {}
+        `/payment/subscription/delete/`
       );
+
       console.log("account----->", response);
+
       if (response.status === 204) {
+        window.location.href = "/dashboard/account";
         toast({
           title: "Subscription deactivated successfully!",
           variant: "success",
@@ -221,9 +222,10 @@ const AccountPage = () => {
     } catch (error) {
       userCheck(error as AxiosError);
       console.error("error", error);
+      console.log({error})
       toast({
         //@ts-ignore
-        title: error.response.data.message,
+        title: "Subscription deactivation goes wrong....",
         variant: "destructive",
         duration: 2000,
       });

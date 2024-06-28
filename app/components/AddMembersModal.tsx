@@ -7,7 +7,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormField, FormItem } from "@/components/ui/form";
 import { useCallback, useEffect, useState } from "react";
 import { GroupMember } from "../types";
-import axios from "axios";
 import { useSession } from "next-auth/react";
 import OrgDialog from "./my-organization/org-dialog";
 import { OrgGroup } from "../my-organization/groups/page";
@@ -24,20 +23,34 @@ const AddMembersModal = ({
   members,
   onSubmit,
   group,
+  handleNextPage,
+  handlePreviousPage,
+  previousPage,
+  nextPage,
+  loading,
+  setMembers,
 }: {
   members: GroupMember[] | undefined;
   onSubmit: (s: IMemberChanges) => void;
   group: OrgGroup | undefined;
+  handleNextPage: any;
+  handlePreviousPage: any;
+  previousPage: any;
+  nextPage: any;
+  loading: boolean;
+  setMembers: (data:any) => void;
 }) => {
   const form = useForm();
   const { data: session } = useSession();
-  const token = session?.user!.tokens?.access_token;
-  const [loadingMembers, setIsLoadingMembers] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(10); // Items per page
+  const [loadingMembers, setLoadingMembers] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const queryClient = useQueryClient();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedMembers, setSelectedMembers] = useState(new Set());
+  const [changes, setChanges] = useState<IMemberChanges>({
+    added: new Set(),
+    removed: new Set(),
+  });
+
   let organization_id = session?.user.data.organization_id;
 
   const getSearchedMembers = async (
@@ -48,17 +61,15 @@ const AddMembersModal = ({
         `/organization/${organization_id}/members/?q=${query}`
       );
 
-      setSelectedMembers(new Set(response.data.data));
+      // setSelectedMembers(new Set(response.data.data));
       return response.data.data;
     } catch (error) {
-      // setError("Failed to load members. Please try again.");
-      setIsLoadingMembers(false);
       console.error(error);
     }
   };
 
   const getMembers = async () => {
-    setIsLoadingMembers(true);
+    setLoadingMembers(true);
     try {
       const response = await apiClient.get(
         `/organization/${organization_id}/group/${group?.id}/member/list/`
@@ -73,10 +84,10 @@ const AddMembersModal = ({
       }
 
       setSelectedMembers(new Set(newData));
-      setIsLoadingMembers(false);
     } catch (error) {
       console.log(error);
-      setIsLoadingMembers(false);
+    } finally {
+      setLoadingMembers(false);
     }
   };
 
@@ -87,8 +98,17 @@ const AddMembersModal = ({
     };
   }, [group]);
 
-  const [selectedMembers, setSelectedMembers] = useState(new Set());
-
+  const { mutate: searchMutation } = useMutation(getSearchedMembers, {
+    onSuccess: (data) => {
+      queryClient.setQueryData("members", data);
+      setSelectedMembers(new Set(data));
+      setMembers(data)
+    },
+    onError: (error: any) => {
+      console.error(error);
+    },
+  });
+  
   const debounce = (func: (e: string) => void, delay: number) => {
     let timeoutId: any;
     return (...args: any) => {
@@ -99,26 +119,12 @@ const AddMembersModal = ({
     };
   };
 
-  const { mutate: searchMutation } = useMutation(getSearchedMembers, {
-    onSuccess: (data) => {
-      queryClient.setQueryData("members", data);
-      setSelectedMembers(new Set(data));
-    },
-    onError: (error: any) => {
-      console.error(error);
-    },
-  });
 
   const debouncedFetchMembers = useCallback(
     debounce((query: string) => searchMutation(query), 400),
     [searchMutation]
   );
 
-  // State to track the changes - additions and deletions
-  const [changes, setChanges] = useState<IMemberChanges>({
-    added: new Set(),
-    removed: new Set(),
-  });
 
   const handleCheckedChange = (checked: string | boolean, memberId: string) => {
     const updatedSet = new Set(selectedMembers);
@@ -149,21 +155,6 @@ const AddMembersModal = ({
     debouncedFetchMembers(event.target.value);
   };
 
-  const handleSearchQueryChange = (query: string) => {};
-
-  // Pagination
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  // const currentMembers = members?.filter((member) =>
-  //     `${member.member.first_name} ${member.member.last_name}`
-  //       .toLowerCase()
-  //       .includes(searchTerm.toLowerCase()) ||
-  //     member.member.email.toLowerCase().includes(searchTerm.toLowerCase())
-  //   )
-  //   .slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil((members?.length || 0) / itemsPerPage);
-
   return (
     <OrgDialog
       title={`${group?.name} Members`}
@@ -184,7 +175,7 @@ const AddMembersModal = ({
               name="image"
               render={() => (
                 <FormItem>
-                  {loadingMembers ? (
+                  {loadingMembers || loading ? (
                     <p className="text-black dark:text-white text-center">
                       Loading members...
                     </p>
@@ -229,19 +220,15 @@ const AddMembersModal = ({
       </div>
       <div className="flex justify-between items-center mt-4">
         <Button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
+          onClick={handlePreviousPage}
+          disabled={previousPage === null}
         >
           Previous
         </Button>
-        <span className="text-black dark:text-white">
-          Page {currentPage} of {totalPages}
-        </span>
+
         <Button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
+          onClick={handleNextPage}
+          disabled={nextPage === null}
         >
           Next
         </Button>

@@ -32,8 +32,7 @@ const UserPage = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState("");
   const [searchPerformed, setSearchPerformed] = useState(false);
 
-  const categories = ["multinode", "devops", "networking"];
-  const difficulties = ["Easy", "Medium", "Hard"];
+  const difficulties = ["beginner", "intermediate", "hard"];
 
   const getImages = async () => {
     try {
@@ -45,16 +44,32 @@ const UserPage = () => {
     }
   };
 
+  const getCategories = async () => {
+    try {
+      const response = await apiClient.get(`/user/image/tags/`);
+      return response.data.tags || [];
+    } catch (error) {
+      userCheck(error as AxiosError);
+      return [];
+    }
+  };
+
   const { data: images = [], isLoading, isError } = useQuery(["images"], getImages);
+  const { data: categories = [], isLoading: catLoading, isError: catError } = useQuery(["categories"], getCategories);
 
   const viewImage = (image: ILabImage) => {
     dispatch(setCurrentImage(image));
     router.push(`/dashboard/images?image=${image.id}`);
   };
 
-  const getSearchedMembers = async (query: string, categories: string[]): Promise<ILabImage[] | undefined> => {
+  const getSearchedMembers = async (query: string, categories: string[], difficulty: string): Promise<ILabImage[] | undefined> => {
     try {
-      const response = await apiClient.get(`user/image/list/?q=${query}&tags=${categories.join(',')}`);
+      const params = new URLSearchParams();
+      if (query) params.append('q', query);
+      if (categories.length) params.append('tags', categories.join(','));
+      if (difficulty) params.append('difficulty_level', difficulty);
+
+      const response = await apiClient.get(`/user/image/list/?${params.toString()}`);
       return response.data.data || [];
     } catch (error) {
       console.error(error);
@@ -62,7 +77,7 @@ const UserPage = () => {
     }
   };
 
-  const debounce = (func: (query: string, categories: string[]) => void, delay: number) => {
+  const debounce = (func: (query: string, categories: string[], difficulty: string) => void, delay: number) => {
     let timeoutId: any;
     return (...args: any) => {
       if (timeoutId) clearTimeout(timeoutId);
@@ -72,7 +87,7 @@ const UserPage = () => {
     };
   };
 
-  const { mutate: searchMutation } = useMutation(({ query, categories }: { query: string, categories: string[] }) => getSearchedMembers(query, categories), {
+  const { mutate: searchMutation } = useMutation(({ query, categories, difficulty }: { query: string, categories: string[], difficulty: string }) => getSearchedMembers(query, categories, difficulty), {
     onSuccess: (data) => {
       queryClient.setQueryData("images", data);
       setSearchPerformed(true);
@@ -84,7 +99,7 @@ const UserPage = () => {
   });
 
   const debouncedFetchMembers = useCallback(
-    debounce((query: string, categories: string[]) => searchMutation({ query, categories }), 400),
+    debounce((query: string, categories: string[], difficulty: string) => searchMutation({ query, categories, difficulty }), 400),
     [searchMutation]
   );
 
@@ -92,7 +107,7 @@ const UserPage = () => {
     const value = e.target.value;
     setSearchTerm(value);
     setSearchPerformed(false);
-    debouncedFetchMembers(value, selectedCategories);
+    debouncedFetchMembers(value, selectedCategories, selectedDifficulty);
   };
 
   const toggleCategory = (category: string) => {
@@ -102,7 +117,14 @@ const UserPage = () => {
 
     setSelectedCategories(newCategories);
     setSearchPerformed(false);
-    debouncedFetchMembers(searchTerm, newCategories);
+    debouncedFetchMembers(searchTerm, newCategories, selectedDifficulty);
+  };
+
+  const toggleDifficulty = (difficulty: string) => {
+    const newDifficulty = selectedDifficulty === difficulty ? "" : difficulty;
+    setSelectedDifficulty(newDifficulty);
+    setSearchPerformed(false);
+    debouncedFetchMembers(searchTerm, selectedCategories, newDifficulty);
   };
 
   return (
@@ -117,37 +139,46 @@ const UserPage = () => {
 
       <div className="p-4">
         <span className="">All Labs</span>
-        
         {/* Search Section */}
-        <div className="flex justify-center my-4">
-          <div className="w-1/5"></div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="Search..."
-            className="w-3/5 p-2 border rounded-md"
-          />
-          <div className="w-1/5"></div>
+        <div className="sticky top-0 z-10 bg-white dark:bg-[#2c2d3c] p-4">
+          <div className="flex justify-center my-4">
+            <div className="w-1/5"></div>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Search..."
+              className="w-3/5 p-2 border rounded-md"
+            />
+            <div className="w-1/5"></div>
+          </div>
         </div>
 
         {/* Categories Section */}
         <div className="my-4">
           <h2 className="text-lg font-semibold">Categories</h2>
           <div className="flex gap-2 mt-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => toggleCategory(category)}
-                className={`p-2 border rounded-md ${
-                  selectedCategories.includes(category)
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
+            {catLoading ? (
+              <>
+                <Skeleton className="p-2 w-20 h-9 border rounded-md bg-gray-200" />
+                <Skeleton className="p-2 w-20 h-9 border rounded-md bg-gray-200" />
+                <Skeleton className="p-2 w-20 h-9 border rounded-md bg-gray-200" />
+              </>
+            ) : (
+              categories.map((category: string) => (
+                <button
+                  key={category}
+                  onClick={() => toggleCategory(category)}
+                  className={`p-2 border rounded-md ${
+                    selectedCategories.includes(category)
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200"
+                  }`}
+                >
+                  {category}
+                </button>
+              ))
+            )}
           </div>
         </div>
 
@@ -158,7 +189,7 @@ const UserPage = () => {
             {difficulties.map((level) => (
               <button
                 key={level}
-                onClick={() => setSelectedDifficulty(level)}
+                onClick={() => toggleDifficulty(level)}
                 className={`p-2 border rounded-md ${
                   selectedDifficulty === level
                     ? "bg-blue-500 text-white"

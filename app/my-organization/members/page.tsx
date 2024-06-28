@@ -29,7 +29,6 @@ import {
   setMemberPageSize,
   setMemberTableData,
 } from "@/redux/reducers/MemberTableSlice";
-import { setnextState } from "@/redux/reducers/nextPaginationSlice";
 import AltRouteCheck from "@/app/components/alt-route-check";
 
 const ROLES = [
@@ -73,7 +72,7 @@ const Images = () => {
     try {
       setIsLoadingMembers(true);
       setError(null);
-      const response = await apiClient.get(`/organization/${org_id}/members`);
+      const response = await apiClient.get(`/organization/${org_id}/members/?page_size=5`);
 
       if (response.data.status === 404) {
         setIsLoadingMembers(false);

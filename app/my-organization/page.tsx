@@ -85,7 +85,7 @@ const myOrganizationPage = () => {
 
   const getOrgImages = async () => {
     try {
-      const response = await apiClient.get(`/organization/${org_id}/images/`);
+      const response = await apiClient.get(`/organization/${org_id}/images/?page_size=2`);
       console.log({ logs: response.data });
       dispatch(setLabTableData(response.data.data));
       dispatch(setLabPageSize(Math.ceil(response.data.count / 2)));
@@ -233,6 +233,7 @@ const myOrganizationPage = () => {
     onSuccess: (data) => {
       if (Array.isArray(data)) {
         queryClient.setQueryData("orgImages", data);
+        dispatch(setLabTableData(data));
         setemptyQuery(false);
       } else {
         queryClient.setQueryData("orgImages", {

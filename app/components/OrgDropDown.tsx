@@ -127,9 +127,18 @@ export default function OrgDropDown() {
   );
 
   const goToOrg = async (e: any, org: any) => {
+    console.log('----->',{orgrole:org.role,id:org.organization.id})
     e.preventDefault();
-    await update({ role: org?.role, organization_id: org });
-    router.push("/my-organization/overview");
+    await update({ role: org.role, organization_id: org.organization.id });
+    // router.push("/my-organization/overview");
+    window.location.href="/my-organization/overview"
+  };
+
+
+  const goToOrg2 = async (e: any, org: any) => {
+    e.preventDefault();
+    await update({ organization_id: org.id });
+    window.location.href="/my-organization/overview"
   };
 
   return (
@@ -150,7 +159,7 @@ export default function OrgDropDown() {
             <DropdownMenuItem>
               <Link href="/my-organization/overview" className="flex">
                 <Users2 className="h-4 w-4 mr-2" />
-                <span onClick={(e: any) => goToOrg(e, organization.id)}>
+                <span onClick={(e: any) => goToOrg2(e, organization)}>
                   {organization.name}
                 </span>
               </Link>
@@ -211,7 +220,7 @@ export default function OrgDropDown() {
                     <DropdownMenuPortal>
                       <DropdownMenuSubContent>
                         <DropdownMenuItem
-                          onClick={(e: any) => goToOrg(e, org.organization.id)}
+                          onClick={(e: any) => goToOrg(e, org)}
                           disabled={org.role === "Member"}
                         >
                           <Link href="/my-organization/overview">
