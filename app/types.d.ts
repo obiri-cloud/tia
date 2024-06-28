@@ -40,7 +40,7 @@ interface ILabImage {
   liveness_probe_failure_threshold?: number;
   updated_date?: string;
   sidecar?: boolean;
-  tags?: string;
+  tags: string;
 }
 
 interface IinviteData {
@@ -208,3 +208,12 @@ interface Plan {
   basicPrice?: number;
   plan_choice: string;
 }
+
+type Tag = {
+  id: number;
+  name: string;
+};
+
+type TagResponse = {
+  data: Tag[];
+};
