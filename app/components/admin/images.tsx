@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { TabsContent } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -24,8 +23,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { toast } from "@/components/ui/use-toast";
 import { getImageListX } from "./overview";
-import axios from "axios";
-import { useSession } from "next-auth/react";
 import {
   setCurrentImage,
   setImageCount,
@@ -41,15 +38,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVerticalIcon } from "lucide-react";
-import { useQuery } from "react-query";
 import apiClient from "@/lib/request";
 
 const Images = () => {
   const { imageCount, imageList } = useSelector(
     (state: RootState) => state.admin
   );
-
-  const { data: session } = useSession();
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -58,30 +52,19 @@ const Images = () => {
   const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
     useState<boolean>(false);
 
-  // @ts-ignore
-  const token = session?.user!.tokens?.access_token;
-
   const deleteImage = async (id: number | undefined) => {
-    let axiosConfig = {
-      method: "DELETE",
-      url: `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/delete/`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
     try {
-      const response = await axios(axiosConfig);
+      const response = await apiClient.delete(`/moderator/image/${id}/delete/`);
 
       if (response.status === 204) {
         toast({
           variant: "success",
           title: "Image Deletion",
           description: "Image deleted successfully",
+          duration: 2000,
         });
 
-        getImageListX(token).then((response) => {
+        getImageListX().then((response) => {
           dispatch(setImageCount(response.data.count));
           dispatch(setImageList(response.data.data));
           document.getElementById("closeDialog")?.click();
@@ -91,6 +74,7 @@ const Images = () => {
           variant: "destructive",
           title: "Image Deletion  Error",
           description: response.data.message,
+          duration: 2000,
         });
       }
     } catch (error) {
@@ -98,21 +82,12 @@ const Images = () => {
         variant: "destructive",
         title: "Image Deletion  Error",
         description: "Something went wrong",
+        duration: 2000,
       });
     } finally {
       // setDisabled(false);
     }
   };
-
-  const getTags = () => {
-    const request = apiClient.get("/moderator/tags/");
-    console.log("request", request);
-    return request;
-  };
-
-  const { data: tags } = useQuery(["tags"], () => getTags());
-
-  console.log("tags", tags);
 
   return (
     <div className="space-y-4">
