@@ -20,15 +20,8 @@ import * as z from "zod";
 import { toast } from "@/components/ui/use-toast";
 import TailLoader from "@/app/loaders/tail";
 import { createRoot } from "react-dom/client";
+import { Tag, TagResponse } from "@/app/types";
 
-type Tag = {
-  id: number;
-  name: string;
-};
-
-type TagResponse = {
-  data: Tag[];
-};
 const TagsPage = () => {
   const fetchTags = async () => {
     const response: AxiosResponse<TagResponse> = await apiClient.get(
