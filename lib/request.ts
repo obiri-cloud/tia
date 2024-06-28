@@ -11,7 +11,6 @@ const apiClient = () => {
 
   instance.interceptors.request.use(async (request) => {
     const session = await getSession();
-    console.log("=>", { session });
 
     if (session) {
       (request.headers[
