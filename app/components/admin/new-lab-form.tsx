@@ -84,7 +84,7 @@ const NewLabForm: FC<INewLabForm> = ({ labDetails }) => {
           description: "Image updated successfully",
           duration: 2000
         });
-        getImageListX(token).then(() => {
+        getImageListX().then(() => {
           document.getElementById("closeDialog")?.click();
         });
       } else {
