@@ -1,10 +1,8 @@
 "use client";
 import ReduxProvider from "@/redux/ReduxProvider";
-import { SVGProps } from "react";
+
 import { Inter } from "next/font/google";
-import { signOut } from "next-auth/react";
-import secureLocalStorage from "react-secure-storage";
-import ProfileHeader from "../components/admin/profile-header";
+
 import { usePathname } from "next/navigation";
 import { DropToggle } from "../components/DropToggle";
 import {
@@ -20,6 +18,7 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { logout } from "@/lib/logout";
+import { isActive } from "@/lib/isPathActive";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -165,12 +164,4 @@ export default function UserDashboardLayout({
       <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     </ReduxProvider>
   );
-}
-
-export function isActive(path: string, currentPath: string, isExact?: boolean) {
-  if (isExact) {
-    return currentPath === path;
-  }
-
-  return currentPath.startsWith(path);
 }
