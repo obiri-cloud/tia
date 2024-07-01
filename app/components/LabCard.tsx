@@ -29,13 +29,14 @@ const LabCard = ({
       <p className="mt-3 text-sm">{lab.description}</p>
       <div className="mt-4 space-x-1">
         {lab?.tags &&
-          lab?.tags
-            ?.split(",")
-            .map((tag) => (
-              <span className="px-3 py-1 border border-1 rounded-md text-sm">
-                {tag}
-              </span>
-            ))}
+          lab?.tags?.split(",").map((tag, i) => (
+            <span
+              key={i}
+              className="px-3 py-1 border border-1 rounded-md text-sm"
+            >
+              {tag}
+            </span>
+          ))}
       </div>
     </div>
   );
