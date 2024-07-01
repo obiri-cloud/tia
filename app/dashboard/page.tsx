@@ -23,7 +23,16 @@ const UserPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const { data: images } = useQuery(["images"], () => getImages());
+  const token = session?.user.tokens?.access_token;
+
+  const queryClient = useQueryClient();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedDifficulty, setSelectedDifficulty] = useState("");
+  const [searchPerformed, setSearchPerformed] = useState(false);
+
+  const difficulties = ["beginner", "intermediate", "hard"];
 
   const getImages = async () => {
     try {
@@ -45,9 +54,109 @@ const UserPage = () => {
     }
   };
 
+  const {
+    data: images = [],
+    isLoading,
+    isError,
+  } = useQuery(["images"], getImages);
+  const {
+    data: categories = [],
+    isLoading: catLoading,
+    isError: catError,
+  } = useQuery(["categories"], getCategories);
+
   const viewImage = (image: ILabImage) => {
     dispatch(setCurrentImage(image));
     router.push(`/dashboard/images?image=${image.id}`);
+  };
+
+  const getSearchedMembers = async (
+    query: string,
+    categories: string[],
+    difficulty: string
+  ): Promise<ILabImage[] | undefined> => {
+    try {
+      const params = new URLSearchParams();
+      if (query) params.append("q", query);
+      if (categories.length) params.append("tags", categories.join(","));
+      if (difficulty) params.append("difficulty_level", difficulty);
+
+      const response = await apiClient.get(
+        `/user/image/list/?${params.toString()}`
+      );
+      return response.data.data || [];
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  const debounce = (
+    func: (query: string, categories: string[], difficulty: string) => void,
+    delay: number
+  ) => {
+    let timeoutId: any;
+    return (...args: any) => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(null, args);
+      }, delay);
+    };
+  };
+
+  const { mutate: searchMutation } = useMutation(
+    ({
+      query,
+      categories,
+      difficulty,
+    }: {
+      query: string;
+      categories: string[];
+      difficulty: string;
+    }) => getSearchedMembers(query, categories, difficulty),
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData("images", data);
+        setSearchPerformed(true);
+      },
+      onError: (error: any) => {
+        console.error(error);
+        setSearchPerformed(true);
+      },
+    }
+  );
+
+  const debouncedFetchMembers = useCallback(
+    debounce(
+      (query: string, categories: string[], difficulty: string) =>
+        searchMutation({ query, categories, difficulty }),
+      400
+    ),
+    [searchMutation]
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    setSearchPerformed(false);
+    debouncedFetchMembers(value, selectedCategories, selectedDifficulty);
+  };
+
+  const toggleCategory = (category: string) => {
+    const newCategories = selectedCategories.includes(category)
+      ? selectedCategories.filter((cat) => cat !== category)
+      : [...selectedCategories, category];
+
+    setSelectedCategories(newCategories);
+    setSearchPerformed(false);
+    debouncedFetchMembers(searchTerm, newCategories, selectedDifficulty);
+  };
+
+  const toggleDifficulty = (difficulty: string) => {
+    const newDifficulty = selectedDifficulty === difficulty ? "" : difficulty;
+    setSelectedDifficulty(newDifficulty);
+    setSearchPerformed(false);
+    debouncedFetchMembers(searchTerm, selectedCategories, newDifficulty);
   };
 
   return (
@@ -57,6 +166,7 @@ const UserPage = () => {
           <span className="p-2">All Labs</span>
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c]" />
         </div>
+
         <AltRouteCheck />
       </div>
 
@@ -135,15 +245,21 @@ const UserPage = () => {
                 />
               ))}
             </>
+          ) : (
+            <>
+              {Array.isArray(images) && images.length > 0
+                ? images.map((image: ILabImage, i: number) => (
+                    <LabCard key={i} lab={image} viewImage={viewImage} />
+                  ))
+                : searchPerformed && (
+                    <div className="w-full flex justify-center items-center col-span-12">
+                      <p className="text-gray-600 dark:text-white">
+                        No Lab(s) found for the specified search criteria...
+                      </p>
+                    </div>
+                  )}
+            </>
           )}
-
-          {images && images.length === 0 ? (
-            <div className="w-full flex justify-center  items-center col-span-12">
-              <p className="text-gray-600 dark:text-white">
-                No images found...
-              </p>
-            </div>
-          ) : null}
         </div>
       </div>
     </div>
