@@ -1,27 +1,15 @@
 "use client";
-import {
-  ILabImage,
-  ISession,
-  NoInvitationsResponse,
-  OrganizationGroup,
-} from "@/app/types";
+import { OrganizationGroup } from "@/app/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { userCheck } from "@/lib/utils";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { ChevronRight } from "lucide-react";
-import { useSession } from "next-auth/react";
+
 import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import React from "react";
 import { useQuery } from "react-query";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import AltRouteCheck from "@/app/components/alt-route-check";
 import { Arrow } from "@/public/svgs/Arrow";
 import apiClient from "@/lib/request";
@@ -70,40 +58,6 @@ const OrganizationPage = () => {
         <AltRouteCheck />
       </div>
 
-      {/* <div className="p-4 ">
-        {!isLoading && groups ? (
-          groups.data.length === 0 ? (
-            <p className="dark:text-white text-black w-full text-center">
-              You have not being added to any group in this organization...
-            </p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="">Group Name</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {groups.data.map((group, i) => (
-                  <TableRow key={i}>
-                    <TableCell>
-                      <Link
-                        href={`/dashboard/organizations/${id}/groups/${group.id}?name=${name}&group_name=${group.name}`}
-                        className="text-blue-500 underline"
-                      >
-                        {group.name}
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )
-        ) : (
-          "Loading"
-        )}
-      </div> */}
-
       <div className="p-4 ">
         {!isLoading && groups ? (
           <div className=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6">
@@ -139,7 +93,7 @@ const OrganizationPage = () => {
             {groups && groups.data.length === 0 ? (
               <div className="w-full flex justify-center  items-center col-span-12">
                 <p className="text-gray-600 dark:text-white">
-                  No images found...
+                  You haven't been added to any group yet...
                 </p>
               </div>
             ) : null}
