@@ -220,7 +220,7 @@ export default function OrgDropDown() {
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                           <Link
-                            href={`/dashboard/organizations/${org.organization.id}/groups`}
+                            href={`/dashboard/organizations/${org.organization.id}/groups?name=${org.organization.name}`}
                           >
                             <span>Go to labs</span>
                           </Link>
