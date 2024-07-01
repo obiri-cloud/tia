@@ -17,7 +17,7 @@ import InviteModal from "@/app/components/InviteModal";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import BulkInviteModal from "@/app/components/BulkInviteModal";
 import { Input } from "@/components/ui/input";
-import { DataTable } from "@/app/components/DataTable";
+
 import { columns } from "@/app/components/columns";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
@@ -33,6 +33,7 @@ import { TableCaption, Table } from "@/components/ui/table";
 import apiClient from "@/lib/request";
 import formClient from "@/lib/formRequest";
 import AltRouteCheck from "@/app/components/alt-route-check";
+import DataTable from "@/app/components/DataTable";
 
 const InivitationPage = () => {
   const [file, setfile] = useState<any>();
@@ -369,7 +370,6 @@ const InivitationPage = () => {
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
         <AltRouteCheck />
-      
       </div>
       <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">
