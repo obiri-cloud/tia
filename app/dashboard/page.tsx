@@ -22,8 +22,6 @@ const UserPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const token = session?.user.tokens?.access_token;
-
   const { data: images } = useQuery(["images"], () => getImages());
 
   const getImages = async () => {
