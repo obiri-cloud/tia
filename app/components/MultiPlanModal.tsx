@@ -46,7 +46,6 @@ export default function MultiPlanModal({
   const { data: session } = useSession();
   const token = session?.user?.tokens?.access_token;
   const [loading, setLoading] = useState(false);
-  const [loading2, setLoading2] = useState(false);
 
   const subscribe = async (plan: Plan) => {
     setLoading(true);
@@ -89,7 +88,7 @@ export default function MultiPlanModal({
   };
 
   const upgradeSubscription = async (plan: Plan) => {
-    setLoading2(true);
+    setLoading(true);
     try {
       const response = await apiClient.post(`/payment/subscription/update/`, {
         amount: plan.price,
@@ -116,7 +115,7 @@ export default function MultiPlanModal({
         variant: "destructive",
       });
     } finally {
-      setLoading2(false);
+      setLoading(false);
     }
   };
 

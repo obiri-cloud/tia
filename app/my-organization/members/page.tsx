@@ -12,6 +12,7 @@ import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { GroupMember } from "@/app/types";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import MemberModal from "@/app/components/MemberModal";
 import {
   Select,
   SelectContent,
@@ -29,8 +30,8 @@ import {
   setMemberPageSize,
   setMemberTableData,
 } from "@/redux/reducers/MemberTableSlice";
-import { setnextState } from "@/redux/reducers/nextPaginationSlice";
 import AltRouteCheck from "@/app/components/alt-route-check";
+import { Button } from "@/components/ui/button";
 
 const ROLES = [
   {
@@ -57,8 +58,10 @@ const Images = () => {
   const [image, setImage] = useState<any>();
   const [role, setRole] = useState<string>("");
   const [isOpenViewDialogOpen, setIsOpenViewDialog] = useState<boolean>(false);
-  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
-    useState<boolean>(false);
+  const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =useState<boolean>(false);
+  const [emailInput, setEmailInput] = useState<string>('');
+  const [isOpenMembersDialogOpen, setIsOpenMemberseDialog] =useState<boolean>(false);
+
   const [loadingMembers, setIsLoadingMembers] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState<string | null | boolean>(null);
@@ -73,7 +76,7 @@ const Images = () => {
     try {
       setIsLoadingMembers(true);
       setError(null);
-      const response = await apiClient.get(`/organization/${org_id}/members`);
+      const response = await apiClient.get(`/organization/${org_id}/members/?page_size=5`);
 
       if (response.data.status === 404) {
         setIsLoadingMembers(false);
@@ -109,8 +112,11 @@ const Images = () => {
   };
 
   const deleteMember = async (id: number) => {
-    const response = await apiClient.delete(
-      `/organization/${org_id}/member/${id}/delete/`
+    const response =await apiClient.post(
+      `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/member/delete/`,
+      {
+        user_ids: id,
+      }
     );
     return response.data.data;
   };
@@ -247,6 +253,66 @@ const Images = () => {
     debouncedRoleMembers(query);
   };
 
+
+      //single and direct invite 
+      const addDirectInvite = async (email: string) => {
+        const response = await apiClient.post(
+          `/organization/${org_id}/members/add/`,
+          {
+            email:email
+          }
+        );
+        return response.data;
+      };
+  
+      //direct single invite
+      const { mutate: addDirectInviteMutation } = useMutation(
+        (data: string) => addDirectInvite(data),
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries("members");
+            setEmailInput("");
+            getMembers();
+            toast({
+              variant: "success",
+              title: `Added Member sucessfully`,
+            });
+            setIsOpenMemberseDialog(false);
+            (
+              document.getElementById("submit-button") as HTMLButtonElement
+            ).textContent = "Adding Member";
+          },
+          onError: (error: any) => {
+            const responseData = error.response.data;
+            console.log({responseData})
+            toast({
+              variant: "destructive",
+              title: responseData.message,
+            });
+            (
+              document.getElementById("submit-button") as HTMLButtonElement
+            ).textContent = "Adding Member";
+    
+            (
+              document.getElementById("submit-button") as HTMLButtonElement
+            ).disabled = false;
+          },
+        }
+      );
+  
+    //single and direct invite
+    const sendDirectEmail = () => {
+      (document.getElementById("submit-btn") as HTMLButtonElement).disabled =
+        true;
+      (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
+        "Adding Member...";
+      (document.getElementById("submit-btn") as HTMLButtonElement).textContent =
+        "Adding Member...";
+      addDirectInviteMutation(emailInput);
+    };
+  
+
+
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
@@ -267,12 +333,16 @@ const Images = () => {
       </div>
       <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">
-          <CardHeader className="flex flex-row justify-between items-center w-full">
-            <div>
-              <CardTitle>Organization Members</CardTitle>
-            </div>
-          </CardHeader>
-
+        <CardHeader className="flex flex-row justify-between items-center w-full">
+        <CardTitle>Organization Members</CardTitle>
+        <Button
+          onClick={() => {
+            setIsOpenMemberseDialog(true);
+          }}
+        >
+          Add Member 
+        </Button>
+      </CardHeader>
           <div className="flex items-center gap-4 m-5">
             <Input
               placeholder="Search members"
@@ -338,6 +408,17 @@ const Images = () => {
           confirmText="Yes, Delete"
           confirmFunc={() => deleteMemberMutation(image?.member.id)}
         />
+      </Dialog>
+
+
+
+      <Dialog
+        open={isOpenMembersDialogOpen}
+        onOpenChange={
+          isOpenMembersDialogOpen ? setIsOpenMemberseDialog : setIsOpenViewDialog
+        }
+      >
+        <MemberModal emailInput={emailInput} onSend={sendDirectEmail} setEmailInput={setEmailInput} />
       </Dialog>
     </div>
   );

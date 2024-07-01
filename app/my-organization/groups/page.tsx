@@ -1,5 +1,5 @@
 "use client";
-import React, { FormEvent, useCallback, useState } from "react";
+import React, { FormEvent, useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -19,8 +19,6 @@ import {
 } from "@/components/ui/table";
 import CreateGroupModal from "@/app/components/CreateGroupModal";
 import { toast } from "@/components/ui/use-toast";
-
-import axios from "axios";
 import { useSession } from "next-auth/react";
 import DeleteConfirmation from "@/app/components/delete-confirmation";
 import { ILabImage, GroupMember } from "@/app/types";
@@ -70,9 +68,17 @@ const OrganizationGroup = () => {
   const [group, setGroup] = useState<OrgGroup | null>(null);
   const [emptyQuery, setemptyQuery] = useState(false);
   const [updateData, setUpdateData] = useState<any>(null);
+  const [members, setMembers] = useState<GroupMember[]>([]);
+  const [images, setImages] = useState<ILabImage[]>([]);
+  const [nextPage, setNextPage] = useState<string | null>(null);
+  const [previousPage, setPreviousPage] = useState<string | null>(null);
+  const [loading,setLoading]=useState<boolean>(false)
 
-  // @ts-ignore
-  const token = session?.user!.tokens?.access_token;
+
+  //
+  const [nextImgPage, setNextImgPage] = useState<string | null>(null);
+  const [previousImgPage, setPreviousImgPage] = useState<string | null>(null);
+  
   const org_id = session?.user!.data?.organization_id;
 
   const getGroups = async (): Promise<OrgGroup[] | undefined> => {
@@ -89,26 +95,40 @@ const OrganizationGroup = () => {
 
   const getMembers = async (): Promise<GroupMember[] | undefined> => {
     try {
-      const response = await apiClient.get(`/organization/${org_id}/members/`);
-      return response.data.data;
+      const response = await apiClient.get(`/organization/${org_id}/members/?page_size=2`);
+      setNextPage(response.data.next);
+      setPreviousPage(response.data.previous);
+      setMembers(response.data.data);
+      return response.data.data
     } catch (error) {
       console.log(error);
     }
   };
 
-  const { data: members } = useQuery(["members"], () => getMembers());
+  // useEffect(()=>{
+  //   getMembers()
+  // },[])
+
+  const { data: membersData } = useQuery(["members"], () => getMembers());
 
   const getOrgImages = async (): Promise<ILabImage[] | undefined> => {
     try {
-      const response = await apiClient.get(`/organization/${org_id}/images/`);
-
+      const response = await apiClient.get(`/organization/${org_id}/images/?page_size=3`);
+      setNextImgPage(response.data.next);
+      setPreviousImgPage(response.data.previous);
+      setImages(response.data.data);
       return response.data.data;
     } catch (error) {
       console.log(error);
     }
   };
 
-  const { data: images } = useQuery(["orgImages"], () => getOrgImages());
+  // const { data: images } = useQuery(["orgImages"], () => getOrgImages());
+
+
+ useEffect(()=>{
+  getOrgImages()
+ },[])
 
   const { isLoading: loadingGroups, data: groups } = useQuery(["groups"], () =>
     getGroups()
@@ -123,7 +143,6 @@ const OrganizationGroup = () => {
     return response.data.data;
   };
 
-  console.log({ groups });
 
   const { mutate: deleteGroupMutation } = useMutation(
     (id: number) => deleteGroup(id),
@@ -480,6 +499,81 @@ const OrganizationGroup = () => {
     debouncedfetchSearchGroups(query);
   };
 
+
+ //pagination next 
+  const handleNextPage = async () => {
+     setLoading(true)
+    if (nextPage) {
+      try {
+        const response = await apiClient.get(nextPage);
+        setNextPage(response.data.next);
+        setPreviousPage(response.data.previous);
+        setMembers(response.data.data)
+      } catch (error) {
+        console.error("Error fetching next page:", error);
+      }finally{
+        setLoading(false)
+      }
+    }
+  };
+
+
+  //pagination next 
+    const handlePreviousPage = async () => {
+      setLoading(true)
+      if (previousPage) {
+        try {
+          const response = await apiClient.get(previousPage);
+          setNextPage(response.data.next);
+          setPreviousPage(response.data.previous);
+          setMembers(response.data.data)
+        } catch (error) {
+          console.error("Error fetching next page:", error);
+        }finally{
+          setLoading(false)
+        }
+      }
+    };
+
+
+     //pagination next 
+  const handleNextImgPage = async () => {
+    setLoading(true)
+   if (nextImgPage) {
+     try {
+       const response = await apiClient.get(nextImgPage);
+       setNextImgPage(response.data.next);
+       setPreviousImgPage(response.data.previous);
+       setImages(response.data.data)
+     } catch (error) {
+       console.error("Error fetching next page:", error);
+     }finally{
+       setLoading(false)
+     }
+   }
+ };
+
+
+ //pagination next 
+   const handlePreviousImgPage = async () => {
+     setLoading(true)
+     if (previousImgPage) {
+       try {
+         const response = await apiClient.get(previousImgPage);
+         setNextImgPage(response.data.next);
+         setPreviousImgPage(response.data.previous);
+         setImages(response.data.data)
+       } catch (error) {
+         console.error("Error fetching next page:", error);
+       }finally{
+         setLoading(false)
+       }
+     }
+   };
+
+   console.log({loadingGroups,groups})
+
+
   return (
     <div className="">
       <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
@@ -497,7 +591,6 @@ const OrganizationGroup = () => {
           <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c] " />
         </div>
         <AltRouteCheck />
-
       </div>
       <div className="grid gap-4 md:grid-cols-2 p-4">
         <Card className="col-span-4">
@@ -526,10 +619,10 @@ const OrganizationGroup = () => {
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
-
-                {!loadingGroups && groups && groups.length === 0 ? (
+                 {/* @ts-ignore */}
+                {!loadingGroups && (groups === 'No Group(s) found in this Organization' || (Array.isArray(groups) && groups.length === 0)) && (
                   <TableCaption>No groups in your organization...</TableCaption>
-                ) : null}
+                )}
 
                 {loadingGroups ? (
                   <TableCaption>
@@ -654,7 +747,13 @@ const OrganizationGroup = () => {
           <AddImgGroupModal
             images={images}
             group={group}
+            setImages={setImages}
             onSubmit={updateImages}
+            handleNextImgPage={handleNextImgPage}
+            handlePreviousImgPage={handlePreviousImgPage}
+            nextImgPage={nextImgPage}
+            previousImgPage={previousImgPage}
+            loading={loading}
           />
         )}
       </Sheet>
@@ -668,8 +767,14 @@ const OrganizationGroup = () => {
         {group && (
           <AddMembersModal
             members={members}
+            setMembers={setMembers}
             onSubmit={updateMember}
             group={group}
+            handleNextPage={handleNextPage}
+            handlePreviousPage={handlePreviousPage}
+            nextPage={nextPage}
+            previousPage={previousPage}
+            loading={loading}
           />
         )}
       </Sheet>
