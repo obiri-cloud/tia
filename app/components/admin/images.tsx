@@ -162,6 +162,16 @@ const Images = () => {
                                     className="cursor-pointer py-2"
                                     onClick={() =>
                                       router.push(
+                                        `/admin/images/${image.id}/description`
+                                      )
+                                    }
+                                  >
+                                    Attach Description
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="cursor-pointer py-2"
+                                    onClick={() =>
+                                      router.push(
                                         `/admin/images/${image.id}/instructions`
                                       )
                                     }

@@ -25,6 +25,8 @@ const apiClient = () => {
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
+      console.log("error", error);
+      
       if (
         error instanceof AxiosError &&
         //@ts-ignore

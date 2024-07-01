@@ -20,7 +20,8 @@ const InstructionPage = () => {
 
   const [currentImage, setCurrentImage] = useState<ILabImage>();
   const [instructions, setInstructions] = useState<IInstruction[] | null>(null);
-  const [currentInstruction, setCurrentInstruction] =useState<IInstruction | null>(null);
+  const [currentInstruction, setCurrentInstruction] =
+    useState<IInstruction | null>(null);
 
   const { data: session } = useSession();
 
@@ -53,10 +54,11 @@ const InstructionPage = () => {
     }
   };
 
+
   const getInstructions = async () => {
     const id = params.id;
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/instruction/list/`,
+      `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/image-descriptions/`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -66,22 +68,22 @@ const InstructionPage = () => {
         },
       }
     );
+
     if (response.status === 200) {
       setInstructions(response.data.data);
     }
   };
 
-  const deleteInstruction = async (siq: number | undefined) => {
+  const deleteInstruction2 = async (siq: number | undefined) => {
     const id = params.id;
-
+    console.log(id,siq)
     try {
-      const response = await apiClient.delete(
-        `/moderator/image/${id}/instruction/${siq}/delete/`
-      );
-      if (response.status === 200) {
+      const response = await apiClient.delete(`/moderator/image/${String(id)}/image-descriptions/${String(siq)}/`);
+      console.log({response})
+      if (response.status === 204) {
         toast({
           variant: "success",
-          title: "Sequence Instruction Deleted",
+          title: "description Deleted",
         });
         if (instructions) {
           let temp = instructions.filter((ins) => ins.id !== siq);
@@ -89,8 +91,45 @@ const InstructionPage = () => {
           document.getElementById("closeDialog")?.click();
         }
       }
-    } catch (error) {}
+    } catch (error) {
+        console.log("error", error);
+    }
   };
+
+
+
+  const deleteInstruction = async (siq: number | undefined) => {
+    const id = params.id;
+    const response = await axios.delete(
+      `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${String(id)}/image-descriptions/${String(siq)}/`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          // @ts-ignore
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log('==--|--|->',response)
+
+    if (response.status === 204) {
+        toast({
+          variant: "success",
+          title: "description Deleted",
+        });
+        if (instructions) {
+          let temp = instructions.filter((ins) => ins.id !== siq);
+          setInstructions(temp);
+          document.getElementById("closeDialog")?.click();
+        }
+      }
+
+    
+  };
+
+  console.log({currentInstruction})
 
   return (
     <Dialog>
@@ -119,11 +158,11 @@ const InstructionPage = () => {
             <Button
               onClick={() =>
                 router.push(
-                  `/admin/images/${params.id}/instructions/sequence/-1`
+                  `/admin/images/${params.id}/description/sequence/-1`
                 )
               }
             >
-              Add Instruction
+              Add description
             </Button>
           </div>
         ) : (
@@ -146,7 +185,7 @@ const InstructionPage = () => {
                     <Button
                       onClick={() =>
                         router.push(
-                          `/admin/images/${params.id}/instructions/sequence/${ins.id}`
+                          `/admin/images/${params.id}/description/sequence/${ins.id}`
                         )
                       }
                     >
@@ -165,7 +204,7 @@ const InstructionPage = () => {
               ))}
             </div>
           ) : (
-            <p className="">No instructions for this Image...</p>
+            <p className="">No description for this Image...</p>
           )
         ) : (
           <div className="">

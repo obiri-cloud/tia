@@ -61,6 +61,7 @@ const MainImagePage = ({
   const [openModal, setOpenModal] = useState(false);
   const [creatingStarted, setCreatingStarted] = useState(false);
   const [jokes, setJokes] = useState<string[]>([]);
+  // const [description,setDescription]=useState<any>()
 
   const getCurrentImage = async (id: string | null, token: string | null) => {
     if (!token && session?.expires) {
@@ -339,6 +340,30 @@ const MainImagePage = ({
     }
   };
 
+
+  const getDescription = async () => {
+    // const id = params.id;
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/image-descriptions/`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          // @ts-ignore
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      // setDescription(response.data.data);
+      return response.data.data
+    }
+  };
+
+  const { data: description } = useQuery(["description"], getDescription);
+ 
+  console.log('--->',description&&description[0]?.id)
   return (
     <div className="">
       {" "}
@@ -446,6 +471,7 @@ const MainImagePage = ({
                 )}
               </p>
             </div>
+
             <div className="flex gap-2">
               {isActive ? (
                 <Button
@@ -487,14 +513,17 @@ const MainImagePage = ({
                   {creatingStarted && <p>Lab Loading In Progress</p>}
                 </div>
               )}
-
+       
               {isActive ? (
                 <Button variant="destructive" className="bg-danger flex gap-1">
                   <TrashIcon className="stroke-2 w-4 h-5" />
                   <span>Delete</span>
                 </Button>
               ) : null}
+
             </div>
+            {/* <h1>{description&&description[0]?.text}</h1> */}
+            <div dangerouslySetInnerHTML={{ __html: description&&description[0]?.text}} />
             <div className="mt-[100px_!important]">
               {token && id ? <Reviews id={id} token={token} /> : null}
             </div>
