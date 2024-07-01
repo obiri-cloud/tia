@@ -86,6 +86,7 @@ const AccountPage = () => {
     }
   };
 
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     let formData = {
@@ -191,6 +192,8 @@ const AccountPage = () => {
       //     "Something went deactivating your account",
       //   variant: "destructive",
       // });
+
+
     } finally {
       if (deactivateButtonRef.current) {
         deactivateButtonRef.current.disabled = false;

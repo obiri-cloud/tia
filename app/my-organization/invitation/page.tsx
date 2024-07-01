@@ -138,6 +138,10 @@ const InivitationPage = () => {
     return response.data;
   };
 
+
+
+
+ //bulk invite 
   const bulkInvite = async (file: any) => {
     let formData = new FormData();
     formData.append("file", file);
@@ -149,6 +153,7 @@ const InivitationPage = () => {
     return response.data;
   };
 
+  //single or multiple invites
   const { mutate: addInviteMutation } = useMutation(
     (data: string) => addInvite(data),
     {
@@ -182,6 +187,9 @@ const InivitationPage = () => {
       },
     }
   );
+
+
+
 
   const { mutate: addBulkInviteMutation } = useMutation(
     (file: any) => bulkInvite(file),
@@ -246,6 +254,7 @@ const InivitationPage = () => {
 
     addInviteMutation(JSON.stringify(emailData));
   };
+
 
   const addGroup = () => {
     if (emailInput) {

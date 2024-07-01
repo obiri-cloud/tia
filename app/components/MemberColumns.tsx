@@ -104,17 +104,10 @@ export const MemberColumns: ColumnDef<any>[] = [
       };
 
       const deleteInvite = async (id: number) => {
-        const response = await axios.post(
+        const response = await apiClient.post(
           `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/member/delete/`,
           {
             user_ids: delData,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              Authorization: `Bearer ${token}`,
-            },
           }
         );
 
