@@ -88,7 +88,18 @@ interface ILabInfo {
   lab_id: number;
   image_id: number;
 }
+interface Idescription{
+  id:number;
+  text:string;
+  title:string;
+  updated_date:string;
+  creation_date:string;
+  image:{
+    id:number;
+    name:string;
+  }
 
+}
 interface IActiveLab {
   creation_date: string;
   id: number;

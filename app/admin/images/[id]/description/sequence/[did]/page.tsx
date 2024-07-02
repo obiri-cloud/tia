@@ -123,7 +123,7 @@ const SequencePage = () => {
     const response = await apiClient.get(`/moderator/image/${id}/retrieve/`);
 
     if (response.status === 200) {
-      setCurrentImage(response.data.data); // Ensure response.data.data matches ILabImage
+      setCurrentImage(response.data.data);
     }
   };
 

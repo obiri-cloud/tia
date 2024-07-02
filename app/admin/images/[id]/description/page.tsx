@@ -22,8 +22,6 @@ const InstructionPage = () => {
   const [currentInstruction,setCurrentInstruction]=useState<IInstruction | null>(null)
 
   const { data: session } = useSession();
-
-  // @ts-ignore
   const token = session?.user!.tokens?.access_token;
 
   useEffect(() => {
@@ -54,17 +52,7 @@ const InstructionPage = () => {
 
   const getInstruction = async () => {
     const id = params.id;
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/image-descriptions/retrieve`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          // @ts-ignore
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await apiClient.get(`/moderator/image/${id}/image-descriptions/retrieve`);
 
     if (response.data.status === 200) {
       setInstruction(response.data.data);
@@ -73,9 +61,8 @@ const InstructionPage = () => {
 
   const deleteInstruction = async (siq: number | undefined) => {
     const id = params.id;
-    const response = await axios.delete(
-      `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${String(id)}/image-descriptions/delete/`,
-      {
+    const response = await axios.delete(`${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${String(id)}/image-descriptions/delete/`,
+    {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -83,8 +70,7 @@ const InstructionPage = () => {
           Authorization: `Bearer ${token}`,
         },
       }
-    );
-
+   );
     if (response.status === 204) {
       toast({
         variant: "success",
@@ -168,7 +154,7 @@ const InstructionPage = () => {
       </div>
       <DeleteConfirmation
         instructions={currentInstruction}
-        text="Do you want to delete this sequence"
+        text="Do you want to delete this description"
         noText="No"
         confirmText="Yes, Delete this sequence"
         confirmFunc={() => deleteInstruction(currentInstruction?.id)}

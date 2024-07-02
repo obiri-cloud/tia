@@ -27,7 +27,7 @@ import {
 import secureLocalStorage from "react-secure-storage";
 import { userCheck } from "@/lib/utils";
 import { TrashIcon } from "@radix-ui/react-icons";
-import { IActiveLab, ILabImage } from "@/app/types";
+import { IActiveLab, Idescription } from "@/app/types";
 import AltRouteCheck from "../alt-route-check";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import MultiPlanModal from "../MultiPlanModal";
@@ -61,7 +61,7 @@ const MainImagePage = ({
   const [openModal, setOpenModal] = useState(false);
   const [creatingStarted, setCreatingStarted] = useState(false);
   const [jokes, setJokes] = useState<string[]>([]);
-  const [description,setDescription]=useState<any>()
+  const [description,setDescription]=useState<Idescription | null>()
 
   const getCurrentImage = async (id: string | null, token: string | null) => {
     if (!token && session?.expires) {
@@ -366,6 +366,9 @@ const MainImagePage = ({
 useEffect(()=>{
   getDescription()
 },[])
+
+console.log(typeof description)
+console.log( description)
   return (
     <div className="">
       {" "}
@@ -524,7 +527,8 @@ useEffect(()=>{
               ) : null}
 
             </div>
-            <div dangerouslySetInnerHTML={{ __html: description?.text}} />
+            {/* @ts-ignore */}
+            <div dangerouslySetInnerHTML={{ __html: description?.text || '' }} />
             <div className="mt-[100px_!important]">
               {token && id ? <Reviews id={id} token={token} /> : null}
             </div>

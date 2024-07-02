@@ -119,7 +119,12 @@ const DataTable = React.memo(
             </TableBody>
           </Table>
         </div>
+        {
+    table.getRowModel().rows?.length ? (
         <DataTablePagination table={table} />
+  ) : 
+  null
+}
       </div>
     );
   }
