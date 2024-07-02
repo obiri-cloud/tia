@@ -61,7 +61,7 @@ const MainImagePage = ({
   const [openModal, setOpenModal] = useState(false);
   const [creatingStarted, setCreatingStarted] = useState(false);
   const [jokes, setJokes] = useState<string[]>([]);
-  // const [description,setDescription]=useState<any>()
+  const [description,setDescription]=useState<any>()
 
   const getCurrentImage = async (id: string | null, token: string | null) => {
     if (!token && session?.expires) {
@@ -344,7 +344,7 @@ const MainImagePage = ({
   const getDescription = async () => {
     // const id = params.id;
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/image-descriptions/`,
+      `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/image-descriptions/retrieve`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -356,14 +356,16 @@ const MainImagePage = ({
     );
 
     if (response.status === 200) {
-      // setDescription(response.data.data);
+      setDescription(response.data.data);
       return response.data.data
     }
   };
 
-  const { data: description } = useQuery(["description"], getDescription);
+  // const { data: description } = useQuery(["description"], getDescription);
  
-  console.log('--->',description&&description[0]?.id)
+useEffect(()=>{
+  getDescription()
+},[])
   return (
     <div className="">
       {" "}
@@ -522,8 +524,7 @@ const MainImagePage = ({
               ) : null}
 
             </div>
-            {/* <h1>{description&&description[0]?.text}</h1> */}
-            <div dangerouslySetInnerHTML={{ __html: description&&description[0]?.text}} />
+            <div dangerouslySetInnerHTML={{ __html: description?.text}} />
             <div className="mt-[100px_!important]">
               {token && id ? <Reviews id={id} token={token} /> : null}
             </div>

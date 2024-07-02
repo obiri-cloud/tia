@@ -37,9 +37,8 @@ const SequencePage = () => {
 
   const getSequenceInfo = async () => {
     const id = params.id;
-    const siq = params.did;
     const response = await apiClient.get(
-      `/moderator/image/${id}/image-descriptions/${siq}`
+      `/moderator/image/${id}/image-descriptions/retrieve`
     );
 
     if (response.status === 200) {
@@ -50,25 +49,24 @@ const SequencePage = () => {
     }
   };
 
-  const updateSequenceInst2 = async () => {
+  const updateSequenceInst = async () => {
     const id = params.id;
-    const siq = params.did;
 
     let text = "";
     if (editorRef.current) {
       //@ts-ignore
       text = editorRef.current.getContent();
     }
-    let formData = JSON.stringify({ title: heading, text, image: Number(id) });
+    let formData = JSON.stringify({ title: heading, text });
     try {
-      const response = await apiClient.patch(
-        `/moderator/image/${id}/image-descriptions/${siq}`,
+      const response = await apiClient.put(
+        `/moderator/image/${id}/image-descriptions/update`,
         formData
       );
       if (response.status === 200) {
         toast({
           variant: "success",
-          title: "Sequence Instruction updated",
+          title: "description  updated",
         });
         router.push(`/admin/images/${id}/description`);
       }
@@ -81,44 +79,6 @@ const SequencePage = () => {
     }
   };
 
-  const updateSequenceInst = async () => {
-    const id = params.id;
-    const siq = params.did;
-
-    let text = "";
-    if (editorRef.current) {
-      //@ts-ignore
-      text = editorRef.current.getContent();
-    }
-    let formData = JSON.stringify({ title: heading, text, image: id });
-    try {
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/image-descriptions/${siq}/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // @ts-ignore
-            Authorization: `Bearer ${token}`,
-          },
-          data: formData,
-        }
-      );
-      if (response.status === 200) {
-        toast({
-          variant: "success",
-          title: "Sequence Instruction updated",
-        });
-        router.push(`/admin/images/${id}/description`);
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        //@ts-ignore
-        title: error.response.data.message,
-      });
-    }
-  };
 
   const createSequenceInst = async () => {
     const id = params.id;
@@ -133,7 +93,7 @@ const SequencePage = () => {
 
     try {
       const response = await apiClient.post(
-        `/moderator/image/${id}/image-descriptions/`,
+        `/moderator/image/${id}/image-descriptions/create/`,
         formData
       );
 
@@ -224,7 +184,7 @@ const SequencePage = () => {
         <Button
           className="mt-2 ml-auto"
           onClick={() => {
-            Number(params.siq) > 0
+            Number(params.did) > 0
               ? updateSequenceInst()
               : createSequenceInst();
           }}
