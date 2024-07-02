@@ -66,7 +66,7 @@ const SequencePage = () => {
       if (response.status === 200) {
         toast({
           variant: "success",
-          title: "description  updated",
+          title: "description updated sucessfully",
         });
         router.push(`/admin/images/${id}/description`);
       }

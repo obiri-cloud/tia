@@ -32,6 +32,7 @@ import AltRouteCheck from "../alt-route-check";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import MultiPlanModal from "../MultiPlanModal";
 import apiClient from "@/lib/request";
+import DescriptionIframe from "../description-iframe";
 
 const MainImagePage = ({
   token,
@@ -342,33 +343,19 @@ const MainImagePage = ({
 
 
   const getDescription = async () => {
-    // const id = params.id;
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BE_URL}/moderator/image/${id}/image-descriptions/retrieve`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          // @ts-ignore
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
+    const response = await apiClient.get(`/moderator/image/${id}/image-descriptions/retrieve`);
     if (response.status === 200) {
       setDescription(response.data.data);
       return response.data.data
     }
   };
-
-  // const { data: description } = useQuery(["description"], getDescription);
  
 useEffect(()=>{
   getDescription()
 },[])
 
-console.log(typeof description)
-console.log( description)
+const htmlContent = description?.text || '';
+
   return (
     <div className="">
       {" "}
@@ -527,8 +514,10 @@ console.log( description)
               ) : null}
 
             </div>
-            {/* @ts-ignore */}
-            <div dangerouslySetInnerHTML={{ __html: description?.text || '' }} />
+            <DescriptionIframe className="font-sans">
+              <div  dangerouslySetInnerHTML={{__html: htmlContent}} />
+            </DescriptionIframe>
+          
             <div className="mt-[100px_!important]">
               {token && id ? <Reviews id={id} token={token} /> : null}
             </div>
