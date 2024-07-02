@@ -7,21 +7,13 @@ import { userCheck } from "@/lib/utils";
 import { ILabImage, Plan } from "../types";
 import apiClient from "@/lib/request";
 
-const plans: Plan[] = [
-  {
-    value: "basic",
-    label: "Basic",
-    features: ["100 credits per month", "Basic analytics", "Community support"],
-    price: "0",
-    basicPrice: 0,
-    plan_choice: "monthly",
-  },
+const plans:Plan[] = [
   {
     value: "standard",
     label: "Standard",
     features: ["250 credits per month", "Enhanced analytics", "Email support"],
-    price: "10",
-    plan_choice: "monthly",
+    price: process.env.NEXT_PUBLIC_SUBSCRIPTION_PLAN_STANDARD_AMOUNT || "10",
+    plan_choice: process.env.NEXT_PUBLIC_SUBSCRIPTION_PLAN_INTERVAL || "monthly",
   },
   {
     value: "premium",
@@ -31,8 +23,8 @@ const plans: Plan[] = [
       "Advanced analytics",
       "Priority support",
     ],
-    price: "20",
-    plan_choice: "monthly",
+    price: process.env.NEXT_PUBLIC_SUBSCRIPTION_PLAN_PREMIUM_AMOUNT || "20",
+    plan_choice: process.env.NEXT_PUBLIC_SUBSCRIPTION_PLAN_INTERVAL || "monthly",
   },
 ];
 

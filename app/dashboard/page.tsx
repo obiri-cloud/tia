@@ -161,10 +161,10 @@ const UserPage = () => {
 
   return (
     <div className="">
-      <div className="border-b dark:border-b-[#2c2d3c] border-b-whiteEdge flex justify-between items-center gap-2 p-2">
+      <div className="border-b dark:border-b-gray-700 border-b-gray-200 flex justify-between items-center gap-2 p-2">
         <div className="flex items-center">
           <span className="p-2">All Labs</span>
-          <ChevronRight className="w-[12px] dark:fill-[#d3d3d3] fill-[#2c2d3c]" />
+          <ChevronRight className="w-[12px] dark:text-gray-300 text-gray-700" />
         </div>
 
         <AltRouteCheck />
@@ -173,7 +173,7 @@ const UserPage = () => {
       <div className="p-4">
         <span className="">All Labs</span>
         {/* Search Section */}
-        <div className="sticky top-0 z-10 bg-white dark:bg-[#2c2d3c] p-4">
+        <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 p-4">
           <div className="flex justify-center my-4">
             <div className="w-1/5"></div>
             <input
@@ -181,7 +181,7 @@ const UserPage = () => {
               value={searchTerm}
               onChange={handleSearchChange}
               placeholder="Search..."
-              className="w-3/5 p-2 border rounded-md"
+              className="w-3/5 p-2 border rounded-md dark:border-gray-700 dark:bg-transparent dark:text-white"
             />
             <div className="w-1/5"></div>
           </div>
@@ -193,9 +193,9 @@ const UserPage = () => {
           <div className="flex gap-2 mt-2">
             {catLoading ? (
               <>
-                <Skeleton className="p-2 w-20 h-9 border rounded-md bg-gray-200" />
-                <Skeleton className="p-2 w-20 h-9 border rounded-md bg-gray-200" />
-                <Skeleton className="p-2 w-20 h-9 border rounded-md bg-gray-200" />
+                <Skeleton className="p-2 w-20 h-9 border rounded-md bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="p-2 w-20 h-9 border rounded-md bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="p-2 w-20 h-9 border rounded-md bg-gray-200 dark:bg-gray-700" />
               </>
             ) : (
               categories.map((category: string) => (
@@ -205,7 +205,7 @@ const UserPage = () => {
                   className={`p-2 border rounded-md ${
                     selectedCategories.includes(category)
                       ? "bg-blue-500 text-white"
-                      : "bg-gray-200"
+                      : "bg-gray-200 dark:bg-gray-700 dark:text-white"
                   }`}
                 >
                   {category}
@@ -226,7 +226,7 @@ const UserPage = () => {
                 className={`p-2 border rounded-md ${
                   selectedDifficulty === level
                     ? "bg-blue-500 text-white"
-                    : "bg-gray-200"
+                    : "bg-gray-200 dark:bg-gray-700 dark:text-white"
                 }`}
               >
                 {level}

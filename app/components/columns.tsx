@@ -225,76 +225,7 @@ export const columns: ColumnDef<IinviteData>[] = [
         </span>
       </div>
     ),
-  },
-  {
-    accessorKey: "action",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Action" />
-    ),
-    cell: ({ row }) => {
-      const [diag, setdiag] = useState<boolean>(false);
-      const { data: tableData } = useSelector(
-        (state: RootState) => state.table
-      );
-      const { data: session } = useSession();
-      const dispatch = useDispatch();
-      const token = session?.user!.tokens?.access_token;
-      const org_id = session?.user!.data?.organization_id;
-      const [passedData, setPassedData] = useState<IinviteData>();
-
-      const deleteInvite = async (id: number) => {
-        const response = await apiClient.delete(
-          `/organization/${org_id}/invitation/${id}/delete/`
-        );
-
-        const newData = tableData.filter((item: any) => item.id !== id);
-        dispatch(setTableData(newData));
-
-        return response.data.data;
-      };
-
-      const deletebtn = (data: IinviteData) => {
-        setPassedData(data);
-        setdiag(true);
-      };
-
-      const deleteInviteMutation = async (data: any) => {
-        console.log("data", data);
-        setdiag(false);
-        toast({
-          variant: "destructive",
-          title: data.message || "Invitation deleted successfully",
-        });
-        await deleteInvite(data);
-      };
-
-      return (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <MoreVerticalIcon className="w-4 h-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="left-[-20px_!important]">
-              <DropdownMenuItem
-                onClick={() => deletebtn(row.original)}
-                className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
-              >
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Dialog open={diag} onOpenChange={setdiag}>
-            <DeleteConfirmation
-              text={`Do you want to delete ${passedData?.recipient_email} invitation`}
-              noText="No"
-              confirmText="Yes, Delete!"
-              confirmFunc={() => deleteInviteMutation(passedData?.id ?? 0)}
-            />
-          </Dialog>
-        </>
-      );
-    },
-  },
+  }
 ];
 
 function TrashIcon(props: any) {

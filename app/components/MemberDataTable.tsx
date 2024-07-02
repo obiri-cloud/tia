@@ -107,16 +107,23 @@ export function MemberDataTable<IinviteData, TValue>({data,columns,}: DataTableP
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-red-500"
                 >
-                  No results.
+                   No member(s) found for this Organization...
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <MemberDataTablePagination table={table} />
+
+
+          {
+        table.getRowModel().rows?.length ? (
+          <MemberDataTablePagination table={table} />
+          ) : 
+         null
+          }
     </div>
   );
 }

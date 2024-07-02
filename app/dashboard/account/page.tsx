@@ -9,13 +9,10 @@ import React, {
 } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast";
-import { ToastAction } from "@radix-ui/react-toast";
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import * as z from "zod";
-import { cn, userCheck } from "@/lib/utils";
+import { userCheck } from "@/lib/utils";
 
 import {
   Dialog,
@@ -37,7 +34,7 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/components/ui/command";
-import { CarrotIcon, CheckIcon } from "lucide-react";
+import { CarrotIcon} from "lucide-react";
 import AltRouteCheck from "@/app/components/alt-route-check";
 import PlanModalContent from "@/app/components/PlanModal";
 
@@ -45,19 +42,11 @@ import apiClient from "@/lib/request";
 
 const plans = [
   {
-    value: "basic",
-    label: "Basic",
-    features: ["100 credits per month", "Basic analytics", "Community support"],
-    price: "0",
-    basicPrice: 0,
-    plan_choice: "monthly",
-  },
-  {
     value: "standard",
     label: "Standard",
     features: ["250 credits per month", "Enhanced analytics", "Email support"],
-    price: "10",
-    plan_choice: "monthly",
+    price: process.env.NEXT_PUBLIC_SUBSCRIPTION_PLAN_STANDARD_AMOUNT || "10",
+    plan_choice: process.env.NEXT_PUBLIC_SUBSCRIPTION_PLAN_INTERVAL || "monthly",
   },
   {
     value: "premium",
@@ -67,10 +56,12 @@ const plans = [
       "Advanced analytics",
       "Priority support",
     ],
-    price: "20",
-    plan_choice: "monthly",
+    price: process.env.NEXT_PUBLIC_SUBSCRIPTION_PLAN_PREMIUM_AMOUNT || "20",
+    plan_choice: process.env.NEXT_PUBLIC_SUBSCRIPTION_PLAN_INTERVAL || "monthly",
   },
 ];
+
+
 
 const AccountPage = () => {
   const { data: session } = useSession();
@@ -88,7 +79,6 @@ const AccountPage = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const token = session?.user?.tokens?.access_token;
   const currentPlan = session?.user?.data?.subscription_plan;
-
   const getUser = async () => {
     const response = await apiClient.get(`/auth/user/`);
     setUserData(response.data);
@@ -195,7 +185,7 @@ const AccountPage = () => {
     }
   };
 
-  const deactivateSubscription = async () => {
+  const deactivateSubscription2 = async () => {
     if (deactivateButtonRef.current) deactivateButtonRef.current.disabled = true;
     try {
       const response = await apiClient.post(
@@ -222,15 +212,66 @@ const AccountPage = () => {
     } catch (error) {
       userCheck(error as AxiosError);
       console.error("error", error);
-      console.log({error})
+      //@ts-ignore
       toast({
         //@ts-ignore
-        title: "Subscription deactivation goes wrong....",
+        title: error.response.data.message,
         variant: "destructive",
         duration: 2000,
       });
+    }finally{
+      if (deactivateButtonRef.current)
+        deactivateButtonRef.current.disabled = false;
     }
   };
+
+
+
+  const deactivateSubscription = async () => {
+    if (deactivateButtonRef.current) deactivateButtonRef.current.disabled = true;
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BE_URL}/payment/subscription/delete/`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+       console.log('++++++++++++___',response)
+      if (response.status === 204) {
+        toast({
+          title: "Subscription deactivated successfully!",
+          variant: "success",
+          duration: 2000,
+        });
+        window.location.href = "/dashboard/account";
+      } else {
+        toast({
+          title: "Something went wrong!",
+          variant: "destructive",
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      userCheck(error as AxiosError);
+      console.error("error", error);
+      //@ts-ignore
+      toast({
+        //@ts-ignore
+        title: error.response.data.message,
+        variant: "destructive",
+        duration: 2000,
+      });
+    } finally {
+      if (deactivateButtonRef.current)
+        deactivateButtonRef.current.disabled = false;
+    }
+  };
+
 
   const getFilteredPlans = () => {
     return plans.filter((plan) => plan.value !== currentPlan);
@@ -345,7 +386,7 @@ const AccountPage = () => {
           <div className="sc-hLBbgP gUrCBj mt-8">
             <div className="sc-hLBbgP sc-eAeVAz dIPdRh hOuTWu">
               <label className="text-[0.8125rem] text-whiteDark dark:text-dashboardDarkHeadText font-medium ml-[2px] mr-[4px] inline-block text-left">
-                Upgrade plan
+                Change plan
               </label>
               <span className="sc-bcXHqe sc-iuxOeI wRSCb jhSxJJ">
                 Upgrade your subscription plan
@@ -360,7 +401,7 @@ const AccountPage = () => {
                   aria-expanded={open}
                   className="w-[200px] justify-between dark:bg-comboBg bg-white theme-selector"
                 >
-                  {currentPlan === "basic" ? "Subscribe..." : "Upgrade plan..."}
+                  {currentPlan === "basic" ? "Subscribe..." : "change plan..."}
                   <CarrotIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -435,6 +476,7 @@ const AccountPage = () => {
               noText="No, cancel"
               confirmText="Yes, deactivate"
               confirmFunc={deactivateAccount}
+              deactivateButtonRef
             />
           </Dialog>
 
@@ -468,6 +510,7 @@ const AccountPage = () => {
               noText="No, cancel"
               confirmText="Yes, deactivate"
               confirmFunc={deactivateSubscription}
+              deactivateButtonRef={deactivateButtonRef}
             />
           </Dialog>
 

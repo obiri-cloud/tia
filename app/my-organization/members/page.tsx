@@ -380,7 +380,7 @@ const Images = () => {
                 {!loadingMembers &&
                   !error &&
                   tableData &&
-                  tableData.length === 0 && (
+                  tableData.length < 0 && (
                     <TableCaption>
                       No member(s) found for this Organization...
                     </TableCaption>

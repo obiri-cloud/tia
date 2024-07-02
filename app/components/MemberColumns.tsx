@@ -54,7 +54,7 @@ export const MemberColumns: ColumnDef<any>[] = [
     id: "select",
     header: ({ table }) => {
       const [selected, setSelected] = useState(false);
-      const [diag, setdiag] = useState<boolean>(false);
+      const [diag, setDiag] = useState<boolean>(false);
       const { Memberdata: tableData } = useSelector(
         (state: RootState) => state.memberTable
       );
@@ -75,9 +75,7 @@ export const MemberColumns: ColumnDef<any>[] = [
 
       const delData = table
         .getFilteredSelectedRowModel()
-        .rows.map((a) => a.original.member.id);
-
-      console.log("------>", delData);
+        .rows.map((a) => a?.original?.member?.id);
 
       const getInvitations = async (): Promise<IinviteData[] | undefined> => {
         try {
@@ -87,83 +85,98 @@ export const MemberColumns: ColumnDef<any>[] = [
               headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
-                // @ts-ignore
                 Authorization: `Bearer ${token}`,
               },
             }
           );
 
+          if (response.data.status === 404) {
+            const newData = tableData.filter(
+              (item: any) => !delData.includes(item.member.id)
+            );
+            dispatch(setMemberTableData(newData));
+            dispatch(setMemberPageSize(Math.ceil(response.data.count / 2)));
+            dispatch(setMemberOriginalPageSize(response.data.count));
+            return;
+          }
           dispatch(setMemberTableData(response.data.data));
           dispatch(setMemberPageSize(Math.ceil(response.data.count / 2)));
           dispatch(setMemberOriginalPageSize(response.data.count));
-
           return response.data.data;
         } catch (error) {
           console.log(error);
         }
       };
 
-      const deleteInvite = async (id: number) => {
-        const response = await apiClient.post(
+      const deleteInvite = async (ids: number[]) => {
+        await apiClient.post(
           `${process.env.NEXT_PUBLIC_BE_URL}/organization/${org_id}/member/delete/`,
           {
-            user_ids: delData,
+            user_ids: ids,
           }
         );
 
         const newData = tableData.filter(
-          (item: any) => !delData.includes(item.id)
+          (item: any) => !ids.includes(item.member.id)
         );
-        dispatch(setTableData(newData));
 
-        return response.data.data;
+        // dispatch(setMemberTableData(newData));
       };
 
-      const deleteInviteMutation = async (data: any) => {
-        table.toggleAllPageRowsSelected(false);
-        setSelected(false);
-        setdiag(false);
-        toast({
-          variant: "destructive",
-          title: data.message || "Invitation deleted successfully",
-        });
-        await deleteInvite(data);
-        await getInvitations();
+      const deleteInviteMutation = async () => {
+        try {
+          await deleteInvite(delData);
+          await getInvitations();
+          table.toggleAllPageRowsSelected(false);
+          setSelected(false);
+          setDiag(false);
+          toast({
+            variant: "destructive",
+            title: "Invitations deleted successfully",
+          });
+
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Failed to delete invitations",
+          });
+          console.log(error);
+        }
       };
 
       return (
         <div className="flex gap-2 items-center">
           {tableData.length === 0 ? null : (
-            <Checkbox
-              checked={
-                table.getIsAllPageRowsSelected() ||
-                (table.getIsSomePageRowsSelected() && "indeterminate")
-              }
-              onCheckedChange={(value) => handleSelectAll(!!value)}
-              aria-label="Select all"
-              className="translate-y-[2px]"
-            />
+            <>
+              <Checkbox
+                checked={
+                  table.getIsAllPageRowsSelected() ||
+                  (table.getIsSomePageRowsSelected() && "indeterminate")
+                }
+                onCheckedChange={(value) => handleSelectAll(!!value)}
+                aria-label="Select all"
+                className="translate-y-[2px]"
+              />
+              {selected ? (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="text-red-500"
+                  onClick={() => setDiag(true)}
+                >
+                  <TrashIcon className="h-4 w-4 text-red-500" />
+                  <p className="sr-only">Delete</p>
+                </Button>
+              ) : null}
+            </>
           )}
 
-          {selected ? (
-            <Button
-              variant="outline"
-              id="closeDialog"
-              size="icon"
-              className="text-red-500"
-              onClick={() => setdiag(true)}
-            >
-              <TrashIcon className="h-4 w-4 text-red-500" />
-              <p className="sr-only">Delete</p>
-            </Button>
-          ) : null}
-
-          <Dialog open={diag} onOpenChange={setdiag}>
+          <Dialog open={diag} onOpenChange={setDiag}>
             <DeleteConfirmation
               text={`Do you want to delete these invitations`}
               noText="No"
               confirmText="Yes, Delete!"
-              confirmFunc={() => deleteInviteMutation(delData)}
+              confirmFunc={deleteInviteMutation}
             />
           </Dialog>
         </div>
@@ -331,79 +344,5 @@ export const MemberColumns: ColumnDef<any>[] = [
         </TooltipProvider>
       );
     },
-  },
-  {
-    accessorKey: "action",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Action" />
-    ),
-    cell: ({ row }) => {
-      const [image, setImage] = useState<any>();
-      const [isOpenViewDialogOpen, setIsOpenViewDialog] =
-        useState<boolean>(false);
-      const [isOpenDeleteDialogOpen, setIsOpenDeleteDialog] =
-        useState<boolean>(false);
-
-      const [diag, setdiag] = useState<boolean>();
-      const { data: tableData } = useSelector(
-        (state: RootState) => state.table
-      );
-      const { data: session } = useSession();
-      const dispatch = useDispatch();
-      const org_id = session?.user!.data?.organization_id;
-
-      const deleteMember = async (id: number) => {
-        const response = await apiClient.delete(
-          `/organization/${org_id}/member/${id}/delete/`
-        );
-
-        const newData = tableData.filter((item: any) => item.member.id !== id);
-        dispatch(setMemberTableData(newData));
-
-        return response.data.data;
-      };
-
-      const deleteMemberMutation = async (data: any) => {
-        console.log("data", data);
-        setdiag(false);
-        toast({
-          variant: "destructive",
-          title: data.message || "Member deleted successfully",
-        });
-        await deleteMember(data);
-      };
-
-      return (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <MoreVerticalIcon className="w-4 h-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="left-[-20px_!important]">
-              <DropdownMenuItem
-                onClick={() => {
-                  setdiag(true);
-                  setImage(row?.original?.member);
-                }}
-                className="font-medium cursor-pointer hover:text-red-500 text-red-500 py-2"
-              >
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Dialog
-            open={diag}
-            onOpenChange={diag ? setdiag : setIsOpenDeleteDialog}
-          >
-            <DeleteConfirmation
-              text={`Do you want to delete ${image?.first_name} from your organization`}
-              noText="No"
-              confirmText="Yes, Delete"
-              confirmFunc={() => deleteMemberMutation(image?.id)}
-            />
-          </Dialog>
-        </>
-      );
-    },
-  },
+  }
 ];

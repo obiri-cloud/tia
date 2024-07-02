@@ -29,7 +29,7 @@ const AccountPage = () => {
   const [userData, setUserData] = useState<any>();
   const [editMode, setEditMode] = useState(false);
   const router = useRouter();
-
+  // const deactivateButtonRef = useRef<HTMLButtonElement>(null);
   const NameRef = useRef<HTMLInputElement>(null);
   const deactivateButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -288,6 +288,7 @@ const AccountPage = () => {
             noText="No, cancel"
             confirmText="Yes, delete"
             confirmFunc={() => deleteOrganization()}
+            deactivateButtonRef
           />
         </div>
       </div>
