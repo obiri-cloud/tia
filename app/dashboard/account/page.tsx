@@ -444,12 +444,15 @@ const AccountPage = () => {
 
           <DropToggle />
 
-          <div className="sc-jEJXZe cyvxRV"></div>
-
+          <div className="sc-jEJXZe cyvxRV"></div> 
+          <span className="text-left leading-8 text-xl text-red-500 font-medium tracking-widest-[-0.01rem] dark:text-red-400 whiteDark">
+                 Danger Zone
+          </span>
+          <div className="border-b border-red-500 my-6 dark:border-red-400"></div>
           <div className="sc-hLBbgP flex justify-between mt-10">
             <div className="">
               <div className="sc-hLBbgP gUrCBj">
-                <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText whiteDark">
+                <span className="text-left leading-8 text-xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText whiteDark">
                   Deactivate Account
                 </span>
               </div>
@@ -480,15 +483,19 @@ const AccountPage = () => {
             />
           </Dialog>
 
+
+
           <div className="sc-hLBbgP flex justify-between mt-10">
             <div className="">
               <div className="sc-hLBbgP gUrCBj">
-                <span className="text-left leading-8 text-2xl font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText whiteDark">
+
+                <span className="text-left leading-8 text-xl  font-medium tracking-widest-[-0.01rem] dark:text-dashboardDarkHeadText whiteDark">
                   Deactivate Subscription
                 </span>
+
               </div>
               <div className="sc-bcXHqe sc-cRIgaW cpMQpB htAZxf">
-                Deactivate your subscription
+                  Deactivate your subscription
               </div>
             </div>
             <DialogTrigger asChild>

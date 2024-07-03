@@ -171,9 +171,8 @@ const UserPage = () => {
       </div>
 
       <div className="p-4">
-        <span className="">All Labs</span>
         {/* Search Section */}
-        <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 p-4">
+        <div className="sticky top-0 z-10 bg-white dark:bg-transparent p-4">
           <div className="flex justify-center my-4">
             <div className="w-1/5"></div>
             <input
@@ -188,9 +187,10 @@ const UserPage = () => {
         </div>
 
         {/* Categories Section */}
-        <div className="my-4">
-          <h2 className="text-lg font-semibold">Categories</h2>
-          <div className="flex gap-2 mt-2">
+        <div className="my-4 flex jus">
+          <h2 className="text-lg font-semibold pt-2">Categories :</h2>
+          
+          <div className="flex gap-2 mt-2 ml-2"> 
             {catLoading ? (
               <>
                 <Skeleton className="p-2 w-20 h-9 border rounded-md bg-gray-200 dark:bg-gray-700" />
@@ -202,7 +202,7 @@ const UserPage = () => {
                 <button
                   key={category}
                   onClick={() => toggleCategory(category)}
-                  className={`p-2 border rounded-md ${
+                  className={`px-3 py-1 border border-1 rounded-md text-sm ${
                     selectedCategories.includes(category)
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 dark:bg-gray-700 dark:text-white"
@@ -216,14 +216,14 @@ const UserPage = () => {
         </div>
 
         {/* Difficulty Level Section */}
-        <div className="my-4">
-          <h2 className="text-lg font-semibold">Difficulty Level</h2>
-          <div className="flex gap-2 mt-2">
+        <div className="my-4 flex ">
+          <h2 className="text-lg font-semibold pt-2">Difficulty Level :</h2>
+          <div className="flex gap-2 mt-2 ml-2">
             {difficulties.map((level) => (
               <button
                 key={level}
                 onClick={() => toggleDifficulty(level)}
-                className={`p-2 border rounded-md ${
+                className={`px-3 py-1 border border-1 rounded-md text-sm ${
                   selectedDifficulty === level
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200 dark:bg-gray-700 dark:text-white"
